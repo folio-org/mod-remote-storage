@@ -41,6 +41,10 @@
           <groupId>org.apache.logging.log4j</groupId>
           <artifactId>log4j-to-slf4j</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -107,11 +111,6 @@
                 <resource>
                   <directory>${basedir}/descriptors</directory>
                   <include>*Descriptor*-template.json</include>
-                  <filtering>true</filtering>
-                </resource>
-                <resource>
-                  <directory>${basedir}</directory>
-                  <include>run.sh</include>
                   <filtering>true</filtering>
                 </resource>
               </resources>

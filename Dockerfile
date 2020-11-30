@@ -29,4 +29,4 @@ EXPOSE 8081
 
 WORKDIR $JAVA_APP_DIR
 
-ENTRYPOINT ["sh", "./run.sh"]
+# ENTRYPOINT ["sh", "./run.sh"]

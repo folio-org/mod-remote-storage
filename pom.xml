@@ -27,14 +27,6 @@
     <folio-spring-base-version>1.0.1-SNAPSHOT</folio-spring-base-version>
   </properties>
 
-  <repositories>
-    <repository>
-      <id>folio-nexus</id>
-      <name>FOLIO Maven repository</name>
-      <url>https://repository.folio.org/repository/maven-folio</url>
-    </repository>
-  </repositories>
-
   <dependencies>
     <dependency>
       <groupId>org.folio</groupId>
@@ -120,5 +112,37 @@
 
     </plugins>
   </build>
+
+  <repositories>
+    <repository>
+      <id>folio-nexus</id>
+      <name>FOLIO Maven repository</name>
+      <url>https://repository.folio.org/repository/maven-folio</url>
+    </repository>
+  </repositories>
+
+  <distributionManagement>
+    <repository>
+      <id>folio-nexus</id>
+      <name>FOLIO Release Repository</name>
+      <url>https://repository.folio.org/repository/maven-releases/</url>
+      <uniqueVersion>false</uniqueVersion>
+      <layout>default</layout>
+    </repository>
+    <snapshotRepository>
+      <id>folio-nexus</id>
+      <name>FOLIO Snapshot Repository</name>
+      <uniqueVersion>true</uniqueVersion>
+      <url>https://repository.folio.org/repository/maven-snapshots/</url>
+      <layout>default</layout>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <scm>
+    <url>https://github.com/folio-org/${project.artifactId}</url>
+    <connection>scm:git:git://github.com/folio-org/${project.artifactId}.git</connection>
+    <developerConnection>scm:git:git@github.com:folio-org/${project.artifactId}.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
 
 </project>

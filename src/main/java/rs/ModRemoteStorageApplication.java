@@ -8,6 +8,6 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 public class ModRemoteStorageApplication {
   public static void main(String[] args) {
-    SpringApplication.run(new Class[]{ ModRemoteStorageApplication.class }, args);
+    SpringApplication.run(ModRemoteStorageApplication.class, args);
   }
 }

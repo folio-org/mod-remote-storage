@@ -1,4 +1,4 @@
-package rs.controller;
+package org.folio.rs.controller;
 
 import liquibase.exception.LiquibaseException;
 import lombok.extern.log4j.Log4j2;

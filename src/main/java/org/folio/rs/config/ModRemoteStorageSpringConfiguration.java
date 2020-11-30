@@ -1,4 +1,4 @@
-package rs.config;
+package org.folio.rs.config;
 
 import org.springframework.context.annotation.Configuration;
 

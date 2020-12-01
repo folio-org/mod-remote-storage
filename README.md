@@ -1,6 +1,4 @@
- # mod-remote-storage
-
-Backend module for remote storages
+# mod-remote-storage
 
 Copyright (C) 2020 The Open Library Foundation
 
@@ -8,6 +6,9 @@ This software is distributed under the terms of the Apache License,
 Version 2.0. See the file "[LICENSE](LICENSE)" for more information.
 
 ## Introduction
+
+Backend module for remote storages
+
 The mod-remote-storage module provides API for:
   * storing and retrieving all remote-storages settings
   * setting the remote-storage for the location from UI

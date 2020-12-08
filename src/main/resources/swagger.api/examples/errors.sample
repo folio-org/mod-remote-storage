@@ -1,8 +1,8 @@
 {
   "errors": [
     {
-      "message": "may not be null",
-      "type": "1",
+      "message": "must not be null",
+      "type": "Validation error",
       "code": "-1",
       "parameters": [
         {

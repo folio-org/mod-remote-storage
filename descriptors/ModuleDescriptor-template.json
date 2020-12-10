@@ -1,5 +1,5 @@
 {
-  "id": "${artifactId}-${version}",
+  "id": "@artifactId@-@version@",
   "name": "Remote storages API module",
   "requires": [],
   "provides": [
@@ -89,7 +89,7 @@
     }
   ],
   "launchDescriptor": {
-    "dockerImage": "${artifactId}:${version}",
+    "dockerImage": "@artifactId@:@version@",
     "dockerPull": false,
     "dockerArgs": {
       "HostConfig": {

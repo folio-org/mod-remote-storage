@@ -94,7 +94,7 @@ public class DbConfig {
       new AbstractPostgresConfig.Credentials("user", "pass")
     );
 
-//    postgresConfig.getAdditionalInitDbParams().addAll(DEFAULT_ADDITIONAL_INIT_DB_PARAMS);
+    postgresConfig.getAdditionalInitDbParams().addAll(DEFAULT_ADDITIONAL_INIT_DB_PARAMS);
 
     return postgresConfig;
   }

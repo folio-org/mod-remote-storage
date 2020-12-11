@@ -5,6 +5,7 @@ FROM adoptopenjdk/openjdk11:alpine-jre as builder
 # should be a single jar file
 ARG JAR_FILE=target/*.jar
 
+COPY run.sh run.sh
 COPY ${JAR_FILE} application.jar
 RUN java -Djarmode=layertools -jar application.jar extract
 
@@ -21,7 +22,7 @@ COPY --from=builder snapshot-dependencies/ ${JAVA_APP_DIR}/
 COPY --from=builder spring-boot-loader/ ${JAVA_APP_DIR}/
 COPY --from=builder application/ ${JAVA_APP_DIR}/
 
-COPY target/run.sh ${JAVA_APP_DIR}/
+COPY --from-builder run.sh ${JAVA_APP_DIR}/
 RUN chmod 755 ${JAVA_APP_DIR}/run.sh
 
 # Expose this port locally in the container.

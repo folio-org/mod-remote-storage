@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import org.folio.rs.domain.dto.RemoteStorageConfig;
 import org.folio.rs.domain.dto.RemoteStorageConfigCollection;
 import org.folio.rs.domain.dto.TimeUnits;
@@ -33,6 +34,7 @@ import java.util.UUID;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource("classpath:application-test.properties")
 @ActiveProfiles("TestDB")
+@AutoConfigureEmbeddedDatabase
 @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:PopulateTestData.sql")
 @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:ClearTestData.sql")
 public class RemoteStorageConfigurationsControllerTest {

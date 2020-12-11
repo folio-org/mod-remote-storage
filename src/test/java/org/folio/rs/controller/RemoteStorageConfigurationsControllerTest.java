@@ -37,12 +37,14 @@ import java.util.UUID;
 @AutoConfigureEmbeddedDatabase
 @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:PopulateTestData.sql")
 @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:ClearTestData.sql")
-public class RemoteStorageConfigurationsControllerTest {
+class RemoteStorageConfigurationsControllerTest {
 
   private static final String CONFIGURATIONS_URL = "http://localhost:%s/remote-storages/configurations/";
+  private static final String TENANT_URL = "http://localhost:%s/_/tenant";
 
   private static HttpHeaders headers;
-  private String url;
+  private static RestTemplate restTemplate;
+  private String configurationsUrl;
 
   @LocalServerPort
   private int port;
@@ -52,16 +54,25 @@ public class RemoteStorageConfigurationsControllerTest {
     headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.add(XOkapiHeaders.TENANT, "test_tenant");
+    restTemplate = new RestTemplate();
   }
 
   @BeforeEach
   void testSetup() {
-    url = String.format(CONFIGURATIONS_URL, port);
+    configurationsUrl = String.format(CONFIGURATIONS_URL, port);
+  }
+
+  @Test
+  void postTenant() {
+    String tenants = "{\"module_to\":\"moduleId\", \"parameters\": [ { \"key\":\"loadSample\", \"value\": true } ] }";
+    ResponseEntity<String> response = restTemplate
+      .exchange(String.format(TENANT_URL, port), HttpMethod.POST, createRequestBody(tenants), String.class);
+    assertThat(response.getStatusCode(), is(HttpStatus.OK));
   }
 
   @Test
   void canPostConfiguration() {
-    RemoteStorageConfig responseConfig = new RestTemplate().postForObject(url,
+    RemoteStorageConfig responseConfig = restTemplate.postForObject(configurationsUrl,
       createRequestBody(buildConfiguration(null)), RemoteStorageConfig.class);
     assertThat(responseConfig.getId(), notNullValue());
     assertThat(responseConfig.getMetadata().getCreatedDate(), notNullValue());
@@ -77,7 +88,7 @@ public class RemoteStorageConfigurationsControllerTest {
   @Test
   void canGetConfigurationById() {
     RemoteStorageConfig remoteConfig = getRemoteStorageConfigs().getConfigurations().get(0);
-    ResponseEntity<RemoteStorageConfig> response = new RestTemplate().exchange(url + remoteConfig.getId(),
+    ResponseEntity<RemoteStorageConfig> response = restTemplate.exchange(configurationsUrl + remoteConfig.getId(),
       HttpMethod.GET, createRequestBody(), RemoteStorageConfig.class);
     assertThat(response.getStatusCode(), is(HttpStatus.OK));
   }
@@ -89,7 +100,7 @@ public class RemoteStorageConfigurationsControllerTest {
     assertThat(remoteConfig.getAccessionTimeUnit(), is(TimeUnits.HOURS));
 
     remoteConfig.accessionDelay(5).accessionTimeUnit(TimeUnits.MINUTES);
-    ResponseEntity<RemoteStorageConfig> response = new RestTemplate().exchange(url, HttpMethod.PUT,
+    ResponseEntity<RemoteStorageConfig> response = restTemplate.exchange(configurationsUrl, HttpMethod.PUT,
       createRequestBody(remoteConfig), RemoteStorageConfig.class);
     assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
     assertThat(response.getBody().getAccessionDelay(), is(5));
@@ -102,7 +113,7 @@ public class RemoteStorageConfigurationsControllerTest {
     RemoteStorageConfig remoteConfig = getRemoteStorageConfigs().getConfigurations().get(0);
     remoteConfig.id(null).accessionDelay(5).accessionTimeUnit(TimeUnits.MINUTES);
 
-    ResponseEntity<RemoteStorageConfig> response = new RestTemplate().exchange(url, HttpMethod.PUT,
+    ResponseEntity<RemoteStorageConfig> response = restTemplate.exchange(configurationsUrl, HttpMethod.PUT,
       createRequestBody(remoteConfig), RemoteStorageConfig.class);
     assertThat(response.getStatusCode(), is(HttpStatus.OK));
     assertThat(response.getBody().getId(), notNullValue());
@@ -117,45 +128,50 @@ public class RemoteStorageConfigurationsControllerTest {
   @Test
   void canDeleteConfiguration() {
     RemoteStorageConfig remoteConfig = getRemoteStorageConfigs().getConfigurations().get(0);
-    assertThat(new RestTemplate().exchange(url + remoteConfig.getId(), HttpMethod.DELETE, createRequestBody(),
+    assertThat(restTemplate.exchange(configurationsUrl + remoteConfig.getId(), HttpMethod.DELETE, createRequestBody(),
       String.class).getStatusCode(), is(HttpStatus.NO_CONTENT));
     assertThat(getRemoteStorageConfigs().getTotalRecords(), is(0));
   }
 
   @Test
   void shouldReturnUnprocessableEntityForInvalidBody() {
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> new RestTemplate()
-      .exchange(url, HttpMethod.POST, createRequestBody(new RemoteStorageConfig().name(null)), RemoteStorageConfig.class));
+    HttpEntity entity1 = createRequestBody(new RemoteStorageConfig().name(null));
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
+      .exchange(configurationsUrl, HttpMethod.POST, entity1, RemoteStorageConfig.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.UNPROCESSABLE_ENTITY));
 
-    exception = assertThrows(HttpClientErrorException.class, () -> new RestTemplate()
-      .exchange(url, HttpMethod.PUT, createRequestBody(buildConfiguration("abcde")), RemoteStorageConfig.class));
+    HttpEntity entity2 = createRequestBody(buildConfiguration("abcde"));
+    exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
+      .exchange(configurationsUrl, HttpMethod.PUT, entity2, RemoteStorageConfig.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.UNPROCESSABLE_ENTITY));
   }
 
   @Test
   void shouldReturnBadRequestForInvalidUuid() {
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> new RestTemplate()
-      .exchange(url + "abcde", HttpMethod.DELETE, createRequestBody(), String.class));
+    HttpEntity entity = createRequestBody();
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
+      .exchange(configurationsUrl + "abcde", HttpMethod.DELETE, entity, String.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
 
-    exception = assertThrows(HttpClientErrorException.class, () -> new RestTemplate()
-      .exchange(url + "abcde", HttpMethod.GET, createRequestBody(), String.class));
+    exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
+      .exchange(configurationsUrl + "abcde", HttpMethod.GET, entity, String.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
   }
 
   @Test
   void shouldReturnNotFoundForWrongUuid() {
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> new RestTemplate()
-      .exchange(url + UUID.randomUUID().toString(), HttpMethod.DELETE, createRequestBody(), String.class));
+    HttpEntity entity1 = createRequestBody();
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
+      .exchange(configurationsUrl + UUID.randomUUID().toString(), HttpMethod.DELETE, entity1, String.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
 
-    exception = assertThrows(HttpClientErrorException.class, () -> new RestTemplate()
-      .exchange(url + UUID.randomUUID().toString(), HttpMethod.GET, createRequestBody(), String.class));
+    exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
+      .exchange(configurationsUrl + UUID.randomUUID().toString(), HttpMethod.GET, entity1, String.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
 
-    exception = assertThrows(HttpClientErrorException.class, () -> new RestTemplate().exchange(url, HttpMethod.PUT,
-      createRequestBody(buildConfiguration(UUID.randomUUID().toString())), RemoteStorageConfig.class));
+    HttpEntity entity2 = createRequestBody(buildConfiguration(UUID.randomUUID().toString()));
+    exception = assertThrows(HttpClientErrorException.class, () -> restTemplate.exchange(configurationsUrl,
+      HttpMethod.PUT, entity2, RemoteStorageConfig.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
   }
 
@@ -170,7 +186,7 @@ public class RemoteStorageConfigurationsControllerTest {
   }
 
   private RemoteStorageConfigCollection getRemoteStorageConfigs() {
-    return new RestTemplate().exchange(url, HttpMethod.GET, createRequestBody(), RemoteStorageConfigCollection.class).getBody();
+    return restTemplate.exchange(configurationsUrl, HttpMethod.GET, createRequestBody(), RemoteStorageConfigCollection.class).getBody();
   }
 
   private HttpEntity createRequestBody() {

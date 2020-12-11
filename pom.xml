@@ -156,6 +156,11 @@
                   <include>*Descriptor*-template.json</include>
                   <filtering>true</filtering>
                 </resource>
+                <resource>
+                  <directory>${basedir}</directory>
+                  <include>run.sh</include>
+                  <filtering>false</filtering>
+                </resource>
               </resources>
             </configuration>
           </execution>

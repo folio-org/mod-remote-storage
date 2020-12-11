@@ -37,7 +37,7 @@ import java.util.UUID;
 @AutoConfigureEmbeddedDatabase
 @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:PopulateTestData.sql")
 @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:ClearTestData.sql")
-public class RemoteStorageConfigurationsControllerTest {
+class RemoteStorageConfigurationsControllerTest {
 
   private static final String CONFIGURATIONS_URL = "http://localhost:%s/remote-storages/configurations/";
   private static final String TENANT_URL = "http://localhost:%s/_/tenant";
@@ -161,12 +161,13 @@ public class RemoteStorageConfigurationsControllerTest {
   @Test
   void shouldReturnNotFoundForWrongUuid() {
     HttpEntity entity1 = createRequestBody();
+    String urlWithRandomUuid = configurationsUrl + UUID.randomUUID().toString();
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
-      .exchange(configurationsUrl + UUID.randomUUID().toString(), HttpMethod.DELETE, entity1, String.class));
+      .exchange(urlWithRandomUuid, HttpMethod.DELETE, entity1, String.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
 
     exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
-      .exchange(configurationsUrl + UUID.randomUUID().toString(), HttpMethod.GET, entity1, String.class));
+      .exchange(urlWithRandomUuid, HttpMethod.GET, entity1, String.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
 
     HttpEntity entity2 = createRequestBody(buildConfiguration(UUID.randomUUID().toString()));

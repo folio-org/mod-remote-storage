@@ -1,6 +1,7 @@
 package org.folio.rs.domain.entity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
+@NoArgsConstructor
 @Table(name = "REMOTESTORAGECONFIGURATIONS")
 @Entity
 public class RemoteStorageConfiguration {

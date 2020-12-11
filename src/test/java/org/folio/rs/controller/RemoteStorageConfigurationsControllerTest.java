@@ -37,7 +37,7 @@ import java.util.UUID;
 @AutoConfigureEmbeddedDatabase
 @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:PopulateTestData.sql")
 @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:ClearTestData.sql")
-class RemoteStorageConfigurationsControllerTest {
+public class RemoteStorageConfigurationsControllerTest {
 
   private static final String CONFIGURATIONS_URL = "http://localhost:%s/remote-storages/configurations/";
   private static final String TENANT_URL = "http://localhost:%s/_/tenant";

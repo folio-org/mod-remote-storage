@@ -249,7 +249,7 @@
         <version>2.22.2</version>
         <configuration>
           <includes>
-            <include>org/folio/rs/controller/RemoteStorageConfigurationsControllerTest.class</include>
+            <include>org/folio/rs/TestSuite.class</include>
           </includes>
           <useSystemClassLoader>false</useSystemClassLoader>
         </configuration>

@@ -3,7 +3,7 @@ info:
   title: Remote storages API
   version: v1
 servers:
-  - url: /remote-storages/
+  - url: /remote-storage/
 paths:
   /configurations:
     get:
@@ -13,7 +13,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/remoteStorageConfigCollection"
+                $ref: "#/components/schemas/storageConfigurations"
         '500':
           description: Internal server error
           content:
@@ -34,7 +34,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/remoteStorageConfig"
+                $ref: "#/components/schemas/storageConfiguration"
         '400':
           description: Bad request
           content:
@@ -57,7 +57,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/remoteStorageConfig"
+              $ref: "#/components/schemas/storageConfiguration"
         required: true
     put:
       responses:
@@ -66,7 +66,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/remoteStorageConfig"
+                $ref: "#/components/schemas/storageConfiguration"
         '400':
           description: Bad request
           content:
@@ -94,7 +94,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/remoteStorageConfig"
+              $ref: "#/components/schemas/storageConfiguration"
         required: true
   /configurations/{configId}:
     get:
@@ -104,7 +104,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/remoteStorageConfig"
+                $ref: "#/components/schemas/storageConfiguration"
         '404':
           description: Configuration not found
           content:
@@ -160,10 +160,17 @@ components:
           schema:
             $ref: "#/components/schemas/errors"
   schemas:
-    remoteStorageConfig:
-      $ref: schemas/remoteStorageConfig.json
-    remoteStorageConfigCollection:
-      $ref: schemas/remoteStorageConfigs.json
+    storageConfiguration:
+      $ref: schemas/storageConfiguration.json
+    storageConfigurations:
+      allOf:
+        - $ref: schemas/baseCollection.json
+        - type: object
+          properties:
+            configurations:
+              type: array
+              items:
+                $ref: "#/components/schemas/storageConfiguration"
     errors:
       $ref: schemas/errors.json
   parameters:

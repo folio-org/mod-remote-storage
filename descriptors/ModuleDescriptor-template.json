@@ -1,6 +1,6 @@
 {
   "id": "@artifactId@-@version@",
-  "name": "Remote storages API module",
+  "name": "Remote storage API module",
   "requires": [],
   "provides": [
     {
@@ -9,28 +9,28 @@
       "handlers": [
         {
           "methods": ["POST"],
-          "pathPattern": "/remote-storages/configurations",
-          "permissionsRequired" : [ "remote-storage.configuration.item.post" ]
+          "pathPattern": "/remote-storage/configurations",
+          "permissionsRequired" : [ "remote-storage.configurations.item.post" ]
         },
         {
           "methods": ["PUT"],
-          "pathPattern": "/remote-storages/configurations",
-          "permissionsRequired" : [ "remote-storage.configuration.item.put" ]
+          "pathPattern": "/remote-storage/configurations/",
+          "permissionsRequired" : [ "remote-storage.configurations.item.put" ]
         },
         {
           "methods": ["GET"],
-          "pathPattern": "/remote-storages/configurations",
-          "permissionsRequired" : [ "remote-storage.configuration.collection.get" ]
+          "pathPattern": "/remote-storage/configurations",
+          "permissionsRequired" : [ "remote-storage.configurations.collection.get" ]
         },
         {
           "methods": ["GET"],
-          "pathPattern": "/remote-storages/configurations/{configurationId}",
-          "permissionsRequired" : [ "remote-storage.configuration.item.get" ]
+          "pathPattern": "/remote-storage/configurations/{configurationId}",
+          "permissionsRequired" : [ "remote-storage.configurations.item.get" ]
         },
         {
           "methods": ["DELETE"],
-          "pathPattern": "/remote-storages/configurations/{configurationId}",
-          "permissionsRequired" : [ "remote-storage.configuration.item.delete" ]
+          "pathPattern": "/remote-storage/configurations/{configurationId}",
+          "permissionsRequired" : [ "remote-storage.configurations.item.delete" ]
         }
       ]
     },
@@ -51,40 +51,40 @@
   ],
   "permissionSets": [
     {
-      "permissionName" : "remote-storage.configuration.item.post",
+      "permissionName" : "remote-storage.configurations.item.post",
       "displayName" : "create a remote storage configuration",
       "description" : "Add a remote storage configuration"
     },
     {
-      "permissionName" : "remote-storage.configuration.item.put",
+      "permissionName" : "remote-storage.configurations.item.put",
       "displayName" : "modify a remote storage configuration",
       "description" : "Modify a remote storage configuration"
     },
     {
-      "permissionName" : "remote-storage.configuration.item.put",
+      "permissionName" : "remote-storage.configurations.collection.get",
       "displayName" : "get remote storage configurations collection",
       "description" : "Get a list of remote storage configurations"
     },
     {
-      "permissionName" : "remote-storage.configuration.item.get",
+      "permissionName" : "remote-storage.configurations.item.get",
       "displayName" : "get remote storage configuration",
       "description" : "Get a remote storage configuration by id"
     },
     {
-      "permissionName" : "remote-storage.configuration.item.delete",
+      "permissionName" : "remote-storage.configurations.item.delete",
       "displayName" : "delete a remote storage configuration",
       "description" : "Delete a remote storage configuration by id"
     },
     {
-      "permissionName" : "remote-storages.all",
-      "displayName" : "remote storages API module - all permissions",
-      "description" : "All permissions for remote sorages",
+      "permissionName" : "remote-storage.all",
+      "displayName" : "remote storage API module - all permissions",
+      "description" : "All permissions for remote storage",
       "subPermissions" : [
-        "remote-storage.configuration.item.post",
-        "remote-storage.configuration.item.put",
-        "remote-storage.configuration.item.put",
-        "remote-storage.configuration.item.get",
-        "remote-storage.configuration.item.delete"
+        "remote-storage.configurations.item.post",
+        "remote-storage.configurations.item.put",
+        "remote-storage.configurations.collection.get",
+        "remote-storage.configurations.item.get",
+        "remote-storage.configurations.item.delete"
       ]
     }
   ],

@@ -6,19 +6,21 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-@Table(name = "REMOTESTORAGECONFIGURATIONS")
+@Table(name = "REMOTE_STORAGE_CONFIGURATIONS")
 @Entity
-public class RemoteStorageConfiguration {
+public class Configuration {
 
   @Id
   private UUID id;
 
-  @Column(name = "name")
+  @Column(name = "name", unique = true)
+  @NotNull
   private String name;
 
   @Column(name = "provider_name")
@@ -51,7 +53,7 @@ public class RemoteStorageConfiguration {
   @Column(name = "updated_by_username")
   private String updatedByUsername;
 
-  public RemoteStorageConfiguration copyForUpdate(RemoteStorageConfiguration another) {
+  public Configuration copyForUpdate(Configuration another) {
     this.providerName = another.getProviderName();
     this.url = another.getUrl();
     this.accessionDelay = another.getAccessionDelay();

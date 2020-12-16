@@ -2,8 +2,8 @@
   "errors": [
     {
       "message": "must not be null",
-      "type": "Validation error",
-      "code": "-1",
+      "type": "-1",
+      "code": "Validation error",
       "parameters": [
         {
           "key": "moduleTo",

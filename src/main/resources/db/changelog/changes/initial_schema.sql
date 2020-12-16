@@ -1,4 +1,4 @@
-CREATE TABLE RemoteStorageConfigurations (
+CREATE TABLE remote_storage_configurations (
     id                      UUID PRIMARY KEY,
     name                    VARCHAR(256) CONSTRAINT unq_RemoteStorageConfigurations_Name UNIQUE NOT NULL,
     provider_name           VARCHAR(256),

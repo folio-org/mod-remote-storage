@@ -1,1 +1,1 @@
-DELETE FROM remotestorageconfigurations;
+DELETE FROM remote_storage_configurations;

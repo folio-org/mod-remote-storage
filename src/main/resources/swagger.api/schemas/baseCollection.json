@@ -1,0 +1,10 @@
+{
+  "description": "Basic object to create pageable responses",
+  "type": "object",
+  "properties": {
+    "totalRecords": {
+      "description": "total records value",
+      "type": "integer"
+    }
+  }
+}

@@ -3,8 +3,8 @@ package org.folio.rs.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import liquibase.exception.LiquibaseException;
 import lombok.extern.log4j.Log4j2;
-import org.folio.rs.domain.dto.RemoteStorageConfig;
-import org.folio.rs.service.RemoteStorageConfigurationsService;
+import org.folio.rs.domain.dto.StorageConfiguration;
+import org.folio.rs.service.ConfigurationsService;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.liquibase.FolioSpringLiquibase;
 import org.folio.tenant.domain.dto.Parameter;
@@ -33,13 +33,13 @@ public class TenantController implements TenantApi {
 
   private final FolioExecutionContext context;
 
-  private final RemoteStorageConfigurationsService configurationsService;
+  private final ConfigurationsService configurationsService;
 
   private final List<String> samples = Collections.singletonList("dematic.json");
 
   @Autowired
   public TenantController(FolioSpringLiquibase folioSpringLiquibase, FolioExecutionContext context,
-    RemoteStorageConfigurationsService configurationsService) {
+    ConfigurationsService configurationsService) {
     this.folioSpringLiquibase = folioSpringLiquibase;
     this.context = context;
     this.configurationsService = configurationsService;
@@ -73,7 +73,7 @@ public class TenantController implements TenantApi {
     samples.forEach(sampleFileName -> {
       try {
         configurationsService.postConfiguration(new ObjectMapper()
-          .readValue(new ClassPathResource(SAMPLES_DIR + "/" + sampleFileName).getFile(), RemoteStorageConfig.class));
+          .readValue(new ClassPathResource(SAMPLES_DIR + "/" + sampleFileName).getFile(), StorageConfiguration.class));
       } catch (IOException e) {
         log.error("Error loading " + sampleFileName, e);
       }

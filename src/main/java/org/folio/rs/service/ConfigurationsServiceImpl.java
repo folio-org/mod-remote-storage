@@ -1,13 +1,11 @@
 package org.folio.rs.service;
 
-import static java.util.Objects.isNull;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.rs.domain.dto.RemoteStorageConfig;
-import org.folio.rs.domain.dto.RemoteStorageConfigCollection;
-import org.folio.rs.mapper.RemoteStorageConfigurationsMapper;
-import org.folio.rs.repository.RemoteStorageConfigurationsRepository;
+import org.folio.rs.domain.dto.StorageConfiguration;
+import org.folio.rs.domain.dto.StorageConfigurations;
+import org.folio.rs.mapper.ConfigurationsMapper;
+import org.folio.rs.repository.ConfigurationsRepository;
 import org.folio.spring.data.OffsetRequest;
 import org.springframework.stereotype.Service;
 
@@ -15,13 +13,15 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static java.util.Objects.isNull;
+
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class RemoteStorageConfigurationsServiceImpl implements RemoteStorageConfigurationsService {
+public class ConfigurationsServiceImpl implements ConfigurationsService {
 
-  private final RemoteStorageConfigurationsRepository configurationsRepository;
-  private final RemoteStorageConfigurationsMapper configurationsMapper;
+  private final ConfigurationsRepository configurationsRepository;
+  private final ConfigurationsMapper configurationsMapper;
 
   @Override
   public void deleteConfigurationById(String configId) {
@@ -31,33 +31,33 @@ public class RemoteStorageConfigurationsServiceImpl implements RemoteStorageConf
   }
 
   @Override
-  public RemoteStorageConfig getConfigurationById(String configId) {
+  public StorageConfiguration getConfigurationById(String configId) {
     var id = UUID.fromString(configId);
 
     return configurationsRepository.findById(id).map(configurationsMapper::mapEntityToDto).orElse(null);
   }
 
   @Override
-  public RemoteStorageConfigCollection getConfigurations(Integer offset, Integer limit, String query) {
+  public StorageConfigurations getConfigurations(Integer offset, Integer limit, String query) {
     var configurationList = configurationsRepository.findAll(new OffsetRequest(offset, limit));
 
     return configurationsMapper.mapEntitiesToRemoteConfigCollection(configurationList);
   }
 
   @Override
-  public RemoteStorageConfig postConfiguration(RemoteStorageConfig remoteConfig) {
-    if (isNull(remoteConfig.getId())) {
-      remoteConfig.id(UUID.randomUUID().toString());
+  public StorageConfiguration postConfiguration(StorageConfiguration storageConfiguration) {
+    if (isNull(storageConfiguration.getId())) {
+      storageConfiguration.id(UUID.randomUUID().toString());
     }
-    var configuration = configurationsMapper.mapDtoToEntity(remoteConfig);
+    var configuration = configurationsMapper.mapDtoToEntity(storageConfiguration);
     configuration.setCreatedDate(Timestamp.valueOf(LocalDateTime.now()));
 
     return configurationsMapper.mapEntityToDto(configurationsRepository.save(configuration));
   }
 
   @Override
-  public RemoteStorageConfig createOrUpdateConfiguration(RemoteStorageConfig remoteConfig) {
-    var configuration = configurationsMapper.mapDtoToEntity(remoteConfig);
+  public StorageConfiguration createOrUpdateConfiguration(StorageConfiguration storageConfiguration) {
+    var configuration = configurationsMapper.mapDtoToEntity(storageConfiguration);
     if (isNull(configuration.getId())) {
       configuration.setId(UUID.randomUUID());
       if (isNull(configuration.getCreatedDate())) {

@@ -1,16 +1,17 @@
 package org.folio.rs.controller;
 
 import static java.util.Objects.isNull;
-import static org.folio.rs.util.ErrorUtil.CONFIGURATION_NOT_FOUND;
-import static org.folio.rs.util.ErrorUtil.buildValidationError;
+import static org.folio.rs.error.ErrorUtil.CONFIGURATION_NOT_FOUND;
+import static org.folio.rs.error.ErrorUtil.buildErrors;
 
 import lombok.extern.log4j.Log4j2;
+import org.folio.rs.domain.dto.StorageConfiguration;
+import org.folio.rs.domain.dto.StorageConfigurations;
 import org.folio.rs.domain.dto.Errors;
-import org.folio.rs.domain.dto.RemoteStorageConfig;
-import org.folio.rs.domain.dto.RemoteStorageConfigCollection;
 import org.folio.rs.rest.resource.ConfigurationsApi;
-import org.folio.rs.service.RemoteStorageConfigurationsService;
+import org.folio.rs.service.ConfigurationsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,13 +28,13 @@ import javax.validation.constraints.Min;
 
 @Log4j2
 @RestController
-@RequestMapping(value = "/remote-storages/")
-public class RemoteStorageConfigurationsController implements ConfigurationsApi {
+@RequestMapping(value = "/remote-storage/")
+public class ConfigurationsController implements ConfigurationsApi {
 
-  private final RemoteStorageConfigurationsService configurationsService;
+  private final ConfigurationsService configurationsService;
 
   @Autowired
-  public RemoteStorageConfigurationsController(RemoteStorageConfigurationsService configurationsService) {
+  public ConfigurationsController(ConfigurationsService configurationsService) {
     this.configurationsService = configurationsService;
   }
 
@@ -44,34 +45,34 @@ public class RemoteStorageConfigurationsController implements ConfigurationsApi 
   }
 
   @Override
-  public ResponseEntity<RemoteStorageConfig> getConfigurationById(String configId) {
+  public ResponseEntity<StorageConfiguration> getConfigurationById(String configId) {
     var configuration = configurationsService.getConfigurationById(configId);
     return isNull(configuration) ? ResponseEntity.notFound().build() : new ResponseEntity<>(configuration, HttpStatus.OK);
   }
 
   @Override
-  public ResponseEntity<RemoteStorageConfigCollection> getConfigurations(@Min(0) @Max(2147483647) @Valid Integer offset,
+  public ResponseEntity<StorageConfigurations> getConfigurations(@Min(0) @Max(2147483647) @Valid Integer offset,
     @Min(0) @Max(2147483647) @Valid Integer limit, @Valid String query) {
     var configurations = configurationsService.getConfigurations(offset, limit, "");
     return new ResponseEntity<>(configurations, HttpStatus.OK);
   }
 
   @Override
-  public ResponseEntity<RemoteStorageConfig> postConfiguration(@Valid RemoteStorageConfig remoteConfig) {
-    var configuration = configurationsService.postConfiguration(remoteConfig);
+  public ResponseEntity<StorageConfiguration> postConfiguration(@Valid StorageConfiguration storageConfiguration) {
+    var configuration = configurationsService.postConfiguration(storageConfiguration);
     return new ResponseEntity<>(configuration, HttpStatus.OK);
   }
 
   @Override
-  public ResponseEntity<RemoteStorageConfig> putConfiguration(@Valid RemoteStorageConfig remoteConfig) {
-    var configuration = configurationsService.createOrUpdateConfiguration(remoteConfig);
+  public ResponseEntity<StorageConfiguration> putConfiguration(@Valid StorageConfiguration storageConfiguration) {
+    var configuration = configurationsService.createOrUpdateConfiguration(storageConfiguration);
     return new ResponseEntity<>(configuration, HttpStatus.OK);
   }
 
   @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-  @ExceptionHandler(MethodArgumentNotValidException.class)
-  public Errors handleValidationExceptions(MethodArgumentNotValidException ex) {
-    return buildValidationError(ex);
+  @ExceptionHandler({ MethodArgumentNotValidException.class, DataIntegrityViolationException.class })
+  public Errors handleValidationExceptions(Throwable throwable) {
+    return buildErrors(throwable);
   }
 
   @ResponseStatus(HttpStatus.NOT_FOUND)

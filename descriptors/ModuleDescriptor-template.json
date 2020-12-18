@@ -1,11 +1,95 @@
 {
-  "id": "${artifactId}-${version}",
-  "name": "",
+  "id": "@artifactId@-@version@",
+  "name": "Remote storage API module",
   "requires": [],
-  "provides": [],
-  "permissionSets": [],
+  "provides": [
+    {
+      "id": "remote-storage-configurations",
+      "version": "1.0",
+      "handlers": [
+        {
+          "methods": ["POST"],
+          "pathPattern": "/remote-storage/configurations",
+          "permissionsRequired" : [ "remote-storage.configurations.item.post" ]
+        },
+        {
+          "methods": ["PUT"],
+          "pathPattern": "/remote-storage/configurations/",
+          "permissionsRequired" : [ "remote-storage.configurations.item.put" ]
+        },
+        {
+          "methods": ["GET"],
+          "pathPattern": "/remote-storage/configurations",
+          "permissionsRequired" : [ "remote-storage.configurations.collection.get" ]
+        },
+        {
+          "methods": ["GET"],
+          "pathPattern": "/remote-storage/configurations/{configurationId}",
+          "permissionsRequired" : [ "remote-storage.configurations.item.get" ]
+        },
+        {
+          "methods": ["DELETE"],
+          "pathPattern": "/remote-storage/configurations/{configurationId}",
+          "permissionsRequired" : [ "remote-storage.configurations.item.delete" ]
+        }
+      ]
+    },
+    {
+      "id": "_tenant",
+      "version": "1.2",
+      "interfaceType": "system",
+      "handlers": [
+        {
+          "methods": ["POST"],
+          "pathPattern": "/_/tenant"
+        }, {
+          "methods": ["DELETE"],
+          "pathPattern": "/_/tenant"
+        }
+      ]
+    }
+  ],
+  "permissionSets": [
+    {
+      "permissionName" : "remote-storage.configurations.item.post",
+      "displayName" : "create a remote storage configuration",
+      "description" : "Add a remote storage configuration"
+    },
+    {
+      "permissionName" : "remote-storage.configurations.item.put",
+      "displayName" : "modify a remote storage configuration",
+      "description" : "Modify a remote storage configuration"
+    },
+    {
+      "permissionName" : "remote-storage.configurations.collection.get",
+      "displayName" : "get remote storage configurations collection",
+      "description" : "Get a list of remote storage configurations"
+    },
+    {
+      "permissionName" : "remote-storage.configurations.item.get",
+      "displayName" : "get remote storage configuration",
+      "description" : "Get a remote storage configuration by id"
+    },
+    {
+      "permissionName" : "remote-storage.configurations.item.delete",
+      "displayName" : "delete a remote storage configuration",
+      "description" : "Delete a remote storage configuration by id"
+    },
+    {
+      "permissionName" : "remote-storage.all",
+      "displayName" : "remote storage API module - all permissions",
+      "description" : "All permissions for remote storage",
+      "subPermissions" : [
+        "remote-storage.configurations.item.post",
+        "remote-storage.configurations.item.put",
+        "remote-storage.configurations.collection.get",
+        "remote-storage.configurations.item.get",
+        "remote-storage.configurations.item.delete"
+      ]
+    }
+  ],
   "launchDescriptor": {
-    "dockerImage": "${artifactId}:${version}",
+    "dockerImage": "@artifactId@:@version@",
     "dockerPull": false,
     "dockerArgs": {
       "HostConfig": {

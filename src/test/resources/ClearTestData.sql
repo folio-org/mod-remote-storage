@@ -1,0 +1,1 @@
+DELETE FROM remote_storage_configurations;

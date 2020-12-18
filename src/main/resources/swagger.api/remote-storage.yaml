@@ -1,0 +1,200 @@
+openapi: 3.0.0
+info:
+  title: Remote storages API
+  version: v1
+servers:
+  - url: /remote-storage/
+paths:
+  /configurations:
+    get:
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/storageConfigurations"
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Internal server error
+      description: Get a list of remote storage configurations
+      operationId: getConfigurations
+      parameters:
+        - $ref: "#/components/parameters/trait_pageable_offset"
+        - $ref: "#/components/parameters/trait_pageable_limit"
+        - $ref: "#/components/parameters/trait_queryable_query"
+    post:
+      responses:
+        '201':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/storageConfiguration"
+        '400':
+          description: Bad request
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Bad request
+        '422':
+          $ref: "#/components/responses/trait_validate_422"
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Internal server error
+      description: Add new remote storage configuration
+      operationId: postConfiguration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/storageConfiguration"
+        required: true
+    put:
+      responses:
+        '201':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/storageConfiguration"
+        '400':
+          description: Bad request
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Bad request
+        '404':
+          description: Configuration not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Configuration not found
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Internal server error
+      description: Change the remote storage configuration
+      operationId: putConfiguration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/storageConfiguration"
+        required: true
+  /configurations/{configId}:
+    get:
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/storageConfiguration"
+        '404':
+          description: Configuration not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Configuration not found
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Internal server error
+      operationId: getConfigurationById
+    delete:
+      responses:
+        '204':
+          description: No content
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: No content
+        '404':
+          description: Configuration not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Configuration not found
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Internal server error
+      operationId: deleteConfigurationById
+    parameters:
+      - name: configId
+        in: path
+        required: true
+        schema:
+          type: string
+components:
+  responses:
+    trait_validate_422:
+      description: Validation errors
+      content:
+        application/json:
+          example: examples/errors.sample
+          schema:
+            $ref: "#/components/schemas/errors"
+  schemas:
+    storageConfiguration:
+      $ref: schemas/storageConfiguration.json
+    storageConfigurations:
+      allOf:
+        - $ref: schemas/baseCollection.json
+        - type: object
+          properties:
+            configurations:
+              type: array
+              items:
+                $ref: "#/components/schemas/storageConfiguration"
+    errors:
+      $ref: schemas/errors.json
+  parameters:
+    trait_queryable_query:
+      name: query
+      in: query
+      description: A query string to filter rules based on matching criteria in fields.
+      schema:
+        type: string
+    trait_pageable_offset:
+      name: offset
+      in: query
+      description: Skip over a number of elements by specifying an offset value for the query
+      schema:
+        default: 0
+        minimum: 0
+        maximum: 2147483647
+        type: integer
+    trait_pageable_limit:
+      name: limit
+      in: query
+      description: Limit the number of elements returned in the response
+      schema:
+        default: 10
+        minimum: 0
+        maximum: 2147483647
+        type: integer

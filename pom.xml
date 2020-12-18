@@ -30,6 +30,7 @@
     <mapstruct.version>1.3.1.Final</mapstruct.version>
     <json.version>20200518</json.version>
     <hazelcast.version>4.0.2</hazelcast.version>
+    <sonar.exclusions>src/main/java/org/folio/rs/domain/entity/**</sonar.exclusions>
     <remote-storage.yaml.file>${project.basedir}/src/main/resources/swagger.api/remote-storage.yaml</remote-storage.yaml.file>
   </properties>
 

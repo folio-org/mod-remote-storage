@@ -52,17 +52,4 @@ public class Configuration {
 
   @Column(name = "updated_by_username")
   private String updatedByUsername;
-
-  public Configuration copyForUpdate(Configuration another) {
-    this.providerName = another.getProviderName();
-    this.url = another.getUrl();
-    this.accessionDelay = another.getAccessionDelay();
-    this.accessionTimeUnit = another.getAccessionTimeUnit();
-    this.setUpdatedByUserId(another.getUpdatedByUserId());
-    this.setUpdatedByUsername(another.getUpdatedByUsername());
-    var ud = another.getUpdatedDate();
-    this.setUpdatedDate(ud != null ? ud : Timestamp.valueOf(LocalDateTime.now()));
-
-    return this;
-  }
 }

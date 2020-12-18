@@ -172,9 +172,9 @@ class ConfigurationsControllerTest {
     assertThat(exception.getStatusCode(), is(HttpStatus.UNPROCESSABLE_ENTITY));
 
 
-    StorageConfiguration duplicatedNameEntity = responseEntity.getBody().id(null);
+    StorageConfiguration duplicatedNameEntity = responseEntity.getBody().id(null).accessionDelay(10);
     exception = assertThrows(HttpClientErrorException.class,
-      () -> restTemplate.put(configurationsUrl,  duplicatedNameEntity.accessionDelay(10)));
+      () -> restTemplate.put(configurationsUrl,  duplicatedNameEntity));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.UNPROCESSABLE_ENTITY));
   }
 
@@ -200,8 +200,8 @@ class ConfigurationsControllerTest {
       .getForObject(urlWithRandomUuid, String.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
 
-    exception = assertThrows(HttpClientErrorException.class, () -> restTemplate.put(configurationsUrl,
-      new HttpEntity<>(buildConfiguration(UUID.randomUUID().toString()))));
+    HttpEntity entity = new HttpEntity<>(buildConfiguration(UUID.randomUUID().toString()));
+    exception = assertThrows(HttpClientErrorException.class, () -> restTemplate.put(configurationsUrl, entity));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
   }
 

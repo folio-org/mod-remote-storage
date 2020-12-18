@@ -36,7 +36,7 @@ public class ConfigurationsService {
     return configurationsRepository.findById(id).map(configurationsMapper::mapEntityToDto).orElse(null);
   }
 
-  public StorageConfigurations getConfigurations(Integer offset, Integer limit, String query) {
+  public StorageConfigurations getConfigurations(Integer offset, Integer limit) {
     var configurationList = configurationsRepository.findAll(new OffsetRequest(offset, limit));
 
     return configurationsMapper.mapEntitiesToRemoteConfigCollection(configurationList);

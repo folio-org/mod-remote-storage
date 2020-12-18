@@ -53,7 +53,7 @@ public class ConfigurationsController implements ConfigurationsApi {
   @Override
   public ResponseEntity<StorageConfigurations> getConfigurations(@Min(0) @Max(2147483647) @Valid Integer offset,
     @Min(0) @Max(2147483647) @Valid Integer limit, @Valid String query) {
-    var configurations = configurationsService.getConfigurations(offset, limit, "");
+    var configurations = configurationsService.getConfigurations(offset, limit);
     return new ResponseEntity<>(configurations, HttpStatus.OK);
   }
 

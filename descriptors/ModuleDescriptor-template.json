@@ -35,6 +35,26 @@
       ]
     },
     {
+      "id": "remote-storage-mappings",
+      "version": "1.0",
+      "handlers": [
+        {
+          "methods": ["POST"],
+          "pathPattern": "/remote-storage/mappings",
+          "permissionsRequired": [
+            "remote-storage.mappings.item.post"
+          ]
+        },
+        {
+          "methods": ["DELETE"],
+          "pathPattern": "/remote-storage/mappings/{folioLocationId}",
+          "permissionsRequired": [
+            "remote-storage.mappings.item.delete"
+          ]
+        }
+      ]
+    },
+    {
       "id": "_tenant",
       "version": "1.2",
       "interfaceType": "system",
@@ -71,20 +91,32 @@
       "description" : "Get a remote storage configuration by id"
     },
     {
-      "permissionName" : "remote-storage.configurations.item.delete",
-      "displayName" : "delete a remote storage configuration",
-      "description" : "Delete a remote storage configuration by id"
+      "permissionName": "remote-storage.configurations.item.delete",
+      "displayName": "delete a remote storage configuration",
+      "description": "Delete a remote storage configuration by id"
     },
     {
-      "permissionName" : "remote-storage.all",
-      "displayName" : "remote storage API module - all permissions",
-      "description" : "All permissions for remote storage",
-      "subPermissions" : [
+      "permissionName": "remote-storage.mappings.item.post",
+      "displayName": "create/update location mapping",
+      "description": "Create new or update existing location mapping"
+    },
+    {
+      "permissionName": "remote-storage.mappings.item.delete",
+      "displayName": "Delete location mapping",
+      "description": "Delete a location mapping by id"
+    },
+    {
+      "permissionName": "remote-storage.all",
+      "displayName": "remote storage API module - all permissions",
+      "description": "All permissions for remote storage",
+      "subPermissions": [
         "remote-storage.configurations.item.post",
         "remote-storage.configurations.item.put",
         "remote-storage.configurations.collection.get",
         "remote-storage.configurations.item.get",
-        "remote-storage.configurations.item.delete"
+        "remote-storage.configurations.item.delete",
+        "remote-storage.mappings.item.post",
+        "remote-storage.mappings.item.delete"
       ]
     }
   ],

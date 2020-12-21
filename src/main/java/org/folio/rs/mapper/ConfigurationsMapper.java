@@ -1,6 +1,5 @@
 package org.folio.rs.mapper;
 
-import org.apache.commons.lang3.StringUtils;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.dto.StorageConfigurations;
 import org.folio.rs.domain.entity.Configuration;
@@ -11,13 +10,12 @@ import org.mapstruct.Mappings;
 import org.mapstruct.NullValueCheckStrategy;
 
 import java.util.List;
-import java.util.UUID;
 
 @Mapper(componentModel = "spring", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface ConfigurationsMapper {
 
   @Mappings({
-    @Mapping(target = "id", expression = "java(uuidToStringSafe(configuration.getId()))"),
+    @Mapping(target = "id", expression = "java(org.folio.rs.util.MapperUtils.uuidToStringSafe(configuration.getId()))"),
     @Mapping(target = "name", source = "name"),
     @Mapping(target = "providerName", source = "providerName"),
     @Mapping(target = "url", source = "url"),
@@ -33,10 +31,10 @@ public interface ConfigurationsMapper {
   StorageConfiguration mapEntityToDto(Configuration configuration);
 
   @Mappings({
-    @Mapping(target = "id", expression = "java(stringToUUIDSafe(storageConfiguration.getId()))"),
+    @Mapping(target = "id", expression = "java(org.folio.rs.util.MapperUtils.stringToUUIDSafe(storageConfiguration.getId()))"),
     @Mapping(target = "accessionTimeUnit", expression = "java(storageConfiguration.getAccessionTimeUnit() == null ? null : storageConfiguration.getAccessionTimeUnit().toString())"),
-    @Mapping(target = "createdByUserId", expression = "java(storageConfiguration.getMetadata() == null ? null : stringToUUIDSafe(storageConfiguration.getMetadata().getCreatedByUserId()))"),
-    @Mapping(target = "updatedByUserId", expression = "java(storageConfiguration.getMetadata() == null ? null : stringToUUIDSafe(storageConfiguration.getMetadata().getUpdatedByUserId()))")
+    @Mapping(target = "createdByUserId", expression = "java(storageConfiguration.getMetadata() == null ? null : org.folio.rs.util.MapperUtils.stringToUUIDSafe(storageConfiguration.getMetadata().getCreatedByUserId()))"),
+    @Mapping(target = "updatedByUserId", expression = "java(storageConfiguration.getMetadata() == null ? null : org.folio.rs.util.MapperUtils.stringToUUIDSafe(storageConfiguration.getMetadata().getUpdatedByUserId()))")
   })
   @InheritInverseConfiguration
   Configuration mapDtoToEntity(StorageConfiguration storageConfiguration);
@@ -47,13 +45,5 @@ public interface ConfigurationsMapper {
   default StorageConfigurations mapEntitiesToRemoteConfigCollection(Iterable<Configuration> remoteStorageConfigurationList) {
     List<StorageConfiguration> remoteConfigList = mapEntitiesToDtos(remoteStorageConfigurationList);
     return new StorageConfigurations().configurations(remoteConfigList).totalRecords(remoteConfigList.size());
-  }
-
-  default UUID stringToUUIDSafe(String uuid) {
-    return (StringUtils.isBlank(uuid)) ? null : UUID.fromString(uuid);
-  }
-
-  default String uuidToStringSafe(UUID uuid) {
-    return uuid != null ? uuid.toString() : null;
   }
 }

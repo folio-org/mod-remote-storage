@@ -3,8 +3,10 @@ package org.folio.rs.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import liquibase.exception.LiquibaseException;
 import lombok.extern.log4j.Log4j2;
+import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.service.ConfigurationsService;
+import org.folio.rs.service.LocationMappingsService;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.liquibase.FolioSpringLiquibase;
 import org.folio.tenant.domain.dto.Parameter;
@@ -21,6 +23,9 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 
 @Log4j2
 @RestController("folioTenantController")
@@ -34,15 +39,18 @@ public class TenantController implements TenantApi {
   private final FolioExecutionContext context;
 
   private final ConfigurationsService configurationsService;
+  private final LocationMappingsService locationMappingsService;
 
-  private final List<String> samples = Collections.singletonList("dematic.json");
+  private final List<String> configurationSamples = Collections.singletonList("dematic.json");
+  private final List<String> mappingSamples = Collections.singletonList("annex_to_dematic.json");
 
   @Autowired
   public TenantController(FolioSpringLiquibase folioSpringLiquibase, FolioExecutionContext context,
-    ConfigurationsService configurationsService) {
+    ConfigurationsService configurationsService, LocationMappingsService locationMappingsService) {
     this.folioSpringLiquibase = folioSpringLiquibase;
     this.context = context;
     this.configurationsService = configurationsService;
+    this.locationMappingsService = locationMappingsService;
   }
 
   @Override
@@ -70,14 +78,23 @@ public class TenantController implements TenantApi {
 
   private void loadSampleData() {
     log.info("Loading sample data");
-    samples.forEach(sampleFileName -> {
-      try {
-        configurationsService.postConfiguration(new ObjectMapper()
-          .readValue(new ClassPathResource(SAMPLES_DIR + "/" + sampleFileName).getFile(), StorageConfiguration.class));
-      } catch (IOException e) {
-        log.error("Error loading " + sampleFileName, e);
-      }
-    });
+    readEntitiesFromFiles(configurationSamples, StorageConfiguration.class).forEach(configurationsService::postConfiguration);
+    readEntitiesFromFiles(mappingSamples, LocationMapping.class).forEach(locationMappingsService::postMapping);
+  }
+
+  private <T> List<T> readEntitiesFromFiles(List<String> filenames, Class<T> type) {
+    return filenames.stream()
+      .map(fileName -> {
+        try {
+          return new ObjectMapper()
+            .readValue(new ClassPathResource(SAMPLES_DIR + "/" + fileName).getFile(), type);
+        } catch (IOException e) {
+          log.error("Error loading " + fileName, e);
+          return null;
+        }
+      })
+      .filter(Objects::nonNull)
+      .collect(Collectors.toList());
   }
 
   private boolean isLoadSample(TenantAttributes tenantAttributes) {

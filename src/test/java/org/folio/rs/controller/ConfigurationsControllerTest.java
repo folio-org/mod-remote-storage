@@ -7,65 +7,38 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.dto.StorageConfigurations;
 import org.folio.rs.domain.dto.TimeUnits;
-import org.folio.spring.integration.XOkapiHeaders;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.UUID;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestPropertySource("classpath:application-test.properties")
-@ActiveProfiles("TestDB")
-@AutoConfigureEmbeddedDatabase(beanName = "dataSource")
 @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:PopulateTestData.sql")
 @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:ClearTestData.sql")
-class ConfigurationsControllerTest {
+public class ConfigurationsControllerTest extends ControllerTestBase {
 
   private static final String CONFIGURATIONS_URL = "http://localhost:%s/remote-storage/configurations/";
   private static final String TENANT_URL = "http://localhost:%s/_/tenant";
 
-  private static HttpHeaders headers;
-  private static RestTemplate restTemplate;
   private String configurationsUrl;
-
-  @LocalServerPort
-  private int port;
 
   @Autowired
   private CacheManager cacheManager;
 
-  @BeforeAll
-  static void globalSetup() {
-    headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_JSON);
-    headers.add(XOkapiHeaders.TENANT, "test_tenant");
-    restTemplate = new RestTemplate();
-  }
-
   @BeforeEach
-  void testSetup() {
+  void prepareUrl() {
     configurationsUrl = String.format(CONFIGURATIONS_URL, port);
   }
 

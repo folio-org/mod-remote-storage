@@ -12,3 +12,8 @@ CREATE TABLE remote_storage_configurations (
     updated_by_user_id      UUID,
     updated_by_username     VARCHAR(100)
 );
+
+CREATE TABLE location_mappings (
+    folio_location_id   UUID PRIMARY KEY,
+    configuration_id    UUID NOT NULL
+);

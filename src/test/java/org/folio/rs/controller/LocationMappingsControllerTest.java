@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.folio.rs.domain.dto.LocationMapping;
+import org.folio.rs.domain.dto.LocationMappings;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,23 @@ public class LocationMappingsControllerTest extends ControllerTestBase {
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
     assertThat(responseEntity.getBody().getFolioLocationId(), notNullValue());
     assertThat(responseEntity.getBody().getConfigurationId(), notNullValue());
+  }
+
+  @Test
+  void canGetAllMappings() {
+    ResponseEntity<LocationMappings> responseEntity = restTemplate
+      .getForEntity(mappingsUrl, LocationMappings.class);
+    assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+    assertThat(responseEntity.getBody().getTotalRecords(), is(1));
+  }
+
+  @Test
+  void canGetMappingById() {
+    LocationMapping mapping = restTemplate.getForObject(mappingsUrl, LocationMappings.class)
+      .getMappings().get(0);
+    ResponseEntity<LocationMapping> response = restTemplate
+      .getForEntity(mappingsUrl + mapping.getFolioLocationId(), LocationMapping.class);
+    assertThat(response.getStatusCode(), is(HttpStatus.OK));
   }
 
   @Test

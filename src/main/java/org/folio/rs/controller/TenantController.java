@@ -1,5 +1,7 @@
 package org.folio.rs.controller;
 
+import static java.util.Objects.nonNull;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import liquibase.exception.LiquibaseException;
 import lombok.extern.log4j.Log4j2;
@@ -25,7 +27,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 
 @Log4j2
 @RestController("folioTenantController")
@@ -98,9 +99,11 @@ public class TenantController implements TenantApi {
   }
 
   private boolean isLoadSample(TenantAttributes tenantAttributes) {
-    for (Parameter parameter : tenantAttributes.getParameters()) {
-      if (PARAMETER_LOAD_SAMPLE.equals(parameter.getKey())) {
-        return Boolean.parseBoolean(parameter.getValue());
+    if (nonNull(tenantAttributes.getParameters())) {
+      for (Parameter parameter : tenantAttributes.getParameters()) {
+        if (PARAMETER_LOAD_SAMPLE.equals(parameter.getKey())) {
+          return Boolean.parseBoolean(parameter.getValue());
+        }
       }
     }
     return false;

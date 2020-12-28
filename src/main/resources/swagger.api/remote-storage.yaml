@@ -184,7 +184,51 @@ paths:
             schema:
               $ref: "#/components/schemas/locationMapping"
         required: true
+    get:
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/locationMappings"
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Internal server error
+      description: Get a list of location mappings
+      operationId: getMappings
+      parameters:
+        - $ref: "#/components/parameters/trait_pageable_offset"
+        - $ref: "#/components/parameters/trait_pageable_limit"
+        - $ref: "#/components/parameters/trait_queryable_query"
   /mappings/{folioLocationId}:
+    get:
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/locationMapping"
+        '404':
+          description: Mapping not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Mapping not found
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Internal server error
+      operationId: getMappingById
     delete:
       responses:
         '204':
@@ -239,6 +283,15 @@ components:
                 $ref: "#/components/schemas/storageConfiguration"
     locationMapping:
       $ref: schemas/locationMapping.json
+    locationMappings:
+      allOf:
+        - $ref: schemas/baseCollection.json
+        - type: object
+          properties:
+            mappings:
+              type: array
+              items:
+                $ref: "#/components/schemas/locationMapping"
     errors:
       $ref: schemas/errors.json
   parameters:

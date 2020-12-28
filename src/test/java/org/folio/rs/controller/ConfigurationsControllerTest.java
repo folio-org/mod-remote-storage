@@ -20,13 +20,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.UUID;
 
-@Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:PopulateTestData.sql")
-@Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:ClearTestData.sql")
 public class ConfigurationsControllerTest extends ControllerTestBase {
 
   private static final String CONFIGURATIONS_URL = "http://localhost:%s/remote-storage/configurations/";
@@ -48,8 +45,16 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
   }
 
   @Test
-  void postTenant() {
+  void canPostTenantWithParameters() {
     String tenants = "{\"module_to\":\"moduleId\", \"parameters\": [ { \"key\":\"loadSample\", \"value\": true } ] }";
+    ResponseEntity<String> response = restTemplate
+      .exchange(String.format(TENANT_URL, port), HttpMethod.POST, new HttpEntity<>(tenants, headers), String.class);
+    assertThat(response.getStatusCode(), is(HttpStatus.OK));
+  }
+
+  @Test
+  void canPostTenantWithoutParameters() {
+    String tenants = "{\"module_to\":\"moduleId\"}";
     ResponseEntity<String> response = restTemplate
       .exchange(String.format(TENANT_URL, port), HttpMethod.POST, new HttpEntity<>(tenants, headers), String.class);
     assertThat(response.getStatusCode(), is(HttpStatus.OK));

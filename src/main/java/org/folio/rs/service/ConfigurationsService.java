@@ -56,7 +56,7 @@ public class ConfigurationsService {
   public void updateConfiguration(String configId, StorageConfiguration storageConfiguration) {
     if (configId.equals(storageConfiguration.getId())) {
       var configuration = configurationsMapper.mapDtoToEntity(storageConfiguration);
-      copyForUpdate(configurationsRepository.getOne(configuration.getId()), configuration);
+      configurationsRepository.save(copyForUpdate(configurationsRepository.getOne(configuration.getId()), configuration));
     } else {
       throw new ConstraintViolationException("request id and entity id are not equal", null);
     }
@@ -69,8 +69,7 @@ public class ConfigurationsService {
     dest.setAccessionTimeUnit(source.getAccessionTimeUnit());
     dest.setUpdatedByUserId(source.getUpdatedByUserId());
     dest.setUpdatedByUsername(source.getUpdatedByUsername());
-    var ud = source.getUpdatedDate();
-    dest.setUpdatedDate(ud != null ? ud : Timestamp.valueOf(LocalDateTime.now()));
+    dest.setUpdatedDate(Timestamp.valueOf(LocalDateTime.now()));
     return dest;
   }
 }

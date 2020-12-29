@@ -5,12 +5,12 @@ import lombok.extern.log4j.Log4j2;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.dto.StorageConfigurations;
 import org.folio.rs.domain.entity.Configuration;
+import org.folio.rs.error.IdMismatchException;
 import org.folio.rs.mapper.ConfigurationsMapper;
 import org.folio.rs.repository.ConfigurationsRepository;
 import org.folio.spring.data.OffsetRequest;
 import org.springframework.stereotype.Service;
 
-import javax.validation.ConstraintViolationException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -58,7 +58,7 @@ public class ConfigurationsService {
       var configuration = configurationsMapper.mapDtoToEntity(storageConfiguration);
       configurationsRepository.save(copyForUpdate(configurationsRepository.getOne(configuration.getId()), configuration));
     } else {
-      throw new ConstraintViolationException("request id and entity id are not equal", null);
+      throw new IdMismatchException();
     }
   }
 

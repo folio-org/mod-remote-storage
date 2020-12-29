@@ -157,7 +157,7 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
       .accessionDelay(5).accessionTimeUnit(TimeUnits.MINUTES);
     String urlWithAnotherUuid = configurationsUrl + UUID.randomUUID().toString();
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
-      .put(urlWithAnotherUuid, String.class));
+      .put(urlWithAnotherUuid, configurationDto, String.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
   }
 

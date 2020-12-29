@@ -53,6 +53,19 @@ public class DefaultErrorHandler {
       .body(errors);
   }
 
+  @ExceptionHandler(IdMismatchException.class)
+  public ResponseEntity<Errors> handleIdMismatch(final IdMismatchException exception) {
+    Errors errors = new Errors();
+    errors.addErrorsItem(new Error()
+      .message(exception.getMessage())
+      .code(VALIDATION_ERROR.getDescription())
+      .type(INTERNAL.getValue()));
+    errors.setTotalRecords(1);
+    return ResponseEntity
+      .badRequest()
+      .body(errors);
+  }
+
   @ExceptionHandler(DataIntegrityViolationException.class)
   public ResponseEntity<Errors> handleDataIntegrityViolation(final DataIntegrityViolationException exception) {
     if (exception.getMostSpecificCause() instanceof PSQLException) {

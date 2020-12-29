@@ -107,8 +107,8 @@
     },
     {
       "permissionName": "remote-storage.mappings.item.post",
-      "displayName": "update location mapping",
-      "description": "Update location mapping"
+      "displayName": "create/update location mapping",
+      "description": "Create new or update existing location mapping"
     },
     {
       "permissionName" : "remote-storage.mappings.collection.get",

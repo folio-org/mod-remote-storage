@@ -66,11 +66,6 @@ public class ConfigurationsController implements ConfigurationsApi {
     return ResponseEntity.noContent().build();
   }
 
-  //  public ResponseEntity<String> putConfiguration(String configId, @Valid StorageConfiguration storageConfiguration) {
-//    configurationsService.updateConfiguration(configId, storageConfiguration);
-//    return ResponseEntity.noContent().build();
-//  }
-
   @ExceptionHandler({EmptyResultDataAccessException.class, EntityNotFoundException.class})
   public ResponseEntity<String> handleNotFoundExceptions() {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CONFIGURATION_NOT_FOUND);

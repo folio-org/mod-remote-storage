@@ -5,6 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.dto.StorageConfigurations;
 import org.folio.rs.domain.entity.Configuration;
+import org.folio.rs.error.IdMismatchException;
 import org.folio.rs.mapper.ConfigurationsMapper;
 import org.folio.rs.repository.ConfigurationsRepository;
 import org.folio.spring.data.OffsetRequest;
@@ -52,17 +53,13 @@ public class ConfigurationsService {
     return configurationsMapper.mapEntityToDto(configurationsRepository.save(configuration));
   }
 
-  public StorageConfiguration createOrUpdateConfiguration(StorageConfiguration storageConfiguration) {
-    var configuration = configurationsMapper.mapDtoToEntity(storageConfiguration);
-    if (isNull(configuration.getId())) {
-      configuration.setId(UUID.randomUUID());
-      if (isNull(configuration.getCreatedDate())) {
-        configuration.setCreatedDate(Timestamp.valueOf(LocalDateTime.now()));
-      }
+  public void updateConfiguration(String configId, StorageConfiguration storageConfiguration) {
+    if (configId.equals(storageConfiguration.getId())) {
+      var configuration = configurationsMapper.mapDtoToEntity(storageConfiguration);
+      configurationsRepository.save(copyForUpdate(configurationsRepository.getOne(configuration.getId()), configuration));
     } else {
-      configuration = copyForUpdate(configurationsRepository.getOne(configuration.getId()), configuration);
+      throw new IdMismatchException();
     }
-    return configurationsMapper.mapEntityToDto(configurationsRepository.save(configuration));
   }
 
   private Configuration copyForUpdate(Configuration dest, Configuration source) {
@@ -72,8 +69,7 @@ public class ConfigurationsService {
     dest.setAccessionTimeUnit(source.getAccessionTimeUnit());
     dest.setUpdatedByUserId(source.getUpdatedByUserId());
     dest.setUpdatedByUsername(source.getUpdatedByUsername());
-    var ud = source.getUpdatedDate();
-    dest.setUpdatedDate(ud != null ? ud : Timestamp.valueOf(LocalDateTime.now()));
+    dest.setUpdatedDate(Timestamp.valueOf(LocalDateTime.now()));
     return dest;
   }
 }

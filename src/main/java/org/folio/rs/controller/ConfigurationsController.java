@@ -19,6 +19,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
 
 @Log4j2
 @RestController
@@ -59,9 +60,10 @@ public class ConfigurationsController implements ConfigurationsApi {
   }
 
   @Override
-  public ResponseEntity<StorageConfiguration> putConfiguration(@Valid StorageConfiguration storageConfiguration) {
-    var configuration = configurationsService.createOrUpdateConfiguration(storageConfiguration);
-    return new ResponseEntity<>(configuration, HttpStatus.OK);
+  public ResponseEntity<String> putConfiguration(@Pattern(regexp = "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[1-5][a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}$") String configId,
+    @Valid StorageConfiguration storageConfiguration) {
+    configurationsService.updateConfiguration(configId, storageConfiguration);
+    return ResponseEntity.noContent().build();
   }
 
   @ExceptionHandler({EmptyResultDataAccessException.class, EntityNotFoundException.class})

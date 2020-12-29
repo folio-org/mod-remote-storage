@@ -14,7 +14,7 @@
         },
         {
           "methods": ["PUT"],
-          "pathPattern": "/remote-storage/configurations",
+          "pathPattern": "/remote-storage/configurations/{configurationId}",
           "permissionsRequired" : [ "remote-storage.configurations.item.put" ]
         },
         {
@@ -147,13 +147,13 @@
     "dockerPull": false,
     "dockerArgs": {
       "HostConfig": {
-        "Memory": 357913941,
+        "Memory": 512673984,
         "PortBindings": { "8081/tcp": [ { "HostPort": "%p" } ] }
       }
     },
     "env": [
       { "name": "JAVA_OPTIONS",
-        "value": "-XX:MaxRAMPercentage=66.0"
+        "value": "-XX:MaxRAMPercentage=75.0"
       },
       { "name": "DB_HOST", "value": "postgres" },
       { "name": "DB_PORT", "value": "5432" },

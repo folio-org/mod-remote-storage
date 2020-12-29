@@ -89,32 +89,10 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
   @Test
   void canPutConfiguration() {
     StorageConfiguration configurationDto = fetchConfigurations().getConfigurations().get(0);
-    assertThat(configurationDto.getAccessionDelay(), is(1));
-    assertThat(configurationDto.getAccessionTimeUnit(), is(TimeUnits.HOURS));
-
     configurationDto.accessionDelay(5).accessionTimeUnit(TimeUnits.MINUTES);
-    ResponseEntity<StorageConfiguration> response = restTemplate.exchange(configurationsUrl, HttpMethod.PUT,
-      new HttpEntity<>(configurationDto), StorageConfiguration.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
-    assertThat(response.getBody().getAccessionDelay(), is(5));
-    assertThat(response.getBody().getAccessionTimeUnit(), is(TimeUnits.MINUTES));
-    assertThat(response.getBody().getMetadata().getUpdatedDate(), notNullValue());
-  }
-
-  @Test
-  void shouldCreateConfigurationWhenIdIsNull() {
-    StorageConfiguration configuration = fetchConfigurations().getConfigurations().get(0);
-    configuration.id(null).name("RS3").accessionDelay(5).accessionTimeUnit(TimeUnits.MINUTES);
-
-    ResponseEntity<StorageConfiguration> responseEntity = restTemplate.exchange(configurationsUrl, HttpMethod.PUT,
-      new HttpEntity<>(configuration), StorageConfiguration.class);
-    assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-    assertThat(responseEntity.getBody().getId(), notNullValue());
-    assertThat(responseEntity.getBody().getName(), is("RS3"));
-    assertThat(responseEntity.getBody().getAccessionDelay(), is(5));
-    assertThat(responseEntity.getBody().getAccessionTimeUnit(), is(TimeUnits.MINUTES));
-    assertThat(responseEntity.getBody().getMetadata().getCreatedDate(), notNullValue());
-    assertThat(fetchConfigurations().getTotalRecords(), is(2));
+    ResponseEntity<String> response = restTemplate.exchange(configurationsUrl + configurationDto.getId(),
+      HttpMethod.PUT, new HttpEntity<>(configurationDto), String.class);
+    assertThat(response.getStatusCode(), equalTo(HttpStatus.NO_CONTENT));
   }
 
   @Test
@@ -131,11 +109,6 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
       .postForEntity(configurationsUrl, entityMissingName, StorageConfiguration.class));
     assertThat(exception.getStatusCode(), is(HttpStatus.UNPROCESSABLE_ENTITY));
-
-    HttpEntity entityWithInvalidId = new HttpEntity(buildConfiguration("abcde"));
-    exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
-      .exchange(configurationsUrl, HttpMethod.PUT, entityWithInvalidId, StorageConfiguration.class));
-    assertThat(exception.getStatusCode(), is(HttpStatus.UNPROCESSABLE_ENTITY));
   }
 
   @Test
@@ -148,12 +121,6 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class,
       () -> restTemplate.postForEntity(configurationsUrl, initialEntity, StorageConfiguration.class));
     assertThat(exception.getStatusCode(), is(HttpStatus.UNPROCESSABLE_ENTITY));
-
-
-    StorageConfiguration duplicatedNameEntity = responseEntity.getBody().id(null).accessionDelay(10);
-    exception = assertThrows(HttpClientErrorException.class,
-      () -> restTemplate.put(configurationsUrl,  duplicatedNameEntity));
-    assertThat(exception.getStatusCode(), equalTo(HttpStatus.UNPROCESSABLE_ENTITY));
   }
 
   @Test
@@ -169,7 +136,8 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
 
   @Test
   void shouldReturnNotFoundForWrongUuid() {
-    String urlWithRandomUuid = configurationsUrl + UUID.randomUUID().toString();
+    String randomUuid = UUID.randomUUID().toString();
+    String urlWithRandomUuid = configurationsUrl + randomUuid;
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
       .delete(urlWithRandomUuid));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
@@ -178,9 +146,19 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
       .getForObject(urlWithRandomUuid, String.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
 
-    HttpEntity entity = new HttpEntity<>(buildConfiguration(UUID.randomUUID().toString()));
-    exception = assertThrows(HttpClientErrorException.class, () -> restTemplate.put(configurationsUrl, entity));
+    HttpEntity entity = new HttpEntity<>(buildConfiguration(randomUuid));
+    exception = assertThrows(HttpClientErrorException.class, () -> restTemplate.put(urlWithRandomUuid, entity));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
+  }
+
+  @Test
+  void shouldReturnBadRequestForIdsMismatch() {
+    StorageConfiguration configurationDto = fetchConfigurations().getConfigurations().get(0)
+      .accessionDelay(5).accessionTimeUnit(TimeUnits.MINUTES);
+    String urlWithAnotherUuid = configurationsUrl + UUID.randomUUID().toString();
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
+      .put(urlWithAnotherUuid, String.class));
+    assertThat(exception.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
   }
 
   private StorageConfiguration buildConfiguration(String id) {

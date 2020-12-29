@@ -10,6 +10,7 @@ import org.folio.rs.repository.ConfigurationsRepository;
 import org.folio.spring.data.OffsetRequest;
 import org.springframework.stereotype.Service;
 
+import javax.validation.ConstraintViolationException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -52,17 +53,13 @@ public class ConfigurationsService {
     return configurationsMapper.mapEntityToDto(configurationsRepository.save(configuration));
   }
 
-  public StorageConfiguration createOrUpdateConfiguration(StorageConfiguration storageConfiguration) {
-    var configuration = configurationsMapper.mapDtoToEntity(storageConfiguration);
-    if (isNull(configuration.getId())) {
-      configuration.setId(UUID.randomUUID());
-      if (isNull(configuration.getCreatedDate())) {
-        configuration.setCreatedDate(Timestamp.valueOf(LocalDateTime.now()));
-      }
+  public void updateConfiguration(String configId, StorageConfiguration storageConfiguration) {
+    if (configId.equals(storageConfiguration.getId())) {
+      var configuration = configurationsMapper.mapDtoToEntity(storageConfiguration);
+      copyForUpdate(configurationsRepository.getOne(configuration.getId()), configuration);
     } else {
-      configuration = copyForUpdate(configurationsRepository.getOne(configuration.getId()), configuration);
+      throw new ConstraintViolationException("request id and entity id are not equal", null);
     }
-    return configurationsMapper.mapEntityToDto(configurationsRepository.save(configuration));
   }
 
   private Configuration copyForUpdate(Configuration dest, Configuration source) {

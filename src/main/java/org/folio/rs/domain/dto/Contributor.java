@@ -9,5 +9,4 @@ import lombok.Getter;
 @Getter
 public class Contributor {
   private String name;
-  private boolean primary;
 }

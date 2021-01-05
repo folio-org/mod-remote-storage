@@ -30,7 +30,13 @@
     <mapstruct.version>1.4.1.Final</mapstruct.version>
     <json.version>20200518</json.version>
     <hazelcast.version>4.0.2</hazelcast.version>
+    <spring-kafka.version>2.6.3</spring-kafka.version>
+    <wiremock.version>2.27.2</wiremock.version>
+    <awaitility.version>3.0.0</awaitility.version>
+    <spring-kafka-test.version>2.6.4</spring-kafka-test.version>
     <sonar.exclusions>src/main/java/org/folio/rs/domain/entity/**</sonar.exclusions>
+    <generated_sources_dir>${project.build.directory}/generated-sources</generated_sources_dir>
+    <jsonschema2pojo_output_dir>${generated_sources_dir}/jsonschema2pojo</jsonschema2pojo_output_dir>
     <remote-storage.yaml.file>${project.basedir}/src/main/resources/swagger.api/remote-storage.yaml</remote-storage.yaml.file>
   </properties>
 
@@ -39,6 +45,12 @@
       <groupId>org.folio</groupId>
       <artifactId>folio-spring-base</artifactId>
       <version>${folio-spring-base-version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.kafka</groupId>
+      <artifactId>spring-kafka</artifactId>
+      <version>${spring-kafka.version}</version>
     </dependency>
 
     <dependency>
@@ -64,6 +76,12 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-cache</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-openfeign</artifactId>
+      <version>2.2.1.RELEASE</version>
     </dependency>
 
     <dependency>
@@ -101,6 +119,12 @@
       <version>${hazelcast.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.6</version>
+    </dependency>
+
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -128,6 +152,28 @@
       <version>1.6.1</version>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.springframework.kafka</groupId>
+      <artifactId>spring-kafka-test</artifactId>
+      <version>${spring-kafka-test.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock-standalone</artifactId>
+      <version>${wiremock.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <version>${awaitility.version}</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -280,6 +326,31 @@
             </path>
           </annotationProcessorPaths>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.jsonschema2pojo</groupId>
+        <artifactId>jsonschema2pojo-maven-plugin</artifactId>
+        <version>0.5.1</version>
+        <configuration>
+          <includes>
+            <include>*.json</include>
+          </includes>
+          <outputDirectory>${jsonschema2pojo_output_dir}</outputDirectory>
+          <generateBuilders>true</generateBuilders>
+        </configuration>
+        <executions>
+          <execution>
+            <id>dto</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <sourceDirectory>${basedir}/src/main/resources/dto</sourceDirectory>
+              <targetPackage>org.folio.rs.dto</targetPackage>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
 
       <plugin>

@@ -7,6 +7,9 @@ import org.folio.rs.domain.dto.LocationMappings;
 import org.folio.rs.mapper.LocationMappingsMapper;
 import org.folio.rs.repository.LocationMappingsRepository;
 import org.folio.spring.data.OffsetRequest;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +22,13 @@ public class LocationMappingsService {
   private final LocationMappingsRepository locationMappingsRepository;
   private final LocationMappingsMapper locationMappingsMapper;
 
+  @CachePut("mappings")
   public LocationMapping postMapping(LocationMapping locationMapping) {
     return locationMappingsMapper
       .mapEntityToDto(locationMappingsRepository.save(locationMappingsMapper.mapDtoToEntity(locationMapping)));
   }
 
+  @Cacheable("mappings")
   public LocationMapping getMappingByFolioLocationId(String folioLocationId) {
     var id = UUID.fromString(folioLocationId);
     return locationMappingsRepository.findById(id).map(locationMappingsMapper::mapEntityToDto).orElse(null);
@@ -34,6 +39,7 @@ public class LocationMappingsService {
     return locationMappingsMapper.mapEntitiesToMappingCollection(mappings);
   }
 
+  @CacheEvict("mappings")
   public void deleteMappingById(String mappingId) {
     var id = UUID.fromString(mappingId);
     locationMappingsRepository.deleteById(id);

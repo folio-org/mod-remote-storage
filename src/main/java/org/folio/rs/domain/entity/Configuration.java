@@ -35,10 +35,10 @@ public class Configuration {
   private String accessionTimeUnit;
 
   @Column(name = "created_date")
-  private Timestamp createdDate;
+  private LocalDateTime createdDate;
 
   @Column(name = "updated_date")
-  private Timestamp updatedDate;
+  private LocalDateTime updatedDate;
 
   @Column(name = "created_by_user_id")
   private UUID createdByUserId;

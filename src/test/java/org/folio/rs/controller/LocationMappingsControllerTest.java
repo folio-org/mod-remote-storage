@@ -1,5 +1,6 @@
 package org.folio.rs.controller;
 
+import static org.folio.rs.util.Utils.randomIdAsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -35,8 +36,8 @@ public class LocationMappingsControllerTest extends ControllerTestBase {
     ResponseEntity<LocationMapping> responseEntity = restTemplate
       .postForEntity(mappingsUrl,
         new LocationMapping()
-          .folioLocationId(UUID.randomUUID().toString())
-          .configurationId(UUID.randomUUID().toString()),
+          .folioLocationId(randomIdAsString().toString())
+          .configurationId(randomIdAsString().toString()),
         LocationMapping.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.CREATED));
     assertThat(responseEntity.getBody().getFolioLocationId(), notNullValue());
@@ -65,8 +66,8 @@ public class LocationMappingsControllerTest extends ControllerTestBase {
     ResponseEntity<LocationMapping> responseEntity = restTemplate
       .postForEntity(mappingsUrl,
         new LocationMapping()
-          .folioLocationId(UUID.randomUUID().toString())
-          .configurationId(UUID.randomUUID().toString()),
+          .folioLocationId(randomIdAsString())
+          .configurationId(randomIdAsString()),
         LocationMapping.class);
     assertThat(restTemplate.exchange(mappingsUrl + responseEntity.getBody().getFolioLocationId(), HttpMethod.DELETE,
       new HttpEntity<>(headers), String.class).getStatusCode(), is(HttpStatus.NO_CONTENT));
@@ -84,7 +85,7 @@ public class LocationMappingsControllerTest extends ControllerTestBase {
 
   @Test
   void shouldReturnNotFoundForRandomUuid() {
-    String urlWithRandomUuid = mappingsUrl + UUID.randomUUID().toString();
+    String urlWithRandomUuid = mappingsUrl + randomIdAsString();
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
       .delete(urlWithRandomUuid));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));

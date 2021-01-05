@@ -1,7 +1,12 @@
 {
   "id": "@artifactId@-@version@",
   "name": "Remote storage API module",
-  "requires": [],
+  "requires": [
+    {
+      "id": "inventory",
+      "version": "10.7"
+    }
+  ],
   "provides": [
     {
       "id": "remote-storage-configurations",

@@ -2,6 +2,7 @@ package org.folio.rs.controller;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
+import static org.folio.rs.util.Utils.randomIdAsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -139,7 +140,7 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
 
   @Test
   void shouldReturnNotFoundForWrongUuid() {
-    String randomUuid = UUID.randomUUID().toString();
+    String randomUuid = randomIdAsString();
     String urlWithRandomUuid = configurationsUrl + randomUuid;
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
       .delete(urlWithRandomUuid));
@@ -158,7 +159,7 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
   void shouldReturnBadRequestForIdsMismatch() {
     StorageConfiguration configurationDto = fetchConfigurations().getConfigurations().get(0)
       .accessionDelay(5).accessionTimeUnit(TimeUnits.MINUTES);
-    String urlWithAnotherUuid = configurationsUrl + UUID.randomUUID().toString();
+    String urlWithAnotherUuid = configurationsUrl + randomIdAsString();
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
       .put(urlWithAnotherUuid, configurationDto, String.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));

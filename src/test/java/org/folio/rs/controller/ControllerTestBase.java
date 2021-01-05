@@ -18,7 +18,7 @@ import org.springframework.web.client.RestTemplate;
 @AutoConfigureEmbeddedDatabase(beanName = "dataSource")
 @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:PopulateTestData.sql")
 @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:ClearTestData.sql")
-class ControllerTestBase {
+public class ControllerTestBase {
   protected static HttpHeaders headers;
   protected static RestTemplate restTemplate;
 

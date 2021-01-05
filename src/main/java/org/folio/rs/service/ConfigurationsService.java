@@ -1,7 +1,11 @@
 package org.folio.rs.service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import static java.util.Objects.isNull;
+import static org.folio.rs.util.Utils.randomIdAsString;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.dto.StorageConfigurations;
 import org.folio.rs.domain.entity.Configuration;
@@ -14,12 +18,8 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import static java.util.Objects.isNull;
-import static org.folio.rs.util.Utils.randomIdAsString;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Service
 @RequiredArgsConstructor

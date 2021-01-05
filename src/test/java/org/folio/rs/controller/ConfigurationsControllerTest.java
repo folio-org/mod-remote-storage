@@ -1,6 +1,7 @@
 package org.folio.rs.controller;
 
 import static java.util.Optional.ofNullable;
+import static org.folio.rs.util.Utils.randomIdAsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -21,8 +22,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
-
-import java.util.UUID;
 
 public class ConfigurationsControllerTest extends ControllerTestBase {
 
@@ -136,7 +135,7 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
 
   @Test
   void shouldReturnNotFoundForWrongUuid() {
-    String randomUuid = UUID.randomUUID().toString();
+    String randomUuid = randomIdAsString();
     String urlWithRandomUuid = configurationsUrl + randomUuid;
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
       .delete(urlWithRandomUuid));
@@ -155,7 +154,7 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
   void shouldReturnBadRequestForIdsMismatch() {
     StorageConfiguration configurationDto = fetchConfigurations().getConfigurations().get(0)
       .accessionDelay(5).accessionTimeUnit(TimeUnits.MINUTES);
-    String urlWithAnotherUuid = configurationsUrl + UUID.randomUUID().toString();
+    String urlWithAnotherUuid = configurationsUrl + randomIdAsString();
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
       .put(urlWithAnotherUuid, configurationDto, String.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));

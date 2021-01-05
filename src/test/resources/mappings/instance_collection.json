@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/inventory/instances?query=id==a89eccf0-57a6-495e-898d-32b9b2210f2f"
+  },
+  "response": {
+    "status": 200,
+    "body": "{\n    \"instances\": [\n        {\n            \"@context\": \"http://folio-testing-okapi.dev.folio.org/inventory/instances/context\",\n            \"id\": \"a89eccf0-57a6-495e-898d-32b9b2210f2f\",\n            \"hrid\": \"inst000000000017\",\n            \"source\": \"FOLIO\",\n            \"title\": \"Interesting Times\",\n            \"alternativeTitles\": [],\n            \"editions\": [],\n            \"series\": [],\n            \"identifiers\": [\n                {\n                    \"identifierTypeId\": \"8261054f-be78-422d-bd51-4ed9f33c3422\",\n                    \"value\": \"0552142352\"\n                },\n                {\n                    \"identifierTypeId\": \"8261054f-be78-422d-bd51-4ed9f33c3422\",\n                    \"value\": \"9780552142352\"\n                }\n            ],\n            \"contributors\": [\n                {\n                    \"contributorNameTypeId\": \"2b94c631-fca9-4892-a730-03ee529ffe2a\",\n                    \"name\": \"Pratchett, Terry\",\n                    \"contributorTypeId\": null,\n                    \"contributorTypeText\": null,\n                    \"primary\": null\n                }\n            ],\n            \"subjects\": [],\n            \"classifications\": [],\n            \"publication\": [],\n            \"publicationFrequency\": [],\n            \"publicationRange\": [],\n            \"electronicAccess\": [],\n            \"instanceTypeId\": \"6312d172-f0cf-40f6-b27d-9fa8feaf332f\",\n            \"instanceFormatIds\": [],\n            \"physicalDescriptions\": [],\n            \"languages\": [],\n            \"notes\": [],\n            \"discoverySuppress\": false,\n            \"statisticalCodeIds\": [],\n            \"statusUpdatedDate\": \"2021-01-03T03:19:22.548+0000\",\n            \"metadata\": {\n                \"createdDate\": \"2021-01-03T03:19:22.548+00:00\",\n                \"createdByUserId\": null,\n                \"updatedDate\": \"2021-01-03T03:19:22.548+00:00\",\n                \"updatedByUserId\": null\n            },\n            \"tags\": {\n                \"tagList\": []\n            },\n            \"natureOfContentTermIds\": [],\n            \"links\": {\n                \"self\": \"http://folio-testing-okapi.dev.folio.org/inventory/instances/a89eccf0-57a6-495e-898d-32b9b2210f2f\"\n            }\n        }\n    ],\n    \"totalRecords\": 1\n}",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

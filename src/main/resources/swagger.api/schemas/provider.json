@@ -1,0 +1,19 @@
+{
+  "description": "Provider",
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "provider name",
+      "type": "string"
+    },
+    "id": {
+      "description": "provider id",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "id"
+  ]
+}

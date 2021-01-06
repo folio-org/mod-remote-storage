@@ -5,7 +5,7 @@
   "provides": [
     {
       "id": "remote-storage-configurations",
-      "version": "1.0",
+      "version": "1.1",
       "handlers": [
         {
           "methods": ["POST"],
@@ -31,6 +31,11 @@
           "methods": ["DELETE"],
           "pathPattern": "/remote-storage/configurations/{configurationId}",
           "permissionsRequired" : [ "remote-storage.configurations.item.delete" ]
+        },
+        {
+          "methods": ["GET"],
+          "pathPattern": "/remote-storage/providers",
+          "permissionsRequired" : [ "remote-storage.providers.get" ]
         }
       ]
     },

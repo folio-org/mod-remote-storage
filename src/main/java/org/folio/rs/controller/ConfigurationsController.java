@@ -20,8 +20,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @Log4j2
@@ -71,8 +72,7 @@ public class ConfigurationsController implements ConfigurationsApi {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CONFIGURATION_NOT_FOUND);
   }
 
-  @RequestMapping("/providers")
-  @ResponseBody
+  @GetMapping(value = "/providers")
   public ResponseEntity<List<Provider>> getProviders() {
     return new ResponseEntity<>(providerService.getProviders(), HttpStatus.OK);
   }

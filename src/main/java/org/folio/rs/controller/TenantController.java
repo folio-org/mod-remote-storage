@@ -4,6 +4,7 @@ import static java.util.Objects.nonNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import liquibase.exception.LiquibaseException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
@@ -14,7 +15,6 @@ import org.folio.spring.liquibase.FolioSpringLiquibase;
 import org.folio.tenant.domain.dto.Parameter;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.folio.tenant.rest.resource.TenantApi;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,29 +30,18 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @RestController("folioTenantController")
+@RequiredArgsConstructor
 @RequestMapping(value = "/_/")
 public class TenantController implements TenantApi {
   private static final String PARAMETER_LOAD_SAMPLE = "loadSample";
   private static final String SAMPLES_DIR = "samples";
 
   private final FolioSpringLiquibase folioSpringLiquibase;
-
   private final FolioExecutionContext context;
-
   private final ConfigurationsService configurationsService;
   private final LocationMappingsService locationMappingsService;
-
   private final List<String> configurationSamples = Collections.singletonList("dematic.json");
   private final List<String> mappingSamples = Collections.singletonList("annex_to_dematic.json");
-
-  @Autowired
-  public TenantController(FolioSpringLiquibase folioSpringLiquibase, FolioExecutionContext context,
-    ConfigurationsService configurationsService, LocationMappingsService locationMappingsService) {
-    this.folioSpringLiquibase = folioSpringLiquibase;
-    this.context = context;
-    this.configurationsService = configurationsService;
-    this.locationMappingsService = locationMappingsService;
-  }
 
   @Override
   public ResponseEntity<String> postTenant(@Valid TenantAttributes tenantAttributes) {

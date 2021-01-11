@@ -5,7 +5,7 @@
   "provides": [
     {
       "id": "remote-storage-configurations",
-      "version": "1.1",
+      "version": "1.0",
       "handlers": [
         {
           "methods": ["POST"],
@@ -31,11 +31,6 @@
           "methods": ["DELETE"],
           "pathPattern": "/remote-storage/configurations/{configurationId}",
           "permissionsRequired" : [ "remote-storage.configurations.item.delete" ]
-        },
-        {
-          "methods": ["GET"],
-          "pathPattern": "/remote-storage/providers",
-          "permissionsRequired" : [ "remote-storage.providers.get" ]
         }
       ]
     },
@@ -66,6 +61,17 @@
           "permissionsRequired": [
             "remote-storage.mappings.item.delete"
           ]
+        }
+      ]
+    },
+    {
+      "id": "remote-storage-providers",
+      "version": "1.0",
+      "handlers": [
+        {
+          "methods": ["GET"],
+          "pathPattern": "/remote-storage/providers",
+          "permissionsRequired" : [ "remote-storage.providers.collection.get" ]
         }
       ]
     },
@@ -131,6 +137,11 @@
       "description": "Delete a location mapping by id"
     },
     {
+      "permissionName": "remote-storage.providers.collection.get",
+      "displayName": "get remote storage providers collection",
+      "description": "Get list of remote storage providers"
+    },
+    {
       "permissionName": "remote-storage.all",
       "displayName": "remote storage API module - all permissions",
       "description": "All permissions for remote storage",
@@ -143,7 +154,8 @@
         "remote-storage.mappings.item.post",
         "remote-storage.mappings.collection.get",
         "remote-storage.mappings.item.get",
-        "remote-storage.mappings.item.delete"
+        "remote-storage.mappings.item.delete",
+        "remote-storage.providers.collection.get"
       ]
     }
   ],

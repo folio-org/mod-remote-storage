@@ -15,14 +15,13 @@ import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.dto.StorageConfigurations;
 import org.folio.rs.rest.resource.ConfigurationsApi;
 import org.folio.rs.service.ConfigurationsService;
-import org.folio.rs.service.ProviderService;
+import org.folio.rs.service.ProvidersService;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @Log4j2
@@ -33,7 +32,7 @@ public class ConfigurationsController implements ConfigurationsApi {
   private static final String CONFIGURATION_NOT_FOUND = "Configuration not found";
 
   private final ConfigurationsService configurationsService;
-  private final ProviderService providerService;
+  private final ProvidersService providersService;
 
   @Override
   public ResponseEntity<String> deleteConfigurationById(String configId) {
@@ -74,6 +73,6 @@ public class ConfigurationsController implements ConfigurationsApi {
 
   @GetMapping(value = "/providers")
   public ResponseEntity<List<Provider>> getProviders() {
-    return new ResponseEntity<>(providerService.getProviders(), HttpStatus.OK);
+    return new ResponseEntity<>(providersService.getProviders(), HttpStatus.OK);
   }
 }

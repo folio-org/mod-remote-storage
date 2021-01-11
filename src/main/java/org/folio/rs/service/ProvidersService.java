@@ -12,11 +12,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Log4j2
-public class ProviderService {
+public class ProvidersService {
 
   private final List<Provider> providers;
 
-  public ProviderService() {
+  public ProvidersService() {
     this.providers = new ArrayList<>();
     prepareProviderData();
   }

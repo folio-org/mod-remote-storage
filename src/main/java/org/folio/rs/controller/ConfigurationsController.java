@@ -56,7 +56,7 @@ public class ConfigurationsController implements ConfigurationsApi {
   @Override
   public ResponseEntity<StorageConfiguration> postConfiguration(@Valid StorageConfiguration storageConfiguration) {
     var configuration = configurationsService.postConfiguration(storageConfiguration);
-    return new ResponseEntity<>(configuration, HttpStatus.OK);
+    return new ResponseEntity<>(configuration, HttpStatus.CREATED);
   }
 
   @Override

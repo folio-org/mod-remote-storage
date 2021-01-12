@@ -28,7 +28,7 @@ public class LocationMappingsController implements MappingsApi {
 
   @Override
   public ResponseEntity<LocationMapping> postMapping(@Valid LocationMapping locationMapping) {
-    return ResponseEntity.ok().body(locationMappingsService.postMapping(locationMapping));
+    return new ResponseEntity<>(locationMappingsService.postMapping(locationMapping), HttpStatus.CREATED);
   }
 
   @Override

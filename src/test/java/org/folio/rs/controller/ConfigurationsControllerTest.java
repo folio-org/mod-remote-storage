@@ -67,7 +67,7 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
   void canPostConfiguration() {
     ResponseEntity<StorageConfiguration> responseEntity = restTemplate
       .postForEntity(configurationsUrl, buildConfiguration(null), StorageConfiguration.class);
-    assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+    assertThat(responseEntity.getStatusCode(), is(HttpStatus.CREATED));
     assertThat(responseEntity.getBody().getId(), notNullValue());
     assertThat(responseEntity.getBody().getMetadata().getCreatedDate(), notNullValue());
     assertThat(fetchConfigurations().getTotalRecords(), is(2));
@@ -119,7 +119,7 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
     StorageConfiguration initialEntity = buildConfiguration(null).name("RS");
     ResponseEntity<StorageConfiguration> responseEntity = restTemplate
       .postForEntity(configurationsUrl, initialEntity, StorageConfiguration.class);
-    assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+    assertThat(responseEntity.getStatusCode(), is(HttpStatus.CREATED));
 
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class,
       () -> restTemplate.postForEntity(configurationsUrl, initialEntity, StorageConfiguration.class));

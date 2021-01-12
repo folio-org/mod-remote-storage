@@ -170,7 +170,7 @@
     },
     "env": [
       { "name": "JAVA_OPTIONS",
-        "value": "-XX:MaxRAMPercentage=75.0"
+        "value": "-Xmx256m -XX:MaxRAMPercentage=75.0"
       },
       { "name": "DB_HOST", "value": "postgres" },
       { "name": "DB_PORT", "value": "5432" },

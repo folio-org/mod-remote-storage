@@ -1,12 +1,16 @@
 package org.folio.rs.controller;
 
+import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.List;
+import java.util.UUID;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.dto.StorageConfigurations;
 import org.folio.rs.domain.dto.TimeUnits;
@@ -22,11 +26,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.util.UUID;
-
 public class ConfigurationsControllerTest extends ControllerTestBase {
 
   private static final String CONFIGURATIONS_URL = "http://localhost:%s/remote-storage/configurations/";
+  private static final String PROVIDERS_URL = "http://localhost:%s/remote-storage/providers/";
   private static final String TENANT_URL = "http://localhost:%s/_/tenant";
 
   private String configurationsUrl;
@@ -64,7 +67,7 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
   void canPostConfiguration() {
     ResponseEntity<StorageConfiguration> responseEntity = restTemplate
       .postForEntity(configurationsUrl, buildConfiguration(null), StorageConfiguration.class);
-    assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+    assertThat(responseEntity.getStatusCode(), is(HttpStatus.CREATED));
     assertThat(responseEntity.getBody().getId(), notNullValue());
     assertThat(responseEntity.getBody().getMetadata().getCreatedDate(), notNullValue());
     assertThat(fetchConfigurations().getTotalRecords(), is(2));
@@ -116,7 +119,7 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
     StorageConfiguration initialEntity = buildConfiguration(null).name("RS");
     ResponseEntity<StorageConfiguration> responseEntity = restTemplate
       .postForEntity(configurationsUrl, initialEntity, StorageConfiguration.class);
-    assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+    assertThat(responseEntity.getStatusCode(), is(HttpStatus.CREATED));
 
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class,
       () -> restTemplate.postForEntity(configurationsUrl, initialEntity, StorageConfiguration.class));
@@ -159,6 +162,12 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
       .put(urlWithAnotherUuid, configurationDto, String.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
+  }
+
+  @Test
+  void shouldReturnAllProviders() {
+    ResponseEntity<List> response = restTemplate.getForEntity(String.format(PROVIDERS_URL, port), List.class);
+    assertEquals(2, requireNonNull(response.getBody()).size());
   }
 
   private StorageConfiguration buildConfiguration(String id) {

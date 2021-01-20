@@ -32,18 +32,19 @@ public class AccessionQueueService {
   private final InstancesClient instancesClient;
 
   public void processAccessionQueueRecord(List<DomainEvent> events) {
-
+    log.info("Starting processing events...");
     events.forEach(event -> {
-
       if (isEffectiveLocationChanged(event)) {
         var item = event.getNewEntity();
-
         var locationMapping = locationMappingsService.getMappingByFolioLocationId(item.getEffectiveLocationId());
-
+        // TODO should be deleted
+        log.info("LM#2: " + locationMapping);
         if (Objects.nonNull(locationMapping)) {
           var instances = instancesClient.query("id==" + item.getInstanceId());
-          var instance = instances.getResult().get(0);
+          var instance = instances.getResult()
+            .get(0);
           var record = buildAccessionQueueRecord(item, instance, locationMapping);
+          log.info("Record prepared: {}", record);
           accessionQueueRepository.save(record);
         }
       }

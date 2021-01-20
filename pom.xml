@@ -13,7 +13,7 @@
 
   <groupId>org.folio</groupId>
   <artifactId>mod-remote-storage</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <licenses>
@@ -25,7 +25,7 @@
 
   <properties>
     <java.version>11</java.version>
-    <folio-spring-base-version>1.0.0</folio-spring-base-version>
+    <folio-spring-base-version>1.0.1-SNAPSHOT</folio-spring-base-version>
     <openapi-generator.version>4.3.1</openapi-generator.version>
     <mapstruct.version>1.4.1.Final</mapstruct.version>
     <json.version>20200518</json.version>

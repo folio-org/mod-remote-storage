@@ -3,7 +3,11 @@ package org.folio.rs;
 import org.folio.rs.controller.ConfigurationsControllerTest;
 import org.folio.rs.controller.LocationMappingsControllerTest;
 import org.folio.rs.integration.KafkaIntegrationTest;
+import org.folio.rs.service.SecurityManagerService;
+import org.folio.rs.service.SecurityManagerServiceTest;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.RepeatedTest;
+
 
 public class TestSuite {
   @Nested
@@ -16,5 +20,9 @@ public class TestSuite {
 
   @Nested
   class KafkaIntegrationTestNested extends KafkaIntegrationTest {
+  }
+
+  @Nested
+  class SecurityManagerServiceTestNested extends SecurityManagerServiceTest {
   }
 }

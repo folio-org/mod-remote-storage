@@ -6,15 +6,21 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
-import org.folio.rs.domain.entity.GlobalValue;
+import org.folio.rs.domain.entity.Credential;
+import org.folio.rs.domain.entity.FolioContext;
+
+import org.folio.rs.repository.CredentialsRepository;
 import org.folio.rs.service.ConfigurationsService;
 import org.folio.rs.service.LocationMappingsService;
+
+import org.folio.rs.service.SecurityManagerService;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.liquibase.FolioSpringLiquibase;
 import org.folio.tenant.domain.dto.Parameter;
@@ -37,25 +43,42 @@ import lombok.extern.log4j.Log4j2;
 @RequestMapping(value = "/_/")
 @RequiredArgsConstructor
 public class TenantController implements TenantApi {
-  private static final String PARAMETER_LOAD_SAMPLE = "loadSample";
+  public static final String PARAMETER_LOAD_SAMPLE = "loadSample";
   private static final String SAMPLES_DIR = "samples";
 
   private final FolioSpringLiquibase folioSpringLiquibase;
   private final FolioExecutionContext context;
   private final ConfigurationsService configurationsService;
   private final LocationMappingsService locationMappingsService;
-  private final GlobalValue globalValue;
+  private final CredentialsRepository credentialsRepository;
+  private final SecurityManagerService securityManagerService;
+  private final FolioContext folioContext;
 
   private final List<String> configurationSamples = Collections.singletonList("dematic.json");
   private final List<String> mappingSamples = Collections.singletonList("annex_to_dematic.json");
+  private final List<String> credentials = Collections.singletonList("credentials.json");
+
+  public static final String BACKGROUND_USERNAME = "remote-storage-background-user";
 
   @Override
   public ResponseEntity<String> postTenant(@Valid TenantAttributes tenantAttributes) {
     if (folioSpringLiquibase != null) {
       var tenantId = context.getTenantId();
 
-      // Set okapi url to global variables bean
-      globalValue.setOkapiUrl(context.getOkapiUrl());
+      folioContext.setOkapiUrl(context.getOkapiUrl());
+      folioContext.setOkapiToken(context.getToken());
+      folioContext.setTenant(tenantId);
+
+      readEntitiesFromFiles(credentials, Credential.class).forEach(x -> {
+        x.setId(UUID.randomUUID());
+        credentialsRepository.save(x);
+      });
+
+      securityManagerService.createBackgroundUser(BACKGROUND_USERNAME);
+
+      var backgroundUserApiKey = securityManagerService.loginPubSubUser(BACKGROUND_USERNAME);
+
+      folioContext.setOkapiToken(backgroundUserApiKey);
 
       var schemaName = context.getFolioModuleMetadata()
         .getDBSchemaName(tenantId);

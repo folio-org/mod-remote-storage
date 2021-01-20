@@ -2,12 +2,12 @@ package org.folio.rs.domain.entity;
 
 import org.springframework.stereotype.Component;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
+@Data
 @Component
-@Setter
-@Getter
-public class GlobalValue {
+public class FolioContext {
   private String okapiUrl;
+  private String okapiToken;
+  private String tenant;
 }

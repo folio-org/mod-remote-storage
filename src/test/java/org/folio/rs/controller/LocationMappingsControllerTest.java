@@ -18,8 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.util.UUID;
-
 public class LocationMappingsControllerTest extends ControllerTestBase {
 
   private static final String MAPPINGS_URL = "http://localhost:%s/remote-storage/mappings/";
@@ -28,7 +26,7 @@ public class LocationMappingsControllerTest extends ControllerTestBase {
 
   @BeforeEach
   void prepareUrl() {
-    mappingsUrl = String.format(MAPPINGS_URL, port);
+    mappingsUrl = String.format(MAPPINGS_URL, okapiPort);
   }
 
   @Test
@@ -36,8 +34,8 @@ public class LocationMappingsControllerTest extends ControllerTestBase {
     ResponseEntity<LocationMapping> responseEntity = restTemplate
       .postForEntity(mappingsUrl,
         new LocationMapping()
-          .folioLocationId(randomIdAsString().toString())
-          .configurationId(randomIdAsString().toString()),
+          .folioLocationId(randomIdAsString())
+          .configurationId(randomIdAsString()),
         LocationMapping.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
     assertThat(responseEntity.getBody().getFolioLocationId(), notNullValue());

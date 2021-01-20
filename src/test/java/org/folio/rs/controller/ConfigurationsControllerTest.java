@@ -35,7 +35,7 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
 
   @BeforeEach
   void prepareUrl() {
-    configurationsUrl = String.format(CONFIGURATIONS_URL, port);
+    configurationsUrl = String.format(CONFIGURATIONS_URL, okapiPort);
   }
 
   @AfterEach
@@ -47,7 +47,7 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
   void canPostTenantWithParameters() {
     String tenants = "{\"module_to\":\"moduleId\", \"parameters\": [ { \"key\":\"loadSample\", \"value\": true } ] }";
     ResponseEntity<String> response = restTemplate
-      .exchange(String.format(TENANT_URL, port), HttpMethod.POST, new HttpEntity<>(tenants, headers), String.class);
+      .exchange(String.format(TENANT_URL, okapiPort), HttpMethod.POST, new HttpEntity<>(tenants, headers), String.class);
     assertThat(response.getStatusCode(), is(HttpStatus.OK));
   }
 
@@ -55,7 +55,7 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
   void canPostTenantWithoutParameters() {
     String tenants = "{\"module_to\":\"moduleId\"}";
     ResponseEntity<String> response = restTemplate
-      .exchange(String.format(TENANT_URL, port), HttpMethod.POST, new HttpEntity<>(tenants, headers), String.class);
+      .exchange(String.format(TENANT_URL, okapiPort), HttpMethod.POST, new HttpEntity<>(tenants, headers), String.class);
     assertThat(response.getStatusCode(), is(HttpStatus.OK));
   }
 

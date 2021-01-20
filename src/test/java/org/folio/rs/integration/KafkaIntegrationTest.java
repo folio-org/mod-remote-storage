@@ -43,7 +43,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.log4j.Log4j2;
 
-@EmbeddedKafka(topics = { "inventory.item" }, ports = { 9092 })
+@EmbeddedKafka(topics = { "inventory.item" }, ports = { 9097 })
 @TestPropertySource("classpath:application-test.properties")
 @ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -96,7 +96,7 @@ public class KafkaIntegrationTest extends ControllerTestBase {
   }
 
   @Test
-  void testItemUpdatingEventHandling() throws JsonProcessingException, InterruptedException {
+  void testItemUpdatingEventHandling() throws JsonProcessingException {
 
     var originalItem = new Item().withEffectiveLocationId(OLD_EFFECTIVE_LOCATION_ID)
       .withInstanceId(INSTANCE_ID)

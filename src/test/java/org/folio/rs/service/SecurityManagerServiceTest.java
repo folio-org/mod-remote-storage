@@ -4,17 +4,12 @@ import org.folio.rs.controller.ControllerTestBase;
 import org.folio.rs.domain.entity.Credential;
 import org.folio.rs.domain.entity.FolioContext;
 import org.folio.rs.repository.CredentialsRepository;
-import org.folio.spring.FolioExecutionContext;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.UUID;
 
-import static org.folio.rs.controller.TenantController.BACKGROUND_USERNAME;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,7 +26,6 @@ public class SecurityManagerServiceTest extends ControllerTestBase {
   public static final String EXISTED_USER = "existed_user";
   public static final String NON_EXISTED_USER = "non_existed_user";
   public static final String NON_PRESENTED_USER = "non_presented_user";
-
 
 
   @BeforeEach

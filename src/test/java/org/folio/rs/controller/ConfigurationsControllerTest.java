@@ -167,7 +167,7 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
 
   @Test
   void shouldReturnAllProviders() {
-    ResponseEntity<List> response = restTemplate.getForEntity(String.format(PROVIDERS_URL, port), List.class);
+    ResponseEntity<List> response = restTemplate.getForEntity(String.format(PROVIDERS_URL, okapiPort), List.class);
     assertEquals(2, requireNonNull(response.getBody()).size());
   }
 

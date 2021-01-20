@@ -81,6 +81,27 @@
       ]
     },
     {
+      "id": "remote-storage-accessions",
+      "version": "1.0",
+      "handlers": [
+        {
+          "methods": ["GET"],
+          "pathPattern": "/remote-storage/accessions",
+          "permissionsRequired" : [ "remote-storage.accessions.collection.get" ]
+        },
+        {
+          "methods": ["PUT"],
+          "pathPattern": "/remote-storage/accessions/id/{accessionId}",
+          "permissionsRequired" : [ "remote-storage.accessions.item.put" ]
+        },
+        {
+          "methods": ["PUT"],
+          "pathPattern": "/remote-storage/accessions/barcode/{barcode}",
+          "permissionsRequired" : [ "remote-storage.accessions.item.put" ]
+        }
+      ]
+    },
+    {
       "id": "_tenant",
       "version": "1.2",
       "interfaceType": "system",
@@ -154,6 +175,16 @@
       "description": "Get list of remote storage providers"
     },
     {
+      "permissionName": "remote-storage.accessions.collection.get",
+      "displayName": "get remote storage accession queues collection",
+      "description": "Get list of remote storage accession queues"
+    },
+    {
+      "permissionName" : "remote-storage.accessions.item.put",
+      "displayName" : "modify a remote storage accession queue",
+      "description" : "Modify a remote storage accession queue by changing accessioned date time"
+    },
+    {
       "permissionName": "remote-storage.all",
       "displayName": "remote storage API module - all permissions",
       "description": "All permissions for remote storage",
@@ -167,7 +198,9 @@
         "remote-storage.mappings.collection.get",
         "remote-storage.mappings.item.get",
         "remote-storage.mappings.item.delete",
-        "remote-storage.providers.collection.get"
+        "remote-storage.providers.collection.get",
+        "remote-storage.accessions.collection.get",
+        "remote-storage.accessions.item.put"
       ]
     }
   ],

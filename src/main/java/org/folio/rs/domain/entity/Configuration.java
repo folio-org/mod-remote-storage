@@ -1,5 +1,6 @@
 package org.folio.rs.domain.entity;
 
+import java.time.LocalDateTime;
 import lombok.Data;
 
 import javax.persistence.Column;

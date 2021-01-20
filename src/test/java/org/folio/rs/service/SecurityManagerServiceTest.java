@@ -4,12 +4,15 @@ import org.folio.rs.controller.ControllerTestBase;
 import org.folio.rs.domain.entity.Credential;
 import org.folio.rs.domain.entity.FolioContext;
 import org.folio.rs.repository.CredentialsRepository;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.UUID;
 
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,16 +51,24 @@ public class SecurityManagerServiceTest extends ControllerTestBase {
     credential2.setPassword("pwd");
 
     credentialsRepository.save(credential2);
+
+    wireMockServer.resetAll();
   }
 
   @Test
   void testCreateNonExistedUser() {
     securityManagerService.createBackgroundUser(NON_EXISTED_USER);
+    List<String> paths = wireMockServer.getAllServeEvents().stream().map(e -> e.getRequest().getUrl()).collect(toList());
+    assertThat(paths, Matchers.contains("/perms/users", "/authn/credentials", "/users", "/users?query=username==non_existed_user"));
   }
 
   @Test
   void testCreateExistedUser() {
     securityManagerService.createBackgroundUser(EXISTED_USER);
+    List<String> paths = wireMockServer.getAllServeEvents().stream().map(e -> e.getRequest().getUrl()).collect(toList());
+    assertThat(paths, Matchers.contains("/perms/users/c78aa9ec-b7d3-4d53-9e43-20296f39b496/permissions?indexField=userId",
+      "/users/c78aa9ec-b7d3-4d53-9e43-20296f39b496",
+      "/users?query=username==existed_user"));
   }
 
   @Test

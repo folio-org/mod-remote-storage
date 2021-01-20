@@ -1,5 +1,7 @@
 package org.folio.rs.service;
 
+import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -29,6 +31,7 @@ import com.google.common.io.Resources;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.util.CollectionUtils;
 
 @Component
 @Log4j2
@@ -43,16 +46,18 @@ public class SecurityManagerService {
   private final AuthnClient authnClient;
   private final CredentialsRepository credentialsRepository;
 
-  @Cacheable("api_keys")
   public String loginPubSubUser(String username) {
     List<Credential> credentials = credentialsRepository.findByUsername(username);
     if (credentials.isEmpty()) {
       throw new IllegalStateException("No credentials found to assign to user: " + username);
     } else {
       ResponseEntity<String> e = authnClient.getApiKey(credentials.get(0));
-      return e.getHeaders()
-        .get(XOkapiHeaders.TOKEN)
-        .get(0);
+      List<String> headers = e.getHeaders().get(XOkapiHeaders.TOKEN);
+      if (CollectionUtils.isEmpty(headers)) {
+        return EMPTY;
+      } else {
+        return headers.get(0);
+      }
     }
   }
 

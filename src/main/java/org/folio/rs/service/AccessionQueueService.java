@@ -37,8 +37,6 @@ public class AccessionQueueService {
       if (isEffectiveLocationChanged(event)) {
         var item = event.getNewEntity();
         var locationMapping = locationMappingsService.getMappingByFolioLocationId(item.getEffectiveLocationId());
-        // TODO should be deleted
-        log.info("LM#2: " + locationMapping);
         if (Objects.nonNull(locationMapping)) {
           var instances = instancesClient.query("id==" + item.getInstanceId());
           var instance = instances.getResult()

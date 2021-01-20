@@ -2,7 +2,6 @@ package org.folio.rs.client;
 
 import org.folio.rs.domain.dto.Permission;
 import org.folio.rs.domain.dto.Permissions;
-import org.folio.rs.domain.dto.User;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;

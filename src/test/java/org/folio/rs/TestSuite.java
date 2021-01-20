@@ -19,10 +19,10 @@ public class TestSuite {
   }
 
   @Nested
-  class KafkaIntegrationTestNested extends KafkaIntegrationTest {
+  class SecurityManagerServiceTestNested extends SecurityManagerServiceTest {
   }
 
   @Nested
-  class SecurityManagerServiceTestNested extends SecurityManagerServiceTest {
+  class KafkaIntegrationTestNested extends KafkaIntegrationTest {
   }
 }

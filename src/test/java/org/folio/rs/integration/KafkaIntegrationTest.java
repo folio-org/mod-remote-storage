@@ -77,7 +77,7 @@ public class KafkaIntegrationTest extends ControllerTestBase {
   public static final String INSTANCE_AUTHOR = "Pratchett, Terry";
   public static final String INSTANCE_TITLE = "Interesting Times";
 
-  Producer<String, String> producer;
+  private Producer<String, String> producer;
 
   @BeforeEach
   void setUp() {
@@ -90,6 +90,8 @@ public class KafkaIntegrationTest extends ControllerTestBase {
     locationMapping.setFolioLocationId(NEW_EFFECTIVE_LOCATION_ID);
     locationMapping.setConfigurationId(REMOTE_STORAGE_ID);
     locationMappingsService.postMapping(locationMapping);
+
+    log.info("->>>" + locationMappingsService.getMappingByFolioLocationId(locationMapping.getFolioLocationId()));
   }
 
   @Test
@@ -110,9 +112,9 @@ public class KafkaIntegrationTest extends ControllerTestBase {
       .withBarcode(BARCODE)
       .withEffectiveCallNumberComponents(new EffectiveCallNumberComponents().withCallNumber(CALL_NUMBER));
 
-    var resourceBodyWithRemoteConfig = DomainEvent.of(originalItem, newItem, DomainEventType.UPDATE, "tenant");
+    var resourceBodyWithRemoteConfig = DomainEvent.of(originalItem, newItem, DomainEventType.UPDATE, "test_tenant");
     var resourceBodyWithoutRemoteConfig = DomainEvent.of(originalItem, newItemWithoutRemoteConfig, DomainEventType.UPDATE,
-        "tenant");
+        "test_tenant");
 
     producer.send(new ProducerRecord<>(TOPIC, OBJECT_MAPPER.writeValueAsString(resourceBodyWithRemoteConfig)));
     producer.send(new ProducerRecord<>(TOPIC, OBJECT_MAPPER.writeValueAsString(resourceBodyWithoutRemoteConfig)));
@@ -135,5 +137,6 @@ public class KafkaIntegrationTest extends ControllerTestBase {
     assertThat(accessionQueueRecord.getInstanceAuthor(), equalTo(INSTANCE_AUTHOR));
     assertThat(accessionQueueRecord.getInstanceTitle(), equalTo(INSTANCE_TITLE));
   }
+
 
 }

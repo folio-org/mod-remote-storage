@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -44,4 +45,7 @@ public class AccessionQueueRecord {
 
   @Column(name = "instance_author")
   private String instanceAuthor;
+
+  @Column(name = "accessioned")
+  private boolean accessioned;
 }

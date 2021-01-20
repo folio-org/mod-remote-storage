@@ -277,6 +277,48 @@ paths:
                 example: Internal server error
       description: Get a list of providers
       operationId: getProviders
+  /accession:
+    get:
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/accessionQueues"
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Internal server error
+      description: Get a list of accession records
+      operationId: getAccessions
+      parameters:
+        - $ref: "#/components/parameters/trait_queryable_accessioned"
+        - $ref: "#/components/parameters/trait_queryable_storage_id"
+        - $ref: "#/components/parameters/trait_queryable_created_date"
+        - $ref: "#/components/parameters/trait_pageable_offset"
+        - $ref: "#/components/parameters/trait_pageable_limit"
+  /accession/{accessionId}:
+    put:
+      responses:
+        '204':
+          description: Set accession date and flag accessioned to true
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: No content
+      description: Set accessionedDate and accessioned flag
+      operationId: setAccessioned
+      parameters:
+        - name: accessionId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/uuid"
 components:
   responses:
     trait_validate_422:
@@ -287,6 +329,17 @@ components:
           schema:
             $ref: "#/components/schemas/errors"
   schemas:
+    accessionQueue:
+      $ref: schemas/accessionQueue.json
+    accessionQueues:
+      allOf:
+        - $ref: schemas/baseCollection.json
+        - type: object
+          properties:
+            accessions:
+              type: array
+              items:
+                $ref: "#/components/schemas/accessionQueue"
     storageConfiguration:
       $ref: schemas/storageConfiguration.json
     storageConfigurations:
@@ -320,6 +373,24 @@ components:
     uuid:
       $ref: schemas/uuid.json
   parameters:
+    trait_queryable_storage_id:
+      name: storageId
+      in: query
+      description: Remote storage id
+      schema:
+        type: string
+    trait_queryable_accessioned:
+      name: accessioned
+      in: query
+      description: Flag to indicate, that accession queue record was accessioned and has accesion date
+      schema:
+        type: boolean
+    trait_queryable_created_date:
+      name: createdDate
+      in: query
+      description: Date of accession queue record creation
+      schema:
+        type: string
     trait_queryable_query:
       name: query
       in: query

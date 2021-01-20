@@ -2,6 +2,10 @@ package org.folio.rs.controller;
 
 import static java.util.Objects.nonNull;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import liquibase.exception.LiquibaseException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -32,16 +36,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import liquibase.exception.LiquibaseException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @RestController("folioTenantController")
-@RequestMapping(value = "/_/")
 @RequiredArgsConstructor
+@RequestMapping(value = "/_/")
 public class TenantController implements TenantApi {
   public static final String PARAMETER_LOAD_SAMPLE = "loadSample";
   private static final String SAMPLES_DIR = "samples";

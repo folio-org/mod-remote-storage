@@ -37,7 +37,7 @@ public class LocationMappingsControllerTest extends ControllerTestBase {
           .folioLocationId(randomIdAsString())
           .configurationId(randomIdAsString()),
         LocationMapping.class);
-    assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+    assertThat(responseEntity.getStatusCode(), is(HttpStatus.CREATED));
     assertThat(responseEntity.getBody().getFolioLocationId(), notNullValue());
     assertThat(responseEntity.getBody().getConfigurationId(), notNullValue());
   }

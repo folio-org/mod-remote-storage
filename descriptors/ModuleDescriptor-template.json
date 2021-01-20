@@ -70,6 +70,17 @@
       ]
     },
     {
+      "id": "remote-storage-providers",
+      "version": "1.0",
+      "handlers": [
+        {
+          "methods": ["GET"],
+          "pathPattern": "/remote-storage/providers",
+          "permissionsRequired" : [ "remote-storage.providers.collection.get" ]
+        }
+      ]
+    },
+    {
       "id": "_tenant",
       "version": "1.2",
       "interfaceType": "system",
@@ -138,6 +149,11 @@
       "description": "Delete a location mapping by id"
     },
     {
+      "permissionName": "remote-storage.providers.collection.get",
+      "displayName": "get remote storage providers collection",
+      "description": "Get list of remote storage providers"
+    },
+    {
       "permissionName": "remote-storage.all",
       "displayName": "remote storage API module - all permissions",
       "description": "All permissions for remote storage",
@@ -150,7 +166,8 @@
         "remote-storage.mappings.item.post",
         "remote-storage.mappings.collection.get",
         "remote-storage.mappings.item.get",
-        "remote-storage.mappings.item.delete"
+        "remote-storage.mappings.item.delete",
+        "remote-storage.providers.collection.get"
       ]
     }
   ],
@@ -159,7 +176,7 @@
     "dockerPull": false,
     "dockerArgs": {
       "HostConfig": {
-        "Memory": 512673984,
+        "Memory": 712673984,
         "PortBindings": { "8081/tcp": [ { "HostPort": "%p" } ] }
       }
     },

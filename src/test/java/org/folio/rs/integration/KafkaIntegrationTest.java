@@ -30,7 +30,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -43,7 +42,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.log4j.Log4j2;
 
-@EmbeddedKafka(topics = { "inventory.item" }, ports = { 9097 })
+@EmbeddedKafka(topics = { "inventory.item" }, ports = { 9099 })
 @TestPropertySource("classpath:application-test.properties")
 @ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -62,8 +61,6 @@ public class KafkaIntegrationTest extends ControllerTestBase {
   private FolioContext folioContext;
   @Autowired
   private CredentialsRepository credentialsRepository;
-  @Autowired
-  private CacheManager ca;
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 

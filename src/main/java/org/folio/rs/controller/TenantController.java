@@ -56,9 +56,9 @@ public class TenantController implements TenantApi {
 
   private final List<String> configurationSamples = Collections.singletonList("dematic.json");
   private final List<String> mappingSamples = Collections.singletonList("annex_to_dematic.json");
-  private final List<String> credentials = Collections.singletonList("credentials.json");
 
   public static final String BACKGROUND_USERNAME = "remote-storage-background-user";
+  public static final String BACKGROUND_USER_PWD = "remote-storage-background-password";
 
   @Override
   public ResponseEntity<String> postTenant(@Valid TenantAttributes tenantAttributes) {
@@ -69,10 +69,7 @@ public class TenantController implements TenantApi {
       folioContext.setOkapiToken(context.getToken());
       folioContext.setTenant(tenantId);
 
-      readEntitiesFromFiles(credentials, Credential.class).forEach(x -> {
-        x.setId(UUID.randomUUID());
-        credentialsRepository.save(x);
-      });
+      credentialsRepository.save(Credential.of(UUID.randomUUID(), BACKGROUND_USERNAME, BACKGROUND_USER_PWD));
 
       securityManagerService.createBackgroundUser(BACKGROUND_USERNAME);
 

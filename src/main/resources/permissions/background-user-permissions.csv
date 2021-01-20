@@ -1,6 +1,1 @@
-source-storage.events.post
-source-records-manager.events.post
-inventory.events.post
-circulation.events.post
-patron-blocks.events.post
-audit-data.events.post
+inventory.instances.collection.get

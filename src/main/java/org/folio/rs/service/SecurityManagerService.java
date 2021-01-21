@@ -1,6 +1,5 @@
 package org.folio.rs.service;
 
-import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -23,7 +22,6 @@ import org.folio.rs.domain.dto.User;
 import org.folio.rs.domain.entity.Credential;
 import org.folio.rs.repository.CredentialsRepository;
 import org.folio.spring.integration.XOkapiHeaders;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 

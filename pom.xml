@@ -34,7 +34,7 @@
     <wiremock.version>2.27.2</wiremock.version>
     <awaitility.version>3.0.0</awaitility.version>
     <spring-kafka-test.version>2.6.4</spring-kafka-test.version>
-    <sonar.exclusions>src/main/java/org/folio/rs/domain/**, src/main/java/org/folio/rs/client/AuthClient.java</sonar.exclusions>
+    <sonar.exclusions>src/main/java/org/folio/rs/domain/**, src/main/java/org/folio/rs/client/AuthClient.java, src/main/java/org/folio/rs/config/properties/** </sonar.exclusions>
     <remote-storage.yaml.file>${project.basedir}/src/main/resources/swagger.api/remote-storage.yaml</remote-storage.yaml.file>
   </properties>
 

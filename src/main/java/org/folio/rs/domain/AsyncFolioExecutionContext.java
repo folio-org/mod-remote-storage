@@ -2,12 +2,16 @@ package org.folio.rs.domain;
 
 import java.util.Collection;
 import java.util.Map;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import org.folio.rs.domain.entity.SystemUserParameters;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.FolioModuleMetadata;
 
 @Getter
+@Builder
+@AllArgsConstructor
 public class AsyncFolioExecutionContext implements FolioExecutionContext {
 
   private final String userName;

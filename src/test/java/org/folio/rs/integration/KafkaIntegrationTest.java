@@ -6,25 +6,28 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
+import lombok.extern.log4j.Log4j2;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.awaitility.Duration;
 import org.folio.rs.controller.ControllerTestBase;
+import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.rs.domain.dto.EffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
 import org.folio.rs.domain.entity.DomainEvent;
 import org.folio.rs.domain.entity.DomainEventType;
-import org.folio.rs.domain.entity.FolioSystemUserHolder;
 import org.folio.rs.repository.AccessionQueueRepository;
 import org.folio.rs.repository.CredentialsRepository;
 import org.folio.rs.service.LocationMappingsService;
+import org.folio.spring.scope.FolioExecutionScopeExecutionContextManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -37,12 +40,7 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import lombok.extern.log4j.Log4j2;
-
-@EmbeddedKafka(topics = { "inventory.item" }, ports = { 9099 })
+@EmbeddedKafka(topics = {"inventory.item"}, ports = {9099})
 @TestPropertySource("classpath:application-test.properties")
 @ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -57,8 +55,7 @@ public class KafkaIntegrationTest extends ControllerTestBase {
   private AccessionQueueRepository accessionQueueRepository;
   @Autowired
   private LocationMappingsService locationMappingsService;
-  @Autowired
-  private FolioSystemUserHolder folioContext;
+
   @Autowired
   private CredentialsRepository credentialsRepository;
 
@@ -81,17 +78,21 @@ public class KafkaIntegrationTest extends ControllerTestBase {
 
   @BeforeEach
   void setUp() {
-    folioContext.setOkapiUrl(String.format("http://localhost:%s/", WIRE_MOCK_PORT));
+    FolioExecutionScopeExecutionContextManager.beginFolioExecutionContext(
+      AsyncFolioExecutionContext.builder()
+        .okapiUrl(String.format("http://localhost:%s/", WIRE_MOCK_PORT)).build());
 
     Map<String, Object> configs = new HashMap<>(KafkaTestUtils.producerProps(embeddedKafkaBroker));
-    producer = new DefaultKafkaProducerFactory<>(configs, new StringSerializer(), new StringSerializer()).createProducer();
+    producer = new DefaultKafkaProducerFactory<>(configs, new StringSerializer(),
+      new StringSerializer()).createProducer();
 
     var locationMapping = new LocationMapping();
     locationMapping.setFolioLocationId(NEW_EFFECTIVE_LOCATION_ID);
     locationMapping.setConfigurationId(REMOTE_STORAGE_ID);
     locationMappingsService.postMapping(locationMapping);
 
-    log.info("->>>" + locationMappingsService.getMappingByFolioLocationId(locationMapping.getFolioLocationId()));
+    log.info("->>>" + locationMappingsService
+      .getMappingByFolioLocationId(locationMapping.getFolioLocationId()));
   }
 
   @Test
@@ -100,24 +101,31 @@ public class KafkaIntegrationTest extends ControllerTestBase {
     var originalItem = new Item().withEffectiveLocationId(OLD_EFFECTIVE_LOCATION_ID)
       .withInstanceId(INSTANCE_ID)
       .withBarcode(BARCODE)
-      .withEffectiveCallNumberComponents(new EffectiveCallNumberComponents().withCallNumber(CALL_NUMBER));
+      .withEffectiveCallNumberComponents(
+        new EffectiveCallNumberComponents().withCallNumber(CALL_NUMBER));
 
     var newItem = new Item().withEffectiveLocationId(NEW_EFFECTIVE_LOCATION_ID)
       .withInstanceId(INSTANCE_ID)
       .withBarcode(BARCODE)
-      .withEffectiveCallNumberComponents(new EffectiveCallNumberComponents().withCallNumber(CALL_NUMBER));
+      .withEffectiveCallNumberComponents(
+        new EffectiveCallNumberComponents().withCallNumber(CALL_NUMBER));
 
     var newItemWithoutRemoteConfig = new Item().withEffectiveLocationId(randomIdAsString())
       .withInstanceId(INSTANCE_ID)
       .withBarcode(BARCODE)
-      .withEffectiveCallNumberComponents(new EffectiveCallNumberComponents().withCallNumber(CALL_NUMBER));
+      .withEffectiveCallNumberComponents(
+        new EffectiveCallNumberComponents().withCallNumber(CALL_NUMBER));
 
-    var resourceBodyWithRemoteConfig = DomainEvent.of(originalItem, newItem, DomainEventType.UPDATE, "test_tenant");
-    var resourceBodyWithoutRemoteConfig = DomainEvent.of(originalItem, newItemWithoutRemoteConfig, DomainEventType.UPDATE,
+    var resourceBodyWithRemoteConfig = DomainEvent
+      .of(originalItem, newItem, DomainEventType.UPDATE, "test_tenant");
+    var resourceBodyWithoutRemoteConfig = DomainEvent
+      .of(originalItem, newItemWithoutRemoteConfig, DomainEventType.UPDATE,
         "test_tenant");
 
-    producer.send(new ProducerRecord<>(TOPIC, OBJECT_MAPPER.writeValueAsString(resourceBodyWithRemoteConfig)));
-    producer.send(new ProducerRecord<>(TOPIC, OBJECT_MAPPER.writeValueAsString(resourceBodyWithoutRemoteConfig)));
+    producer.send(
+      new ProducerRecord<>(TOPIC, OBJECT_MAPPER.writeValueAsString(resourceBodyWithRemoteConfig)));
+    producer.send(new ProducerRecord<>(TOPIC,
+      OBJECT_MAPPER.writeValueAsString(resourceBodyWithoutRemoteConfig)));
     producer.flush();
 
     await().atMost(Duration.FIVE_SECONDS)
@@ -136,7 +144,8 @@ public class KafkaIntegrationTest extends ControllerTestBase {
     assertThat(accessionQueueRecord.getId(), notNullValue());
     assertThat(accessionQueueRecord.getItemBarcode(), equalTo(BARCODE));
     assertThat(accessionQueueRecord.getCallNumber(), equalTo(CALL_NUMBER));
-    assertThat(accessionQueueRecord.getRemoteStorageId(), equalTo(UUID.fromString(REMOTE_STORAGE_ID)));
+    assertThat(accessionQueueRecord.getRemoteStorageId(),
+      equalTo(UUID.fromString(REMOTE_STORAGE_ID)));
     assertThat(accessionQueueRecord.getInstanceAuthor(), equalTo(INSTANCE_AUTHOR));
     assertThat(accessionQueueRecord.getInstanceTitle(), equalTo(INSTANCE_TITLE));
   }

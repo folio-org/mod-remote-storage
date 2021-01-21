@@ -3,27 +3,19 @@ package org.folio.rs.controller;
 import static java.util.Objects.nonNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import liquibase.exception.LiquibaseException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.stream.Collectors;
-
 import javax.validation.Valid;
-
+import liquibase.exception.LiquibaseException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
-import org.folio.rs.domain.entity.Credential;
-import org.folio.rs.domain.entity.FolioContext;
-
-import org.folio.rs.repository.CredentialsRepository;
 import org.folio.rs.service.ConfigurationsService;
 import org.folio.rs.service.LocationMappingsService;
-
 import org.folio.rs.service.SecurityManagerService;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.liquibase.FolioSpringLiquibase;
@@ -42,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping(value = "/_/")
 public class TenantController implements TenantApi {
+
   public static final String PARAMETER_LOAD_SAMPLE = "loadSample";
   private static final String SAMPLES_DIR = "samples";
 
@@ -49,32 +42,19 @@ public class TenantController implements TenantApi {
   private final FolioExecutionContext context;
   private final ConfigurationsService configurationsService;
   private final LocationMappingsService locationMappingsService;
-  private final CredentialsRepository credentialsRepository;
   private final SecurityManagerService securityManagerService;
-  private final FolioContext folioContext;
+
 
   private final List<String> configurationSamples = Collections.singletonList("dematic.json");
   private final List<String> mappingSamples = Collections.singletonList("annex_to_dematic.json");
 
-  public static final String BACKGROUND_USERNAME = "remote-storage-background-user";
-  public static final String BACKGROUND_USER_PWD = "remote-storage-background-password";
 
   @Override
   public ResponseEntity<String> postTenant(@Valid TenantAttributes tenantAttributes) {
     if (folioSpringLiquibase != null) {
       var tenantId = context.getTenantId();
 
-      folioContext.setOkapiUrl(context.getOkapiUrl());
-      folioContext.setOkapiToken(context.getToken());
-      folioContext.setTenant(tenantId);
-
-      credentialsRepository.save(Credential.of(UUID.randomUUID(), BACKGROUND_USERNAME, BACKGROUND_USER_PWD));
-
-      securityManagerService.createBackgroundUser(BACKGROUND_USERNAME);
-
-      var backgroundUserApiKey = securityManagerService.loginPubSubUser(BACKGROUND_USERNAME);
-
-      folioContext.setOkapiToken(backgroundUserApiKey);
+      securityManagerService.createBackgroundUser(context.getOkapiUrl(), tenantId);
 
       var schemaName = context.getFolioModuleMetadata()
         .getDBSchemaName(tenantId);
@@ -99,15 +79,18 @@ public class TenantController implements TenantApi {
 
   private void loadSampleData() {
     log.info("Loading sample data");
-    readEntitiesFromFiles(configurationSamples, StorageConfiguration.class).forEach(configurationsService::postConfiguration);
-    readEntitiesFromFiles(mappingSamples, LocationMapping.class).forEach(locationMappingsService::postMapping);
+    readEntitiesFromFiles(configurationSamples, StorageConfiguration.class)
+      .forEach(configurationsService::postConfiguration);
+    readEntitiesFromFiles(mappingSamples, LocationMapping.class)
+      .forEach(locationMappingsService::postMapping);
   }
 
   private <T> List<T> readEntitiesFromFiles(List<String> filenames, Class<T> type) {
     return filenames.stream()
       .map(fileName -> {
         try {
-          return new ObjectMapper().readValue(new ClassPathResource(SAMPLES_DIR + "/" + fileName).getFile(), type);
+          return new ObjectMapper()
+            .readValue(new ClassPathResource(SAMPLES_DIR + "/" + fileName).getFile(), type);
         } catch (IOException e) {
           log.error("Error loading " + fileName, e);
           return null;

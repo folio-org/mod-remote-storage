@@ -1,8 +1,8 @@
 package org.folio.rs.service;
 
 import org.folio.rs.controller.ControllerTestBase;
-import org.folio.rs.domain.entity.Credential;
-import org.folio.rs.domain.entity.FolioContext;
+import org.folio.rs.domain.entity.SystemUserParameters;
+import org.folio.rs.domain.entity.FolioSystemUserHolder;
 import org.folio.rs.repository.CredentialsRepository;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +24,7 @@ public class SecurityManagerServiceTest extends ControllerTestBase {
   @Autowired
   private CredentialsRepository credentialsRepository;
   @Autowired
-  FolioContext folioContext;
+  FolioSystemUserHolder folioContext;
 
   public static final String EXISTED_USER = "existed_user";
   public static final String NON_EXISTED_USER = "non_existed_user";
@@ -38,14 +38,14 @@ public class SecurityManagerServiceTest extends ControllerTestBase {
     folioContext.setOkapiToken("AAA");
     folioContext.setTenant("test");
 
-    Credential credential1 = new Credential();
+    SystemUserParameters credential1 = new SystemUserParameters();
     credential1.setId(UUID.randomUUID());
     credential1.setUsername(EXISTED_USER);
     credential1.setPassword("pwd");
 
     credentialsRepository.save(credential1);
 
-    Credential credential2 = new Credential();
+    SystemUserParameters credential2 = new SystemUserParameters();
     credential2.setId(UUID.randomUUID());
     credential2.setUsername(NON_EXISTED_USER);
     credential2.setPassword("pwd");
@@ -57,14 +57,14 @@ public class SecurityManagerServiceTest extends ControllerTestBase {
 
   @Test
   void testCreateNonExistedUser() {
-    securityManagerService.createBackgroundUser(NON_EXISTED_USER);
+    securityManagerService.createBackgroundUser(NON_EXISTED_USER, );
     List<String> paths = wireMockServer.getAllServeEvents().stream().map(e -> e.getRequest().getUrl()).collect(toList());
     assertThat(paths, Matchers.contains("/perms/users", "/authn/credentials", "/users", "/users?query=username==non_existed_user"));
   }
 
   @Test
   void testCreateExistedUser() {
-    securityManagerService.createBackgroundUser(EXISTED_USER);
+    securityManagerService.createBackgroundUser(EXISTED_USER, );
     List<String> paths = wireMockServer.getAllServeEvents().stream().map(e -> e.getRequest().getUrl()).collect(toList());
     assertThat(paths, Matchers.contains("/perms/users/c78aa9ec-b7d3-4d53-9e43-20296f39b496/permissions?indexField=userId",
       "/users/c78aa9ec-b7d3-4d53-9e43-20296f39b496",
@@ -73,18 +73,18 @@ public class SecurityManagerServiceTest extends ControllerTestBase {
 
   @Test
   void testCreateNonPresentedUser() {
-    assertThrows(IllegalStateException.class, () -> securityManagerService.createBackgroundUser(NON_PRESENTED_USER));
+    assertThrows(IllegalStateException.class, () -> securityManagerService.createBackgroundUser(NON_PRESENTED_USER, ));
   }
 
   @Test
   void testLoginBackgroundUser() {
-    String apiKey = securityManagerService.loginPubSubUser(EXISTED_USER);
+    String apiKey = securityManagerService.loginSystemUser(EXISTED_USER);
     assertThat(apiKey, notNullValue());
   }
 
   @Test
   void testLoginBackgroundUserFailed() {
-    assertThrows(IllegalStateException.class, () -> securityManagerService.loginPubSubUser(NON_PRESENTED_USER));
+    assertThrows(IllegalStateException.class, () -> securityManagerService.loginSystemUser(NON_PRESENTED_USER));
   }
 
 }

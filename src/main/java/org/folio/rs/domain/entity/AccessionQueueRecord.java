@@ -24,16 +24,12 @@ public class AccessionQueueRecord {
   @Id
   private UUID id;
 
-  @Column(name = "item_barcode")
   private String itemBarcode;
 
-  @Column(name = "created_date_time")
   private LocalDateTime createdDateTime;
 
-  @Column(name = "accessioned_date_time")
   private LocalDateTime accessionedDateTime;
 
-  @Column(name = "remote_storage_id")
   private UUID remoteStorageId;
 
   @Column(name = "call_number")

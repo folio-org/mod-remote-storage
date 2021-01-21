@@ -21,7 +21,7 @@ import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
 import org.folio.rs.domain.entity.DomainEvent;
 import org.folio.rs.domain.entity.DomainEventType;
-import org.folio.rs.domain.entity.FolioContext;
+import org.folio.rs.domain.entity.FolioSystemUserHolder;
 import org.folio.rs.repository.AccessionQueueRepository;
 import org.folio.rs.repository.CredentialsRepository;
 import org.folio.rs.service.LocationMappingsService;
@@ -58,7 +58,7 @@ public class KafkaIntegrationTest extends ControllerTestBase {
   @Autowired
   private LocationMappingsService locationMappingsService;
   @Autowired
-  private FolioContext folioContext;
+  private FolioSystemUserHolder folioContext;
   @Autowired
   private CredentialsRepository credentialsRepository;
 
@@ -121,7 +121,10 @@ public class KafkaIntegrationTest extends ControllerTestBase {
     producer.flush();
 
     await().atMost(Duration.FIVE_SECONDS)
-      .until(() -> accessionQueueRepository.count() == 1L);
+      .until(() -> {
+        System.out.println("COUNT in queue" + accessionQueueRepository.count());
+        return accessionQueueRepository.count() == 1L;
+      });
 
     var actualAccessionQueueRecord = accessionQueueRepository.findAll()
       .get(0);

@@ -10,14 +10,11 @@ import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Data
-@Table(name = "LOCATION_MAPPINGS")
 @Entity
-public class MappingRecord {
+public class LocationMapping {
   @Id
-  @Column(name = "folio_location_id")
   private UUID folioLocationId;
 
   @NotNull
-  @Column(name = "configuration_id")
   private UUID configurationId;
 }

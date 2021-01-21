@@ -28,6 +28,9 @@ public class Configuration {
   @Column(name = "url")
   private String url;
 
+  @Column(name = "status_url")
+  private String statusUrl;
+
   @Column(name = "accession_delay")
   private Integer accessionDelay;
 

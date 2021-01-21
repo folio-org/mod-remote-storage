@@ -10,12 +10,12 @@ import java.util.stream.Collectors;
 
 import org.folio.rs.client.InstancesClient;
 import org.folio.rs.domain.dto.Contributor;
+import org.folio.rs.domain.dto.EffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.Instance;
+import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
 import org.folio.rs.domain.entity.DomainEvent;
-import org.folio.rs.dto.EffectiveCallNumberComponents;
-import org.folio.rs.dto.Item;
 import org.folio.rs.repository.AccessionQueueRepository;
 import org.springframework.stereotype.Service;
 

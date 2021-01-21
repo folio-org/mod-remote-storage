@@ -1,6 +1,6 @@
 package org.folio.rs.domain.entity;
 
-import org.folio.rs.dto.Item;
+
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.folio.rs.domain.dto.Item;
 
 @Data
 @NoArgsConstructor

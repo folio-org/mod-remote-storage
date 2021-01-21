@@ -34,9 +34,7 @@
     <wiremock.version>2.27.2</wiremock.version>
     <awaitility.version>3.0.0</awaitility.version>
     <spring-kafka-test.version>2.6.4</spring-kafka-test.version>
-    <sonar.exclusions>src/main/java/org/folio/rs/domain/entity/**</sonar.exclusions>
-    <generated_sources_dir>${project.build.directory}/generated-sources</generated_sources_dir>
-    <jsonschema2pojo_output_dir>${generated_sources_dir}/jsonschema2pojo</jsonschema2pojo_output_dir>
+    <sonar.exclusions>src/main/java/org/folio/rs/domain/**, src/main/java/org/folio/rs/client/AuthClient.java</sonar.exclusions>
     <remote-storage.yaml.file>${project.basedir}/src/main/resources/swagger.api/remote-storage.yaml</remote-storage.yaml.file>
   </properties>
 
@@ -326,31 +324,6 @@
             </path>
           </annotationProcessorPaths>
         </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.jsonschema2pojo</groupId>
-        <artifactId>jsonschema2pojo-maven-plugin</artifactId>
-        <version>0.5.1</version>
-        <configuration>
-          <includes>
-            <include>*.json</include>
-          </includes>
-          <outputDirectory>${jsonschema2pojo_output_dir}</outputDirectory>
-          <generateBuilders>true</generateBuilders>
-        </configuration>
-        <executions>
-          <execution>
-            <id>dto</id>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <sourceDirectory>${basedir}/src/main/resources/dto</sourceDirectory>
-              <targetPackage>org.folio.rs.dto</targetPackage>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
 
       <plugin>

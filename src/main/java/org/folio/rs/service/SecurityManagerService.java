@@ -47,11 +47,11 @@ public class SecurityManagerService {
   public static final String BACKGROUND_USER_PWD = "remote-storage-background-password";
 
   public String loginSystemUser(String username) {
-    List<SystemUserParameters> credentials = credentialsRepository.findByUsername(username);
+    Optional<SystemUserParameters> credentials = credentialsRepository.findById(username);
     if (credentials.isEmpty()) {
       throw new IllegalStateException("No credentials found to assign to user: " + username);
     } else {
-      ResponseEntity<String> e = authnClient.getApiKey(credentials.get(0));
+      ResponseEntity<String> e = authnClient.getApiKey(credentials.get());
       List<String> headers = e.getHeaders().get(XOkapiHeaders.TOKEN);
       if (CollectionUtils.isEmpty(headers)) {
         return EMPTY;
@@ -81,14 +81,14 @@ public class SecurityManagerService {
     saveUser(params);
   }
 
-  @CachePut("systemUser")
+ // @CachePut("systemUser") // TODO: fix
   public void saveUser(SystemUserParameters params) {
     credentialsRepository.save(params);
   }
 
-  @Cacheable("systemUser")
+  //@Cacheable("systemUser") TODO: fix
   public SystemUserParameters getSystemUser(String tenantId) {
-    return credentialsRepository.findByUsername(BACKGROUND_USERNAME).stream()
+    return credentialsRepository.findById(BACKGROUND_USERNAME).stream()
       .findAny().orElseThrow(() -> {
         log.error("System User haven't been created");
         return new IllegalStateException("System User haven't been created");
@@ -118,13 +118,13 @@ public class SecurityManagerService {
   }
 
   private void saveCredentials(String username) {
-    List<SystemUserParameters> credentials = credentialsRepository.findByUsername(username);
+    Optional<SystemUserParameters> credentials = credentialsRepository.findById(username);
 
-    if (isEmpty(credentials)) {
+    if (credentials.isEmpty()) {
       throw new IllegalStateException("No credentials found to assign to user: " + username);
     }
 
-    authnClient.saveCredentials(credentials.get(0));
+    authnClient.saveCredentials(credentials.get());
     log.info("Saved credentials for user: [{}]", username);
   }
 

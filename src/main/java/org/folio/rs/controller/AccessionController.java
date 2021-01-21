@@ -1,6 +1,6 @@
 package org.folio.rs.controller;
 
-import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -24,13 +24,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/remote-storage")
 public class AccessionController implements AccessionApi {
   private static final String ACCESSION_QUEUE_NOT_FOUND = "Accession queue not found";
+  private static final String WRONG_DATE_FORMAT_MESSAGE = "Wrong date format for accession queue";
 
   private final AccessionQueueService accessionQueueService;
 
   @Override
   public ResponseEntity<AccessionQueues> getAccessions(@Valid Boolean accessioned, @Valid String storageId, @Valid String createdDate,
       @Min(0) @Max(2147483647) @Valid Integer offset, @Min(0) @Max(2147483647) @Valid Integer limit) {
-    var accessionQueues = accessionQueueService.getAccessions(getFilterData(accessioned, storageId, null, offset, limit));  //todo createdDate format?
+    var accessionQueues = accessionQueueService.getAccessions(getFilterData(accessioned, storageId, createdDate, offset, limit));
     return new ResponseEntity<>(accessionQueues, HttpStatus.OK);
   }
 
@@ -46,7 +47,12 @@ public class AccessionController implements AccessionApi {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ACCESSION_QUEUE_NOT_FOUND);
   }
 
-  private FilterData getFilterData(Boolean accessioned, String storageId, LocalDateTime createdDate, Integer offset, Integer limit) {
+  @ExceptionHandler({DateTimeParseException.class})
+  public ResponseEntity<String> handleDateTimeFormatExceptions() {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(WRONG_DATE_FORMAT_MESSAGE);
+  }
+
+  private FilterData getFilterData(Boolean accessioned, String storageId, String createdDate, Integer offset, Integer limit) {
     return FilterData.builder()
         .accessioned(accessioned)
         .storageId(storageId)

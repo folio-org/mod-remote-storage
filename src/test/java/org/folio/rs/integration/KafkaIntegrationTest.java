@@ -8,11 +8,13 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hibernate.validator.internal.util.Contracts.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import io.netty.util.internal.StringUtil;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -46,6 +48,7 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.SocketUtils;
@@ -55,6 +58,7 @@ import org.springframework.web.client.HttpClientErrorException;
 @TestPropertySource("classpath:application-test.properties")
 @ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 public class KafkaIntegrationTest extends ControllerTestBase {
 
   private static final String ACCESSION_URL = "http://localhost:%s/remote-storage/accession";
@@ -148,7 +152,7 @@ public class KafkaIntegrationTest extends ControllerTestBase {
 
   @Test
   void shouldFindAccessionQueuesByRemoteStorageId() throws JsonProcessingException {
-    createBaseAccessionQueueRecord();
+    accessionQueueRepository.save(createBaseAccessionQueueRecord());
     accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID), false));
 
     ResponseEntity<AccessionQueues> responseEntity = restTemplate.getForEntity(formattedAccessionUrl +"?storageId=" + REMOTE_STORAGE_ID, AccessionQueues.class);
@@ -159,7 +163,7 @@ public class KafkaIntegrationTest extends ControllerTestBase {
 
   @Test
   void shouldFindAccessionQueuesByAccessionedFlagTrue() throws JsonProcessingException {
-    createBaseAccessionQueueRecord();
+    accessionQueueRepository.save(createBaseAccessionQueueRecord());
     accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID), true));
 
     ResponseEntity<AccessionQueues> responseEntity = restTemplate.getForEntity(formattedAccessionUrl + "?accessioned=true", AccessionQueues.class);
@@ -170,7 +174,7 @@ public class KafkaIntegrationTest extends ControllerTestBase {
 
   @Test
   void shouldFindAccessionQueuesByAccessionedFlagFalse() throws JsonProcessingException {
-    createBaseAccessionQueueRecord();
+    accessionQueueRepository.save(createBaseAccessionQueueRecord());
     accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID), false));
 
     ResponseEntity<AccessionQueues> responseEntity = restTemplate.getForEntity(formattedAccessionUrl + "?accessioned=false", AccessionQueues.class);
@@ -180,28 +184,22 @@ public class KafkaIntegrationTest extends ControllerTestBase {
 
   @Test
   void shouldFindAccessionQueuesWithOffset() throws JsonProcessingException {
-    createBaseAccessionQueueRecord();
+    accessionQueueRepository.save(createBaseAccessionQueueRecord());
     accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID), false));
 
     ResponseEntity<AccessionQueues> responseEntity = restTemplate.getForEntity(formattedAccessionUrl + "?offset=1", AccessionQueues.class);
     assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(2));
-//    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(1));  //todo fix for search with only pagination values
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(1));
   }
 
   @Test
   void shouldFindAccessionQueuesWithLimit() throws JsonProcessingException {
-    createBaseAccessionQueueRecord();
+    accessionQueueRepository.save(createBaseAccessionQueueRecord());
     accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID), false));
 
     ResponseEntity<AccessionQueues> responseEntity = restTemplate.getForEntity(formattedAccessionUrl + "?limit=1", AccessionQueues.class);
     assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(2));
-//    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(1)); //todo fix for search with only pagination values
-  }
-
-  private void createBaseAccessionQueueRecord() {
-    AccessionQueueRecord accessionQueueRecord = new AccessionQueueRecord();
-    accessionQueueRecord.setId(stringToUUIDSafe(ACCESSION_RECORD_0_ID));
-    accessionQueueRepository.save(accessionQueueRecord);
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(1));
   }
 
   @Test
@@ -224,6 +222,40 @@ public class KafkaIntegrationTest extends ControllerTestBase {
         restTemplate.put(String.format(ACCESSION_URL, port) + "/" + UUID.randomUUID(),null));
 
     assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.NOT_FOUND));
+  }
+
+  @Test
+  void shouldFindAccessionQueuesByCreatedDate() throws JsonProcessingException {
+    LocalDateTime createdDate = LocalDateTime.now();
+    AccessionQueueRecord accessionQueueRecord = createBaseAccessionQueueRecord();
+    accessionQueueRecord.setCreatedDateTime(createdDate);
+    accessionQueueRepository.save(accessionQueueRecord);
+
+    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID), false));
+
+    ResponseEntity<AccessionQueues> responseEntity = restTemplate.getForEntity(formattedAccessionUrl + "?createdDate=" + createdDate, AccessionQueues.class);
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(1));
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(1));
+  }
+
+  @Test
+  void shouldThrowBadRequestExceptionWhenCreateDateHasWrongFormat() throws JsonProcessingException {
+    LocalDateTime createdDate = LocalDateTime.now();
+    AccessionQueueRecord accessionQueueRecord = createBaseAccessionQueueRecord();
+    accessionQueueRecord.setCreatedDateTime(createdDate);
+    accessionQueueRepository.save(accessionQueueRecord);
+    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID), false));
+
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
+        restTemplate.getForEntity(formattedAccessionUrl + "?createdDate=123" , AccessionQueues.class), StringUtil.EMPTY_STRING);
+
+    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.BAD_REQUEST));
+  }
+
+  private AccessionQueueRecord createBaseAccessionQueueRecord() {
+    AccessionQueueRecord accessionQueueRecord = new AccessionQueueRecord();
+    accessionQueueRecord.setId(stringToUUIDSafe(ACCESSION_RECORD_0_ID));
+    return accessionQueueRecord;
   }
 
   private AccessionQueueRecord buildAccessionQueueRecord(UUID id, Boolean accessioned) {

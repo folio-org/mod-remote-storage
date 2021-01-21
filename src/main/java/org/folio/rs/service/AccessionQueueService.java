@@ -24,8 +24,9 @@ import org.folio.rs.dto.EffectiveCallNumberComponents;
 import org.folio.rs.dto.Item;
 import org.folio.rs.mapper.AccessionQueueMapper;
 import org.folio.rs.repository.AccessionQueueRepository;
+import org.folio.spring.data.OffsetRequest;
 import org.springframework.data.domain.Example;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -95,7 +96,8 @@ public class AccessionQueueService {
 
   public AccessionQueues getAccessions(FilterData filterData) {
     AccessionQueueRecord queueRecord = getAccessionQueueSearchModel(filterData);
-    var queueRecords = accessionQueueRepository.findAll(Example.of(queueRecord), PageRequest.of(filterData.getOffset(), filterData.getLimit()));
+    var queueRecords = accessionQueueRepository.findAll(Example.of(queueRecord),
+        new OffsetRequest(filterData.getOffset(), filterData.getLimit(), Sort.unsorted()));
     return accessionQueueMapper.mapEntitiesToAccessionQueueCollection(queueRecords);
   }
 
@@ -108,7 +110,7 @@ public class AccessionQueueService {
       queueRecord.setRemoteStorageId(stringToUUIDSafe(filterData.getStorageId()));
     }
     if (Objects.nonNull(filterData.getCreateDate())) {
-      queueRecord.setCreatedDateTime(filterData.getCreateDate());
+      queueRecord.setCreatedDateTime(LocalDateTime.parse(filterData.getCreateDate()));
     }
     return queueRecord;
   }

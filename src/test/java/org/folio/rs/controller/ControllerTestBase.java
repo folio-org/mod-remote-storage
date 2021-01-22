@@ -28,18 +28,10 @@ public class ControllerTestBase {
   public static WireMockServer wireMockServer;
   public static String TEST_TENANT = "test_tenant";
 
-  @Autowired
-  private TenantController tenantController;
-
   @LocalServerPort
   protected int okapiPort;
 
   public final static int WIRE_MOCK_PORT = SocketUtils.findAvailableTcpPort();
-
-   @BeforeEach
-  void prepareDB() {
-   tenantController.postTenant(new TenantAttributes().moduleTo("remote-storage-module"));
-  }
 
 
   @BeforeAll

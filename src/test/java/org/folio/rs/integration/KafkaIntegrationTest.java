@@ -95,16 +95,19 @@ public class KafkaIntegrationTest extends ControllerTestBase {
 
   @BeforeEach
   void setUp() {
+
+
     FolioExecutionScopeExecutionContextManager.beginFolioExecutionContext(
       AsyncFolioExecutionContext.builder()
         .tenantId(TEST_TENANT).
         moduleMetadata(moduleMetadata)
         .okapiUrl(String.format("http://localhost:%s/", WIRE_MOCK_PORT)).build());
 
-   /* Map<String, Object> configs = new HashMap<>(KafkaTestUtils.producerProps(embeddedKafkaBroker));
+    tenantController.postTenant(new TenantAttributes().moduleTo("remote-storage-module"));
+
+    /* Map<String, Object> configs = new HashMap<>(KafkaTestUtils.producerProps(embeddedKafkaBroker));
     producer = new DefaultKafkaProducerFactory<>(configs, new StringSerializer(),
       new StringSerializer()).createProducer();*/
-
 
     var locationMapping = new LocationMapping();
     locationMapping.setFolioLocationId(NEW_EFFECTIVE_LOCATION_ID);

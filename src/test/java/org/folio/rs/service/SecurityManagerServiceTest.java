@@ -2,26 +2,18 @@ package org.folio.rs.service;
 
 import org.folio.rs.controller.ControllerTestBase;
 
-import org.folio.rs.repository.CredentialsRepository;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.folio.rs.repository.SystemUserParametersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-import java.util.UUID;
-
-import static java.util.stream.Collectors.toList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class SecurityManagerServiceTest extends ControllerTestBase {
 
   @Autowired
   SecurityManagerService securityManagerService;
   @Autowired
-  private CredentialsRepository credentialsRepository;
+  private SystemUserParametersRepository credentialsRepository;
  /* @Autowired
   FolioSystemUserHolder folioContext;
 

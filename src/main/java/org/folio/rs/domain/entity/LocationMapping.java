@@ -11,6 +11,7 @@ import java.util.UUID;
 
 @Data
 @Entity
+@Table(name = "location_mapping")
 public class LocationMapping {
   @Id
   private UUID folioLocationId;

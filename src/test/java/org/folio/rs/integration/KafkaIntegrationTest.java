@@ -4,10 +4,12 @@ import static org.awaitility.Awaitility.await;
 import static org.folio.rs.util.Utils.randomIdAsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -17,6 +19,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.awaitility.Duration;
 import org.folio.rs.controller.ControllerTestBase;
+import org.folio.rs.controller.TenantController;
 import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.rs.domain.dto.EffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.Item;
@@ -25,9 +28,11 @@ import org.folio.rs.domain.entity.AccessionQueueRecord;
 import org.folio.rs.domain.entity.DomainEvent;
 import org.folio.rs.domain.entity.DomainEventType;
 import org.folio.rs.repository.AccessionQueueRepository;
-import org.folio.rs.repository.CredentialsRepository;
+import org.folio.rs.service.AccessionQueueService;
 import org.folio.rs.service.LocationMappingsService;
+import org.folio.spring.FolioModuleMetadata;
 import org.folio.spring.scope.FolioExecutionScopeExecutionContextManager;
+import org.folio.tenant.domain.dto.TenantAttributes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -40,7 +45,7 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@EmbeddedKafka(topics = {"inventory.item"}, ports = {9099})
+/*@EmbeddedKafka(topics = {"inventory.item"}, ports = {9099})*/
 @TestPropertySource("classpath:application-test.properties")
 @ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -49,15 +54,22 @@ public class KafkaIntegrationTest extends ControllerTestBase {
 
   @Autowired
   private KafkaMessageListener messageListener;
-  @Autowired
-  private EmbeddedKafkaBroker embeddedKafkaBroker;
+  /*@Autowired
+  private EmbeddedKafkaBroker embeddedKafkaBroker;*/
   @Autowired
   private AccessionQueueRepository accessionQueueRepository;
   @Autowired
   private LocationMappingsService locationMappingsService;
 
   @Autowired
-  private CredentialsRepository credentialsRepository;
+  private TenantController tenantController;
+
+  @Autowired
+  private FolioModuleMetadata moduleMetadata;
+
+  @Autowired
+  private AccessionQueueService accessionQueueService;
+
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -74,17 +86,25 @@ public class KafkaIntegrationTest extends ControllerTestBase {
   public static final String INSTANCE_AUTHOR = "Pratchett, Terry";
   public static final String INSTANCE_TITLE = "Interesting Times";
 
+  private static final String TENANT_URL = "http://localhost:%s/_/tenant";
+
   private Producer<String, String> producer;
+
+
+
 
   @BeforeEach
   void setUp() {
     FolioExecutionScopeExecutionContextManager.beginFolioExecutionContext(
       AsyncFolioExecutionContext.builder()
+        .tenantId(TEST_TENANT).
+        moduleMetadata(moduleMetadata)
         .okapiUrl(String.format("http://localhost:%s/", WIRE_MOCK_PORT)).build());
 
-    Map<String, Object> configs = new HashMap<>(KafkaTestUtils.producerProps(embeddedKafkaBroker));
+   /* Map<String, Object> configs = new HashMap<>(KafkaTestUtils.producerProps(embeddedKafkaBroker));
     producer = new DefaultKafkaProducerFactory<>(configs, new StringSerializer(),
-      new StringSerializer()).createProducer();
+      new StringSerializer()).createProducer();*/
+
 
     var locationMapping = new LocationMapping();
     locationMapping.setFolioLocationId(NEW_EFFECTIVE_LOCATION_ID);
@@ -122,11 +142,16 @@ public class KafkaIntegrationTest extends ControllerTestBase {
       .of(originalItem, newItemWithoutRemoteConfig, DomainEventType.UPDATE,
         "test_tenant");
 
-    producer.send(
+    accessionQueueService.processAccessionQueueRecord(
+      Collections.singletonList(resourceBodyWithRemoteConfig));
+    accessionQueueService.processAccessionQueueRecord(
+      Collections.singletonList(resourceBodyWithoutRemoteConfig));
+
+  /*  producer.send(
       new ProducerRecord<>(TOPIC, OBJECT_MAPPER.writeValueAsString(resourceBodyWithRemoteConfig)));
     producer.send(new ProducerRecord<>(TOPIC,
       OBJECT_MAPPER.writeValueAsString(resourceBodyWithoutRemoteConfig)));
-    producer.flush();
+    producer.flush();*/
 
     await().atMost(Duration.FIVE_SECONDS)
       .until(() -> {

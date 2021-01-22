@@ -16,6 +16,7 @@ import java.util.Properties;
 @Configuration
 @EnableTransactionManagement
 @Profile("TestDB")
+//TODO: I believe we should get rid of this manual DB configuration for tests
 public class DbConfig {
 
   @Bean
@@ -49,9 +50,9 @@ public class DbConfig {
     Properties ps = new Properties();
     ps.put("hibernate.temp.use_jdbc_metadata_defaults", "false");
     ps.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL10Dialect");
-    ps.put("hibernate.hbm2ddl.auto", "create");
     ps.put("hibernate.connection.characterEncoding", "UTF-8");
-    ps.put("hibernate.connection.charSet", "UTF-8");
+    ps.put("hibernate.physical_naming_strategy", "org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy");
+    ps.put("hibernate.implicit_naming_strategy", "org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy");
 
     ps.put(AvailableSettings.FORMAT_SQL, "true");
     ps.put(AvailableSettings.SHOW_SQL, "true");

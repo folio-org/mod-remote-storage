@@ -2,6 +2,7 @@ package org.folio.rs.domain;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +15,8 @@ import org.folio.spring.FolioModuleMetadata;
 @AllArgsConstructor
 public class AsyncFolioExecutionContext implements FolioExecutionContext {
 
+  private final UUID userId;
+
   private final String userName;
 
   private final String password;
@@ -24,12 +27,17 @@ public class AsyncFolioExecutionContext implements FolioExecutionContext {
 
   private final String tenantId;
 
-  public AsyncFolioExecutionContext(SystemUserParameters parameters) {
-    this.userName = parameters.getId();
+  private final FolioModuleMetadata moduleMetadata;
+
+  public AsyncFolioExecutionContext(SystemUserParameters parameters,
+    FolioModuleMetadata moduleMetadata) {
+    this.userId = parameters.getId();
+    this.userName = parameters.getUsername();
     this.okapiUrl = parameters.getOkapiUrl();
     this.password = parameters.getPassword();
     this.token = parameters.getOkapiToken();
     this.tenantId = parameters.getTenantId();
+    this.moduleMetadata = moduleMetadata;
   }
 
   @Override
@@ -44,6 +52,6 @@ public class AsyncFolioExecutionContext implements FolioExecutionContext {
 
   @Override
   public FolioModuleMetadata getFolioModuleMetadata() {
-    throw new UnsupportedOperationException("getFolioModuleMetadata");
+    return moduleMetadata;
   }
 }

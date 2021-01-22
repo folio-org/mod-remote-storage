@@ -51,10 +51,9 @@ public class TenantController implements TenantApi {
 
   @Override
   public ResponseEntity<String> postTenant(@Valid TenantAttributes tenantAttributes) {
+    var tenantId = context.getTenantId();
+    
     if (folioSpringLiquibase != null) {
-      var tenantId = context.getTenantId();
-
-      securityManagerService.createBackgroundUser(context.getOkapiUrl(), tenantId);
 
       var schemaName = context.getFolioModuleMetadata()
         .getDBSchemaName(tenantId);
@@ -73,6 +72,10 @@ public class TenantController implements TenantApi {
           .body("Liquibase error: " + e.getMessage());
       }
     }
+
+
+    securityManagerService.createBackgroundUser(context.getOkapiUrl(), tenantId);
+
     return ResponseEntity.ok()
       .body("true");
   }

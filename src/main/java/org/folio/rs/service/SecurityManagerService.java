@@ -22,10 +22,8 @@ import org.folio.rs.domain.dto.Permissions;
 import org.folio.rs.domain.dto.ResultList;
 import org.folio.rs.domain.dto.User;
 import org.folio.rs.domain.entity.SystemUserParameters;
-import org.folio.rs.repository.CredentialsRepository;
+import org.folio.rs.repository.SystemUserParametersRepository;
 import org.folio.spring.integration.XOkapiHeaders;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -41,54 +39,57 @@ public class SecurityManagerService {
   private final PermissionsClient permissionsClient;
   private final UsersClient usersClient;
   private final AuthnClient authnClient;
-  private final CredentialsRepository credentialsRepository;
+  private final SystemUserParametersRepository systemUserParametersRepository;
 
   public static final String BACKGROUND_USERNAME = "remote-storage-background-user";
   public static final String BACKGROUND_USER_PWD = "remote-storage-background-password";
 
-  public String loginSystemUser(String username) {
-    Optional<SystemUserParameters> credentials = credentialsRepository.findById(username);
-    if (credentials.isEmpty()) {
-      throw new IllegalStateException("No credentials found to assign to user: " + username);
-    } else {
-      ResponseEntity<String> e = authnClient.getApiKey(credentials.get());
+  public String loginSystemUser(SystemUserParameters params) {
+      ResponseEntity<String> e = authnClient.getApiKey(params);
       List<String> headers = e.getHeaders().get(XOkapiHeaders.TOKEN);
       if (CollectionUtils.isEmpty(headers)) {
         return EMPTY;
       } else {
         return headers.get(0);
       }
-    }
   }
 
 
   public void createBackgroundUser(String okapiUrl, String tenantId) {
     var user = getExistingUser(BACKGROUND_USERNAME);
 
+    var params = systemUserParametersRepository.getFirstByUsername(BACKGROUND_USERNAME)
+      .orElse(SystemUserParameters.builder()
+        .id(UUID.randomUUID())
+        .username(BACKGROUND_USERNAME)
+        .password(BACKGROUND_USER_PWD).okapiUrl(okapiUrl)
+        .tenantId(tenantId).build());
+
+    var backgroundUserApiKey = loginSystemUser(params);
+
+    params.setOkapiToken(backgroundUserApiKey);
+
     if (user.isPresent()) {
       updateUser(user.get());
       addPermissions(user.get().getId());
     } else {
       var userId = createUser(BACKGROUND_USERNAME);
-      saveCredentials(BACKGROUND_USERNAME);
+      saveCredentials(params);
       assignPermissions(userId);
     }
 
-    var backgroundUserApiKey = loginSystemUser(BACKGROUND_USERNAME);
-    final SystemUserParameters params = SystemUserParameters.builder().id(BACKGROUND_USERNAME)
-      .password(BACKGROUND_USER_PWD).okapiToken(backgroundUserApiKey).okapiUrl(okapiUrl)
-      .tenantId(tenantId).build();
     saveUser(params);
+
   }
 
- // @CachePut("systemUser") // TODO: fix
+  // @CachePut("systemUser") // TODO: fix
   public void saveUser(SystemUserParameters params) {
-    credentialsRepository.save(params);
+    systemUserParametersRepository.save(params);
   }
 
   //@Cacheable("systemUser") TODO: fix
   public SystemUserParameters getSystemUser(String tenantId) {
-    return credentialsRepository.findById(BACKGROUND_USERNAME).stream()
+    return systemUserParametersRepository.getFirstByUsername(BACKGROUND_USERNAME).stream()
       .findAny().orElseThrow(() -> {
         log.error("System User haven't been created");
         return new IllegalStateException("System User haven't been created");
@@ -117,15 +118,15 @@ public class SecurityManagerService {
     log.info("Update the user [{}]", existingUser.getId());
   }
 
-  private void saveCredentials(String username) {
-    Optional<SystemUserParameters> credentials = credentialsRepository.findById(username);
+  private void saveCredentials(SystemUserParameters systemUserParameters) {
+    // Optional<SystemUserParameters> credentials = systemUserParametersRepository.getFirstByUsername(username);
 
-    if (credentials.isEmpty()) {
+   /* if (credentials.isEmpty()) {
       throw new IllegalStateException("No credentials found to assign to user: " + username);
-    }
+    }*/
 
-    authnClient.saveCredentials(credentials.get());
-    log.info("Saved credentials for user: [{}]", username);
+    authnClient.saveCredentials(systemUserParameters);
+    log.info("Saved credentials for user: [{}]", systemUserParameters);
   }
 
   private boolean assignPermissions(String userId) {

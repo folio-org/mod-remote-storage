@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-@Table(name = "REMOTE_STORAGE_CONFIGURATIONS")
+@Table(name = "remote_storage_configuration")
 @Entity
 public class Configuration {
 

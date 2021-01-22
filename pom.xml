@@ -146,7 +146,7 @@
 
     <dependency>
       <groupId>io.zonky.test</groupId>
-      <artifactId>embedded-database-spring-test</artifactId>
+      <artifactId>AutoConfigureEmbeddedDatabase</artifactId>
       <version>1.6.1</version>
       <scope>test</scope>
     </dependency>

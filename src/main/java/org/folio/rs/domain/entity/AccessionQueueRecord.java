@@ -14,7 +14,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Table(name = "ACCESSION_QUEUE")
+@Table(name = "accession_queue")
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,12 +32,9 @@ public class AccessionQueueRecord {
 
   private UUID remoteStorageId;
 
-  @Column(name = "call_number")
   private String callNumber;
 
-  @Column(name = "instance_title")
   private String instanceTitle;
 
-  @Column(name = "instance_author")
   private String instanceAuthor;
 }

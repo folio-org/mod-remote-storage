@@ -8,7 +8,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hibernate.validator.internal.util.Contracts.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,8 +47,8 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.SocketUtils;
 import org.springframework.web.client.HttpClientErrorException;
@@ -58,7 +57,7 @@ import org.springframework.web.client.HttpClientErrorException;
 @TestPropertySource("classpath:application-test.properties")
 @ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
+@Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:ClearTestData.sql")
 public class KafkaIntegrationTest extends ControllerTestBase {
 
   private static final String ACCESSION_URL = "http://localhost:%s/remote-storage/accession";
@@ -217,9 +216,10 @@ public class KafkaIntegrationTest extends ControllerTestBase {
   @Test
   void shouldThrowNotFoundExceptionWhenIdDoesNotExist() throws JsonProcessingException {
     accessionQueueRepository.save(buildAccessionQueueRecord(UUID.randomUUID(),false));
+    String url = String.format(ACCESSION_URL, port) + "/" + UUID.randomUUID();
 
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
-        restTemplate.put(String.format(ACCESSION_URL, port) + "/" + UUID.randomUUID(),null));
+        restTemplate.put(url,null));
 
     assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.NOT_FOUND));
   }

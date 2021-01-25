@@ -39,7 +39,8 @@ public class SecurityManagerServiceTest extends ControllerTestBase {
 
   @Test
   void testCreateFailedLoginUserUser() {
-    Assertions.assertThrows(FeignException.class, () -> securityManagerService.prepareSystemUser(NON_EXISTED_USER, "failed_password", getOkapiUrl(), TEST_TENANT));
+    String okapiUrl = getOkapiUrl();
+    Assertions.assertThrows(FeignException.class, () -> securityManagerService.prepareSystemUser(NON_EXISTED_USER, "failed_password", okapiUrl, TEST_TENANT));
    }
 
   @Test

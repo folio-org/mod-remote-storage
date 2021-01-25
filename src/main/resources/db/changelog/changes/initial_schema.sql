@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS remote_storage_configurations
         CONSTRAINT unq_RemoteStorageConfigurations_Name UNIQUE NOT NULL,
     provider_name       VARCHAR(256),
     url                 VARCHAR(256),
+    status_url          VARCHAR(256),
     accession_delay     INT,
     accession_time_unit VARCHAR(50),
     created_date        TIMESTAMP default now(),
@@ -15,7 +16,7 @@ CREATE TABLE IF NOT EXISTS remote_storage_configurations
     updated_by_username VARCHAR(100)
 );
 
-CREATE TABLE IF NOT EXISTS location_mapping
+CREATE TABLE IF NOT EXISTS location_mappings
 (
     folio_location_id UUID PRIMARY KEY,
     configuration_id  UUID NOT NULL

@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
-import java.util.UUID;
+
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.dto.StorageConfigurations;
 import org.folio.rs.domain.dto.TimeUnits;
@@ -174,9 +174,9 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
   private StorageConfiguration buildConfiguration(String id) {
     return new StorageConfiguration()
       .id(id)
-      .name("RS1")
+      .name("Remote Storage")
       .providerName("Dematic")
-      .url("https://rs1.dematic.com")
+      .url("https://rs.dematic.com")
       .accessionDelay(2)
       .accessionTimeUnit(TimeUnits.MINUTES);
   }

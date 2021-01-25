@@ -17,9 +17,8 @@ import org.folio.rs.domain.dto.Instance;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
-import org.folio.rs.domain.entity.DomainEvent;
+import org.folio.rs.domain.dto.DomainEvent;
 import org.folio.rs.repository.AccessionQueueRepository;
-import org.folio.spring.DefaultFolioExecutionContext;
 import org.folio.spring.FolioModuleMetadata;
 import org.folio.spring.scope.FolioExecutionScopeExecutionContextManager;
 import org.springframework.stereotype.Service;
@@ -41,7 +40,7 @@ public class AccessionQueueService {
       if (isEffectiveLocationChanged(event)) {
         var item = event.getNewEntity();
         FolioExecutionScopeExecutionContextManager.beginFolioExecutionContext(
-      new AsyncFolioExecutionContext(securityManagerService.getSystemUser(event.getTenant()), moduleMetadata));
+      new AsyncFolioExecutionContext(securityManagerService.getSystemUserParameters(event.getTenant()), moduleMetadata));
         var locationMapping = locationMappingsService
           .getMappingByFolioLocationId(item.getEffectiveLocationId());
         if (Objects.nonNull(locationMapping)) {

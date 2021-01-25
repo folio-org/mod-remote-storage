@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import liquibase.exception.LiquibaseException;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
@@ -48,11 +49,14 @@ public class TenantController implements TenantApi {
   private final List<String> configurationSamples = Collections.singletonList("dematic.json");
   private final List<String> mappingSamples = Collections.singletonList("annex_to_dematic.json");
 
+  public static final String SYSTEM_USER = "system-user";
 
+
+  @SneakyThrows
   @Override
   public ResponseEntity<String> postTenant(@Valid TenantAttributes tenantAttributes) {
     var tenantId = context.getTenantId();
-    
+
     if (folioSpringLiquibase != null) {
 
       var schemaName = context.getFolioModuleMetadata()
@@ -73,8 +77,7 @@ public class TenantController implements TenantApi {
       }
     }
 
-
-    securityManagerService.createBackgroundUser(context.getOkapiUrl(), tenantId);
+    securityManagerService.prepareSystemUser(SYSTEM_USER, SYSTEM_USER, context.getOkapiUrl(), tenantId);
 
     return ResponseEntity.ok()
       .body("true");

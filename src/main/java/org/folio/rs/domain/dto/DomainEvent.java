@@ -1,4 +1,4 @@
-package org.folio.rs.domain.entity;
+package org.folio.rs.domain.dto;
 
 
 
@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.folio.rs.domain.dto.Item;
 
 @Data
 @NoArgsConstructor

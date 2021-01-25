@@ -1,6 +1,5 @@
 package org.folio.rs.service;
 
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -12,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.rs.client.AuthnClient;
@@ -24,6 +24,8 @@ import org.folio.rs.domain.dto.User;
 import org.folio.rs.domain.entity.SystemUserParameters;
 import org.folio.rs.repository.SystemUserParametersRepository;
 import org.folio.spring.integration.XOkapiHeaders;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -41,68 +43,67 @@ public class SecurityManagerService {
   private final AuthnClient authnClient;
   private final SystemUserParametersRepository systemUserParametersRepository;
 
-  public static final String BACKGROUND_USERNAME = "remote-storage-background-user";
-  public static final String BACKGROUND_USER_PWD = "remote-storage-background-password";
+  public void prepareSystemUser(String username, String password, String okapiUrl, String tenantId) {
 
-  public String loginSystemUser(SystemUserParameters params) {
-      ResponseEntity<String> e = authnClient.getApiKey(params);
-      List<String> headers = e.getHeaders().get(XOkapiHeaders.TOKEN);
-      if (CollectionUtils.isEmpty(headers)) {
-        return EMPTY;
-      } else {
-        return headers.get(0);
-      }
-  }
+    var systemUserParameters = systemUserParametersRepository.getFirstByTenantId(username)
+      .orElse(buildDefaultSystemUserParameters(username, password, okapiUrl, tenantId));
 
+    var folioUser = getFolioUser(username);
 
-  public void createBackgroundUser(String okapiUrl, String tenantId) {
-    var user = getExistingUser(BACKGROUND_USERNAME);
-
-    var params = systemUserParametersRepository.getFirstByUsername(BACKGROUND_USERNAME)
-      .orElse(SystemUserParameters.builder()
-        .id(UUID.randomUUID())
-        .username(BACKGROUND_USERNAME)
-        .password(BACKGROUND_USER_PWD).okapiUrl(okapiUrl)
-        .tenantId(tenantId).build());
-
-    var backgroundUserApiKey = loginSystemUser(params);
-
-    params.setOkapiToken(backgroundUserApiKey);
-
-    if (user.isPresent()) {
-      updateUser(user.get());
-      addPermissions(user.get().getId());
+    if (folioUser.isPresent()) {
+      updateUser(folioUser.get());
+      addPermissions(folioUser.get().getId());
     } else {
-      var userId = createUser(BACKGROUND_USERNAME);
-      saveCredentials(params);
+      var userId = createFolioUser(username);
+      saveCredentials(systemUserParameters);
       assignPermissions(userId);
     }
 
-    saveUser(params);
-
+    var backgroundUserApiKey = loginSystemUser(systemUserParameters);
+    systemUserParameters.setOkapiToken(backgroundUserApiKey);
+    saveSystemUserParameters(systemUserParameters);
   }
 
-  // @CachePut("systemUser") // TODO: fix
-  public void saveUser(SystemUserParameters params) {
+  private String loginSystemUser(SystemUserParameters params) {
+    ResponseEntity<String> response = authnClient.getApiKey(params);
+    List<String> headers = response.getHeaders().get(XOkapiHeaders.TOKEN);
+    if (CollectionUtils.isEmpty(headers)) {
+      throw new IllegalStateException(String.format("User [%s] cannot log in", params.getUsername()));
+    } else {
+      return headers.get(0);
+    }
+  }
+
+  private SystemUserParameters buildDefaultSystemUserParameters(String username, String password, String okapiUrl, String tenantId) {
+    return SystemUserParameters.builder()
+      .id(UUID.randomUUID())
+      .username(username)
+      .password(password)
+      .okapiUrl(okapiUrl)
+      .tenantId(tenantId).build();
+  }
+
+  @CachePut("systemUserParameters")
+  private void saveSystemUserParameters(SystemUserParameters params) {
     systemUserParametersRepository.save(params);
   }
 
-  //@Cacheable("systemUser") TODO: fix
-  public SystemUserParameters getSystemUser(String tenantId) {
-    return systemUserParametersRepository.getFirstByUsername(BACKGROUND_USERNAME).stream()
+  @Cacheable("systemUserParameters")
+  public SystemUserParameters getSystemUserParameters(String tenantId) {
+    return systemUserParametersRepository.getFirstByTenantId(tenantId).stream()
       .findAny().orElseThrow(() -> {
-        log.error("System User haven't been created");
-        return new IllegalStateException("System User haven't been created");
+        log.error("System User cannot be found for tenant [{}]", tenantId);
+        return new IllegalStateException(String.format("System User cannot be found for tenant [%s]", tenantId));
       });
   }
 
-  private Optional<User> getExistingUser(String username) {
+  private Optional<User> getFolioUser(String username) {
     String query = "username==" + username;
     ResultList<User> results = usersClient.query(query);
     return results.getResult().stream().findFirst();
   }
 
-  private String createUser(String username) {
+  private String createFolioUser(String username) {
     final User user = createUserObject(username);
     final String id = user.getId();
     usersClient.saveUser(user);
@@ -119,13 +120,9 @@ public class SecurityManagerService {
   }
 
   private void saveCredentials(SystemUserParameters systemUserParameters) {
-    // Optional<SystemUserParameters> credentials = systemUserParametersRepository.getFirstByUsername(username);
-
-   /* if (credentials.isEmpty()) {
-      throw new IllegalStateException("No credentials found to assign to user: " + username);
-    }*/
 
     authnClient.saveCredentials(systemUserParameters);
+
     log.info("Saved credentials for user: [{}]", systemUserParameters);
   }
 

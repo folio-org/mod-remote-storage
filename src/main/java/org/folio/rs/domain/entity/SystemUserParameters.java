@@ -3,7 +3,8 @@ package org.folio.rs.domain.entity;
 import java.util.UUID;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,15 +18,19 @@ import lombok.NoArgsConstructor;
 public class SystemUserParameters {
 
   @Id
+  @JsonIgnore
   private UUID id;
 
   private String username;
 
   private String password;
 
+  @JsonIgnore
   private String okapiToken;
 
+  @JsonIgnore
   private String okapiUrl;
 
+  @JsonIgnore
   private String tenantId;
 }

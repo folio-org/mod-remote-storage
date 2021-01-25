@@ -47,7 +47,7 @@ public class LocationMappingsControllerTest extends ControllerTestBase {
     ResponseEntity<LocationMappings> responseEntity = restTemplate
       .getForEntity(mappingsUrl, LocationMappings.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-    assertThat(responseEntity.getBody().getTotalRecords(), is(1));
+    assertThat(responseEntity.getBody().getTotalRecords(), is(2));
   }
 
   @Test

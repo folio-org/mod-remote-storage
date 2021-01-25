@@ -1,11 +1,9 @@
-
-
 {
   "mappings": [
     {
       "request": {
         "method": "GET",
-        "url": "/users?query=username==remote-storage-background-user"
+        "url": "/users?query=username==system-user"
       },
       "response": {
         "status": 200,

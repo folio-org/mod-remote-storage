@@ -34,6 +34,7 @@
     <wiremock.version>2.27.2</wiremock.version>
     <awaitility.version>3.0.0</awaitility.version>
     <spring-kafka-test.version>2.6.4</spring-kafka-test.version>
+    <embedded.db.version>1.6.2</embedded.db.version>
     <sonar.exclusions>src/main/java/org/folio/rs/domain/**, src/main/java/org/folio/rs/client/AuthClient.java, src/main/java/org/folio/rs/config/properties/** </sonar.exclusions>
     <remote-storage.yaml.file>${project.basedir}/src/main/resources/swagger.api/remote-storage.yaml</remote-storage.yaml.file>
   </properties>
@@ -146,15 +147,8 @@
 
     <dependency>
       <groupId>io.zonky.test</groupId>
-      <artifactId>AutoConfigureEmbeddedDatabase</artifactId>
-      <version>1.6.1</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework.kafka</groupId>
-      <artifactId>spring-kafka-test</artifactId>
-      <version>${spring-kafka-test.version}</version>
+      <artifactId>embedded-database-spring-test</artifactId>
+      <version>${embedded.db.version}</version>
       <scope>test</scope>
     </dependency>
 
@@ -162,13 +156,6 @@
       <groupId>com.github.tomakehurst</groupId>
       <artifactId>wiremock-standalone</artifactId>
       <version>${wiremock.version}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.awaitility</groupId>
-      <artifactId>awaitility</artifactId>
-      <version>${awaitility.version}</version>
       <scope>test</scope>
     </dependency>
 

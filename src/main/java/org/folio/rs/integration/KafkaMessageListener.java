@@ -2,7 +2,7 @@ package org.folio.rs.integration;
 
 import java.util.List;
 
-import org.folio.rs.domain.entity.DomainEvent;
+import org.folio.rs.domain.dto.DomainEvent;
 import org.folio.rs.service.AccessionQueueService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;

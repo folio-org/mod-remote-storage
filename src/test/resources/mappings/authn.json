@@ -16,6 +16,21 @@
     {
       "request": {
         "method": "POST",
+        "url": "/authn/login",
+        "bodyPatterns" : [ {
+          "equalToJson" : "{  \n   \"username\":\"non_existed_user\",\n   \"password\":\"failed_password\"\n}"
+        } ]
+      },
+      "response": {
+        "status": 422,
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
         "url": "/perms/users/c78aa9ec-b7d3-4d53-9e43-20296f39b496/permissions?indexField=userId"
       },
       "response": {

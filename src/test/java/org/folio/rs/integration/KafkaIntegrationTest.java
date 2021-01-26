@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 import lombok.extern.log4j.Log4j2;
-import org.folio.rs.controller.ControllerTestBase;
+import org.folio.rs.TestBase;
 import org.folio.rs.domain.dto.EffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.LocationMapping;
@@ -30,7 +30,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Log4j2
-public class KafkaIntegrationTest extends ControllerTestBase {
+public class KafkaIntegrationTest extends TestBase {
 
   @Autowired
   private KafkaMessageListener messageListener;
@@ -38,7 +38,6 @@ public class KafkaIntegrationTest extends ControllerTestBase {
   private AccessionQueueRepository accessionQueueRepository;
   @Autowired
   private LocationMappingsService locationMappingsService;
-
   @Autowired
   private AccessionQueueService accessionQueueService;
 

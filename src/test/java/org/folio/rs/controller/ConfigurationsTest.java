@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
+import org.folio.rs.TestBase;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.dto.StorageConfigurations;
 import org.folio.rs.domain.dto.TimeUnits;
@@ -27,7 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 
-public class ConfigurationsControllerTest extends ControllerTestBase {
+public class ConfigurationsTest extends TestBase {
 
   private static final String CONFIGURATIONS_URL = "http://localhost:%s/remote-storage/configurations/";
   private static final String PROVIDERS_URL = "http://localhost:%s/remote-storage/providers/";

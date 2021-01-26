@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.folio.rs.TestBase;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.LocationMappings;
 import org.folio.rs.domain.dto.StorageConfiguration;
@@ -18,7 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 
-public class LocationMappingsControllerTest extends ControllerTestBase {
+public class LocationMappingsTest extends TestBase {
 
   private static final String MAPPINGS_URL = "http://localhost:%s/remote-storage/mappings/";
 

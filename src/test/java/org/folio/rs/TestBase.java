@@ -1,8 +1,9 @@
-package org.folio.rs.controller;
+package org.folio.rs;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import lombok.extern.log4j.Log4j2;
+import org.folio.rs.controller.TenantController;
 import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.spring.FolioModuleMetadata;
 import org.folio.spring.integration.XOkapiHeaders;
@@ -32,7 +33,7 @@ import static org.folio.rs.controller.TenantController.PARAMETER_LOAD_SAMPLE;
 @EnableTransactionManagement
 @AutoConfigureEmbeddedDatabase(beanName = "testDataSource")
 @Log4j2
-public class ControllerTestBase {
+public class TestBase {
   protected static HttpHeaders headers;
   protected static RestTemplate restTemplate;
   public static WireMockServer wireMockServer;

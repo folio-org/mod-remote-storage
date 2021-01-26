@@ -1,7 +1,7 @@
 package org.folio.rs.service;
 
 import feign.FeignException;
-import org.folio.rs.controller.ControllerTestBase;
+import org.folio.rs.TestBase;
 
 import org.folio.rs.domain.entity.SystemUserParameters;
 import org.folio.rs.repository.SystemUserParametersRepository;
@@ -16,7 +16,7 @@ import java.util.UUID;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class SecurityManagerServiceTest extends ControllerTestBase {
+public class SecurityManagerServiceTest extends TestBase {
 
   private static final String PASSWORD = "PWD";
 

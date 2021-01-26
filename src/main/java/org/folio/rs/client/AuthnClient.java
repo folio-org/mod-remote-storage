@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface AuthnClient {
 
   @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
-  ResponseEntity<String> getApiKey(@RequestBody SystemUserParameters credential);
+  ResponseEntity<String> getApiKey(@RequestBody SystemUserParameters systemUserParameters);
 
   @PostMapping(value = "/credentials", consumes = MediaType.APPLICATION_JSON_VALUE)
-  void saveCredentials(@RequestBody SystemUserParameters credential);
+  void saveCredentials(@RequestBody SystemUserParameters systemUserParameters);
 
 }

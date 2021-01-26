@@ -1,4 +1,4 @@
-package org.folio.rs.integration;
+package org.folio.rs.service;
 
 import static org.folio.rs.util.Utils.randomIdAsString;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -17,23 +17,17 @@ import org.folio.rs.domain.entity.AccessionQueueRecord;
 import org.folio.rs.domain.dto.DomainEvent;
 import org.folio.rs.domain.dto.DomainEventType;
 import org.folio.rs.repository.AccessionQueueRepository;
-import org.folio.rs.service.AccessionQueueService;
-import org.folio.rs.service.LocationMappingsService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@TestPropertySource("classpath:application-test.properties")
 @ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Log4j2
-public class KafkaIntegrationTest extends TestBase {
+public class AccessionQueueServiceTest extends TestBase {
 
-  @Autowired
-  private KafkaMessageListener messageListener;
   @Autowired
   private AccessionQueueRepository accessionQueueRepository;
   @Autowired

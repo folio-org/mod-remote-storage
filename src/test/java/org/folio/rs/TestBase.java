@@ -28,7 +28,7 @@ import org.springframework.web.client.RestTemplate;
 import static org.folio.rs.controller.TenantController.PARAMETER_LOAD_SAMPLE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestPropertySource("classpath:application-test.properties")
+@TestPropertySource("classpath:application-test.yml")
 @ActiveProfiles("TestDB")
 @EnableTransactionManagement
 @AutoConfigureEmbeddedDatabase(beanName = "testDataSource")

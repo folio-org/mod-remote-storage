@@ -1,7 +1,8 @@
 package org.folio.rs.mapper;
 
+import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.LocationMappings;
-import org.folio.rs.domain.entity.LocationMapping;
+import org.folio.rs.domain.entity.MappingRecord;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -15,19 +16,19 @@ public interface LocationMappingsMapper {
     @Mapping(target = "folioLocationId", expression = "java(org.folio.rs.util.MapperUtils.uuidToStringSafe(mappingRecord.getFolioLocationId()))"),
     @Mapping(target = "configurationId", expression = "java(org.folio.rs.util.MapperUtils.uuidToStringSafe(mappingRecord.getConfigurationId()))")
   })
-  org.folio.rs.domain.dto.LocationMapping mapEntityToDto(LocationMapping mappingRecord);
+  LocationMapping mapEntityToDto(MappingRecord mappingRecord);
 
   @Mappings({
     @Mapping(target = "folioLocationId", expression = "java(org.folio.rs.util.MapperUtils.stringToUUIDSafe(locationMapping.getFolioLocationId()))"),
     @Mapping(target = "configurationId", expression = "java(org.folio.rs.util.MapperUtils.stringToUUIDSafe(locationMapping.getConfigurationId()))")
   })
-  LocationMapping mapDtoToEntity(org.folio.rs.domain.dto.LocationMapping locationMapping);
+  MappingRecord mapDtoToEntity(LocationMapping locationMapping);
 
   @Mappings({})
-  List<org.folio.rs.domain.dto.LocationMapping> mapEntitiesToDtos(Iterable<LocationMapping> mappingRecords);
+  List<LocationMapping> mapEntitiesToDtos(Iterable<MappingRecord> mappingRecords);
 
-  default LocationMappings mapEntitiesToMappingCollection(Iterable<LocationMapping> mappingRecords) {
-    List<org.folio.rs.domain.dto.LocationMapping> mappings = mapEntitiesToDtos(mappingRecords);
+  default LocationMappings mapEntitiesToMappingCollection(Iterable<MappingRecord> mappingRecords) {
+    List<LocationMapping> mappings = mapEntitiesToDtos(mappingRecords);
     return new LocationMappings().mappings(mappings).totalRecords(mappings.size());
   }
 }

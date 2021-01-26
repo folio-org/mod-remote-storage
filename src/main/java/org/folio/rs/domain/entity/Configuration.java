@@ -7,11 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import java.util.UUID;
 
 @Data
-@Table(name = "remote_storage_configurations")
+@Table(name = "REMOTE_STORAGE_CONFIGURATIONS")
 @Entity
 public class Configuration {
 
@@ -28,9 +28,6 @@ public class Configuration {
   @Column(name = "url")
   private String url;
 
-  @Column(name = "status_url")
-  private String statusUrl;
-
   @Column(name = "accession_delay")
   private Integer accessionDelay;
 
@@ -38,10 +35,10 @@ public class Configuration {
   private String accessionTimeUnit;
 
   @Column(name = "created_date")
-  private LocalDateTime createdDate;
+  private Timestamp createdDate;
 
   @Column(name = "updated_date")
-  private LocalDateTime updatedDate;
+  private Timestamp updatedDate;
 
   @Column(name = "created_by_user_id")
   private UUID createdByUserId;

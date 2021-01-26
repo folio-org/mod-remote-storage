@@ -1,13 +1,11 @@
 package org.folio.rs.controller;
 
-import static org.folio.rs.util.Utils.randomIdAsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.folio.rs.TestBase;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.LocationMappings;
 import org.folio.rs.domain.dto.StorageConfiguration;
@@ -19,7 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 
-public class LocationMappingsTest extends TestBase {
+import java.util.UUID;
+
+public class LocationMappingsControllerTest extends ControllerTestBase {
 
   private static final String MAPPINGS_URL = "http://localhost:%s/remote-storage/mappings/";
 
@@ -27,7 +27,7 @@ public class LocationMappingsTest extends TestBase {
 
   @BeforeEach
   void prepareUrl() {
-    mappingsUrl = String.format(MAPPINGS_URL, okapiPort);
+    mappingsUrl = String.format(MAPPINGS_URL, port);
   }
 
   @Test
@@ -35,8 +35,8 @@ public class LocationMappingsTest extends TestBase {
     ResponseEntity<LocationMapping> responseEntity = restTemplate
       .postForEntity(mappingsUrl,
         new LocationMapping()
-          .folioLocationId(randomIdAsString())
-          .configurationId(randomIdAsString()),
+          .folioLocationId(UUID.randomUUID().toString())
+          .configurationId(UUID.randomUUID().toString()),
         LocationMapping.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.CREATED));
     assertThat(responseEntity.getBody().getFolioLocationId(), notNullValue());
@@ -48,7 +48,7 @@ public class LocationMappingsTest extends TestBase {
     ResponseEntity<LocationMappings> responseEntity = restTemplate
       .getForEntity(mappingsUrl, LocationMappings.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-    assertThat(responseEntity.getBody().getTotalRecords(), is(2));
+    assertThat(responseEntity.getBody().getTotalRecords(), is(1));
   }
 
   @Test
@@ -65,8 +65,8 @@ public class LocationMappingsTest extends TestBase {
     ResponseEntity<LocationMapping> responseEntity = restTemplate
       .postForEntity(mappingsUrl,
         new LocationMapping()
-          .folioLocationId(randomIdAsString())
-          .configurationId(randomIdAsString()),
+          .folioLocationId(UUID.randomUUID().toString())
+          .configurationId(UUID.randomUUID().toString()),
         LocationMapping.class);
     assertThat(restTemplate.exchange(mappingsUrl + responseEntity.getBody().getFolioLocationId(), HttpMethod.DELETE,
       new HttpEntity<>(headers), String.class).getStatusCode(), is(HttpStatus.NO_CONTENT));
@@ -84,7 +84,7 @@ public class LocationMappingsTest extends TestBase {
 
   @Test
   void shouldReturnNotFoundForRandomUuid() {
-    String urlWithRandomUuid = mappingsUrl + randomIdAsString();
+    String urlWithRandomUuid = mappingsUrl + UUID.randomUUID().toString();
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
       .delete(urlWithRandomUuid));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));

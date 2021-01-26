@@ -16,7 +16,7 @@ stages:
   steps:
   - applyAppConfig:
       catalogTemplate: p-ngvqv:firebird-helmcharts-mod-remote-storage
-      version: 0.1.26
+      version: 0.1.30
       answers:
         image.repository: docker.dev.folio.org/mod-remote-storage
         image.tag: firebird-latest

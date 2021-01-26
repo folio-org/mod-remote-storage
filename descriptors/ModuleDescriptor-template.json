@@ -1,7 +1,12 @@
 {
   "id": "@artifactId@-@version@",
   "name": "Remote storage API module",
-  "requires": [],
+  "requires": [
+    {
+      "id": "inventory",
+      "version": "10.7"
+    }
+  ],
   "provides": [
     {
       "id": "remote-storage-configurations",
@@ -82,7 +87,14 @@
       "handlers": [
         {
           "methods": ["POST"],
-          "pathPattern": "/_/tenant"
+          "pathPattern": "/_/tenant",
+          "modulePermissions": [
+            "users.collection.get",
+            "users.item.post",
+            "users.item.put",
+            "login.item.post",
+            "perms.users.item.post"
+          ]
         }, {
           "methods": ["DELETE"],
           "pathPattern": "/_/tenant"

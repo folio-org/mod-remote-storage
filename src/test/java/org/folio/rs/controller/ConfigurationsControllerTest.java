@@ -2,7 +2,6 @@ package org.folio.rs.controller;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
-import static org.folio.rs.util.Utils.randomIdAsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -11,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
-
+import java.util.UUID;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.dto.StorageConfigurations;
 import org.folio.rs.domain.dto.TimeUnits;
@@ -40,7 +39,7 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
 
   @BeforeEach
   void prepareUrl() {
-    configurationsUrl = String.format(CONFIGURATIONS_URL, okapiPort);
+    configurationsUrl = String.format(CONFIGURATIONS_URL, port);
   }
 
   @AfterEach
@@ -52,7 +51,7 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
   void canPostTenantWithParameters() {
     String tenants = "{\"module_to\":\"moduleId\", \"parameters\": [ { \"key\":\"loadSample\", \"value\": true } ] }";
     ResponseEntity<String> response = restTemplate
-      .exchange(String.format(TENANT_URL, okapiPort), HttpMethod.POST, new HttpEntity<>(tenants, headers), String.class);
+      .exchange(String.format(TENANT_URL, port), HttpMethod.POST, new HttpEntity<>(tenants, headers), String.class);
     assertThat(response.getStatusCode(), is(HttpStatus.OK));
   }
 
@@ -60,7 +59,7 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
   void canPostTenantWithoutParameters() {
     String tenants = "{\"module_to\":\"moduleId\"}";
     ResponseEntity<String> response = restTemplate
-      .exchange(String.format(TENANT_URL, okapiPort), HttpMethod.POST, new HttpEntity<>(tenants, headers), String.class);
+      .exchange(String.format(TENANT_URL, port), HttpMethod.POST, new HttpEntity<>(tenants, headers), String.class);
     assertThat(response.getStatusCode(), is(HttpStatus.OK));
   }
 
@@ -140,7 +139,7 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
 
   @Test
   void shouldReturnNotFoundForWrongUuid() {
-    String randomUuid = randomIdAsString();
+    String randomUuid = UUID.randomUUID().toString();
     String urlWithRandomUuid = configurationsUrl + randomUuid;
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
       .delete(urlWithRandomUuid));
@@ -159,7 +158,7 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
   void shouldReturnBadRequestForIdsMismatch() {
     StorageConfiguration configurationDto = fetchConfigurations().getConfigurations().get(0)
       .accessionDelay(5).accessionTimeUnit(TimeUnits.MINUTES);
-    String urlWithAnotherUuid = configurationsUrl + randomIdAsString();
+    String urlWithAnotherUuid = configurationsUrl + UUID.randomUUID().toString();
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
       .put(urlWithAnotherUuid, configurationDto, String.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
@@ -167,16 +166,16 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
 
   @Test
   void shouldReturnAllProviders() {
-    ResponseEntity<List> response = restTemplate.getForEntity(String.format(PROVIDERS_URL, okapiPort), List.class);
+    ResponseEntity<List> response = restTemplate.getForEntity(String.format(PROVIDERS_URL, port), List.class);
     assertEquals(2, requireNonNull(response.getBody()).size());
   }
 
   private StorageConfiguration buildConfiguration(String id) {
     return new StorageConfiguration()
       .id(id)
-      .name("Remote Storage")
+      .name("RS1")
       .providerName("Dematic")
-      .url("https://rs.dematic.com")
+      .url("https://rs1.dematic.com")
       .accessionDelay(2)
       .accessionTimeUnit(TimeUnits.MINUTES);
   }

@@ -13,7 +13,7 @@
 
   <groupId>org.folio</groupId>
   <artifactId>mod-remote-storage</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <licenses>
@@ -25,17 +25,12 @@
 
   <properties>
     <java.version>11</java.version>
-    <folio-spring-base-version>1.0.1-SNAPSHOT</folio-spring-base-version>
+    <folio-spring-base-version>1.0.0</folio-spring-base-version>
     <openapi-generator.version>4.3.1</openapi-generator.version>
     <mapstruct.version>1.4.1.Final</mapstruct.version>
     <json.version>20200518</json.version>
     <hazelcast.version>4.0.2</hazelcast.version>
-    <spring-kafka.version>2.6.3</spring-kafka.version>
-    <wiremock.version>2.27.2</wiremock.version>
-    <awaitility.version>3.0.0</awaitility.version>
-    <spring-kafka-test.version>2.6.4</spring-kafka-test.version>
-    <embedded.db.version>1.6.2</embedded.db.version>
-    <sonar.exclusions>src/main/java/org/folio/rs/domain/**, src/main/java/org/folio/rs/client/AuthnClient.java, src/main/java/org/folio/rs/config/properties/** </sonar.exclusions>
+    <sonar.exclusions>src/main/java/org/folio/rs/domain/entity/**</sonar.exclusions>
     <remote-storage.yaml.file>${project.basedir}/src/main/resources/swagger.api/remote-storage.yaml</remote-storage.yaml.file>
   </properties>
 
@@ -44,12 +39,6 @@
       <groupId>org.folio</groupId>
       <artifactId>folio-spring-base</artifactId>
       <version>${folio-spring-base-version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework.kafka</groupId>
-      <artifactId>spring-kafka</artifactId>
-      <version>${spring-kafka.version}</version>
     </dependency>
 
     <dependency>
@@ -75,12 +64,6 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-cache</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-openfeign</artifactId>
-      <version>2.2.1.RELEASE</version>
     </dependency>
 
     <dependency>
@@ -118,12 +101,6 @@
       <version>${hazelcast.version}</version>
     </dependency>
 
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>2.6</version>
-    </dependency>
-
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -148,17 +125,9 @@
     <dependency>
       <groupId>io.zonky.test</groupId>
       <artifactId>embedded-database-spring-test</artifactId>
-      <version>${embedded.db.version}</version>
+      <version>1.6.1</version>
       <scope>test</scope>
     </dependency>
-
-    <dependency>
-      <groupId>com.github.tomakehurst</groupId>
-      <artifactId>wiremock-standalone</artifactId>
-      <version>${wiremock.version}</version>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
 
   <build>

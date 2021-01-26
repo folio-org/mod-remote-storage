@@ -1,5 +1,4 @@
 {
-  "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Remote storage configuration",
   "type": "object",
   "properties": {
@@ -16,10 +15,6 @@
       "type": "string"
     },
     "url": {
-      "description": "remote storage url",
-      "type": "string"
-    },
-    "statusUrl": {
       "description": "remote storage url",
       "type": "string"
     },

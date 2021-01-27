@@ -38,7 +38,7 @@ public class EnrichHeadersClient extends Client.Default {
 
     FieldUtils.writeDeclaredField(request, "headers", headers, true);
     FieldUtils.writeDeclaredField(request, "url",
-      request.url().replace("http://", folioContext.getOkapiUrl()), true);
+      request.url().replace("http://", folioContext.getOkapiUrl() +"/"), true);
 
     log.info("Sending request to {} for tenant: {}", request.url(), request.headers().get(TENANT));
     Response response = super.execute(request, options);

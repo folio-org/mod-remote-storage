@@ -10,5 +10,5 @@ import java.util.List;
 public class Permissions {
   private String id;
   private String userId;
-  private List<String> listOfPermissions;
+  private List<String> permissions;
 }

@@ -81,6 +81,22 @@
       ]
     },
     {
+      "id": "remote-storage-accessions",
+      "version": "1.0",
+      "handlers": [
+        {
+          "methods": ["GET"],
+          "pathPattern": "/remote-storage/accessions",
+          "permissionsRequired" : [ "remote-storage.accessions.collection.get" ]
+        },
+        {
+          "methods": ["PUT"],
+          "pathPattern": "/remote-storage/accessions/{accessionId}",
+          "permissionsRequired" : [ "remote-storage.accessions.item.put" ]
+        }
+      ]
+    },
+    {
       "id": "_tenant",
       "version": "1.2",
       "interfaceType": "system",
@@ -160,7 +176,9 @@
         "remote-storage.mappings.collection.get",
         "remote-storage.mappings.item.get",
         "remote-storage.mappings.item.delete",
-        "remote-storage.providers.collection.get"
+        "remote-storage.providers.collection.get",
+        "remote-storage.accessions.collection.get",
+        "remote-storage.accessions.item.put"
       ]
     }
   ],

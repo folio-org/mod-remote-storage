@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.rs.domain.dto.AccessionQueues;
 import org.folio.rs.domain.dto.FilterData;
-import org.folio.rs.rest.resource.AccessionApi;
+import org.folio.rs.rest.resource.AccessionsApi;
 import org.folio.rs.service.AccessionQueueService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/remote-storage")
-public class AccessionController implements AccessionApi {
+public class AccessionController implements AccessionsApi {
   private static final String ACCESSION_QUEUE_NOT_FOUND = "Accession queue not found";
   private static final String WRONG_DATE_FORMAT_MESSAGE = "Wrong date format for accession queue";
 

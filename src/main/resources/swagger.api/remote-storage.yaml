@@ -277,7 +277,7 @@ paths:
                 example: Internal server error
       description: Get a list of providers
       operationId: getProviders
-  /accession:
+  /accessions:
     get:
       responses:
         '200':
@@ -301,7 +301,7 @@ paths:
         - $ref: "#/components/parameters/trait_queryable_created_date"
         - $ref: "#/components/parameters/trait_pageable_offset"
         - $ref: "#/components/parameters/trait_pageable_limit"
-  /accession/{accessionId}:
+  /accessions/{accessionId}:
     put:
       responses:
         '204':

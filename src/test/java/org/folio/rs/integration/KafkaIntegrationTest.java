@@ -60,7 +60,7 @@ import org.springframework.web.client.HttpClientErrorException;
 @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:ClearTestData.sql")
 public class KafkaIntegrationTest extends ControllerTestBase {
 
-  private static final String ACCESSION_URL = "http://localhost:%s/remote-storage/accession";
+  private static final String ACCESSION_URL = "http://localhost:%s/remote-storage/accessions";
   @Autowired
   private KafkaMessageListener messageListener;
   @Autowired

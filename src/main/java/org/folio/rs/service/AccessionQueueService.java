@@ -37,7 +37,7 @@ public class AccessionQueueService {
   private final SecurityManagerService securityManagerService;
   private final FolioModuleMetadata moduleMetadata;
 
-  public final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
   public void processAccessionQueueRecord(List<DomainEvent> events) {
     log.info("Starting processing events...");

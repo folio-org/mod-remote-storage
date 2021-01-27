@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.rs.client.InstancesClient;
 import org.folio.rs.domain.AsyncFolioExecutionContext;
@@ -34,9 +37,12 @@ public class AccessionQueueService {
   private final SecurityManagerService securityManagerService;
   private final FolioModuleMetadata moduleMetadata;
 
+  public final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
   public void processAccessionQueueRecord(List<DomainEvent> events) {
     log.info("Starting processing events...");
     events.forEach(event -> {
+      log.info("Event received: {}", asJsonString(event));
       if (isEffectiveLocationChanged(event)) {
         var item = event.getNewEntity();
         FolioExecutionScopeExecutionContextManager.beginFolioExecutionContext(
@@ -92,6 +98,11 @@ public class AccessionQueueService {
         .map(Contributor::getName)
         .collect(Collectors.joining("; ")))
       .build();
+  }
+
+  @SneakyThrows
+  private String asJsonString(Object value) {
+    return OBJECT_MAPPER.writeValueAsString(value);
   }
 
 }

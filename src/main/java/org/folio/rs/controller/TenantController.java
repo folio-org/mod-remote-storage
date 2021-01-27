@@ -49,7 +49,7 @@ public class TenantController implements TenantApi {
   private final List<String> configurationSamples = Collections.singletonList("dematic.json");
   private final List<String> mappingSamples = Collections.singletonList("annex_to_dematic.json");
 
-  public static final String SYSTEM_USER = "system-userrrrr";
+  public static final String SYSTEM_USER = "system-user";
 
 
   @SneakyThrows

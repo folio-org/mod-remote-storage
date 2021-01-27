@@ -64,7 +64,7 @@ public class TestBase {
   }
 
   public static String getOkapiUrl() {
-    return String.format("http://localhost:%s/", WIRE_MOCK_PORT);
+    return String.format("http://localhost:%s", WIRE_MOCK_PORT);
   }
 
   @AfterEach

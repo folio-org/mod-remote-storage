@@ -163,6 +163,16 @@
       "description": "Get list of remote storage providers"
     },
     {
+      "permissionName": "remote-storage.accessions.collection.get",
+      "displayName": "get remote storage accession queues collection",
+      "description": "Get list of remote storage accession queues"
+    },
+    {
+      "permissionName" : "remote-storage.accessions.item.put",
+      "displayName" : "modify a remote storage accession queue",
+      "description" : "Modify a remote storage accession queue by changing accessioned date time"
+    },
+    {
       "permissionName": "remote-storage.all",
       "displayName": "remote storage API module - all permissions",
       "description": "All permissions for remote storage",

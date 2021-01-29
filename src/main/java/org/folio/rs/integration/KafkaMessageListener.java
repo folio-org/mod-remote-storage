@@ -3,6 +3,7 @@ package org.folio.rs.integration;
 import java.util.List;
 
 import org.folio.rs.domain.dto.DomainEvent;
+import org.folio.rs.repository.SystemUserParametersRepository;
 import org.folio.rs.service.AccessionQueueService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 public class KafkaMessageListener {
 
   private final AccessionQueueService accessionQueueService;
+  private final SystemUserParametersRepository systemUserParametersRepository;
 
   @KafkaListener(id = "mod-remote-storage-listener",
     containerFactory = "kafkaListenerContainerFactory",

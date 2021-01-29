@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,12 +25,15 @@ import org.folio.rs.domain.dto.ResultList;
 import org.folio.rs.domain.dto.User;
 import org.folio.rs.domain.entity.SystemUserParameters;
 import org.folio.rs.repository.SystemUserParametersRepository;
+import org.folio.spring.FolioModuleMetadata;
 import org.folio.spring.integration.XOkapiHeaders;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+
+import javax.persistence.EntityManager;
 
 @Component
 @Log4j2
@@ -43,9 +48,13 @@ public class SecurityManagerService {
   private final AuthnClient authnClient;
   private final SystemUserParametersRepository systemUserParametersRepository;
 
+  private final EntityManager entityManager;
+  private final FolioModuleMetadata moduleMetadata;
+  private static final Map<String, SystemUserParameters> parameters = new HashMap<>();
+
   public void prepareSystemUser(String username, String password, String okapiUrl, String tenantId) {
 
-    var systemUserParameters = systemUserParametersRepository.getFirstByTenantId(username)
+    var systemUserParameters = systemUserParametersRepository.getFirstByTenantId(tenantId)
       .orElse(buildDefaultSystemUserParameters(username, password, okapiUrl, tenantId));
 
     var folioUser = getFolioUser(username);
@@ -83,18 +92,15 @@ public class SecurityManagerService {
       .tenantId(tenantId).build();
   }
 
-  @CachePut("systemUserParameters")
+  @CachePut(value = "systemUserParameters", key="#params.tenantId")
   private void saveSystemUserParameters(SystemUserParameters params) {
     systemUserParametersRepository.save(params);
   }
 
-  @Cacheable("systemUserParameters")
+  @Cacheable(value = "systemUserParameters")
   public SystemUserParameters getSystemUserParameters(String tenantId) {
-    return systemUserParametersRepository.getFirstByTenantId(tenantId).stream()
-      .findAny().orElseThrow(() -> {
-        log.error("System User cannot be found for tenant [{}]", tenantId);
-        return new IllegalStateException(String.format("System User cannot be found for tenant [%s]", tenantId));
-      });
+    return (SystemUserParameters) entityManager
+      .createNativeQuery("SELECT * FROM " + moduleMetadata.getDBSchemaName(tenantId) + ".system_user_parameters", SystemUserParameters.class).getSingleResult();
   }
 
   private Optional<User> getFolioUser(String username) {

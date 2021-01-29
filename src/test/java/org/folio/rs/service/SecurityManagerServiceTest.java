@@ -1,12 +1,10 @@
 package org.folio.rs.service;
 
-import feign.FeignException;
 import org.folio.rs.TestBase;
 
 import org.folio.rs.domain.entity.SystemUserParameters;
 import org.folio.rs.repository.SystemUserParametersRepository;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -36,12 +34,6 @@ public class SecurityManagerServiceTest extends TestBase {
     List<String> paths = wireMockServer.getAllServeEvents().stream().map(e -> e.getRequest().getUrl()).collect(toList());
     assertThat(paths, Matchers.contains("/authn/login", "/perms/users", "/authn/credentials", "/users", "/users?query=username==non_presented_user"));
   }
-
-  @Test
-  void testCreateFailedLoginUserUser() {
-    String okapiUrl = getOkapiUrl();
-    Assertions.assertThrows(FeignException.class, () -> securityManagerService.prepareSystemUser(NON_EXISTED_USER, "failed_password", okapiUrl, TEST_TENANT));
-   }
 
   @Test
   void testCreateNonExistedUser() {

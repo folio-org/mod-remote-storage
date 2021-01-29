@@ -57,7 +57,7 @@ public class TestBase {
           .tenantId(TEST_TENANT)
           .moduleMetadata(moduleMetadata)
           .okapiUrl(getOkapiUrl()).build());
-      tenantController.postTenant(new TenantAttributes().moduleTo("remote-storage-module")
+      tenantController.postTenant(new TenantAttributes().moduleTo("mod_remote_storage")
         .addParametersItem(new Parameter().key(PARAMETER_LOAD_SAMPLE).value("true")));
 
       wireMockServer.resetAll();

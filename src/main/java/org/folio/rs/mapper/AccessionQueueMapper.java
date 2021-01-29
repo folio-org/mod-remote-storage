@@ -22,8 +22,7 @@ public interface AccessionQueueMapper {
       @Mapping(target = "remoteStorageId", expression = "java(org.folio.rs.util.MapperUtils.uuidToStringSafe(accessionQueueRecord.getRemoteStorageId()))"),
       @Mapping(target = "callNumber", source = "callNumber"),
       @Mapping(target = "instanceTitle", source = "instanceTitle"),
-      @Mapping(target = "instanceAuthor", source = "instanceAuthor"),
-      @Mapping(target = "accessioned", source = "accessioned")
+      @Mapping(target = "instanceAuthor", source = "instanceAuthor")
   })
   AccessionQueue mapEntityToDto(AccessionQueueRecord accessionQueueRecord);
 

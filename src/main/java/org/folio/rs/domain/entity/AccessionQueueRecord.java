@@ -45,7 +45,4 @@ public class AccessionQueueRecord {
 
   @Column(name = "instance_author")
   private String instanceAuthor;
-
-  @Column(name = "accessioned")
-  private boolean accessioned;
 }

@@ -36,10 +36,6 @@
       "description": "Instance author",
       "type": "string"
     },
-    "accessioned": {
-      "description": "Flag to indicate, that accession queue record was accessioned and has accession date",
-      "type": "boolean"
-    },
     "metadata": {
       "description": "Entity metadata",
       "type": "object",

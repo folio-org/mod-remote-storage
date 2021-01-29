@@ -91,7 +91,12 @@
         },
         {
           "methods": ["PUT"],
-          "pathPattern": "/remote-storage/accessions/{accessionId}",
+          "pathPattern": "/remote-storage/accessions/id/{accessionId}",
+          "permissionsRequired" : [ "remote-storage.accessions.item.put" ]
+        },
+        {
+          "methods": ["PUT"],
+          "pathPattern": "/remote-storage/accessions/barcode/{barcode}",
           "permissionsRequired" : [ "remote-storage.accessions.item.put" ]
         }
       ]

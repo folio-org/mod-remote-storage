@@ -6,7 +6,6 @@ import static org.folio.rs.util.Utils.randomIdAsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hibernate.validator.internal.util.Contracts.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -61,17 +60,6 @@ import org.springframework.web.client.HttpClientErrorException;
 public class KafkaIntegrationTest extends ControllerTestBase {
 
   private static final String ACCESSION_URL = "http://localhost:%s/remote-storage/accessions";
-  @Autowired
-  private KafkaMessageListener messageListener;
-  @Autowired
-  private EmbeddedKafkaBroker embeddedKafkaBroker;
-  @Autowired
-  private AccessionQueueRepository accessionQueueRepository;
-  @Autowired
-  private LocationMappingsRepository locationMappingsRepository;
-  @Autowired
-  private GlobalValue globalValue;
-
   private static final String TOPIC = "inventory.items";
   private static final String CALL_NUMBER = "+1-111-22-33";
   private static final String BARCODE = "1234567890";
@@ -83,12 +71,21 @@ public class KafkaIntegrationTest extends ControllerTestBase {
   private static final String ACCESSION_RECORD_1_ID = "5a38cc7d-b8c8-4a43-ad07-14c784dfbcbb";
   private static final String INSTANCE_AUTHOR = "Pratchett, Terry";
   private static final String INSTANCE_TITLE = "Interesting Times";
-
   private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private final static int PORT = SocketUtils.findAvailableTcpPort();
   private static WireMockServer wireMockServer;
-  private String formattedAccessionUrl;
 
+  @Autowired
+  private KafkaMessageListener messageListener;
+  @Autowired
+  private EmbeddedKafkaBroker embeddedKafkaBroker;
+  @Autowired
+  private AccessionQueueRepository accessionQueueRepository;
+  @Autowired
+  private LocationMappingsRepository locationMappingsRepository;
+  @Autowired
+  private GlobalValue globalValue;
+  private String formattedAccessionUrl;
 
   @BeforeAll
   static void globalSetUp() {
@@ -152,7 +149,7 @@ public class KafkaIntegrationTest extends ControllerTestBase {
   @Test
   void shouldFindAccessionQueuesByRemoteStorageId() throws JsonProcessingException {
     accessionQueueRepository.save(createBaseAccessionQueueRecord());
-    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID), false));
+    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID)));
 
     ResponseEntity<AccessionQueues> responseEntity = restTemplate.getForEntity(formattedAccessionUrl +"?storageId=" + REMOTE_STORAGE_ID, AccessionQueues.class);
     assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().get(0).getRemoteStorageId(), equalTo(REMOTE_STORAGE_ID));
@@ -161,30 +158,23 @@ public class KafkaIntegrationTest extends ControllerTestBase {
   }
 
   @Test
-  void shouldFindAccessionQueuesByAccessionedFlagTrue() throws JsonProcessingException {
+  void shouldFindAccessionQueuesWithAccessionDateTime() throws JsonProcessingException {
     accessionQueueRepository.save(createBaseAccessionQueueRecord());
-    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID), true));
+    AccessionQueueRecord accessionQueueRecord = buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID));
+    accessionQueueRecord.setAccessionedDateTime(LocalDateTime.now());
+    accessionQueueRepository.save(accessionQueueRecord);
 
     ResponseEntity<AccessionQueues> responseEntity = restTemplate.getForEntity(formattedAccessionUrl + "?accessioned=true", AccessionQueues.class);
-    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().get(0).getAccessioned(), equalTo(true));
+
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().get(0), notNullValue());
     assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(1));
     assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(1));
   }
 
   @Test
-  void shouldFindAccessionQueuesByAccessionedFlagFalse() throws JsonProcessingException {
-    accessionQueueRepository.save(createBaseAccessionQueueRecord());
-    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID), false));
-
-    ResponseEntity<AccessionQueues> responseEntity = restTemplate.getForEntity(formattedAccessionUrl + "?accessioned=false", AccessionQueues.class);
-    assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(2));
-    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(2));
-  }
-
-  @Test
   void shouldFindAccessionQueuesWithOffset() throws JsonProcessingException {
     accessionQueueRepository.save(createBaseAccessionQueueRecord());
-    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID), false));
+    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID)));
 
     ResponseEntity<AccessionQueues> responseEntity = restTemplate.getForEntity(formattedAccessionUrl + "?offset=1", AccessionQueues.class);
     assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(2));
@@ -194,7 +184,7 @@ public class KafkaIntegrationTest extends ControllerTestBase {
   @Test
   void shouldFindAccessionQueuesWithLimit() throws JsonProcessingException {
     accessionQueueRepository.save(createBaseAccessionQueueRecord());
-    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID), false));
+    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID)));
 
     ResponseEntity<AccessionQueues> responseEntity = restTemplate.getForEntity(formattedAccessionUrl + "?limit=1", AccessionQueues.class);
     assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(2));
@@ -202,21 +192,56 @@ public class KafkaIntegrationTest extends ControllerTestBase {
   }
 
   @Test
-  void shouldSetAccessioned() throws JsonProcessingException {
+  void shouldSetAccessionedById() throws JsonProcessingException {
     UUID id = UUID.randomUUID();
-    accessionQueueRepository.save(buildAccessionQueueRecord(id, false));
+    accessionQueueRepository.save(buildAccessionQueueRecord(id));
 
-    restTemplate.put(String.format(ACCESSION_URL, port) + "/" + id,null);
+    restTemplate.put(formattedAccessionUrl + "/id/" + id,null);
 
     var actualAccessionQueueRecord = accessionQueueRepository.findAll().get(0);
     assertThat(actualAccessionQueueRecord.getAccessionedDateTime(), notNullValue());
-    assertTrue(actualAccessionQueueRecord.isAccessioned(), StringUtil.EMPTY_STRING);
+  }
+
+  @Test
+  void shouldSetAccessionedByBarcode() throws JsonProcessingException {
+    accessionQueueRepository.save(buildAccessionQueueRecord(UUID.randomUUID()));
+
+    restTemplate.put(formattedAccessionUrl + "/barcode/" + BARCODE,null);
+
+    var actualAccessionQueueRecord = accessionQueueRepository.findAll().get(0);
+    assertThat(actualAccessionQueueRecord.getItemBarcode(), equalTo(BARCODE));
+    assertThat(actualAccessionQueueRecord.getAccessionedDateTime(), notNullValue());
   }
 
   @Test
   void shouldThrowNotFoundExceptionWhenIdDoesNotExist() throws JsonProcessingException {
-    accessionQueueRepository.save(buildAccessionQueueRecord(UUID.randomUUID(),false));
-    String url = String.format(ACCESSION_URL, port) + "/" + UUID.randomUUID();
+    accessionQueueRepository.save(buildAccessionQueueRecord(UUID.randomUUID()));
+    String url = formattedAccessionUrl + "/id/" + UUID.randomUUID();
+
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
+        restTemplate.put(url,null));
+
+    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.NOT_FOUND));
+  }
+
+  @Test
+  void shouldThrowNotFoundExceptionWhenAccessionQueueIsAlreadyAccessioned() throws JsonProcessingException {
+    UUID id = UUID.randomUUID();
+    AccessionQueueRecord accessionQueueRecord = buildAccessionQueueRecord(id);
+    accessionQueueRecord.setAccessionedDateTime(LocalDateTime.now());
+    accessionQueueRepository.save(accessionQueueRecord);
+    String url = formattedAccessionUrl + "/id/" + id;
+
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
+        restTemplate.put(url,null));
+
+    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.NOT_FOUND));
+  }
+
+  @Test
+  void shouldThrowNotFoundExceptionWhenBarcodeDoesNotExist() throws JsonProcessingException {
+    accessionQueueRepository.save(buildAccessionQueueRecord(UUID.randomUUID()));
+    String url = formattedAccessionUrl + "/barcode/" + UUID.randomUUID();
 
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
         restTemplate.put(url,null));
@@ -231,7 +256,7 @@ public class KafkaIntegrationTest extends ControllerTestBase {
     accessionQueueRecord.setCreatedDateTime(createdDate);
     accessionQueueRepository.save(accessionQueueRecord);
 
-    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID), false));
+    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID)));
 
     ResponseEntity<AccessionQueues> responseEntity = restTemplate.getForEntity(formattedAccessionUrl + "?createdDate=" + createdDate, AccessionQueues.class);
     assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(1));
@@ -244,7 +269,7 @@ public class KafkaIntegrationTest extends ControllerTestBase {
     AccessionQueueRecord accessionQueueRecord = createBaseAccessionQueueRecord();
     accessionQueueRecord.setCreatedDateTime(createdDate);
     accessionQueueRepository.save(accessionQueueRecord);
-    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID), false));
+    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID)));
 
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
         restTemplate.getForEntity(formattedAccessionUrl + "?createdDate=123" , AccessionQueues.class), StringUtil.EMPTY_STRING);
@@ -258,16 +283,15 @@ public class KafkaIntegrationTest extends ControllerTestBase {
     return accessionQueueRecord;
   }
 
-  private AccessionQueueRecord buildAccessionQueueRecord(UUID id, Boolean accessioned) {
+  private AccessionQueueRecord buildAccessionQueueRecord(UUID id) {
     return AccessionQueueRecord.builder()
         .id(id)
         .remoteStorageId(UUID.fromString(REMOTE_STORAGE_ID))
-        .accessioned(accessioned)
+        .itemBarcode(BARCODE)
         .build();
   }
 
   private static void verifyCreatedAccessionQueueRecord(AccessionQueueRecord accessionQueueRecord) {
-
     assertThat(accessionQueueRecord.getId(), notNullValue());
     assertThat(accessionQueueRecord.getItemBarcode(), equalTo(BARCODE));
     assertThat(accessionQueueRecord.getCallNumber(), equalTo(CALL_NUMBER));

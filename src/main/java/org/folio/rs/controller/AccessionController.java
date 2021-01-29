@@ -36,9 +36,15 @@ public class AccessionController implements AccessionsApi {
   }
 
   @Override
-  public ResponseEntity<String> setAccessioned(
+  public ResponseEntity<String> setAccessionedById(
       @Pattern(regexp = "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[1-5][a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}$") String accessionId) {
-    accessionQueueService.setAccessioned(accessionId);
+    accessionQueueService.setAccessionedById(accessionId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<String> setAccessionedByBarcode(String barcode) {
+    accessionQueueService.setAccessionedByBarcode(barcode);
     return ResponseEntity.noContent().build();
   }
 

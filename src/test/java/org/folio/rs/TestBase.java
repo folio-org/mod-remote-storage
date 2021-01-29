@@ -17,8 +17,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -31,11 +34,11 @@ import static org.folio.rs.controller.TenantController.PARAMETER_LOAD_SAMPLE;
 @TestPropertySource("classpath:application-test.yml")
 @ActiveProfiles("TestDB")
 @EnableTransactionManagement
-@AutoConfigureEmbeddedDatabase(beanName = "testDataSource")
+@AutoConfigureEmbeddedDatabase(beanName = "dataSource")
 @Log4j2
 public class TestBase {
-  protected static HttpHeaders headers;
-  protected static RestTemplate restTemplate;
+  private static HttpHeaders headers;
+  private static RestTemplate restTemplate;
   public static WireMockServer wireMockServer;
   public static String TEST_TENANT = "test_tenant";
 
@@ -88,5 +91,21 @@ public class TestBase {
   @AfterAll
   static void tearDown() {
     wireMockServer.stop();
+  }
+
+  public <T> ResponseEntity<T> get(String url, Class<T> clazz) {
+    return restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), clazz);
+  }
+
+  public <T> ResponseEntity<T> post(String url, Object entity, Class<T> clazz) {
+    return restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(entity, headers), clazz);
+  }
+
+  public ResponseEntity<String> put(String url, Object entity) {
+    return restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(entity, headers), String.class);
+  }
+
+  public ResponseEntity<String> delete(String url) {
+    return restTemplate.exchange(url, HttpMethod.DELETE, new HttpEntity<>(headers), String.class);
   }
 }

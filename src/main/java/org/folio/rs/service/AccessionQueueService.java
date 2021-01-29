@@ -54,8 +54,8 @@ public class AccessionQueueService {
           var instance = instances.getResult()
             .get(0);
           var record = buildAccessionQueueRecord(item, instance, locationMapping);
-          log.info("Record prepared: {}", record);
           accessionQueueRepository.save(record);
+          log.info("Record prepared and saved: {}", record);
         }
       }
     });

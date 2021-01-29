@@ -3,10 +3,6 @@ spring:
     name: mod-remote-storage
   jackson:
     default-property-inclusion: non_null
-  datasource:
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
-    url: jdbc:postgresql://${DB_HOST:postgres}:${DB_PORT:5432}/${DB_DATABASE:okapi_modules}
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/changelog-master.xml
@@ -23,4 +19,4 @@ spring:
     enabled: false
 
 server.port: 8081
-folio.tenant.validation.enabled: false
+folio.tenant.validation.enabled: true

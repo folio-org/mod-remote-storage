@@ -33,7 +33,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import javax.persistence.EntityManager;
 
 @Component
 @Log4j2
@@ -48,7 +47,6 @@ public class SecurityManagerService {
   private final AuthnClient authnClient;
   private final SystemUserParametersRepository systemUserParametersRepository;
 
-  private final EntityManager entityManager;
   private final FolioModuleMetadata moduleMetadata;
   private static final Map<String, SystemUserParameters> parameters = new HashMap<>();
 
@@ -99,8 +97,11 @@ public class SecurityManagerService {
 
   @Cacheable(value = "systemUserParameters")
   public SystemUserParameters getSystemUserParameters(String tenantId) {
-    return (SystemUserParameters) entityManager
-      .createNativeQuery("SELECT * FROM " + moduleMetadata.getDBSchemaName(tenantId) + ".system_user_parameters", SystemUserParameters.class).getSingleResult();
+    return systemUserParametersRepository.getFirstByTenantId(tenantId).stream()
+      .findAny().orElseThrow(() -> {
+        log.error("System User haven't been created");
+        return new IllegalStateException(String.format("System User cannot be found for tenant [%s]", tenantId));
+      });
   }
 
   private Optional<User> getFolioUser(String username) {

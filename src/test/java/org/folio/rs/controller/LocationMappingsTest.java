@@ -32,8 +32,7 @@ public class LocationMappingsTest extends TestBase {
 
   @Test
   void canPostMapping() {
-    ResponseEntity<LocationMapping> responseEntity = restTemplate
-      .postForEntity(mappingsUrl,
+    ResponseEntity<LocationMapping> responseEntity = post(mappingsUrl,
         new LocationMapping()
           .folioLocationId(randomIdAsString())
           .configurationId(randomIdAsString()),
@@ -45,31 +44,26 @@ public class LocationMappingsTest extends TestBase {
 
   @Test
   void canGetAllMappings() {
-    ResponseEntity<LocationMappings> responseEntity = restTemplate
-      .getForEntity(mappingsUrl, LocationMappings.class);
+    ResponseEntity<LocationMappings> responseEntity = get(mappingsUrl, LocationMappings.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
     assertThat(responseEntity.getBody().getTotalRecords(), is(2));
   }
 
   @Test
   void canGetMappingById() {
-    LocationMapping mapping = restTemplate.getForObject(mappingsUrl, LocationMappings.class)
-      .getMappings().get(0);
-    ResponseEntity<LocationMapping> response = restTemplate
-      .getForEntity(mappingsUrl + mapping.getFolioLocationId(), LocationMapping.class);
+    LocationMapping mapping = get(mappingsUrl, LocationMappings.class).getBody().getMappings().get(0);
+    ResponseEntity<LocationMapping> response = get(mappingsUrl + mapping.getFolioLocationId(), LocationMapping.class);
     assertThat(response.getStatusCode(), is(HttpStatus.OK));
   }
 
   @Test
   void canDeleteMapping() {
-    ResponseEntity<LocationMapping> responseEntity = restTemplate
-      .postForEntity(mappingsUrl,
+    ResponseEntity<LocationMapping> responseEntity = post(mappingsUrl,
         new LocationMapping()
           .folioLocationId(randomIdAsString())
           .configurationId(randomIdAsString()),
         LocationMapping.class);
-    assertThat(restTemplate.exchange(mappingsUrl + responseEntity.getBody().getFolioLocationId(), HttpMethod.DELETE,
-      new HttpEntity<>(headers), String.class).getStatusCode(), is(HttpStatus.NO_CONTENT));
+    assertThat(delete(mappingsUrl + responseEntity.getBody().getFolioLocationId()).getStatusCode(), is(HttpStatus.NO_CONTENT));
   }
 
   @Test
@@ -77,24 +71,21 @@ public class LocationMappingsTest extends TestBase {
     HttpEntity invalidBody = new HttpEntity(new LocationMapping()
       .folioLocationId("abcde")
       .configurationId("abcde"));
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
-      .postForEntity(mappingsUrl, invalidBody, StorageConfiguration.class));
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> post(mappingsUrl, invalidBody, StorageConfiguration.class));
     assertThat(exception.getStatusCode(), is(HttpStatus.UNPROCESSABLE_ENTITY));
   }
 
   @Test
   void shouldReturnNotFoundForRandomUuid() {
     String urlWithRandomUuid = mappingsUrl + randomIdAsString();
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
-      .delete(urlWithRandomUuid));
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> delete(urlWithRandomUuid));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
   }
 
   @Test
   void shouldReturnBadRequestForInvalidUuid() {
     String urlWithRandomUuid = mappingsUrl + "abcde";
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
-      .delete(urlWithRandomUuid));
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> delete(urlWithRandomUuid));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
   }
 }

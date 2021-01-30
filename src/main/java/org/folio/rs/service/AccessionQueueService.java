@@ -26,30 +26,14 @@ import org.folio.spring.FolioModuleMetadata;
 import org.folio.spring.scope.FolioExecutionScopeExecutionContextManager;
 import static org.folio.rs.util.MapperUtils.stringToUUIDSafe;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.Predicate;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.folio.rs.client.InstancesClient;
 import org.folio.rs.domain.dto.AccessionQueues;
-import org.folio.rs.domain.dto.Contributor;
 import org.folio.rs.domain.dto.FilterData;
-import org.folio.rs.domain.dto.Instance;
-import org.folio.rs.domain.dto.LocationMapping;
-import org.folio.rs.domain.entity.AccessionQueueRecord;
-import org.folio.rs.domain.entity.DomainEvent;
-import org.folio.rs.dto.EffectiveCallNumberComponents;
-import org.folio.rs.dto.Item;
 import org.folio.rs.mapper.AccessionQueueMapper;
-import org.folio.rs.repository.AccessionQueueRepository;
 import org.folio.spring.data.OffsetRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -69,19 +53,6 @@ public class AccessionQueueService {
   private final LocationMappingsService locationMappingsService;
   private final InstancesClient instancesClient;
   private final AccessionQueueMapper accessionQueueMapper;
-
-  public void processAccessionQueueRecord(List<DomainEvent> events) {
-
-    events.forEach(event -> {
-
-      if (isEffectiveLocationChanged(event)) {
-        var item = event.getNewEntity();
-
-        var locationMapping = locationMappingsService.getMappingByFolioLocationId(item.getEffectiveLocationId());
-
-  private final AccessionQueueRepository accessionQueueRepository;
-  private final LocationMappingsService locationMappingsService;
-  private final InstancesClient instancesClient;
   private final SecurityManagerService securityManagerService;
   private final FolioModuleMetadata moduleMetadata;
 
@@ -147,21 +118,6 @@ public class AccessionQueueService {
   }
 
   /**
-   * This method builds {@link AccessionQueueRecord} based on data from {@link Item} and
-   * corresponding {@link Instance}
-   *
-   * @param item {@link Item} entity
-   * @param instance {@link Instance} entity
-   * @return accession queue record with populated data
-   */
-  private AccessionQueueRecord buildAccessionQueueRecord(Item item, Instance instance,
-    LocationMapping locationMapping) {
-      .getEffectiveLocationId(),
-        domainEvent.getNewEntity()
-          .getEffectiveLocationId());
-  }
-
-  /**
    * This method builds {@link AccessionQueueRecord} based on data from {@link Item} and corresponding {@link Instance}
    *
    * @param item     {@link Item} entity
@@ -218,8 +174,8 @@ public class AccessionQueueService {
     return (record, criteria, builder) -> builder.equal(record.get(ID), stringToUUIDSafe(id));
   }
 
-        @SneakyThrows
-        private String asJsonString(Object value) {
-          return OBJECT_MAPPER.writeValueAsString(value);
-        }
+  @SneakyThrows
+  private String asJsonString(Object value) {
+    return OBJECT_MAPPER.writeValueAsString(value);
+  }
 }

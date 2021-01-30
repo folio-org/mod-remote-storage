@@ -45,7 +45,7 @@ public class SecurityManagerService {
   private final AuthnClient authnClient;
   private final SystemUserParametersRepository systemUserParametersRepository;
   @PersistenceContext
-  private final EntityManager entityManager;
+  private final EntityManager em;
 
   private final FolioModuleMetadata moduleMetadata;
 
@@ -97,7 +97,7 @@ public class SecurityManagerService {
   @Cacheable(value = "systemUserParameters")
   public SystemUserParameters getSystemUserParameters(String tenantId) {
     final String sqlQuery = "SELECT * FROM " + moduleMetadata.getDBSchemaName(tenantId) + ".system_user_parameters";
-    var query = entityManager.createNativeQuery(sqlQuery, SystemUserParameters.class);
+    var query = em.createNativeQuery(sqlQuery, SystemUserParameters.class); //NOSONAR
     return (SystemUserParameters) query.getSingleResult();
   }
 

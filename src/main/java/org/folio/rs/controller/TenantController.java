@@ -2,19 +2,23 @@ package org.folio.rs.controller;
 
 import static java.util.Objects.nonNull;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 import javax.validation.Valid;
-
+import liquibase.exception.LiquibaseException;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.entity.GlobalValue;
 import org.folio.rs.service.ConfigurationsService;
 import org.folio.rs.service.LocationMappingsService;
+import org.folio.rs.service.SecurityManagerService;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.liquibase.FolioSpringLiquibase;
 import org.folio.tenant.domain.dto.Parameter;
@@ -26,36 +30,35 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import liquibase.exception.LiquibaseException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @RestController("folioTenantController")
 @RequestMapping(value = "/_/")
 @RequiredArgsConstructor
 public class TenantController implements TenantApi {
-  private static final String PARAMETER_LOAD_SAMPLE = "loadSample";
+
+  public static final String PARAMETER_LOAD_SAMPLE = "loadSample";
   private static final String SAMPLES_DIR = "samples";
 
   private final FolioSpringLiquibase folioSpringLiquibase;
   private final FolioExecutionContext context;
   private final ConfigurationsService configurationsService;
   private final LocationMappingsService locationMappingsService;
-  private final GlobalValue globalValue;
+  private final SecurityManagerService securityManagerService;
+
 
   private final List<String> configurationSamples = Collections.singletonList("dematic.json");
   private final List<String> mappingSamples = Collections.singletonList("annex_to_dematic.json");
 
+  public static final String SYSTEM_USER = "system-user";
+
+
+  @SneakyThrows
   @Override
   public ResponseEntity<String> postTenant(@Valid TenantAttributes tenantAttributes) {
-    if (folioSpringLiquibase != null) {
-      var tenantId = context.getTenantId();
+    var tenantId = context.getTenantId();
 
-      // Set okapi url to global variables bean
-      globalValue.setOkapiUrl(context.getOkapiUrl());
+    if (folioSpringLiquibase != null) {
 
       var schemaName = context.getFolioModuleMetadata()
         .getDBSchemaName(tenantId);
@@ -74,14 +77,19 @@ public class TenantController implements TenantApi {
           .body("Liquibase error: " + e.getMessage());
       }
     }
+
+    securityManagerService.prepareSystemUser(SYSTEM_USER, SYSTEM_USER, context.getOkapiUrl(), tenantId);
+
     return ResponseEntity.ok()
       .body("true");
   }
 
   private void loadSampleData() {
     log.info("Loading sample data");
-    readEntitiesFromFiles(configurationSamples, StorageConfiguration.class).forEach(configurationsService::postConfiguration);
-    readEntitiesFromFiles(mappingSamples, LocationMapping.class).forEach(locationMappingsService::postMapping);
+    readEntitiesFromFiles(configurationSamples, StorageConfiguration.class)
+      .forEach(configurationsService::postConfiguration);
+    readEntitiesFromFiles(mappingSamples, LocationMapping.class)
+      .forEach(locationMappingsService::postMapping);
   }
 
   private <T> List<T> readEntitiesFromFiles(List<String> filenames, Class<T> type) {

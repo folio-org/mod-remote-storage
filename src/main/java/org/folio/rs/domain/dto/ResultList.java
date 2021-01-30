@@ -1,4 +1,4 @@
-package org.folio.rs.domain.dto;//package org.folio.rs.domain.dto;
+package org.folio.rs.domain.dto;
 
 import java.util.List;
 
@@ -10,6 +10,6 @@ import lombok.Data;
 public class ResultList<E> {
   @JsonAlias("total_records")
   private Integer totalRecords;
-  @JsonAlias({ "instances"})
+  @JsonAlias({ "instances", "users" })
   private List<E> result;
 }

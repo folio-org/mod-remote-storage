@@ -11,11 +11,10 @@ import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data
-@Table(name = "ACCESSION_QUEUE")
+@Table(name = "accession_queue")
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,24 +24,17 @@ public class AccessionQueueRecord {
   @Id
   private UUID id;
 
-  @Column(name = "item_barcode")
   private String itemBarcode;
 
-  @Column(name = "created_date_time")
   private LocalDateTime createdDateTime;
 
-  @Column(name = "accessioned_date_time")
   private LocalDateTime accessionedDateTime;
 
-  @Column(name = "remote_storage_id")
   private UUID remoteStorageId;
 
-  @Column(name = "call_number")
   private String callNumber;
 
-  @Column(name = "instance_title")
   private String instanceTitle;
 
-  @Column(name = "instance_author")
   private String instanceAuthor;
 }

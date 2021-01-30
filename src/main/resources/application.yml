@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: mod-remote-storage
+  jackson:
+    default-property-inclusion: non_null
+  kafka:
+    bootstrap-servers: ${KAFKA_HOST:localhost}:${KAFKA_PORT:9092}
+  datasource:
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    url: jdbc:postgresql://${DB_HOST:postgres}:${DB_PORT:5432}/${DB_DATABASE:okapi_modules}
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/changelog-master.xml
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: none
+  properties:
+    physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+    implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+    hibernate:
+      format_sql: true
+  flyway:
+    enabled: false
+
+application:
+  kafka:
+    listener:
+      events:
+        concurrency: 1
+        topics: inventory.item
+        group-id: mod-remote-storage-items-group
+
+server.port: 8081
+folio.tenant.validation.enabled: true

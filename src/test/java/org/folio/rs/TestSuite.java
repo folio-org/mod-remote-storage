@@ -1,20 +1,31 @@
 package org.folio.rs;
 
-import org.folio.rs.controller.ConfigurationsControllerTest;
-import org.folio.rs.controller.LocationMappingsControllerTest;
-import org.folio.rs.integration.KafkaIntegrationTest;
+import org.folio.rs.controller.ConfigurationsTest;
+import org.folio.rs.controller.LocationMappingsTest;
+import org.folio.rs.service.AccessionQueueServiceTest;
+import org.folio.rs.service.SecurityManagerServiceTest;
 import org.junit.jupiter.api.Nested;
 
+
 public class TestSuite {
+
   @Nested
-  class ConfigurationsControllerTestNested extends ConfigurationsControllerTest {
+  class ConfigurationsTestNested extends ConfigurationsTest {
+
   }
 
   @Nested
-  class LocationMappingsControllerTestNested extends LocationMappingsControllerTest {
+  class LocationMappingsTestNested extends LocationMappingsTest {
+
   }
 
   @Nested
-  class KafkaIntegrationTestNested extends KafkaIntegrationTest {
+  class SecurityManagerServiceTestNested extends SecurityManagerServiceTest {
+
+  }
+
+  @Nested
+  class AccessionQueueServiceTestNested extends AccessionQueueServiceTest {
+
   }
 }

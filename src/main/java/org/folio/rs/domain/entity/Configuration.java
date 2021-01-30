@@ -8,10 +8,11 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-@Table(name = "REMOTE_STORAGE_CONFIGURATIONS")
+@Table(name = "remote_storage_configurations")
 @Entity
 public class Configuration {
 
@@ -27,6 +28,9 @@ public class Configuration {
 
   @Column(name = "url")
   private String url;
+
+  @Column(name = "status_url")
+  private String statusUrl;
 
   @Column(name = "accession_delay")
   private Integer accessionDelay;

@@ -1,4 +1,4 @@
-package org.folio.rs.config;//package org.folio.rs.config;
+package org.folio.rs.config;
 
 import static org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG;
@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.folio.rs.config.properties.FolioKafkaProperties;
-import org.folio.rs.domain.entity.DomainEvent;
+import org.folio.rs.domain.dto.DomainEvent;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -34,6 +34,7 @@ public class KafkaConfiguration {
     var factory = new ConcurrentKafkaListenerContainerFactory<String, DomainEvent>();
     factory.setBatchListener(true);
     factory.setConsumerFactory(jsonNodeConsumerFactory());
+    factory.setBatchErrorHandler(((exception, data) -> log.error("Error in process with Exception {} and the record is {}", exception, data)));
     return factory;
   }
 

@@ -11,7 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
-import java.util.UUID;
+
+import org.folio.rs.TestBase;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.dto.StorageConfigurations;
 import org.folio.rs.domain.dto.TimeUnits;
@@ -22,12 +23,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 
-public class ConfigurationsControllerTest extends ControllerTestBase {
+public class ConfigurationsTest extends TestBase {
 
   private static final String CONFIGURATIONS_URL = "http://localhost:%s/remote-storage/configurations/";
   private static final String PROVIDERS_URL = "http://localhost:%s/remote-storage/providers/";
@@ -40,7 +40,7 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
 
   @BeforeEach
   void prepareUrl() {
-    configurationsUrl = String.format(CONFIGURATIONS_URL, port);
+    configurationsUrl = String.format(CONFIGURATIONS_URL, okapiPort);
   }
 
   @AfterEach
@@ -51,23 +51,20 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
   @Test
   void canPostTenantWithParameters() {
     String tenants = "{\"module_to\":\"moduleId\", \"parameters\": [ { \"key\":\"loadSample\", \"value\": true } ] }";
-    ResponseEntity<String> response = restTemplate
-      .exchange(String.format(TENANT_URL, port), HttpMethod.POST, new HttpEntity<>(tenants, headers), String.class);
+    ResponseEntity<String> response = post(String.format(TENANT_URL, okapiPort), tenants, String.class);
     assertThat(response.getStatusCode(), is(HttpStatus.OK));
   }
 
   @Test
   void canPostTenantWithoutParameters() {
     String tenants = "{\"module_to\":\"moduleId\"}";
-    ResponseEntity<String> response = restTemplate
-      .exchange(String.format(TENANT_URL, port), HttpMethod.POST, new HttpEntity<>(tenants, headers), String.class);
+    ResponseEntity<String> response = post(String.format(TENANT_URL, okapiPort), tenants, String.class);
     assertThat(response.getStatusCode(), is(HttpStatus.OK));
   }
 
   @Test
   void canPostConfiguration() {
-    ResponseEntity<StorageConfiguration> responseEntity = restTemplate
-      .postForEntity(configurationsUrl, buildConfiguration(null), StorageConfiguration.class);
+    ResponseEntity<StorageConfiguration> responseEntity = post(configurationsUrl, buildConfiguration(null), StorageConfiguration.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.CREATED));
     assertThat(responseEntity.getBody().getId(), notNullValue());
     assertThat(responseEntity.getBody().getMetadata().getCreatedDate(), notNullValue());
@@ -76,8 +73,7 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
 
   @Test
   void canGetAllConfigurations() {
-    ResponseEntity<StorageConfigurations> responseEntity = restTemplate
-      .getForEntity(configurationsUrl, StorageConfigurations.class);
+    ResponseEntity<StorageConfigurations> responseEntity = get(configurationsUrl, StorageConfigurations.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
     assertThat(responseEntity.getBody().getTotalRecords(), is(1));
   }
@@ -85,8 +81,7 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
   @Test
   void canGetConfigurationById() {
     StorageConfiguration configurationDto = fetchConfigurations().getConfigurations().get(0);
-    ResponseEntity<StorageConfiguration> response = restTemplate
-      .getForEntity(configurationsUrl + configurationDto.getId(), StorageConfiguration.class);
+    ResponseEntity<StorageConfiguration> response = get(configurationsUrl + configurationDto.getId(), StorageConfiguration.class);
     assertThat(response.getStatusCode(), is(HttpStatus.OK));
   }
 
@@ -94,47 +89,41 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
   void canPutConfiguration() {
     StorageConfiguration configurationDto = fetchConfigurations().getConfigurations().get(0);
     configurationDto.accessionDelay(5).accessionTimeUnit(TimeUnits.MINUTES);
-    ResponseEntity<String> response = restTemplate.exchange(configurationsUrl + configurationDto.getId(),
-      HttpMethod.PUT, new HttpEntity<>(configurationDto), String.class);
+    ResponseEntity<String> response = put(configurationsUrl + configurationDto.getId(),configurationDto);
     assertThat(response.getStatusCode(), equalTo(HttpStatus.NO_CONTENT));
   }
 
   @Test
   void canDeleteConfiguration() {
     StorageConfiguration configuration = fetchConfigurations().getConfigurations().get(0);
-    assertThat(restTemplate.exchange(configurationsUrl + configuration.getId(), HttpMethod.DELETE,
-      new HttpEntity<>(null), String.class).getStatusCode(), is(HttpStatus.NO_CONTENT));
+    assertThat(delete(configurationsUrl + configuration.getId()).getStatusCode(), is(HttpStatus.NO_CONTENT));
     assertThat(fetchConfigurations().getTotalRecords(), is(0));
   }
 
   @Test
   void shouldReturnUnprocessableEntityForInvalidBody() {
     HttpEntity entityMissingName = new HttpEntity(new StorageConfiguration().name(null));
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
-      .postForEntity(configurationsUrl, entityMissingName, StorageConfiguration.class));
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> post(configurationsUrl, entityMissingName, StorageConfiguration.class));
     assertThat(exception.getStatusCode(), is(HttpStatus.UNPROCESSABLE_ENTITY));
   }
 
   @Test
   void shouldReturnUnprocessableEntityOnDuplicatedConfigurationName() {
     StorageConfiguration initialEntity = buildConfiguration(null).name("RS");
-    ResponseEntity<StorageConfiguration> responseEntity = restTemplate
-      .postForEntity(configurationsUrl, initialEntity, StorageConfiguration.class);
+    ResponseEntity<StorageConfiguration> responseEntity = post(configurationsUrl, initialEntity, StorageConfiguration.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.CREATED));
 
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class,
-      () -> restTemplate.postForEntity(configurationsUrl, initialEntity, StorageConfiguration.class));
+      () -> post(configurationsUrl, initialEntity, StorageConfiguration.class));
     assertThat(exception.getStatusCode(), is(HttpStatus.UNPROCESSABLE_ENTITY));
   }
 
   @Test
   void shouldReturnBadRequestForInvalidUuid() {
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
-      .delete(configurationsUrl + "abcde"));
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> delete(configurationsUrl + "abcde"));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
 
-    exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
-      .getForObject(configurationsUrl + "abcde", String.class));
+    exception = assertThrows(HttpClientErrorException.class, () -> get(configurationsUrl + "abcde", String.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
   }
 
@@ -142,16 +131,14 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
   void shouldReturnNotFoundForWrongUuid() {
     String randomUuid = randomIdAsString();
     String urlWithRandomUuid = configurationsUrl + randomUuid;
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
-      .delete(urlWithRandomUuid));
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> delete(urlWithRandomUuid));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
 
-    exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
-      .getForObject(urlWithRandomUuid, String.class));
+    exception = assertThrows(HttpClientErrorException.class, () -> get(urlWithRandomUuid, String.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
 
-    HttpEntity entity = new HttpEntity<>(buildConfiguration(randomUuid));
-    exception = assertThrows(HttpClientErrorException.class, () -> restTemplate.put(urlWithRandomUuid, entity));
+    var config = buildConfiguration(randomUuid);
+    exception = assertThrows(HttpClientErrorException.class, () -> put(urlWithRandomUuid, config));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
   }
 
@@ -160,28 +147,27 @@ public class ConfigurationsControllerTest extends ControllerTestBase {
     StorageConfiguration configurationDto = fetchConfigurations().getConfigurations().get(0)
       .accessionDelay(5).accessionTimeUnit(TimeUnits.MINUTES);
     String urlWithAnotherUuid = configurationsUrl + randomIdAsString();
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> restTemplate
-      .put(urlWithAnotherUuid, configurationDto, String.class));
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> put(urlWithAnotherUuid, configurationDto));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
   }
 
   @Test
   void shouldReturnAllProviders() {
-    ResponseEntity<List> response = restTemplate.getForEntity(String.format(PROVIDERS_URL, port), List.class);
+    ResponseEntity<List> response = get(String.format(PROVIDERS_URL, okapiPort), List.class);
     assertEquals(2, requireNonNull(response.getBody()).size());
   }
 
   private StorageConfiguration buildConfiguration(String id) {
     return new StorageConfiguration()
       .id(id)
-      .name("RS1")
+      .name("Remote Storage")
       .providerName("Dematic")
-      .url("https://rs1.dematic.com")
+      .url("https://rs.dematic.com")
       .accessionDelay(2)
       .accessionTimeUnit(TimeUnits.MINUTES);
   }
 
   private StorageConfigurations fetchConfigurations() {
-    return restTemplate.getForObject(configurationsUrl, StorageConfigurations.class);
+    return get(configurationsUrl, StorageConfigurations.class).getBody();
   }
 }

@@ -1,7 +1,12 @@
 {
   "id": "@artifactId@-@version@",
   "name": "Remote storage API module",
-  "requires": [],
+  "requires": [
+    {
+      "id": "inventory",
+      "version": "10.7"
+    }
+  ],
   "provides": [
     {
       "id": "remote-storage-configurations",
@@ -82,7 +87,14 @@
       "handlers": [
         {
           "methods": ["POST"],
-          "pathPattern": "/_/tenant"
+          "pathPattern": "/_/tenant",
+          "modulePermissions": [
+            "users.collection.get",
+            "users.item.post",
+            "users.item.put",
+            "login.item.post",
+            "perms.users.item.post"
+          ]
         }, {
           "methods": ["DELETE"],
           "pathPattern": "/_/tenant"
@@ -174,6 +186,8 @@
       },
       { "name": "DB_HOST", "value": "postgres" },
       { "name": "DB_PORT", "value": "5432" },
+      { "name": "KAFKA_HOST", "value": "kafka"},
+      { "name": "KAFKA_PORT", "value": "9092"},
       { "name": "DB_USERNAME", "value": "folio_admin" },
       { "name": "DB_PASSWORD", "value": "folio_admin" },
       { "name": "DB_DATABASE", "value": "okapi_modules" },

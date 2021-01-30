@@ -45,14 +45,14 @@ public class AccessionQueueService {
       log.info("Event received: {}", asJsonString(event));
       if (isEffectiveLocationChanged(event)) {
         var item = event.getNewEntity();
+        var systemUserParameters = securityManagerService.getSystemUserParameters(event.getTenant());
         FolioExecutionScopeExecutionContextManager.beginFolioExecutionContext(
-      new AsyncFolioExecutionContext(securityManagerService.getSystemUserParameters(event.getTenant()), moduleMetadata));
+      new AsyncFolioExecutionContext(systemUserParameters, moduleMetadata));
         var locationMapping = locationMappingsService
           .getMappingByFolioLocationId(item.getEffectiveLocationId());
         if (Objects.nonNull(locationMapping)) {
           var instances = instancesClient.query("id==" + item.getInstanceId());
-          var instance = instances.getResult()
-            .get(0);
+          var instance = instances.getResult().get(0);
           var record = buildAccessionQueueRecord(item, instance, locationMapping);
           accessionQueueRepository.save(record);
           log.info("Record prepared and saved: {}", record);

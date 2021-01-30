@@ -137,7 +137,8 @@ public class ConfigurationsTest extends TestBase {
     exception = assertThrows(HttpClientErrorException.class, () -> get(urlWithRandomUuid, String.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
 
-    exception = assertThrows(HttpClientErrorException.class, () -> put(urlWithRandomUuid, buildConfiguration(randomUuid)));
+    var config = buildConfiguration(randomUuid);
+    exception = assertThrows(HttpClientErrorException.class, () -> put(urlWithRandomUuid, config));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
   }
 

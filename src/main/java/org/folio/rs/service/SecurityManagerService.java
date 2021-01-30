@@ -5,12 +5,9 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 
 import com.google.common.io.Resources;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,7 +18,6 @@ import org.folio.rs.client.PermissionsClient;
 import org.folio.rs.client.UsersClient;
 import org.folio.rs.domain.dto.Permission;
 import org.folio.rs.domain.dto.Permissions;
-import org.folio.rs.domain.dto.ResultList;
 import org.folio.rs.domain.dto.User;
 import org.folio.rs.domain.entity.SystemUserParameters;
 import org.folio.rs.repository.SystemUserParametersRepository;
@@ -29,9 +25,11 @@ import org.folio.spring.FolioModuleMetadata;
 import org.folio.spring.integration.XOkapiHeaders;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 
 @Component
@@ -46,9 +44,10 @@ public class SecurityManagerService {
   private final UsersClient usersClient;
   private final AuthnClient authnClient;
   private final SystemUserParametersRepository systemUserParametersRepository;
+  @PersistenceContext
+  private final EntityManager entityManager;
 
   private final FolioModuleMetadata moduleMetadata;
-  private static final Map<String, SystemUserParameters> parameters = new HashMap<>();
 
   public void prepareSystemUser(String username, String password, String okapiUrl, String tenantId) {
 
@@ -72,8 +71,8 @@ public class SecurityManagerService {
   }
 
   private String loginSystemUser(SystemUserParameters params) {
-    ResponseEntity<String> response = authnClient.getApiKey(params);
-    List<String> headers = response.getHeaders().get(XOkapiHeaders.TOKEN);
+    var response = authnClient.getApiKey(params);
+    var headers = response.getHeaders().get(XOkapiHeaders.TOKEN);
     if (CollectionUtils.isEmpty(headers)) {
       throw new IllegalStateException(String.format("User [%s] cannot log in", params.getUsername()));
     } else {
@@ -97,22 +96,20 @@ public class SecurityManagerService {
 
   @Cacheable(value = "systemUserParameters")
   public SystemUserParameters getSystemUserParameters(String tenantId) {
-    return systemUserParametersRepository.getFirstByTenantId(tenantId).stream()
-      .findAny().orElseThrow(() -> {
-        log.error("System User haven't been created");
-        return new IllegalStateException(String.format("System User cannot be found for tenant [%s]", tenantId));
-      });
+    final String sqlQuery = "SELECT * FROM " + moduleMetadata.getDBSchemaName(tenantId) + ".system_user_parameters";
+    var query = entityManager.createNativeQuery(sqlQuery, SystemUserParameters.class);
+    return (SystemUserParameters) query.getSingleResult();
   }
 
   private Optional<User> getFolioUser(String username) {
-    String query = "username==" + username;
-    ResultList<User> results = usersClient.query(query);
+    var query = "username==" + username;
+    var results = usersClient.query(query);
     return results.getResult().stream().findFirst();
   }
 
   private String createFolioUser(String username) {
-    final User user = createUserObject(username);
-    final String id = user.getId();
+    final var user = createUserObject(username);
+    final var id = user.getId();
     usersClient.saveUser(user);
     return id;
   }
@@ -148,14 +145,14 @@ public class SecurityManagerService {
   }
 
   private void addPermissions(String userId) {
-    List<String> permissions = readPermissionsFromResource(PERMISSIONS_FILE_PATH);
+    var permissions = readPermissionsFromResource(PERMISSIONS_FILE_PATH);
 
     if (isEmpty(permissions)) {
       throw new IllegalStateException("No permissions found to assign to user with id: " + userId);
     }
 
     permissions.forEach(permission -> {
-      Permission p = new Permission();
+      var p = new Permission();
       p.setPermissionName(permission);
       permissionsClient.addPermission(userId, p);
     });
@@ -163,7 +160,7 @@ public class SecurityManagerService {
 
   private List<String> readPermissionsFromResource(String path) {
     List<String> permissions = new ArrayList<>();
-    URL url = Resources.getResource(path);
+    var url = Resources.getResource(path);
 
     try {
       permissions = Resources.readLines(url, StandardCharsets.UTF_8);
@@ -175,7 +172,7 @@ public class SecurityManagerService {
   }
 
   private User createUserObject(String username) {
-    final User user = new User();
+    final var user = new User();
 
     user.setId(UUID.randomUUID()
       .toString());

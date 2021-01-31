@@ -89,9 +89,9 @@ public class SecurityManagerService {
       .tenantId(tenantId).build();
   }
 
-  @CachePut(value = "systemUserParameters", key="#params.tenantId")
-  private void saveSystemUserParameters(SystemUserParameters systemUserParameters) {
-    systemUserParametersRepository.save(systemUserParameters);
+  @CachePut(value = "systemUserParameters", key="#systemUserParams.tenantId")
+  private void saveSystemUserParameters(SystemUserParameters systemUserParams) {
+    systemUserParametersRepository.save(systemUserParams);
   }
 
   @Cacheable(value = "systemUserParameters", key="#tenantId")

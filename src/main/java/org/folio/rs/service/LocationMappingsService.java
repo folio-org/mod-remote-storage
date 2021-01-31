@@ -22,13 +22,13 @@ public class LocationMappingsService {
   private final LocationMappingsRepository locationMappingsRepository;
   private final LocationMappingsMapper locationMappingsMapper;
 
-  @CachePut("mappings")
+  @CachePut(value = "mappings", key = "#locationMapping.folioLocationId")
   public LocationMapping postMapping(LocationMapping locationMapping) {
     return locationMappingsMapper
       .mapEntityToDto(locationMappingsRepository.save(locationMappingsMapper.mapDtoToEntity(locationMapping)));
   }
 
-  @Cacheable("mappings")
+  @Cacheable(value = "mappings", key = "#folioLocationId")
   public LocationMapping getMappingByFolioLocationId(String folioLocationId) {
     var id = UUID.fromString(folioLocationId);
     return locationMappingsRepository.findById(id).map(locationMappingsMapper::mapEntityToDto).orElse(null);
@@ -39,9 +39,9 @@ public class LocationMappingsService {
     return locationMappingsMapper.mapEntitiesToMappingCollection(mappings);
   }
 
-  @CacheEvict("mappings")
-  public void deleteMappingById(String mappingId) {
-    var id = UUID.fromString(mappingId);
+  @CacheEvict(value = "mappings", key = "#folioLocationId")
+  public void deleteMappingById(String folioLocationId) {
+    var id = UUID.fromString(folioLocationId);
     locationMappingsRepository.deleteById(id);
   }
 }

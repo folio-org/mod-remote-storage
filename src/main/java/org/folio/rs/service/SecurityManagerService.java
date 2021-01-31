@@ -89,12 +89,12 @@ public class SecurityManagerService {
       .tenantId(tenantId).build();
   }
 
-  @CachePut(value = "systemUserParameters", key="#params.tenantId")
-  private void saveSystemUserParameters(SystemUserParameters params) {
-    systemUserParametersRepository.save(params);
+  @CachePut(value = "systemUserParameters", key="#systemUserParams.tenantId")
+  private void saveSystemUserParameters(SystemUserParameters systemUserParams) {
+    systemUserParametersRepository.save(systemUserParams);
   }
 
-  @Cacheable(value = "systemUserParameters")
+  @Cacheable(value = "systemUserParameters", key="#tenantId")
   public SystemUserParameters getSystemUserParameters(String tenantId) {
     final String sqlQuery = "SELECT * FROM " + moduleMetadata.getDBSchemaName(tenantId) + ".system_user_parameters";
     var query = em.createNativeQuery(sqlQuery, SystemUserParameters.class); //NOSONAR

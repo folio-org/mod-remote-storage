@@ -29,18 +29,14 @@ public class ConfigurationsService {
   private final ConfigurationsRepository configurationsRepository;
   private final ConfigurationsMapper configurationsMapper;
 
-  @CacheEvict("configurations")
-  public void deleteConfigurationById(String configId) {
-    var id = UUID.fromString(configId);
-
-    configurationsRepository.deleteById(id);
+  @CacheEvict(value = "configurations", key = "#id")
+  public void deleteConfigurationById(String id) {
+    configurationsRepository.deleteById(UUID.fromString(id));
   }
 
-  @Cacheable("configurations")
-  public StorageConfiguration getConfigurationById(String configId) {
-    var id = UUID.fromString(configId);
-
-    return configurationsRepository.findById(id).map(configurationsMapper::mapEntityToDto).orElse(null);
+  @Cacheable(value = "configurations", key = "#id")
+  public StorageConfiguration getConfigurationById(String id) {
+    return configurationsRepository.findById(UUID.fromString(id)).map(configurationsMapper::mapEntityToDto).orElse(null);
   }
 
   public StorageConfigurations getConfigurations(Integer offset, Integer limit) {
@@ -49,7 +45,7 @@ public class ConfigurationsService {
     return configurationsMapper.mapEntitiesToRemoteConfigCollection(configurationList);
   }
 
-  @CachePut("configurations")
+  @CachePut(value = "configurations", key = "#storageConfiguration.id")
   public StorageConfiguration postConfiguration(StorageConfiguration storageConfiguration) {
     if (isNull(storageConfiguration.getId())) {
       storageConfiguration.id(randomIdAsString());
@@ -60,9 +56,9 @@ public class ConfigurationsService {
     return configurationsMapper.mapEntityToDto(configurationsRepository.save(configuration));
   }
 
-  @CachePut("configurations")
-  public void updateConfiguration(String configId, StorageConfiguration storageConfiguration) {
-    if (configId.equals(storageConfiguration.getId())) {
+  @CachePut(value = "configurations", key = "#storageConfiguration.id")
+  public void updateConfiguration(String id, StorageConfiguration storageConfiguration) {
+    if (id.equals(storageConfiguration.getId())) {
       var configuration = configurationsMapper.mapDtoToEntity(storageConfiguration);
       configurationsRepository.save(copyForUpdate(configurationsRepository.getOne(configuration.getId()), configuration));
     } else {

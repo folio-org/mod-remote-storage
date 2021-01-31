@@ -48,14 +48,17 @@ public class AccessionQueueService {
         var systemUserParameters = securityManagerService.getSystemUserParameters(event.getTenant());
         FolioExecutionScopeExecutionContextManager.beginFolioExecutionContext(
       new AsyncFolioExecutionContext(systemUserParameters, moduleMetadata));
+        var effectiveLocationId = item.getEffectiveLocationId();
         var locationMapping = locationMappingsService
-          .getMappingByFolioLocationId(item.getEffectiveLocationId());
+          .getMappingByFolioLocationId(effectiveLocationId);
         if (Objects.nonNull(locationMapping)) {
           var instances = instancesClient.query("id==" + item.getInstanceId());
           var instance = instances.getResult().get(0);
           var record = buildAccessionQueueRecord(item, instance, locationMapping);
           accessionQueueRepository.save(record);
           log.info("Record prepared and saved: {}", record);
+        } else {
+          log.info("Location mapping with id={} not found. Accession queue record not created.", effectiveLocationId);
         }
       }
     });
@@ -68,10 +71,12 @@ public class AccessionQueueService {
    * @return true if effective location is changed, otherwise - false
    */
   private boolean isEffectiveLocationChanged(DomainEvent domainEvent) {
-    return !Objects.equals(domainEvent.getOldEntity()
+    var isEffectiveLocationChanged = !Objects.equals(domainEvent.getOldEntity()
         .getEffectiveLocationId(),
       domainEvent.getNewEntity()
         .getEffectiveLocationId());
+    log.info("isEffectiveLocationChanged: {}", isEffectiveLocationChanged);
+    return isEffectiveLocationChanged;
   }
 
   /**

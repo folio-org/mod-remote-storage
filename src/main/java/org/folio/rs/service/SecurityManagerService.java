@@ -127,7 +127,7 @@ public class SecurityManagerService {
 
     authnClient.saveCredentials(systemUserParameters);
 
-    log.info("Saved credentials for user: [{}]", systemUserParameters);
+    log.info("Saved credentials for user: [{}]", systemUserParameters.getUsername());
   }
 
   private boolean assignPermissions(String userId) {

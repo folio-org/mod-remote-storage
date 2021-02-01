@@ -32,8 +32,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Log4j2
 @RestController("folioTenantController")
-@RequiredArgsConstructor
 @RequestMapping(value = "/_/")
+@RequiredArgsConstructor
 public class TenantController implements TenantApi {
 
   public static final String PARAMETER_LOAD_SAMPLE = "loadSample";
@@ -95,8 +95,7 @@ public class TenantController implements TenantApi {
     return filenames.stream()
       .map(fileName -> {
         try {
-          return new ObjectMapper()
-            .readValue(new ClassPathResource(SAMPLES_DIR + "/" + fileName).getFile(), type);
+          return new ObjectMapper().readValue(new ClassPathResource(SAMPLES_DIR + "/" + fileName).getFile(), type);
         } catch (IOException e) {
           log.error("Error loading " + fileName, e);
           return null;

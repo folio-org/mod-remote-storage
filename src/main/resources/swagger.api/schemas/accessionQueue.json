@@ -1,0 +1,47 @@
+{
+  "description": "Accession queue",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "Accession queue id",
+      "$ref": "uuid.json"
+    },
+    "itemBarcode": {
+      "description": "Accession queue name",
+      "type": "string"
+    },
+    "createdDateTime": {
+      "description": "Created Date",
+      "type": "string",
+      "format": "date-time"
+    },
+    "accessionedDateTime": {
+      "description": "Accessioned Date",
+      "type": "string",
+      "format": "date-time"
+    },
+    "remoteStorageId": {
+      "description": "Remote storage id",
+      "$ref": "uuid.json"
+    },
+    "callNumber": {
+      "description": "Call number",
+      "type": "string"
+    },
+    "instanceTitle": {
+      "description": "Instance title",
+      "type": "string"
+    },
+    "instanceAuthor": {
+      "description": "Instance author",
+      "type": "string"
+    },
+    "metadata": {
+      "description": "Entity metadata",
+      "type": "object",
+      "$ref": "metadata.json"
+    }
+  },
+  "additionalProperties": false,
+  "required": []
+}

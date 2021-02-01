@@ -23,6 +23,8 @@ import org.folio.rs.domain.entity.SystemUserParameters;
 import org.folio.rs.repository.SystemUserParametersRepository;
 import org.folio.spring.FolioModuleMetadata;
 import org.folio.spring.integration.XOkapiHeaders;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -87,12 +89,12 @@ public class SecurityManagerService {
       .tenantId(tenantId).build();
   }
 
-//  @CachePut(value = "systemUserParameters", key="#systemUserParams.tenantId")
+  @CachePut(value = "systemUserParameters", key="#systemUserParams.tenantId")
   private void saveSystemUserParameters(SystemUserParameters systemUserParams) {
     systemUserParametersRepository.save(systemUserParams);
   }
 
-//  @Cacheable(value = "systemUserParameters", key="#tenantId")
+  @Cacheable(value = "systemUserParameters", key="#tenantId")
   public SystemUserParameters getSystemUserParameters(String tenantId) {
     final String sqlQuery = "SELECT * FROM " + moduleMetadata.getDBSchemaName(tenantId) + ".system_user_parameters";
     var query = em.createNativeQuery(sqlQuery, SystemUserParameters.class); //NOSONAR

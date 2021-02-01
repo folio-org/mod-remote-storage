@@ -13,6 +13,9 @@ import org.folio.rs.error.IdMismatchException;
 import org.folio.rs.mapper.ConfigurationsMapper;
 import org.folio.rs.repository.ConfigurationsRepository;
 import org.folio.spring.data.OffsetRequest;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -26,12 +29,12 @@ public class ConfigurationsService {
   private final ConfigurationsRepository configurationsRepository;
   private final ConfigurationsMapper configurationsMapper;
 
-//  @CacheEvict(value = "configurations", key = "#id")
+  @CacheEvict(value = "configurations", key = "#id")
   public void deleteConfigurationById(String id) {
     configurationsRepository.deleteById(UUID.fromString(id));
   }
 
-//  @Cacheable(value = "configurations", key = "#id")
+  @Cacheable(value = "configurations", key = "#id")
   public StorageConfiguration getConfigurationById(String id) {
     return configurationsRepository.findById(UUID.fromString(id)).map(configurationsMapper::mapEntityToDto).orElse(null);
   }
@@ -42,7 +45,7 @@ public class ConfigurationsService {
     return configurationsMapper.mapEntitiesToRemoteConfigCollection(configurationList);
   }
 
-//  @CachePut(value = "configurations", key = "#storageConfiguration.id")
+  @CachePut(value = "configurations", key = "#storageConfiguration.id")
   public StorageConfiguration postConfiguration(StorageConfiguration storageConfiguration) {
     if (isNull(storageConfiguration.getId())) {
       storageConfiguration.id(randomIdAsString());
@@ -53,7 +56,7 @@ public class ConfigurationsService {
     return configurationsMapper.mapEntityToDto(configurationsRepository.save(configuration));
   }
 
-//  @CachePut(value = "configurations", key = "#storageConfiguration.id")
+  @CachePut(value = "configurations", key = "#storageConfiguration.id")
   public void updateConfiguration(String id, StorageConfiguration storageConfiguration) {
     if (id.equals(storageConfiguration.getId())) {
       var configuration = configurationsMapper.mapDtoToEntity(storageConfiguration);
@@ -65,7 +68,9 @@ public class ConfigurationsService {
 
   private Configuration copyForUpdate(Configuration dest, Configuration source) {
     dest.setProviderName(source.getProviderName());
+    dest.setName(source.getName());
     dest.setUrl(source.getUrl());
+    dest.setStatusUrl(source.getStatusUrl());
     dest.setAccessionDelay(source.getAccessionDelay());
     dest.setAccessionTimeUnit(source.getAccessionTimeUnit());
     dest.setUpdatedByUserId(source.getUpdatedByUserId());

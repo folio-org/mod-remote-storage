@@ -1,4 +1,4 @@
-package org.folio.rs.config.properties;//package org.folio.rs.config.properties;
+package org.folio.rs.config.properties;
 
 import java.util.Map;
 

@@ -1,6 +1,5 @@
 package org.folio.rs.config;
 
-import feign.Logger;
 import org.folio.rs.client.EnrichHeadersClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

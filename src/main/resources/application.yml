@@ -24,14 +24,6 @@ spring:
   flyway:
     enabled: false
 
-logging:
-  level:
-    project:
-      org:
-        folio:
-          rs:
-            client:
-              EnrichHeadersClient: DEBUG
 feign:
   client:
     config:

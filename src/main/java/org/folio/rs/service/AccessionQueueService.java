@@ -3,6 +3,7 @@ package org.folio.rs.service;
 import static java.util.Optional.ofNullable;
 import static org.folio.rs.util.MapperUtils.stringToUUIDSafe;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,45 +15,24 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.rs.client.InstancesClient;
-import org.folio.rs.domain.dto.AccessionQueues;
 import org.folio.rs.domain.AsyncFolioExecutionContext;
+import org.folio.rs.domain.dto.AccessionQueues;
 import org.folio.rs.domain.dto.Contributor;
-import org.folio.rs.domain.dto.FilterData;
+import org.folio.rs.domain.dto.DomainEvent;
 import org.folio.rs.domain.dto.EffectiveCallNumberComponents;
+import org.folio.rs.domain.dto.FilterData;
 import org.folio.rs.domain.dto.Instance;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
-import org.folio.rs.domain.entity.DomainEvent;
-import org.folio.rs.dto.EffectiveCallNumberComponents;
-import org.folio.rs.dto.Item;
 import org.folio.rs.mapper.AccessionQueueMapper;
-import org.folio.rs.domain.dto.DomainEvent;
 import org.folio.rs.repository.AccessionQueueRepository;
-import org.folio.spring.data.OffsetRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.domain.PageRequest;
 import org.folio.spring.FolioModuleMetadata;
-import org.folio.spring.scope.FolioExecutionScopeExecutionContextManager;
-import static org.folio.rs.util.MapperUtils.stringToUUIDSafe;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Optional;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.criteria.Predicate;
-import org.folio.rs.domain.dto.AccessionQueues;
-import org.folio.rs.domain.dto.FilterData;
-import org.folio.rs.mapper.AccessionQueueMapper;
 import org.folio.spring.data.OffsetRequest;
+import org.folio.spring.scope.FolioExecutionScopeExecutionContextManager;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -76,7 +56,7 @@ public class AccessionQueueService {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-  public void processAccessionQueueRecord(List<DomainEvent> events) {
+  public void processAccessionQueueRecord(List<org.folio.rs.domain.dto.DomainEvent> events) {
     log.info("Starting processing events...");
     events.forEach(event -> {
       log.info("Event received: {}", asJsonString(event));

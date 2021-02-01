@@ -4,25 +4,25 @@ import static org.folio.rs.util.MapperUtils.stringToUUIDSafe;
 import static org.folio.rs.util.Utils.randomIdAsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang.StringUtils;
 import org.folio.rs.TestBase;
 import org.folio.rs.domain.dto.AccessionQueues;
+import org.folio.rs.domain.dto.DomainEvent;
+import org.folio.rs.domain.dto.DomainEventType;
 import org.folio.rs.domain.dto.EffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
-import org.folio.rs.domain.dto.DomainEvent;
-import org.folio.rs.domain.dto.DomainEventType;
 import org.folio.rs.repository.AccessionQueueRepository;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -30,13 +30,28 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.HttpClientErrorException;
 
 @ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Log4j2
+@Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:ClearTestData.sql")
 public class AccessionQueueServiceTest extends TestBase {
+
+  private static final String CALL_NUMBER = "+1-111-22-33";
+  private static final String BARCODE = "1234567890";
+  private static final String INSTANCE_ID = "a89eccf0-57a6-495e-898d-32b9b2210f2f";
+  private static final String OLD_EFFECTIVE_LOCATION_ID = "59a54d96-2563-4f55-a6b0-fb23cb5760af";
+  private static final String NEW_EFFECTIVE_LOCATION_ID = "cefb6261-a8d7-44f1-8264-90667d6c45d3";
+  private static final String REMOTE_STORAGE_ID = "0f976099-2c7a-48ca-9271-3523905eab6b";
+  private static final String INSTANCE_AUTHOR = "Pratchett, Terry";
+  private static final String INSTANCE_TITLE = "Interesting Times";
+  private static final String ACCESSION_RECORD_0_ID = "4a38cc7d-b8c8-4a43-ad07-14c784dfbcbb";
+  private static final String ACCESSION_RECORD_1_ID = "5a38cc7d-b8c8-4a43-ad07-14c784dfbcbb";
+  private static final String ACCESSION_URL = "http://localhost:%s/remote-storage/accessions";
+  private String formattedAccessionUrl;
 
   @Autowired
   private AccessionQueueRepository accessionQueueRepository;
@@ -44,25 +59,6 @@ public class AccessionQueueServiceTest extends TestBase {
   private LocationMappingsService locationMappingsService;
   @Autowired
   private AccessionQueueService accessionQueueService;
-
-  public static final String CALL_NUMBER = "+1-111-22-33";
-  public static final String BARCODE = "1234567890";
-
-  public static final String INSTANCE_ID = "a89eccf0-57a6-495e-898d-32b9b2210f2f";
-  public static final String OLD_EFFECTIVE_LOCATION_ID = "59a54d96-2563-4f55-a6b0-fb23cb5760af";
-  public static final String NEW_EFFECTIVE_LOCATION_ID = "cefb6261-a8d7-44f1-8264-90667d6c45d3";
-  public static final String REMOTE_STORAGE_ID = "0f976099-2c7a-48ca-9271-3523905eab6b";
-
-  public static final String INSTANCE_AUTHOR = "Pratchett, Terry";
-  public static final String INSTANCE_TITLE = "Interesting Times";
-
-  private static final String ACCESSION_RECORD_0_ID = "4a38cc7d-b8c8-4a43-ad07-14c784dfbcbb";
-  private static final String ACCESSION_RECORD_1_ID = "5a38cc7d-b8c8-4a43-ad07-14c784dfbcbb";
-
-  private static final String ACCESSION_URL = "http://localhost:%s/remote-storage/accessions";
-
-  private String formattedAccessionUrl;
-
 
   @BeforeEach
   void prepareUrl() {
@@ -112,10 +108,11 @@ public class AccessionQueueServiceTest extends TestBase {
     verifyCreatedAccessionQueueRecord(actualAccessionQueueRecord);
 
   }
+
   @Test
-  void shouldFindAccessionQueuesByRemoteStorageId() throws JsonProcessingException {
-    createBaseAccessionQueueRecord();
-    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID), false));
+  void shouldFindAccessionQueuesByRemoteStorageId() {
+    accessionQueueRepository.save(createBaseAccessionQueueRecord());
+    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID)));
 
     ResponseEntity<AccessionQueues> responseEntity = get(formattedAccessionUrl +"?storageId=" + REMOTE_STORAGE_ID, AccessionQueues.class);
     assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().get(0).getRemoteStorageId(), equalTo(REMOTE_STORAGE_ID));
@@ -124,88 +121,145 @@ public class AccessionQueueServiceTest extends TestBase {
   }
 
   @Test
-  void shouldFindAccessionQueuesByAccessionedFlagTrue() {
-    createBaseAccessionQueueRecord();
-    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID), true));
+  void shouldFindAccessionQueuesWithAccessionDateTime() {
+    accessionQueueRepository.save(createBaseAccessionQueueRecord());
+    AccessionQueueRecord accessionQueueRecord = buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID));
+    accessionQueueRecord.setAccessionedDateTime(LocalDateTime.now());
+    accessionQueueRepository.save(accessionQueueRecord);
 
     ResponseEntity<AccessionQueues> responseEntity = get(formattedAccessionUrl + "?accessioned=true", AccessionQueues.class);
-    //assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().get(0).getAccessioned(), equalTo(true)); //TODO
+
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().get(0), notNullValue());
     assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(1));
     assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(1));
   }
 
   @Test
-  void shouldFindAccessionQueuesByAccessionedFlagFalse() {
-    createBaseAccessionQueueRecord();
-    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID), false));
-
-    ResponseEntity<AccessionQueues> responseEntity = get(formattedAccessionUrl + "?accessioned=false", AccessionQueues.class);
-    assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(2));
-    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(2));
-  }
-
-  @Test
   void shouldFindAccessionQueuesWithOffset() {
-    createBaseAccessionQueueRecord();
-    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID), false));
+    accessionQueueRepository.save(createBaseAccessionQueueRecord());
+    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID)));
 
     ResponseEntity<AccessionQueues> responseEntity = get(formattedAccessionUrl + "?offset=1", AccessionQueues.class);
     assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(2));
-    //    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(1));  //todo fix for search with only pagination values
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(1));
   }
 
   @Test
   void shouldFindAccessionQueuesWithLimit() {
-    createBaseAccessionQueueRecord();
-    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID), false));
+    accessionQueueRepository.save(createBaseAccessionQueueRecord());
+    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID)));
 
     ResponseEntity<AccessionQueues> responseEntity = get(formattedAccessionUrl + "?limit=1", AccessionQueues.class);
     assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(2));
-    //    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(1)); //todo fix for search with only pagination values
-  }
-
-  private void createBaseAccessionQueueRecord() {
-    AccessionQueueRecord accessionQueueRecord = new AccessionQueueRecord();
-    accessionQueueRecord.setId(stringToUUIDSafe(ACCESSION_RECORD_0_ID));
-    accessionQueueRepository.save(accessionQueueRecord);
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(1));
   }
 
   @Test
-  void shouldSetAccessioned() {
+  void shouldSetAccessionedById() {
     UUID id = UUID.randomUUID();
-    accessionQueueRepository.save(buildAccessionQueueRecord(id, false));
+    accessionQueueRepository.save(buildAccessionQueueRecord(id));
 
-    //put(formattedAccessionUrl + "/" + id,null); //TODO
+    put(formattedAccessionUrl + "/id/" + id,null);
 
     var actualAccessionQueueRecord = accessionQueueRepository.findAll().get(0);
     assertThat(actualAccessionQueueRecord.getAccessionedDateTime(), notNullValue());
-//    assertTrue(actualAccessionQueueRecord.isAccessioned(), StringUtil.EMPTY_STRING);
+  }
+
+  @Test
+  void shouldSetAccessionedByBarcode() {
+    accessionQueueRepository.save(buildAccessionQueueRecord(UUID.randomUUID()));
+
+    put(formattedAccessionUrl + "/barcode/" + BARCODE,null);
+
+    var actualAccessionQueueRecord = accessionQueueRepository.findAll().get(0);
+    assertThat(actualAccessionQueueRecord.getItemBarcode(), equalTo(BARCODE));
+    assertThat(actualAccessionQueueRecord.getAccessionedDateTime(), notNullValue());
   }
 
   @Test
   void shouldThrowNotFoundExceptionWhenIdDoesNotExist() {
-    accessionQueueRepository.save(buildAccessionQueueRecord(UUID.randomUUID(),false));
+    accessionQueueRepository.save(buildAccessionQueueRecord(UUID.randomUUID()));
+    String url = formattedAccessionUrl + "/id/" + UUID.randomUUID();
 
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
-      put(formattedAccessionUrl + "/" + UUID.randomUUID(),null));
+        put(url,null));
 
-    assertThat(exception.getStatusCode(), is(HttpStatus.NOT_FOUND));
+    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.NOT_FOUND));
   }
 
-  private AccessionQueueRecord buildAccessionQueueRecord(UUID id, Boolean accessioned) {
+  @Test
+  void shouldThrowNotFoundExceptionWhenAccessionQueueIsAlreadyAccessioned() {
+    UUID id = UUID.randomUUID();
+    AccessionQueueRecord accessionQueueRecord = buildAccessionQueueRecord(id);
+    accessionQueueRecord.setAccessionedDateTime(LocalDateTime.now());
+    accessionQueueRepository.save(accessionQueueRecord);
+    String url = formattedAccessionUrl + "/id/" + id;
+
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
+        put(url,null));
+
+    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.NOT_FOUND));
+  }
+
+  @Test
+  void shouldThrowNotFoundExceptionWhenBarcodeDoesNotExist() {
+    accessionQueueRepository.save(buildAccessionQueueRecord(UUID.randomUUID()));
+    String url = formattedAccessionUrl + "/barcode/" + UUID.randomUUID();
+
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
+        put(url,null));
+
+    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.NOT_FOUND));
+  }
+
+  @Test
+  void shouldFindAccessionQueuesByCreatedDate() {
+    LocalDateTime createdDate = LocalDateTime.now();
+    AccessionQueueRecord accessionQueueRecord = createBaseAccessionQueueRecord();
+    accessionQueueRecord.setCreatedDateTime(createdDate);
+    accessionQueueRepository.save(accessionQueueRecord);
+
+    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID)));
+
+    ResponseEntity<AccessionQueues> responseEntity = get(formattedAccessionUrl + "?createdDate=" + createdDate, AccessionQueues.class);
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(1));
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(1));
+  }
+
+  @Test
+  void shouldThrowBadRequestExceptionWhenCreateDateHasWrongFormat() {
+    LocalDateTime createdDate = LocalDateTime.now();
+    AccessionQueueRecord accessionQueueRecord = createBaseAccessionQueueRecord();
+    accessionQueueRecord.setCreatedDateTime(createdDate);
+    accessionQueueRepository.save(accessionQueueRecord);
+    accessionQueueRepository
+        .save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID)));
+
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
+        get(formattedAccessionUrl + "?createdDate=123", AccessionQueues.class), StringUtils.EMPTY);
+
+    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.BAD_REQUEST));
+  }
+
+  private AccessionQueueRecord createBaseAccessionQueueRecord() {
+    AccessionQueueRecord accessionQueueRecord = new AccessionQueueRecord();
+    accessionQueueRecord.setId(stringToUUIDSafe(ACCESSION_RECORD_0_ID));
+    return accessionQueueRecord;
+  }
+
+  private AccessionQueueRecord buildAccessionQueueRecord(UUID id) {
     return AccessionQueueRecord.builder()
-      .id(id)
-      .remoteStorageId(UUID.fromString(REMOTE_STORAGE_ID))
-//      .accessioned(accessioned) //TODO
-      .build();
+        .id(id)
+        .remoteStorageId(UUID.fromString(REMOTE_STORAGE_ID))
+        .itemBarcode(BARCODE)
+        .build();
   }
 
   private static void verifyCreatedAccessionQueueRecord(AccessionQueueRecord accessionQueueRecord) {
     assertThat(accessionQueueRecord.getId(), notNullValue());
     assertThat(accessionQueueRecord.getItemBarcode(), equalTo(BARCODE));
     assertThat(accessionQueueRecord.getCallNumber(), equalTo(CALL_NUMBER));
-    assertThat(accessionQueueRecord.getRemoteStorageId(),
-      equalTo(UUID.fromString(REMOTE_STORAGE_ID)));
+    assertThat(accessionQueueRecord.getRemoteStorageId(), equalTo(UUID.fromString(REMOTE_STORAGE_ID)));
     assertThat(accessionQueueRecord.getInstanceAuthor(), equalTo(INSTANCE_AUTHOR));
     assertThat(accessionQueueRecord.getInstanceTitle(), equalTo(INSTANCE_TITLE));
   }

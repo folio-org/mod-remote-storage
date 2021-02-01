@@ -47,4 +47,4 @@ application:
         group-id: mod-remote-storage-items-group
 
 server.port: 8081
-folio.tenant.validation.enabled: true
+folio.tenant.validation.enabled: false

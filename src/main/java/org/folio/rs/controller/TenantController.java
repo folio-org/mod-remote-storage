@@ -15,7 +15,6 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
-import org.folio.rs.domain.entity.GlobalValue;
 import org.folio.rs.service.ConfigurationsService;
 import org.folio.rs.service.LocationMappingsService;
 import org.folio.rs.service.SecurityManagerService;

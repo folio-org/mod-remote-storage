@@ -42,6 +42,19 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.domain.PageRequest;
 import org.folio.spring.FolioModuleMetadata;
 import org.folio.spring.scope.FolioExecutionScopeExecutionContextManager;
+import static org.folio.rs.util.MapperUtils.stringToUUIDSafe;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Optional;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.criteria.Predicate;
+import org.folio.rs.domain.dto.AccessionQueues;
+import org.folio.rs.domain.dto.FilterData;
+import org.folio.rs.mapper.AccessionQueueMapper;
+import org.folio.spring.data.OffsetRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -123,15 +136,13 @@ public class AccessionQueueService {
   }
 
   /**
-   * This method builds {@link AccessionQueueRecord} based on data from {@link Item} and
-   * corresponding {@link Instance}
+   * This method builds {@link AccessionQueueRecord} based on data from {@link Item} and corresponding {@link Instance}
    *
-   * @param item {@link Item} entity
+   * @param item     {@link Item} entity
    * @param instance {@link Instance} entity
    * @return accession queue record with populated data
    */
-  private AccessionQueueRecord buildAccessionQueueRecord(Item item, Instance instance,
-    LocationMapping locationMapping) {
+  private AccessionQueueRecord buildAccessionQueueRecord(Item item, Instance instance, LocationMapping locationMapping) {
     return AccessionQueueRecord.builder()
       .id(UUID.randomUUID())
       .itemBarcode(item.getBarcode())
@@ -148,30 +159,6 @@ public class AccessionQueueService {
       .build();
   }
 
-  @SneakyThrows
-  private String asJsonString(Object value) {
-    return OBJECT_MAPPER.writeValueAsString(value);
-  }
-
-  public AccessionQueues getAccessions(FilterData filterData) {
-    AccessionQueueRecord queueRecord = getAccessionQueueSearchModel(filterData);
-    var queueRecords = accessionQueueRepository.findAll(Example.of(queueRecord),
-        new OffsetRequest(filterData.getOffset(), filterData.getLimit(), Sort.unsorted()));
-    return accessionQueueMapper.mapEntitiesToAccessionQueueCollection(queueRecords);
-  }
-
-  private AccessionQueueRecord getAccessionQueueSearchModel(FilterData filterData) {
-    AccessionQueueRecord queueRecord = new AccessionQueueRecord();
-    if (Objects.nonNull(filterData.getAccessioned())) {
-      queueRecord.setAccessioned(filterData.getAccessioned());
-    }
-    if (Objects.nonNull(filterData.getStorageId())) {
-      queueRecord.setRemoteStorageId(stringToUUIDSafe(filterData.getStorageId()));
-    }
-    if (Objects.nonNull(filterData.getCreateDate())) {
-      queueRecord.setCreatedDateTime(LocalDateTime.parse(filterData.getCreateDate()));
-    }
-    return queueRecord;
   private Specification<AccessionQueueRecord> getCriteriaSpecification(FilterData filterData){
     return (record, criteriaQuery, builder) -> {
       final Collection<Predicate> predicates = new ArrayList<>();
@@ -203,5 +190,10 @@ public class AccessionQueueService {
 
   private Specification<AccessionQueueRecord> hasId(String id) {
     return (record, criteria, builder) -> builder.equal(record.get(ID), stringToUUIDSafe(id));
+  }
+
+  @SneakyThrows
+  private String asJsonString(Object value) {
+    return OBJECT_MAPPER.writeValueAsString(value);
   }
 }

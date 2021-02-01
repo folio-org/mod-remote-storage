@@ -15,6 +15,7 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
+import org.folio.rs.domain.entity.GlobalValue;
 import org.folio.rs.service.ConfigurationsService;
 import org.folio.rs.service.LocationMappingsService;
 import org.folio.rs.service.SecurityManagerService;
@@ -32,8 +33,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Log4j2
 @RestController("folioTenantController")
-@RequiredArgsConstructor
 @RequestMapping(value = "/_/")
+@RequiredArgsConstructor
 public class TenantController implements TenantApi {
 
   public static final String PARAMETER_LOAD_SAMPLE = "loadSample";
@@ -95,8 +96,7 @@ public class TenantController implements TenantApi {
     return filenames.stream()
       .map(fileName -> {
         try {
-          return new ObjectMapper()
-            .readValue(new ClassPathResource(SAMPLES_DIR + "/" + fileName).getFile(), type);
+          return new ObjectMapper().readValue(new ClassPathResource(SAMPLES_DIR + "/" + fileName).getFile(), type);
         } catch (IOException e) {
           log.error("Error loading " + fileName, e);
           return null;

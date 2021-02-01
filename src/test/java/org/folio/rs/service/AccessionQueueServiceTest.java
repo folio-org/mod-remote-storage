@@ -1,25 +1,18 @@
 package org.folio.rs.service;
 
 import static org.folio.rs.util.MapperUtils.stringToUUIDSafe;
-import static org.folio.rs.util.Utils.randomIdAsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang.StringUtils;
 import org.folio.rs.TestBase;
 import org.folio.rs.domain.dto.AccessionQueues;
-import org.folio.rs.domain.dto.DomainEvent;
-import org.folio.rs.domain.dto.DomainEventType;
-import org.folio.rs.domain.dto.EffectiveCallNumberComponents;
-import org.folio.rs.domain.dto.Item;
-import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
 import org.folio.rs.repository.AccessionQueueRepository;
 import org.hamcrest.Matchers;
@@ -66,48 +59,48 @@ public class AccessionQueueServiceTest extends TestBase {
   }
 
 
-  @Test
-  void testItemUpdatingEventHandling() {
-
-    var locationMapping = new LocationMapping();
-    locationMapping.setFolioLocationId(NEW_EFFECTIVE_LOCATION_ID);
-    locationMapping.setConfigurationId(REMOTE_STORAGE_ID);
-    locationMappingsService.postMapping(locationMapping);
-
-    var originalItem = new Item().withEffectiveLocationId(OLD_EFFECTIVE_LOCATION_ID)
-      .withInstanceId(INSTANCE_ID)
-      .withBarcode(BARCODE)
-      .withEffectiveCallNumberComponents(
-        new EffectiveCallNumberComponents().withCallNumber(CALL_NUMBER));
-
-    var newItem = new Item().withEffectiveLocationId(NEW_EFFECTIVE_LOCATION_ID)
-      .withInstanceId(INSTANCE_ID)
-      .withBarcode(BARCODE)
-      .withEffectiveCallNumberComponents(
-        new EffectiveCallNumberComponents().withCallNumber(CALL_NUMBER));
-
-    var newItemWithoutRemoteConfig = new Item().withEffectiveLocationId(randomIdAsString())
-      .withInstanceId(INSTANCE_ID)
-      .withBarcode(BARCODE)
-      .withEffectiveCallNumberComponents(
-        new EffectiveCallNumberComponents().withCallNumber(CALL_NUMBER));
-
-    var resourceBodyWithRemoteConfig = DomainEvent
-      .of(originalItem, newItem, DomainEventType.UPDATE, TEST_TENANT);
-    var resourceBodyWithoutRemoteConfig = DomainEvent
-      .of(originalItem, newItemWithoutRemoteConfig, DomainEventType.UPDATE,
-        TEST_TENANT);
-
-    accessionQueueService.processAccessionQueueRecord(
-      Collections.singletonList(resourceBodyWithRemoteConfig));
-    accessionQueueService.processAccessionQueueRecord(
-      Collections.singletonList(resourceBodyWithoutRemoteConfig));
-
-    var actualAccessionQueueRecord = accessionQueueRepository.findAll()
-      .get(0);
-    verifyCreatedAccessionQueueRecord(actualAccessionQueueRecord);
-
-  }
+//  @Test
+//  void testItemUpdatingEventHandling() {
+//
+//    var locationMapping = new LocationMapping();
+//    locationMapping.setFolioLocationId(NEW_EFFECTIVE_LOCATION_ID);
+//    locationMapping.setConfigurationId(REMOTE_STORAGE_ID);
+//    locationMappingsService.postMapping(locationMapping);
+//
+//    var originalItem = new Item().withEffectiveLocationId(OLD_EFFECTIVE_LOCATION_ID)
+//      .withInstanceId(INSTANCE_ID)
+//      .withBarcode(BARCODE)
+//      .withEffectiveCallNumberComponents(
+//        new EffectiveCallNumberComponents().withCallNumber(CALL_NUMBER));
+//
+//    var newItem = new Item().withEffectiveLocationId(NEW_EFFECTIVE_LOCATION_ID)
+//      .withInstanceId(INSTANCE_ID)
+//      .withBarcode(BARCODE)
+//      .withEffectiveCallNumberComponents(
+//        new EffectiveCallNumberComponents().withCallNumber(CALL_NUMBER));
+//
+//    var newItemWithoutRemoteConfig = new Item().withEffectiveLocationId(randomIdAsString())
+//      .withInstanceId(INSTANCE_ID)
+//      .withBarcode(BARCODE)
+//      .withEffectiveCallNumberComponents(
+//        new EffectiveCallNumberComponents().withCallNumber(CALL_NUMBER));
+//
+//    var resourceBodyWithRemoteConfig = DomainEvent
+//      .of(originalItem, newItem, DomainEventType.UPDATE, TEST_TENANT);
+//    var resourceBodyWithoutRemoteConfig = DomainEvent
+//      .of(originalItem, newItemWithoutRemoteConfig, DomainEventType.UPDATE,
+//        TEST_TENANT);
+//
+//    accessionQueueService.processAccessionQueueRecord(
+//      Collections.singletonList(resourceBodyWithRemoteConfig));
+//    accessionQueueService.processAccessionQueueRecord(
+//      Collections.singletonList(resourceBodyWithoutRemoteConfig));
+//
+//    var actualAccessionQueueRecord = accessionQueueRepository.findAll()
+//      .get(0);
+//    verifyCreatedAccessionQueueRecord(actualAccessionQueueRecord);
+//
+//  }
 
   @Test
   void shouldFindAccessionQueuesByRemoteStorageId() {

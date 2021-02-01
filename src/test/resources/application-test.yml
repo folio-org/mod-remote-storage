@@ -18,5 +18,19 @@ spring:
   flyway:
     enabled: false
 
+logging:
+  level:
+    project:
+      org:
+        folio:
+          rs:
+            client:
+              EnrichHeadersClient: DEBUG
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: full
+
 server.port: 8081
 folio.tenant.validation.enabled: true

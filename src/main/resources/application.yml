@@ -30,6 +30,12 @@ feign:
       default:
         loggerLevel: full
 
+logging:
+  level:
+    org:
+      springframework:
+        cache: OFF
+
 application:
   kafka:
     listener:

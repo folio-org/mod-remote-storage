@@ -7,15 +7,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.folio.rs.TestBase;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.dto.StorageConfigurations;
 import org.folio.rs.domain.dto.TimeUnits;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,10 +45,6 @@ public class ConfigurationsTest extends TestBase {
   @BeforeEach
   void prepareUrl() {
     configurationsUrl = String.format(CONFIGURATIONS_URL, okapiPort);
-  }
-
-  @AfterEach
-  void clearCache() {
     ofNullable(cacheManager.getCache("configurations")).ifPresent(Cache::clear);
   }
 
@@ -69,6 +69,13 @@ public class ConfigurationsTest extends TestBase {
     assertThat(responseEntity.getBody().getId(), notNullValue());
     assertThat(responseEntity.getBody().getMetadata().getCreatedDate(), notNullValue());
     assertThat(fetchConfigurations().getTotalRecords(), is(2));
+
+    // Verify caching
+    StorageConfiguration configuration = get(configurationsUrl + "/" + responseEntity.getBody().getId(), StorageConfiguration.class).getBody();
+    assertTrue(EqualsBuilder.reflectionEquals(responseEntity.getBody(), configuration, true, StorageConfiguration.class, "metadata"));
+    assertTrue(EqualsBuilder.reflectionEquals(
+      requireNonNull(
+        requireNonNull(cacheManager.getCache("configurations")).get(responseEntity.getBody().getId())).get(), configuration, true, StorageConfiguration.class, "metadata"));
   }
 
   @Test
@@ -81,8 +88,18 @@ public class ConfigurationsTest extends TestBase {
   @Test
   void canGetConfigurationById() {
     StorageConfiguration configurationDto = fetchConfigurations().getConfigurations().get(0);
-    ResponseEntity<StorageConfiguration> response = get(configurationsUrl + configurationDto.getId(), StorageConfiguration.class);
-    assertThat(response.getStatusCode(), is(HttpStatus.OK));
+    assertThat(requireNonNull(cacheManager.getCache("configurations")).get(configurationDto.getId()), nullValue());
+    ResponseEntity<StorageConfiguration> firstResponse = get(configurationsUrl + configurationDto.getId(), StorageConfiguration.class);
+    assertThat(firstResponse.getStatusCode(), is(HttpStatus.OK));
+
+    // Verify cache
+    Object cachedConfiguration = requireNonNull(requireNonNull(cacheManager.getCache("configurations")).get(configurationDto.getId())).get();
+
+    ResponseEntity<StorageConfiguration> secondResponse = get(configurationsUrl + configurationDto.getId(), StorageConfiguration.class);
+    assertThat(secondResponse.getStatusCode(), is(HttpStatus.OK));
+    assertTrue(EqualsBuilder.reflectionEquals(configurationDto, secondResponse.getBody(), true, StorageConfiguration.class, "metadata"));
+    assertTrue(EqualsBuilder.reflectionEquals(cachedConfiguration, secondResponse.getBody(), true, StorageConfiguration.class, "metadata"));
+
   }
 
   @Test
@@ -91,13 +108,21 @@ public class ConfigurationsTest extends TestBase {
     configurationDto.accessionDelay(5).accessionTimeUnit(TimeUnits.MINUTES);
     ResponseEntity<String> response = put(configurationsUrl + configurationDto.getId(),configurationDto);
     assertThat(response.getStatusCode(), equalTo(HttpStatus.NO_CONTENT));
+
+    // Verify caching
+    StorageConfiguration configuration = get(configurationsUrl + "/" + configurationDto.getId(), StorageConfiguration.class).getBody();
+    assertTrue(EqualsBuilder.reflectionEquals(configurationDto, configuration, true, StorageConfiguration.class, "metadata"));
+    assertTrue(EqualsBuilder.reflectionEquals(requireNonNull(requireNonNull(cacheManager.getCache("configurations")).get(configurationDto.getId())).get(), configuration, true, StorageConfiguration.class, "metadata"));
+
   }
 
   @Test
   void canDeleteConfiguration() {
     StorageConfiguration configuration = fetchConfigurations().getConfigurations().get(0);
+    requireNonNull(cacheManager.getCache("configurations")).put(configuration.getId(), configuration);
     assertThat(delete(configurationsUrl + configuration.getId()).getStatusCode(), is(HttpStatus.NO_CONTENT));
     assertThat(fetchConfigurations().getTotalRecords(), is(0));
+    assertThat(requireNonNull(cacheManager.getCache("configurations")).get(configuration.getId()), nullValue());
   }
 
   @Test

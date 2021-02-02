@@ -37,6 +37,7 @@ import static org.folio.rs.controller.TenantController.PARAMETER_LOAD_SAMPLE;
 @AutoConfigureEmbeddedDatabase(beanName = "dataSource")
 @Log4j2
 public class TestBase {
+  public static final String METADATA = "metadata";
   private static HttpHeaders headers;
   private static RestTemplate restTemplate;
   public static WireMockServer wireMockServer;

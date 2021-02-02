@@ -19,16 +19,17 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Log4j2
 public class LocationMappingsService {
+  public static final String MAPPINGS = "mappings";
   private final LocationMappingsRepository locationMappingsRepository;
   private final LocationMappingsMapper locationMappingsMapper;
 
-  @CachePut(value = "mappings", key = "#locationMapping.folioLocationId")
+  @CachePut(value = MAPPINGS, key = "#locationMapping.folioLocationId")
   public LocationMapping postMapping(LocationMapping locationMapping) {
     return locationMappingsMapper
       .mapEntityToDto(locationMappingsRepository.save(locationMappingsMapper.mapDtoToEntity(locationMapping)));
   }
 
-  @Cacheable(value = "mappings", key = "#folioLocationId")
+  @Cacheable(value = MAPPINGS, key = "#folioLocationId")
   public LocationMapping getMappingByFolioLocationId(String folioLocationId) {
     var id = UUID.fromString(folioLocationId);
     return locationMappingsRepository.findById(id).map(locationMappingsMapper::mapEntityToDto).orElse(null);
@@ -39,7 +40,7 @@ public class LocationMappingsService {
     return locationMappingsMapper.mapEntitiesToMappingCollection(mappings);
   }
 
-  @CacheEvict(value = "mappings", key = "#folioLocationId")
+  @CacheEvict(value = MAPPINGS, key = "#folioLocationId")
   public void deleteMappingById(String folioLocationId) {
     var id = UUID.fromString(folioLocationId);
     locationMappingsRepository.deleteById(id);

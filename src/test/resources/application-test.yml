@@ -24,5 +24,11 @@ feign:
       default:
         loggerLevel: full
 
+logging:
+  level:
+    org:
+      springframework:
+        cache: OFF
+
 server.port: 8081
 folio.tenant.validation.enabled: true

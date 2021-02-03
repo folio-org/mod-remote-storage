@@ -24,19 +24,17 @@ spring:
   flyway:
     enabled: false
 
-logging:
-  level:
-    project:
-      org:
-        folio:
-          rs:
-            client:
-              EnrichHeadersClient: DEBUG
 feign:
   client:
     config:
       default:
         loggerLevel: full
+
+logging:
+  level:
+    org:
+      springframework:
+        cache: OFF
 
 application:
   kafka:

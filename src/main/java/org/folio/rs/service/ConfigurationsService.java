@@ -26,15 +26,16 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ConfigurationsService {
 
+  public static final String CONFIGURATIONS = "configurations";
   private final ConfigurationsRepository configurationsRepository;
   private final ConfigurationsMapper configurationsMapper;
 
-  @CacheEvict(value = "configurations", key = "#id")
+  @CacheEvict(value = CONFIGURATIONS, key = "#id")
   public void deleteConfigurationById(String id) {
     configurationsRepository.deleteById(UUID.fromString(id));
   }
 
-  @Cacheable(value = "configurations", key = "#id")
+  @Cacheable(value = CONFIGURATIONS, key = "#id")
   public StorageConfiguration getConfigurationById(String id) {
     return configurationsRepository.findById(UUID.fromString(id)).map(configurationsMapper::mapEntityToDto).orElse(null);
   }
@@ -45,7 +46,7 @@ public class ConfigurationsService {
     return configurationsMapper.mapEntitiesToRemoteConfigCollection(configurationList);
   }
 
-  @CachePut(value = "configurations", key = "#storageConfiguration.id")
+  @CachePut(value = CONFIGURATIONS, key = "#storageConfiguration.id")
   public StorageConfiguration postConfiguration(StorageConfiguration storageConfiguration) {
     if (isNull(storageConfiguration.getId())) {
       storageConfiguration.id(randomIdAsString());
@@ -56,14 +57,15 @@ public class ConfigurationsService {
     return configurationsMapper.mapEntityToDto(configurationsRepository.save(configuration));
   }
 
-  @CachePut(value = "configurations", key = "#storageConfiguration.id")
-  public void updateConfiguration(String id, StorageConfiguration storageConfiguration) {
+  @CachePut(value = CONFIGURATIONS, key = "#storageConfiguration.id")
+  public StorageConfiguration updateConfiguration(String id, StorageConfiguration storageConfiguration) {
     if (id.equals(storageConfiguration.getId())) {
       var configuration = configurationsMapper.mapDtoToEntity(storageConfiguration);
       configurationsRepository.save(copyForUpdate(configurationsRepository.getOne(configuration.getId()), configuration));
     } else {
       throw new IdMismatchException();
     }
+    return storageConfiguration;
   }
 
   private Configuration copyForUpdate(Configuration dest, Configuration source) {

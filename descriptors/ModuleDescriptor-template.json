@@ -5,6 +5,18 @@
     {
       "id": "inventory",
       "version": "10.7"
+    },
+    {
+      "id": "users",
+      "version": "15.3"
+    },
+    {
+      "id": "login",
+      "version": "7.0"
+    },
+    {
+      "id": "permissions",
+      "version": "5.3"
     }
   ],
   "provides": [

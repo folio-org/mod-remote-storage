@@ -61,24 +61,22 @@ public class AccessionQueueService {
     log.info("Starting processing events...");
     events.forEach(event -> {
       log.debug("Event received: {}", asJsonString(event));
-      if (DomainEventType.UPDATE == event.getType()) {
-        if (isEffectiveLocationChanged(event)) {
-          var item = event.getNewEntity();
-          var systemUserParameters = securityManagerService.getSystemUserParameters(event.getTenant());
-          FolioExecutionScopeExecutionContextManager.beginFolioExecutionContext(
-            new AsyncFolioExecutionContext(systemUserParameters, moduleMetadata));
-          var effectiveLocationId = item.getEffectiveLocationId();
-          var locationMapping = locationMappingsService
-            .getMappingByFolioLocationId(effectiveLocationId);
-          if (Objects.nonNull(locationMapping)) {
-            var instances = instancesClient.query("id==" + item.getInstanceId());
-            var instance = instances.getResult().get(0);
-            var record = buildAccessionQueueRecord(item, instance, locationMapping);
-            accessionQueueRepository.save(record);
-            log.debug("Record prepared and saved: {}", record);
-          } else {
-            log.info("Location mapping with id={} not found. Accession queue record not created.", effectiveLocationId);
-          }
+      if (DomainEventType.UPDATE == event.getType() && isEffectiveLocationChanged(event)) {
+        var item = event.getNewEntity();
+        var systemUserParameters = securityManagerService.getSystemUserParameters(event.getTenant());
+        FolioExecutionScopeExecutionContextManager.beginFolioExecutionContext(
+          new AsyncFolioExecutionContext(systemUserParameters, moduleMetadata));
+        var effectiveLocationId = item.getEffectiveLocationId();
+        var locationMapping = locationMappingsService
+          .getMappingByFolioLocationId(effectiveLocationId);
+        if (Objects.nonNull(locationMapping)) {
+          var instances = instancesClient.query("id==" + item.getInstanceId());
+          var instance = instances.getResult().get(0);
+          var record = buildAccessionQueueRecord(item, instance, locationMapping);
+          accessionQueueRepository.save(record);
+          log.debug("Record prepared and saved: {}", record);
+        } else {
+          log.info("Location mapping with id={} not found. Accession queue record not created.", effectiveLocationId);
         }
       }
     });

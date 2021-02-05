@@ -1,38 +1,28 @@
 package org.folio.rs.controller;
 
-import org.folio.rs.domain.dto.ItemBarcode;
-import org.folio.rs.service.CheckInItemService;
+import org.folio.rs.TestBase;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.is;
 
-@ExtendWith(MockitoExtension.class)
-public class CheckInControllerTest {
+public class CheckInControllerTest extends TestBase {
 
-  @Mock
-  private CheckInItemService checkInItemService;
+  private static final String CHECK_IN_URL = "http://localhost:%s/remote-storage/check-in-by-barcode";
 
-  @InjectMocks
-  private CheckInController checkInController;
+  private String checkInUrl;
+
+  @BeforeEach
+  void prepareUrl() {
+    checkInUrl = String.format(CHECK_IN_URL, okapiPort);
+  }
 
   @Test
-  public void testCheckInByBarcodePost() {
-    when(checkInItemService.checkInItemByBarcode(isA(ItemBarcode.class))).thenReturn(HttpStatus.OK);
-
-    var itemBarcode = new ItemBarcode();
-    itemBarcode.setValue("item-barcode");
-    checkInController.checkInByBarcodePost(itemBarcode);
-
-    var actualResponse = checkInController.checkInByBarcodePost(itemBarcode);
-    assertThat(actualResponse, equalTo(new ResponseEntity<>(HttpStatus.OK)));
+  public void canPostCheckInByBarcodePost() {
+    var itemBarcode = "{\"value\": \"2887532577331\"}";
+    var response = post(checkInUrl, itemBarcode, String.class);
+    assertThat(response.getStatusCode(), is(HttpStatus.OK));
   }
 }

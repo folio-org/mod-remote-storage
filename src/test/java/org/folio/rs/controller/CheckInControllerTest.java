@@ -20,7 +20,7 @@ public class CheckInControllerTest extends TestBase {
   }
 
   @Test
-  public void canPostCheckInByBarcodePost() {
+  void canPostCheckInByBarcodePost() {
     var itemBarcode = "{\"value\": \"2887532577331\"}";
     var response = post(checkInUrl, itemBarcode, String.class);
     assertThat(response.getStatusCode(), is(HttpStatus.OK));

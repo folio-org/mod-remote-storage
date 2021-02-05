@@ -24,7 +24,7 @@ public class CheckInItemServiceTest extends TestBase {
   private CheckInItemService checkInItemService;
 
   @Test
-  public void testCheckInItemByBarcode() {
+  void testCheckInItemByBarcode() {
     var itemBarcode = new ItemBarcode();
     itemBarcode.setValue("item-barcode");
     var actualStatus = checkInItemService.checkInItemByBarcode(itemBarcode);
@@ -32,7 +32,7 @@ public class CheckInItemServiceTest extends TestBase {
   }
 
   @Test
-  public void testCheckInItemByBarcodeIfCirculationClientSuccess() {
+  void testCheckInItemByBarcodeIfCirculationClientSuccess() {
    var circulationClient = Mockito.mock(CirculationClient.class);
     when(circulationClient.checkIn(isA(CheckInByBarcodeRequest.class)))
       .thenReturn(new ResponseEntity<>(HttpStatus.OK));
@@ -45,7 +45,7 @@ public class CheckInItemServiceTest extends TestBase {
   }
 
   @Test
-  public void testCheckInItemByBarcodeIfCirculationClientFail() {
+  void testCheckInItemByBarcodeIfCirculationClientFail() {
     var circulationClient = Mockito.mock(CirculationClient.class);
     when(circulationClient.checkIn(isA(CheckInByBarcodeRequest.class)))
       .thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));

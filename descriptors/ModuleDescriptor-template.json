@@ -17,6 +17,10 @@
     {
       "id": "permissions",
       "version": "5.3"
+    },
+    {
+      "id": "circulation",
+      "version": "9.5"
     }
   ],
   "provides": [
@@ -110,6 +114,20 @@
           "methods": ["PUT"],
           "pathPattern": "/remote-storage/accessions/barcode/{barcode}",
           "permissionsRequired" : [ "remote-storage.accessions.item.put" ]
+        }
+      ]
+    },
+    {
+      "id": "remote-storage-check-in",
+      "version": "1.0",
+      "handlers": [
+        {
+          "methods": ["POST"],
+          "pathPattern": "/remote-storage/check-in-by-barcode",
+          "modulePermissions" : [
+            "circulation.check-in-by-barcode.post",
+            "modperms.circulation.check-in-by-barcode.post"
+          ]
         }
       ]
     },

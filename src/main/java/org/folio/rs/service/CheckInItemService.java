@@ -20,10 +20,9 @@ public class CheckInItemService {
 
   public HttpStatus checkInItemByBarcode(ItemBarcode itemBarcode) {
     log.info("Start check-in process for item with barcode " + itemBarcode.getValue());
-    //ToDo set up service point
     var responseEntity = circulationClient.checkIn(
-      CheckInByBarcodeRequest.of(itemBarcode.getValue(),"026defb2-b953-4902-b143-3bdb6c2160fa", DateTime.now(UTC)));
-    if (responseEntity.getStatusCode()!= HttpStatus.OK) {
+      CheckInByBarcodeRequest.of(itemBarcode.getValue(), "026defb2-b953-4902-b143-3bdb6c2160fa", DateTime.now(UTC)));
+    if (responseEntity.getStatusCode() != HttpStatus.OK) {
       log.error("Check-in call error for item with barcode " + itemBarcode.getValue());
       return HttpStatus.INTERNAL_SERVER_ERROR;
     }

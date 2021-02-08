@@ -124,6 +124,7 @@
         {
           "methods": ["POST"],
           "pathPattern": "/remote-storage/check-in-by-barcode",
+          "permissionsRequired" : ["remote-storage.check.in.by.barcode"],
           "modulePermissions" : [
             "circulation.check-in-by-barcode.post",
             "modperms.circulation.check-in-by-barcode.post"
@@ -215,6 +216,11 @@
       "description" : "Modify a remote storage accession queue by changing accessioned date time"
     },
     {
+      "permissionName" : "remote-storage.check.in.by.barcode",
+      "displayName" : "check-in item barcode",
+      "description" : "Check-in item by barcode"
+    },
+    {
       "permissionName": "remote-storage.all",
       "displayName": "remote storage API module - all permissions",
       "description": "All permissions for remote storage",
@@ -230,7 +236,8 @@
         "remote-storage.mappings.item.delete",
         "remote-storage.providers.collection.get",
         "remote-storage.accessions.collection.get",
-        "remote-storage.accessions.item.put"
+        "remote-storage.accessions.item.put",
+        "remote-storage.check.in.by.barcode"
       ]
     }
   ],

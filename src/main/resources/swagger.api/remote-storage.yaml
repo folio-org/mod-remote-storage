@@ -337,6 +337,19 @@ paths:
           required: true
           schema:
             type: string
+  /pub-sub-handlers/moved-event:
+    description: "Handler for REQUEST_MOVED_EVENT"
+    post:
+      responses:
+        '204':
+          description: No content
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: No content
+    parameters:
+      - $ref: "#/components/parameters/trait_queryable_pubsub_event"
   /retrievals:
     get:
       responses:
@@ -574,3 +587,9 @@ components:
         minimum: 0
         maximum: 2147483647
         type: integer
+    trait_queryable_pubsub_event:
+      name: event
+      in: query
+      description: Entity from pubsub event
+      schema:
+        type: string

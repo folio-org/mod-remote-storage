@@ -57,7 +57,7 @@ public class AccessionQueueService {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-  public void processAccessionQueueRecord(List<org.folio.rs.domain.dto.DomainEvent> events) {
+  public void processAccessionQueueRecord(List<DomainEvent> events) {
     log.info("Starting processing events...");
     events.forEach(event -> {
       log.debug("Event received: {}", asJsonString(event));

@@ -5,7 +5,9 @@ import static java.util.Objects.nonNull;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -13,16 +15,19 @@ import liquibase.exception.LiquibaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.folio.rest.util.OkapiConnectionParams;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.service.ConfigurationsService;
 import org.folio.rs.service.LocationMappingsService;
 import org.folio.rs.service.SecurityManagerService;
 import org.folio.spring.FolioExecutionContext;
+import org.folio.spring.integration.XOkapiHeaders;
 import org.folio.spring.liquibase.FolioSpringLiquibase;
 import org.folio.tenant.domain.dto.Parameter;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.folio.tenant.rest.resource.TenantApi;
+import org.folio.util.pubsub.PubSubClientUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -76,15 +81,29 @@ public class TenantController implements TenantApi {
           .body("Liquibase error: " + e.getMessage());
       }
     }
+    initializeSystemUser(tenantId);
+    registerModuleToPubSub();
+    return ResponseEntity.ok().body("true");
+  }
 
+  private void initializeSystemUser(String tenantId) {
     try {
       securityManagerService.prepareSystemUser(SYSTEM_USER, SYSTEM_USER, context.getOkapiUrl(), tenantId);
     } catch (Exception e) {
       log.error("Error initializing System User", e);
     }
+  }
 
-    return ResponseEntity.ok()
-      .body("true");
+  private void registerModuleToPubSub() {
+    PubSubClientUtils.registerModule(new OkapiConnectionParams(getHeadersMap(), null));
+  }
+
+  private Map<String, String> getHeadersMap() {
+    Map<String, String> headers = new HashMap<>();
+    headers.put(XOkapiHeaders.URL, context.getOkapiUrl());
+    headers.put(XOkapiHeaders.TENANT, context.getTenantId());
+    headers.put(XOkapiHeaders.TOKEN, context.getToken());
+    return headers;
   }
 
   private void loadSampleData() {

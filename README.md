@@ -35,6 +35,12 @@ API provides the following URLs for working with mappings between Folio location
 | GET | /remote-storage/mappings | remote-storage.configurations.mappings.get   | Retrieves all location mappings |
 | GET | /remote-storage/mappings/{folioLocationId} | remote-storage.mappings.item.get | Retrieves a location mapping by Folio location id |
 
+API provides the following URL to check-in item by barcode:
+
+|  Method | URL| Permissions  | Description  | 
+|---|---|---|---|
+| POST | /remote-storage/check-in-by-barcode | remote-storage.check.in.by.barcode | Check-in item by barcode |
+
 ### Required Permissions
 Institutional users should be granted the following permissions in order to use this remote storage API:
 - `remote-storage.all`

@@ -217,7 +217,7 @@
     },
     {
       "permissionName" : "remote-storage.check.in.by.barcode",
-      "displayName" : "check-in item barcode",
+      "displayName" : "check-in item by barcode",
       "description" : "Check-in item by barcode"
     },
     {

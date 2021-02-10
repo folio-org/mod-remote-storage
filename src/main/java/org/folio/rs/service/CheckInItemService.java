@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.UUID;
 
 import static org.joda.time.DateTimeZone.UTC;
@@ -50,7 +49,10 @@ public class CheckInItemService {
 
   private boolean isResponseLocationSuccess(ResponseEntity<FolioLocation> responseLocation) {
     if (responseLocation.getStatusCode() != HttpStatus.OK) return false;
-    if (responseLocation.getBody() == null) return false;
-    return StringUtils.isNotBlank(responseLocation.getBody().getPrimaryServicePoint());
+    var responseLocationBody = responseLocation.getBody();
+    if (responseLocationBody != null) {
+      return StringUtils.isNotBlank(responseLocationBody.getPrimaryServicePoint());
+    }
+    return false;
   }
 }

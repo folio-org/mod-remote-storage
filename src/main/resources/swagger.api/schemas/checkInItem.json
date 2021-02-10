@@ -3,13 +3,13 @@
   "type": "object",
   "description": "Value of item's barcode to check in an item at service points",
   "properties": {
-    "value": {
+    "itemBarcode": {
       "description": "Barcode of the item to be checked in",
       "type": "string"
     }
   },
   "additionalProperties": false,
   "required": [
-    "value"
+    "itemBarcode"
   ]
 }

@@ -19,6 +19,10 @@
       "version": "5.3"
     },
     {
+      "id": "locations",
+      "version": "3.0"
+    },
+    {
       "id": "circulation",
       "version": "9.5"
     }
@@ -123,9 +127,10 @@
       "handlers": [
         {
           "methods": ["POST"],
-          "pathPattern": "/remote-storage/check-in-by-barcode",
+          "pathPattern": "/remote-storage/{remoteStorageConfigurationId}/check-in-item",
           "permissionsRequired" : ["remote-storage.check.in.by.barcode"],
           "modulePermissions" : [
+            "inventory-storage.locations.item.get",
             "circulation.check-in-by-barcode.post",
             "modperms.circulation.check-in-by-barcode.post"
           ]

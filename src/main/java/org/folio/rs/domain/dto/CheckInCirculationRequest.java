@@ -11,7 +11,7 @@ import org.joda.time.DateTime;
 @NoArgsConstructor
 @AllArgsConstructor(staticName = "of")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CheckInByBarcodeRequest {
+public class CheckInCirculationRequest {
 
   private String itemBarcode;
   private String servicePointId;

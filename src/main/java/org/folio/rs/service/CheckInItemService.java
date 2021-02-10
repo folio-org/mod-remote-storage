@@ -2,6 +2,7 @@ package org.folio.rs.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.folio.rs.client.CirculationClient;
 import org.folio.rs.client.LocationClient;
 import org.folio.rs.domain.dto.CheckInCirculationRequest;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import static org.joda.time.DateTimeZone.UTC;
@@ -34,9 +36,9 @@ public class CheckInItemService {
       var folioLocationId = location.get().getFolioLocationId().toString();
       var responseLocation = locationClient.getLocation(folioLocationId);
       if (isResponseLocationSuccess(responseLocation)) {
-        var responseEntity = circulationClient.checkIn(
+        var responseCirculation= circulationClient.checkIn(
           CheckInCirculationRequest.of(checkInItem.getItemBarcode(), responseLocation.getBody().getPrimaryServicePoint(), DateTime.now(UTC)));
-        if (responseEntity.getStatusCode() == HttpStatus.OK) {
+        if (responseCirculation.getStatusCode() == HttpStatus.OK) {
           log.info("Check-in success for item with barcode " + checkInItem.getItemBarcode());
           return HttpStatus.OK;
         }
@@ -47,7 +49,8 @@ public class CheckInItemService {
   }
 
   private boolean isResponseLocationSuccess(ResponseEntity<FolioLocation> responseLocation) {
-    return responseLocation.getStatusCode() == HttpStatus.OK
-      && responseLocation.getBody() != null && responseLocation.getBody().getPrimaryServicePoint() != null;
+    if (responseLocation.getStatusCode() != HttpStatus.OK) return false;
+    if (responseLocation.getBody() == null) return false;
+    return StringUtils.isNotBlank(responseLocation.getBody().getPrimaryServicePoint());
   }
 }

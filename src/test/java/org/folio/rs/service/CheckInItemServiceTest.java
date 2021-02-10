@@ -98,8 +98,8 @@ public class CheckInItemServiceTest {
   }
 
   @Test
-  void testCheckInItemByBarcodeIfLocationClientReturnOkStatusWithPrimaryServicePointNull() {
-    var location = FolioLocation.of(FOLIO_LOCATION_ID, null);
+  void testCheckInItemByBarcodeIfLocationClientReturnOkStatusWithPrimaryServicePointEmpty() {
+    var location = FolioLocation.of(FOLIO_LOCATION_ID, "");
     var responseLocation = new ResponseEntity<>(location, HttpStatus.OK);
 
     when(locationMappingsRepository.getFirstByConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))

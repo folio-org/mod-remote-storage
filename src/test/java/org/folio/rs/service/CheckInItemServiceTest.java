@@ -41,7 +41,7 @@ public class CheckInItemServiceTest {
   private CheckInItemService checkInItemService;
 
   private LocationMapping locationMapping;
-  private FolioLocation location;
+  private FolioLocation folioLocation;
   private CheckInItem checkInItem;
 
   @BeforeEach
@@ -49,19 +49,17 @@ public class CheckInItemServiceTest {
     locationMapping = new LocationMapping();
     locationMapping.setFolioLocationId(UUID.fromString(FOLIO_LOCATION_ID));
     locationMapping.setConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID));
-    location = FolioLocation.of(FOLIO_LOCATION_ID, PRIMARY_SERVICE_POINT);
+    folioLocation = FolioLocation.of(FOLIO_LOCATION_ID, PRIMARY_SERVICE_POINT);
     checkInItem = new CheckInItem();
     checkInItem.setItemBarcode("item-barcode");
   }
 
   @Test
   void testCheckInItemByBarcode() {
-    var responseLocation = new ResponseEntity<>(location, HttpStatus.OK);
-
     when(locationMappingsRepository.getFirstByConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
       .thenReturn(Optional.of(locationMapping));
     when(locationClient.getLocation(FOLIO_LOCATION_ID))
-      .thenReturn(responseLocation);
+      .thenReturn(folioLocation);
     when(circulationClient.checkIn(isA(CheckInCirculationRequest.class)))
       .thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
@@ -71,12 +69,10 @@ public class CheckInItemServiceTest {
 
   @Test
   void testCheckInItemByBarcodeIfCirculationClientFail() {
-    var responseLocation = new ResponseEntity<>(location, HttpStatus.OK);
-
     when(locationMappingsRepository.getFirstByConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
       .thenReturn(Optional.of(locationMapping));
     when(locationClient.getLocation(FOLIO_LOCATION_ID))
-      .thenReturn(responseLocation);
+      .thenReturn(folioLocation);
     when(circulationClient.checkIn(isA(CheckInCirculationRequest.class)))
       .thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
 
@@ -85,27 +81,13 @@ public class CheckInItemServiceTest {
   }
 
   @Test
-  void testCheckInItemByBarcodeIfLocationClientReturnNotOkStatus() {
-    var responseLocation = new ResponseEntity<>(location, HttpStatus.INTERNAL_SERVER_ERROR);
+  void testCheckInItemByBarcodeIfLocationClientReturnEmptyPrimaryServicePoint() {
+    var folioLocation = FolioLocation.of(FOLIO_LOCATION_ID, "");
 
     when(locationMappingsRepository.getFirstByConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
       .thenReturn(Optional.of(locationMapping));
     when(locationClient.getLocation(FOLIO_LOCATION_ID))
-      .thenReturn(responseLocation);
-
-    var actualStatus = checkInItemService.checkInItemByBarcode(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
-    assertThat(actualStatus, equalTo(HttpStatus.INTERNAL_SERVER_ERROR));
-  }
-
-  @Test
-  void testCheckInItemByBarcodeIfLocationClientReturnOkStatusWithPrimaryServicePointEmpty() {
-    var location = FolioLocation.of(FOLIO_LOCATION_ID, "");
-    var responseLocation = new ResponseEntity<>(location, HttpStatus.OK);
-
-    when(locationMappingsRepository.getFirstByConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
-      .thenReturn(Optional.of(locationMapping));
-    when(locationClient.getLocation(FOLIO_LOCATION_ID))
-      .thenReturn(responseLocation);
+      .thenReturn(folioLocation);
 
     var actualStatus = checkInItemService.checkInItemByBarcode(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
     assertThat(actualStatus, equalTo(HttpStatus.INTERNAL_SERVER_ERROR));

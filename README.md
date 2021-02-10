@@ -39,7 +39,7 @@ API provides the following URL to check-in item by barcode:
 
 |  Method | URL| Permissions  | Description  | 
 |---|---|---|---|
-| POST | /remote-storage/{remoteStorageConfigurationId}/check-in-item | remote-storage.check.in.by.barcode | Check-in item by barcode |
+| POST | /remote-storage/retrieve/{remoteStorageConfigurationId}/checkInItem | remote-storage.check-in.item.post | Check-in item by barcode |
 
 ### Required Permissions
 Institutional users should be granted the following permissions in order to use this remote storage API:

@@ -127,8 +127,8 @@
       "handlers": [
         {
           "methods": ["POST"],
-          "pathPattern": "/remote-storage/{remoteStorageConfigurationId}/check-in-item",
-          "permissionsRequired" : ["remote-storage.check.in.by.barcode"],
+          "pathPattern": "/remote-storage/retrieve/{remoteStorageConfigurationId}/checkInItem",
+          "permissionsRequired" : ["remote-storage.check-in.item.post"],
           "modulePermissions" : [
             "inventory-storage.locations.item.get",
             "circulation.check-in-by-barcode.post",
@@ -242,7 +242,7 @@
         "remote-storage.providers.collection.get",
         "remote-storage.accessions.collection.get",
         "remote-storage.accessions.item.put",
-        "remote-storage.check.in.by.barcode"
+        "remote-storage.check-in.item.post"
       ]
     }
   ],

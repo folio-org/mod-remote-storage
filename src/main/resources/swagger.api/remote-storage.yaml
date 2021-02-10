@@ -337,7 +337,7 @@ paths:
           required: true
           schema:
             type: string
-  /{remoteStorageConfigurationId}/check-in-item:
+  /retrieve/{remoteStorageConfigurationId}/checkInItem:
     post:
       responses:
         '200':

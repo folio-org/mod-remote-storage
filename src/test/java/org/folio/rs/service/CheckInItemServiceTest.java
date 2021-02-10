@@ -27,9 +27,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class CheckInItemServiceTest {
 
-  private final String REMOTE_STORAGE_CONFIGURATION_ID = "de17bad7-2a30-4f1c-bee5-f653ded15629";
-  private final String FOLIO_LOCATION_ID = "53cf956f-c1df-410b-8bea-27f712cca7c0";
-  private final String PRIMARY_SERVICE_POINT = "79faacf1-4ba4-42c7-8b2a-566b259e4641";
+  private static final String REMOTE_STORAGE_CONFIGURATION_ID = "de17bad7-2a30-4f1c-bee5-f653ded15629";
+  private static final String FOLIO_LOCATION_ID = "53cf956f-c1df-410b-8bea-27f712cca7c0";
+  private static final String PRIMARY_SERVICE_POINT = "79faacf1-4ba4-42c7-8b2a-566b259e4641";
   @Mock
   private CirculationClient circulationClient;
   @Mock
@@ -87,6 +87,20 @@ public class CheckInItemServiceTest {
   @Test
   void testCheckInItemByBarcodeIfLocationClientReturnNotOkStatus() {
     var responseLocation = new ResponseEntity<>(location, HttpStatus.INTERNAL_SERVER_ERROR);
+
+    when(locationMappingsRepository.getFirstByConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
+      .thenReturn(Optional.of(locationMapping));
+    when(locationClient.getLocation(FOLIO_LOCATION_ID))
+      .thenReturn(responseLocation);
+
+    var actualStatus = checkInItemService.checkInItemByBarcode(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
+    assertThat(actualStatus, equalTo(HttpStatus.INTERNAL_SERVER_ERROR));
+  }
+
+  @Test
+  void testCheckInItemByBarcodeIfLocationClientReturnOkStatusWithPrimaryServicePointNull() {
+    var location = FolioLocation.of(FOLIO_LOCATION_ID, null);
+    var responseLocation = new ResponseEntity<>(location, HttpStatus.OK);
 
     when(locationMappingsRepository.getFirstByConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
       .thenReturn(Optional.of(locationMapping));

@@ -1,6 +1,6 @@
 package org.folio.rs;
 
-import org.folio.rs.controller.CheckInControllerTest;
+import org.folio.rs.controller.CheckInTest;
 import org.folio.rs.controller.ConfigurationsTest;
 import org.folio.rs.controller.LocationMappingsTest;
 import org.folio.rs.service.AccessionQueueServiceTest;
@@ -32,7 +32,7 @@ public class TestSuite {
   }
 
   @Nested
-  class CheckInControllerTestNested extends CheckInControllerTest {
+  class CheckInTestNested extends CheckInTest {
 
   }
 

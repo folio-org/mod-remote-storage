@@ -22,6 +22,7 @@ import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.rs.domain.dto.AccessionQueues;
 import org.folio.rs.domain.dto.Contributor;
 import org.folio.rs.domain.dto.DomainEvent;
+import org.folio.rs.domain.dto.DomainEventType;
 import org.folio.rs.domain.dto.EffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.FilterData;
 import org.folio.rs.domain.dto.Instance;
@@ -59,12 +60,12 @@ public class AccessionQueueService {
   public void processAccessionQueueRecord(List<org.folio.rs.domain.dto.DomainEvent> events) {
     log.info("Starting processing events...");
     events.forEach(event -> {
-      log.info("Event received: {}", asJsonString(event));
-      if (isEffectiveLocationChanged(event)) {
+      log.debug("Event received: {}", asJsonString(event));
+      if (DomainEventType.UPDATE == event.getType() && isEffectiveLocationChanged(event)) {
         var item = event.getNewEntity();
         var systemUserParameters = securityManagerService.getSystemUserParameters(event.getTenant());
         FolioExecutionScopeExecutionContextManager.beginFolioExecutionContext(
-      new AsyncFolioExecutionContext(systemUserParameters, moduleMetadata));
+          new AsyncFolioExecutionContext(systemUserParameters, moduleMetadata));
         var effectiveLocationId = item.getEffectiveLocationId();
         var locationMapping = locationMappingsService
           .getMappingByFolioLocationId(effectiveLocationId);
@@ -73,7 +74,7 @@ public class AccessionQueueService {
           var instance = instances.getResult().get(0);
           var record = buildAccessionQueueRecord(item, instance, locationMapping);
           accessionQueueRepository.save(record);
-          log.info("Record prepared and saved: {}", record);
+          log.debug("Record prepared and saved: {}", record);
         } else {
           log.info("Location mapping with id={} not found. Accession queue record not created.", effectiveLocationId);
         }

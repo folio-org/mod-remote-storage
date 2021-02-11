@@ -20,10 +20,7 @@ public class CheckInRetrieveController implements RetrieveApi {
 
   @Override
   public ResponseEntity<String> checkInItemByBarcodeWithRemoteStorageConfigurationId(String remoteStorageConfigurationId, @Valid CheckInItem checkInItem) {
-    var status = checkInItemService.checkInItemByBarcode(remoteStorageConfigurationId, checkInItem);
-    if (status == HttpStatus.OK) {
-      return new ResponseEntity<>("Check-in was done for " + checkInItem.getItemBarcode(), HttpStatus.OK);
-    }
-    return new ResponseEntity<>("Server error while check-in for " + checkInItem.getItemBarcode(), HttpStatus.INTERNAL_SERVER_ERROR);
+    checkInItemService.checkInItemByBarcode(remoteStorageConfigurationId, checkInItem);
+    return new ResponseEntity<>("Check-in was done for " + checkInItem.getItemBarcode(), HttpStatus.OK);
   }
 }

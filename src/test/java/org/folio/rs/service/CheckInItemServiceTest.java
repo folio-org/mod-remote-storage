@@ -19,9 +19,9 @@ import org.springframework.http.ResponseEntity;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -63,21 +63,9 @@ public class CheckInItemServiceTest {
     when(circulationClient.checkIn(isA(CheckInCirculationRequest.class)))
       .thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
-    var actualStatus = checkInItemService.checkInItemByBarcode(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
-    assertThat(actualStatus, equalTo(HttpStatus.OK));
-  }
+    checkInItemService.checkInItemByBarcode(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
 
-  @Test
-  void testCheckInItemByBarcodeIfCirculationClientFail() {
-    when(locationMappingsRepository.getFirstByConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
-      .thenReturn(Optional.of(locationMapping));
-    when(locationClient.getLocation(FOLIO_LOCATION_ID))
-      .thenReturn(folioLocation);
-    when(circulationClient.checkIn(isA(CheckInCirculationRequest.class)))
-      .thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
-
-    var actualStatus = checkInItemService.checkInItemByBarcode(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
-    assertThat(actualStatus, equalTo(HttpStatus.INTERNAL_SERVER_ERROR));
+    verify(circulationClient, times(1)).checkIn(isA(CheckInCirculationRequest.class));
   }
 
   @Test
@@ -89,8 +77,9 @@ public class CheckInItemServiceTest {
     when(locationClient.getLocation(FOLIO_LOCATION_ID))
       .thenReturn(folioLocation);
 
-    var actualStatus = checkInItemService.checkInItemByBarcode(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
-    assertThat(actualStatus, equalTo(HttpStatus.INTERNAL_SERVER_ERROR));
+    checkInItemService.checkInItemByBarcode(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
+
+    verify(circulationClient, times(0)).checkIn(isA(CheckInCirculationRequest.class));
   }
 
   @Test
@@ -98,7 +87,8 @@ public class CheckInItemServiceTest {
     when(locationMappingsRepository.getFirstByConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
       .thenReturn(Optional.empty());
 
-    var actualStatus = checkInItemService.checkInItemByBarcode(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
-    assertThat(actualStatus, equalTo(HttpStatus.INTERNAL_SERVER_ERROR));
+    checkInItemService.checkInItemByBarcode(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
+
+    verify(circulationClient, times(0)).checkIn(isA(CheckInCirculationRequest.class));
   }
 }

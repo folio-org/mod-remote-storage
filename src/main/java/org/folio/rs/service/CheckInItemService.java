@@ -9,7 +9,6 @@ import org.folio.rs.domain.dto.CheckInCirculationRequest;
 import org.folio.rs.domain.dto.CheckInItem;
 import org.folio.rs.repository.LocationMappingsRepository;
 import org.joda.time.DateTime;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -25,27 +24,22 @@ public class CheckInItemService {
   private final LocationMappingsRepository locationMappingsRepository;
   private final LocationClient locationClient;
 
-  public HttpStatus checkInItemByBarcode(String remoteStorageConfigurationId, CheckInItem checkInItem) {
+  public void checkInItemByBarcode(String remoteStorageConfigurationId, CheckInItem checkInItem) {
     log.info("Start check-in process for item with barcode " + checkInItem.getItemBarcode());
     var locationMapping = locationMappingsRepository
       .getFirstByConfigurationId(UUID.fromString(remoteStorageConfigurationId));
     if (locationMapping.isEmpty()) {
       log.error("Folio location does not exist for remoteStorageConfigurationId " + remoteStorageConfigurationId);
-      return HttpStatus.INTERNAL_SERVER_ERROR;
+    } else {
+      var folioLocationId = locationMapping.get().getFolioLocationId().toString();
+      var folioLocation = locationClient.getLocation(folioLocationId);
+      if (StringUtils.isBlank(folioLocation.getPrimaryServicePoint())) {
+        log.error("Primary service point is empty for remoteStorageConfigurationId " + remoteStorageConfigurationId);
+      } else {
+        circulationClient.checkIn(CheckInCirculationRequest.of(checkInItem.getItemBarcode(),
+          folioLocation.getPrimaryServicePoint(), DateTime.now(UTC)));
+        log.info("Check-in success for item with barcode " + checkInItem.getItemBarcode());
+      }
     }
-    var folioLocationId = locationMapping.get().getFolioLocationId().toString();
-    var folioLocation = locationClient.getLocation(folioLocationId);
-    if (StringUtils.isBlank(folioLocation.getPrimaryServicePoint())) {
-      log.error("Primary service point is empty for remoteStorageConfigurationId " + remoteStorageConfigurationId);
-      return HttpStatus.INTERNAL_SERVER_ERROR;
-    }
-    var responseCirculation = circulationClient.checkIn(
-      CheckInCirculationRequest.of(checkInItem.getItemBarcode(), folioLocation.getPrimaryServicePoint(), DateTime.now(UTC)));
-    if (responseCirculation.getStatusCode() != HttpStatus.OK) {
-      log.error("Circulation client fail for {} and item barcode {}", remoteStorageConfigurationId, checkInItem.getItemBarcode());
-      return HttpStatus.INTERNAL_SERVER_ERROR;
-    }
-    log.info("Check-in success for item with barcode " + checkInItem.getItemBarcode());
-    return HttpStatus.OK;
   }
 }

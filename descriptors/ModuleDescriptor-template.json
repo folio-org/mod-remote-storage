@@ -131,8 +131,7 @@
           "permissionsRequired" : ["remote-storage.check-in.item.post"],
           "modulePermissions" : [
             "inventory-storage.locations.item.get",
-            "circulation.check-in-by-barcode.post",
-            "modperms.circulation.check-in-by-barcode.post"
+            "circulation.check-in-by-barcode.post"
           ]
         }
       ]

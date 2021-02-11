@@ -27,21 +27,25 @@ public class CheckInItemService {
 
   public HttpStatus checkInItemByBarcode(String remoteStorageConfigurationId, CheckInItem checkInItem) {
     log.info("Start check-in process for item with barcode " + checkInItem.getItemBarcode());
-    var location = locationMappingsRepository
+    var locationMapping = locationMappingsRepository
       .getFirstByConfigurationId(UUID.fromString(remoteStorageConfigurationId));
-    if (location.isPresent()) {
-      var folioLocationId = location.get().getFolioLocationId().toString();
-      var folioLocation = locationClient.getLocation(folioLocationId);
-      if (StringUtils.isNotBlank(folioLocation.getPrimaryServicePoint())) {
-        var responseCirculation = circulationClient.checkIn(
-          CheckInCirculationRequest.of(checkInItem.getItemBarcode(), folioLocation.getPrimaryServicePoint(), DateTime.now(UTC)));
-        if (responseCirculation.getStatusCode() == HttpStatus.OK) {
-          log.info("Check-in success for item with barcode " + checkInItem.getItemBarcode());
-          return HttpStatus.OK;
-        }
-      }
+    if (locationMapping.isEmpty()) {
+      log.error("Folio location does not exist for remoteStorageConfigurationId " + remoteStorageConfigurationId);
+      return HttpStatus.INTERNAL_SERVER_ERROR;
     }
-    log.error("Check-in call error for item with barcode " + checkInItem.getItemBarcode());
-    return HttpStatus.INTERNAL_SERVER_ERROR;
+    var folioLocationId = locationMapping.get().getFolioLocationId().toString();
+    var folioLocation = locationClient.getLocation(folioLocationId);
+    if (StringUtils.isBlank(folioLocation.getPrimaryServicePoint())) {
+      log.error("Primary service point is empty for remoteStorageConfigurationId " + remoteStorageConfigurationId);
+      return HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+    var responseCirculation = circulationClient.checkIn(
+      CheckInCirculationRequest.of(checkInItem.getItemBarcode(), folioLocation.getPrimaryServicePoint(), DateTime.now(UTC)));
+    if (responseCirculation.getStatusCode() != HttpStatus.OK) {
+      log.error("Circulation client fail for {} and item barcode {}", remoteStorageConfigurationId, checkInItem.getItemBarcode());
+      return HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+    log.info("Check-in success for item with barcode " + checkInItem.getItemBarcode());
+    return HttpStatus.OK;
   }
 }

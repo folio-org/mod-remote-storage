@@ -220,7 +220,7 @@
       "description" : "Modify a remote storage accession queue by changing accessioned date time"
     },
     {
-      "permissionName" : "remote-storage.check.in.by.barcode",
+      "permissionName" : "remote-storage.check-in.item.post",
       "displayName" : "check-in item by barcode",
       "description" : "Check-in item by barcode"
     },

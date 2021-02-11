@@ -13,8 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -60,8 +58,6 @@ public class CheckInItemServiceTest {
       .thenReturn(Optional.of(locationMapping));
     when(locationClient.getLocation(FOLIO_LOCATION_ID))
       .thenReturn(folioLocation);
-    when(circulationClient.checkIn(isA(CheckInCirculationRequest.class)))
-      .thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
     checkInItemService.checkInItemByBarcode(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
 

@@ -5,7 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import lombok.NoArgsConstructor;
-import org.joda.time.DateTime;
+
+import java.time.Instant;
 
 @Data
 @NoArgsConstructor
@@ -15,5 +16,5 @@ public class CheckInCirculationRequest {
 
   private String itemBarcode;
   private String servicePointId;
-  private DateTime checkInDate;
+  private Instant checkInDate;
 }

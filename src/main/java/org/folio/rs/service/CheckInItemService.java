@@ -8,12 +8,12 @@ import org.folio.rs.client.LocationClient;
 import org.folio.rs.domain.dto.CheckInCirculationRequest;
 import org.folio.rs.domain.dto.CheckInItem;
 import org.folio.rs.repository.LocationMappingsRepository;
-import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
-import static org.joda.time.DateTimeZone.UTC;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +37,7 @@ public class CheckInItemService {
         log.error("Primary service point is empty for remoteStorageConfigurationId " + remoteStorageConfigurationId);
       } else {
         circulationClient.checkIn(CheckInCirculationRequest.of(checkInItem.getItemBarcode(),
-          folioLocation.getPrimaryServicePoint(), DateTime.now(UTC)));
+          folioLocation.getPrimaryServicePoint(), Instant.now().truncatedTo(ChronoUnit.MILLIS)));
         log.info("Check-in success for item with barcode " + checkInItem.getItemBarcode());
       }
     }

@@ -6,7 +6,9 @@ import org.folio.rs.domain.dto.CheckInCirculationRequest;
 import org.folio.rs.domain.dto.CheckInItem;
 import org.folio.rs.domain.dto.FolioLocation;
 import org.folio.rs.domain.entity.LocationMapping;
+import org.folio.rs.error.CheckInException;
 import org.folio.rs.repository.LocationMappingsRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -64,6 +66,17 @@ public class CheckInItemServiceTest {
     verify(circulationClient, times(1)).checkIn(isA(CheckInCirculationRequest.class));
   }
 
+
+  @Test
+  void testCheckInItemByBarcodeIfLocationNotExistInDataBase() {
+    when(locationMappingsRepository.getFirstByConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
+      .thenReturn(Optional.empty());
+
+    Assertions.assertThrows(CheckInException.class, () -> {
+      checkInItemService.checkInItemByBarcode(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
+    });
+  }
+
   @Test
   void testCheckInItemByBarcodeIfLocationClientReturnEmptyPrimaryServicePoint() {
     var folioLocation = FolioLocation.of(FOLIO_LOCATION_ID, "");
@@ -73,18 +86,8 @@ public class CheckInItemServiceTest {
     when(locationClient.getLocation(FOLIO_LOCATION_ID))
       .thenReturn(folioLocation);
 
-    checkInItemService.checkInItemByBarcode(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
-
-    verify(circulationClient, times(0)).checkIn(isA(CheckInCirculationRequest.class));
-  }
-
-  @Test
-  void testCheckInItemByBarcodeIfLocationNotExistInDataBase() {
-    when(locationMappingsRepository.getFirstByConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
-      .thenReturn(Optional.empty());
-
-    checkInItemService.checkInItemByBarcode(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
-
-    verify(circulationClient, times(0)).checkIn(isA(CheckInCirculationRequest.class));
+    Assertions.assertThrows(CheckInException.class, () -> {
+      checkInItemService.checkInItemByBarcode(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
+    });
   }
 }

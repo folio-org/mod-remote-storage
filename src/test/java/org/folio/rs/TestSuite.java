@@ -1,8 +1,10 @@
 package org.folio.rs;
 
+import org.folio.rs.controller.CheckInRetrieveTest;
 import org.folio.rs.controller.ConfigurationsTest;
 import org.folio.rs.controller.LocationMappingsTest;
 import org.folio.rs.service.AccessionQueueServiceTest;
+import org.folio.rs.service.CheckInItemServiceTest;
 import org.folio.rs.service.SecurityManagerServiceTest;
 import org.junit.jupiter.api.Nested;
 
@@ -26,6 +28,16 @@ public class TestSuite {
 
   @Nested
   class AccessionQueueServiceTestNested extends AccessionQueueServiceTest {
+
+  }
+
+  @Nested
+  class CheckInRetrieveTestNested extends CheckInRetrieveTest {
+
+  }
+
+  @Nested
+  class CheckInItemServiceTestNested extends CheckInItemServiceTest {
 
   }
 }

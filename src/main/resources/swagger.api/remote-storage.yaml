@@ -337,6 +337,36 @@ paths:
           required: true
           schema:
             type: string
+  /retrieve/{remoteStorageConfigurationId}/checkInItem:
+    post:
+      responses:
+        '200':
+          description: Checked-in the item
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Internal server error
+      description: Check-in the item in the primary service by barcode value
+      operationId: checkInItemByBarcodeWithRemoteStorageConfigurationId
+      parameters:
+        - name: remoteStorageConfigurationId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/checkInItem"
+        required: true
 components:
   responses:
     trait_validate_422:
@@ -390,6 +420,8 @@ components:
       $ref: schemas/provider.json
     uuid:
       $ref: schemas/uuid.json
+    checkInItem:
+      $ref: schemas/checkInItem.json
   parameters:
     trait_queryable_storage_id:
       name: storageId

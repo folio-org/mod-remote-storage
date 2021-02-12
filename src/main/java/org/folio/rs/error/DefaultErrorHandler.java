@@ -1,6 +1,7 @@
 package org.folio.rs.error;
 
 import static java.util.Objects.isNull;
+import static org.folio.rs.error.ErrorCode.CHECK_IN_ERROR;
 import static org.folio.rs.error.ErrorCode.CONSTRAINT_VIOLATION;
 import static org.folio.rs.error.ErrorCode.UNKNOWN_ERROR;
 import static org.folio.rs.error.ErrorCode.VALIDATION_ERROR;
@@ -80,6 +81,19 @@ public class DefaultErrorHandler {
     } else {
       return buildUnknownErrorResponse(exception.getMessage());
     }
+  }
+
+  @ExceptionHandler(CheckInException.class)
+  public ResponseEntity<Errors> handleCheckInErrors(final CheckInException exception) {
+    Errors errors = new Errors();
+    errors.addErrorsItem(new Error()
+      .message(exception.getMessage())
+      .code(CHECK_IN_ERROR.getDescription())
+      .type(INTERNAL.getValue()));
+    errors.setTotalRecords(1);
+    return ResponseEntity
+      .badRequest()
+      .body(errors);
   }
 
   @ExceptionHandler({ NullPointerException.class, IllegalArgumentException.class, IllegalStateException.class })

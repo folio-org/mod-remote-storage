@@ -17,6 +17,14 @@
     {
       "id": "permissions",
       "version": "5.3"
+    },
+    {
+      "id": "locations",
+      "version": "3.0"
+    },
+    {
+      "id": "circulation",
+      "version": "9.5"
     }
   ],
   "provides": [
@@ -114,6 +122,21 @@
       ]
     },
     {
+      "id": "remote-storage-check-in",
+      "version": "1.0",
+      "handlers": [
+        {
+          "methods": ["POST"],
+          "pathPattern": "/remote-storage/retrieve/{remoteStorageConfigurationId}/checkInItem",
+          "permissionsRequired" : ["remote-storage.check-in.item.post"],
+          "modulePermissions" : [
+            "inventory-storage.locations.item.get",
+            "circulation.check-in-by-barcode.post"
+          ]
+        }
+      ]
+    },
+    {
       "id": "_tenant",
       "version": "1.2",
       "interfaceType": "system",
@@ -197,6 +220,11 @@
       "description" : "Modify a remote storage accession queue by changing accessioned date time"
     },
     {
+      "permissionName" : "remote-storage.check-in.item.post",
+      "displayName" : "check-in item by barcode",
+      "description" : "Check-in item by barcode"
+    },
+    {
       "permissionName": "remote-storage.all",
       "displayName": "remote storage API module - all permissions",
       "description": "All permissions for remote storage",
@@ -212,7 +240,8 @@
         "remote-storage.mappings.item.delete",
         "remote-storage.providers.collection.get",
         "remote-storage.accessions.collection.get",
-        "remote-storage.accessions.item.put"
+        "remote-storage.accessions.item.put",
+        "remote-storage.check-in.item.post"
       ]
     }
   ],

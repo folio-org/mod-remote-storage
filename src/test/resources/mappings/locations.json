@@ -1,0 +1,17 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "url": "/locations/53cf956f-c1df-410b-8bea-27f712cca7c0"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"id\": \"53cf956f-c1df-410b-8bea-27f712cca7c0\",\n  \"name\": \"Miller General Stacks\",\n  \"code\": \"UA/CB/LC/GS\",\n  \"isActive\": true,\n  \"description\": \"The very general stacks of Miller\",\n  \"discoveryDisplayName\": \"Miller General\",\n  \"institutionId\": \"4b2a3d97-01c3-4ef3-98a5-ae4e853429b4\",\n  \"campusId\": \"b595d838-b1d5-409e-86ac-af3b41bde0be\",\n  \"libraryId\": \"e2889f93-92f2-4937-b944-5452a575367e\",\n  \"details\": {\n    \"a\": \"b\",\n    \"foo\": \"bar\"\n  },\n  \"primaryServicePoint\": \"79faacf1-4ba4-42c7-8b2a-566b259e4641\",\n  \"servicePointIds\": [\n    \"79faacf1-4ba4-42c7-8b2a-566b259e4641\"\n  ]\n\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}

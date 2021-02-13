@@ -448,7 +448,7 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/accessionQueue"
-    retriavalQueue:
+    retrievalQueue:
       $ref: schemas/retrievalQueue.json
     retrievalQueues:
       allOf:

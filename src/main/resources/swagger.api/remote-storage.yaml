@@ -337,6 +337,66 @@ paths:
           required: true
           schema:
             type: string
+  /retrievals:
+    get:
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/retrievalQueues"
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Internal server error
+      description: Get a list of retrieval records
+      operationId: getRetrievals
+      parameters:
+        - $ref: "#/components/parameters/trait_queryable_accessioned"
+        - $ref: "#/components/parameters/trait_queryable_storage_id"
+        - $ref: "#/components/parameters/trait_queryable_created_date"
+        - $ref: "#/components/parameters/trait_pageable_offset"
+        - $ref: "#/components/parameters/trait_pageable_limit"
+  /retrievals/id/{retrievalId}:
+    put:
+      responses:
+        '204':
+          description: Set retrieve date time
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: No content
+      description: Set retrieval date by retrieval queue id
+      operationId: setRetrievedById
+      parameters:
+        - name: retrievalId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/uuid"
+  /retrievals/barcode/{barcode}:
+    put:
+      responses:
+        '204':
+          description: Set retrieve date time
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: No content
+      description: Set retrieved date by item barcode
+      operationId: setRetrievedByBarcode
+      parameters:
+        - name: barcode
+          in: path
+          required: true
+          schema:
+            type: string
   /retrieve/{remoteStorageConfigurationId}/checkInItem:
     post:
       responses:
@@ -388,6 +448,17 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/accessionQueue"
+    retriavalQueue:
+      $ref: schemas/retrievalQueue.json
+    retrievalQueues:
+      allOf:
+        - $ref: schemas/baseCollection.json
+        - type: object
+          properties:
+            retrievals:
+              type: array
+              items:
+                $ref: "#/components/schemas/retrievalQueue"
     storageConfiguration:
       $ref: schemas/storageConfiguration.json
     storageConfigurations:

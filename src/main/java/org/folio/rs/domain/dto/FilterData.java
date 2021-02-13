@@ -7,7 +7,7 @@ import lombok.Getter;
 @Builder(toBuilder = true)
 public class FilterData {
 
-  private final Boolean accessioned;
+  private final Boolean isPresented;
   private final String storageId;
   private final String createDate;
   private final int offset;

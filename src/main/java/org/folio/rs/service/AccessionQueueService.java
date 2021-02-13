@@ -148,7 +148,7 @@ public class AccessionQueueService {
   private Specification<AccessionQueueRecord> getCriteriaSpecification(FilterData filterData){
     return (record, criteriaQuery, builder) -> {
       final Collection<Predicate> predicates = new ArrayList<>();
-      if (Boolean.TRUE.equals(filterData.getAccessioned())) {
+      if (Boolean.TRUE.equals(filterData.getIsPresented())) {
         predicates.add(builder.isNotNull(record.get(ACCESSIONED_DATE_TIME)));
       }
       if (Objects.nonNull(filterData.getStorageId())) {

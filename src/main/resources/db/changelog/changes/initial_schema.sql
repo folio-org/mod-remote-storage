@@ -34,6 +34,23 @@ CREATE TABLE IF NOT EXISTS accession_queue
     instance_author     TEXT
 );
 
+CREATE TABLE IF NOT EXISTS retrieval_queue
+(
+    id                  UUID PRIMARY KEY,
+    hold_id             VARCHAR(256),
+    item_barcode        VARCHAR(256),
+    created_date_time   TIMESTAMP default now(),
+    retrieved_date_time TIMESTAMP,
+    remote_storage_id   UUID,
+    instance_title      TEXT,
+    instance_author     TEXT,
+    call_number         TEXT,
+    patron_barcode      TEXT,
+    patron_name         TEXT,
+    pickup_location     TEXT,
+    request_status      TEXT,
+    request_note        TEXT
+);
 
 CREATE TABLE IF NOT EXISTS system_user_parameters
 (

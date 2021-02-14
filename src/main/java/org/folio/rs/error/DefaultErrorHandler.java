@@ -3,6 +3,8 @@ package org.folio.rs.error;
 import static java.util.Objects.isNull;
 import static org.folio.rs.error.ErrorCode.CHECK_IN_ERROR;
 import static org.folio.rs.error.ErrorCode.CONSTRAINT_VIOLATION;
+import static org.folio.rs.error.ErrorCode.DATE_FORMAT_ERROR;
+import static org.folio.rs.error.ErrorCode.NOT_FOUND_ERROR;
 import static org.folio.rs.error.ErrorCode.UNKNOWN_ERROR;
 import static org.folio.rs.error.ErrorCode.VALIDATION_ERROR;
 import static org.folio.rs.error.ErrorType.INTERNAL;
@@ -21,10 +23,13 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.ConstraintViolationException;
+import java.time.format.DateTimeParseException;
 
 @ControllerAdvice
 public class DefaultErrorHandler {
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<Errors> handleMethodArgumentNotValidException(final MethodArgumentNotValidException exception) {
     Errors errors = new Errors();
@@ -99,6 +104,30 @@ public class DefaultErrorHandler {
   @ExceptionHandler({ NullPointerException.class, IllegalArgumentException.class, IllegalStateException.class })
   public ResponseEntity<Errors> handleInternal(final RuntimeException exception) {
     return buildUnknownErrorResponse(exception.getMessage());
+  }
+
+  @ExceptionHandler({ EntityNotFoundException.class })
+  public ResponseEntity<Errors> handleNotFoundExceptions(final EntityNotFoundException exception) {
+    Errors errors = new Errors();
+    errors.addErrorsItem(new Error()
+      .message(exception.getMessage())
+      .code(NOT_FOUND_ERROR.getDescription())
+      .type(INTERNAL.getValue()));
+    errors.setTotalRecords(1);
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+      .body(errors);
+  }
+
+  @ExceptionHandler({ DateTimeParseException.class })
+  public ResponseEntity<Errors> handleDateTimeFormatExceptions(final DateTimeParseException exception) {
+    Errors errors = new Errors();
+    errors.addErrorsItem(new Error()
+      .message(exception.getMessage())
+      .code(DATE_FORMAT_ERROR.getDescription())
+      .type(INTERNAL.getValue()));
+    errors.setTotalRecords(1);
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+      .body(errors);
   }
 
   private ResponseEntity<Errors> buildUnknownErrorResponse(String message) {

@@ -1,8 +1,5 @@
 package org.folio.rs.controller;
 
-import java.time.format.DateTimeParseException;
-
-import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -14,7 +11,6 @@ import org.folio.rs.rest.resource.AccessionsApi;
 import org.folio.rs.service.AccessionQueueService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,8 +22,6 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 @RequestMapping(value = "/remote-storage")
 public class AccessionController implements AccessionsApi {
-  private static final String ACCESSION_QUEUE_NOT_FOUND = "Accession queue not found";
-  private static final String WRONG_DATE_FORMAT_MESSAGE = "Wrong date format for accession queue";
 
   private final AccessionQueueService accessionQueueService;
 
@@ -51,18 +45,6 @@ public class AccessionController implements AccessionsApi {
     accessionQueueService.setAccessionedByBarcode(barcode);
     return ResponseEntity.noContent()
       .build();
-  }
-
-  @ExceptionHandler({ EntityNotFoundException.class })
-  public ResponseEntity<String> handleNotFoundExceptions() {
-    return ResponseEntity.status(HttpStatus.NOT_FOUND)
-      .body(ACCESSION_QUEUE_NOT_FOUND);
-  }
-
-  @ExceptionHandler({ DateTimeParseException.class })
-  public ResponseEntity<String> handleDateTimeFormatExceptions() {
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-      .body(WRONG_DATE_FORMAT_MESSAGE);
   }
 
   private FilterData getFilterData(Boolean accessioned, String storageId, String createdDate, Integer offset, Integer limit) {

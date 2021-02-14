@@ -2,15 +2,12 @@ package org.folio.rs.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.folio.rs.client.InstancesClient;
 import org.folio.rs.domain.dto.FilterData;
 import org.folio.rs.domain.dto.RetrievalQueues;
 import org.folio.rs.domain.entity.RetrievalQueueRecord;
 import org.folio.rs.mapper.RetrievalQueueMapper;
 import org.folio.rs.repository.RetrievalQueueRepository;
-import org.folio.spring.FolioModuleMetadata;
 import org.folio.spring.data.OffsetRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -37,11 +34,7 @@ public class RetrievalQueueService {
   private static final String REMOTE_STORAGE_ID = "remoteStorageId";
   private static final String REQUEST_DATE_TIME = "createdDateTime";
   private final RetrievalQueueRepository retrievalQueueRepository;
-  private final LocationMappingsService locationMappingsService;
-  private final InstancesClient instancesClient;
   private final RetrievalQueueMapper retrievalQueueMapper;
-  private final SecurityManagerService securityManagerService;
-  private final FolioModuleMetadata moduleMetadata;
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -53,7 +46,7 @@ public class RetrievalQueueService {
   }
 
   public void setRetrievedById(String retrievalQueueId) {
-    Optional<RetrievalQueueRecord> retrievalQueue = retrievalQueueRepository.findOne(Specification.where(hasId(retrievalQueueId).and(notAccessioned())));
+    Optional<RetrievalQueueRecord> retrievalQueue = retrievalQueueRepository.findOne(Specification.where(hasId(retrievalQueueId).and(notRetrievedSpecification())));
     if (retrievalQueue.isPresent()) {
       saveRetrievalQueueWithCurrentDate(retrievalQueue.get());
     } else {
@@ -62,11 +55,11 @@ public class RetrievalQueueService {
   }
 
   public void setRetrievedByBarcode(String barcode) {
-    Optional<RetrievalQueueRecord> accessionQueue = retrievalQueueRepository.findOne(Specification.where(hasBarcode(barcode).and(notAccessioned())));
-    if (accessionQueue.isPresent()) {
-      saveRetrievalQueueWithCurrentDate(accessionQueue.get());
+    Optional<RetrievalQueueRecord> retrievalQueueRecord = retrievalQueueRepository.findOne(Specification.where(hasBarcode(barcode).and(notRetrievedSpecification())));
+    if (retrievalQueueRecord.isPresent()) {
+      saveRetrievalQueueWithCurrentDate(retrievalQueueRecord.get());
     } else {
-      throw new EntityNotFoundException("Accession queue with item barcode " + barcode + " not found");
+      throw new EntityNotFoundException("Retrieval queue record with item barcode " + barcode + " not found");
     }
   }
 
@@ -96,7 +89,7 @@ public class RetrievalQueueService {
     return (record, criteria, builder) -> builder.equal(record.get(ITEM_BARCODE), barcode);
   }
 
-  private Specification<RetrievalQueueRecord> notAccessioned() {
+  private Specification<RetrievalQueueRecord> notRetrievedSpecification() {
     return (record, criteria, builder) -> builder.isNull(record.get(RETRIEVED_DATE_TIME));
   }
 
@@ -104,8 +97,4 @@ public class RetrievalQueueService {
     return (record, criteria, builder) -> builder.equal(record.get(ID), stringToUUIDSafe(id));
   }
 
-  @SneakyThrows
-  private String asJsonString(Object value) {
-    return OBJECT_MAPPER.writeValueAsString(value);
-  }
 }

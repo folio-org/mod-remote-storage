@@ -1,6 +1,5 @@
 package org.folio.rs.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.rs.domain.dto.FilterData;
@@ -35,9 +34,6 @@ public class RetrievalQueueService {
   private static final String REQUEST_DATE_TIME = "createdDateTime";
   private final RetrievalQueueRepository retrievalQueueRepository;
   private final RetrievalQueueMapper retrievalQueueMapper;
-
-  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
 
   public RetrievalQueues getRetrievals(FilterData filterData) {
     var queueRecords = retrievalQueueRepository.findAll(getCriteriaSpecification(filterData),

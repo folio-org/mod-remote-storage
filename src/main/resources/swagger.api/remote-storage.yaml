@@ -356,7 +356,7 @@ paths:
       description: Get a list of retrieval records
       operationId: getRetrievals
       parameters:
-        - $ref: "#/components/parameters/trait_queryable_accessioned"
+        - $ref: "#/components/parameters/trait_queryable_retrieved"
         - $ref: "#/components/parameters/trait_queryable_storage_id"
         - $ref: "#/components/parameters/trait_queryable_created_date"
         - $ref: "#/components/parameters/trait_pageable_offset"
@@ -504,6 +504,12 @@ components:
       name: accessioned
       in: query
       description: Flag to indicate, that accession queue record was accessioned and has accesion date
+      schema:
+        type: boolean
+    trait_queryable_retrieved:
+      name: retrieved
+      in: query
+      description: Flag to indicate, that retrievals queue record was retrieved and has retrievals date
       schema:
         type: boolean
     trait_queryable_created_date:

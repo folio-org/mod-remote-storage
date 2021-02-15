@@ -75,7 +75,7 @@ public class RetrievalQueueServiceTest extends TestBase {
     retrievalQueueRecord.setRetrievedDateTime(LocalDateTime.now());
     retrievalQueueRepository.save(retrievalQueueRecord);
 
-    ResponseEntity<RetrievalQueues> responseEntity = get(formattedRetrievalUrl + "?accessioned=true", RetrievalQueues.class);
+    ResponseEntity<RetrievalQueues> responseEntity = get(formattedRetrievalUrl + "?retrieved=true", RetrievalQueues.class);
 
     assertThat(Objects.requireNonNull(responseEntity.getBody())
       .getRetrievals()
@@ -114,27 +114,27 @@ public class RetrievalQueueServiceTest extends TestBase {
   }
 
   @Test
-  void shouldSetAccessionedById() {
+  void shouldSetRetrievedById() {
     UUID id = UUID.randomUUID();
     retrievalQueueRepository.save(buildRetrievalQueueRecord(id));
 
     put(formattedRetrievalUrl + "/id/" + id, null);
 
-    var actualAccessionQueueRecord = retrievalQueueRepository.findAll()
+    var actualRetrievalQueueRecord = retrievalQueueRepository.findAll()
       .get(0);
-    assertThat(actualAccessionQueueRecord.getRetrievedDateTime(), notNullValue());
+    assertThat(actualRetrievalQueueRecord.getRetrievedDateTime(), notNullValue());
   }
 
   @Test
-  void shouldSetAccessionedByBarcode() {
+  void shouldSetRetrievedByBarcode() {
     retrievalQueueRepository.save(buildRetrievalQueueRecord(UUID.randomUUID()));
 
     put(formattedRetrievalUrl + "/barcode/" + BARCODE, null);
 
-    var actualAccessionQueueRecord = retrievalQueueRepository.findAll()
+    var actualRetrievalQueueRecord = retrievalQueueRepository.findAll()
       .get(0);
-    assertThat(actualAccessionQueueRecord.getItemBarcode(), equalTo(BARCODE));
-    assertThat(actualAccessionQueueRecord.getRetrievedDateTime(), notNullValue());
+    assertThat(actualRetrievalQueueRecord.getItemBarcode(), equalTo(BARCODE));
+    assertThat(actualRetrievalQueueRecord.getRetrievedDateTime(), notNullValue());
   }
 
   @Test
@@ -148,7 +148,7 @@ public class RetrievalQueueServiceTest extends TestBase {
   }
 
   @Test
-  void shouldThrowNotFoundExceptionWhenAccessionQueueIsAlreadyAccessioned() {
+  void shouldThrowNotFoundExceptionWhenRetrievalQueueIsAlreadyRetrieved() {
     UUID id = UUID.randomUUID();
     var retrievalQueueRecord = buildRetrievalQueueRecord(id);
     retrievalQueueRecord.setRetrievedDateTime(LocalDateTime.now());

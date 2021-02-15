@@ -122,6 +122,27 @@
       ]
     },
     {
+      "id": "remote-storage-retrievals",
+      "version": "1.0",
+      "handlers": [
+        {
+          "methods": ["GET"],
+          "pathPattern": "/remote-storage/retrievals",
+          "permissionsRequired" : [ "remote-storage.retrievals.collection.get" ]
+        },
+        {
+          "methods": ["PUT"],
+          "pathPattern": "/remote-storage/retrievals/id/{retrievalId}",
+          "permissionsRequired" : [ "remote-storage.retrievals.item.put" ]
+        },
+        {
+          "methods": ["PUT"],
+          "pathPattern": "/remote-storage/retrievals/barcode/{barcode}",
+          "permissionsRequired" : [ "remote-storage.retrievals.item.put" ]
+        }
+      ]
+    },
+    {
       "id": "remote-storage-check-in",
       "version": "1.0",
       "handlers": [
@@ -220,6 +241,16 @@
       "description" : "Modify a remote storage accession queue by changing accessioned date time"
     },
     {
+      "permissionName": "remote-storage.retrievals.collection.get",
+      "displayName": "get remote storage retrieval queues collection",
+      "description": "Get list of remote storage retrieval queue records"
+    },
+    {
+      "permissionName" : "remote-storage.retrievals.item.put",
+      "displayName" : "modify a remote storage retrieval queue record",
+      "description" : "Modify a remote storage retrieval queue record by changing retrieved date time"
+    },
+    {
       "permissionName" : "remote-storage.check-in.item.post",
       "displayName" : "check-in item by barcode",
       "description" : "Check-in item by barcode"
@@ -241,6 +272,8 @@
         "remote-storage.providers.collection.get",
         "remote-storage.accessions.collection.get",
         "remote-storage.accessions.item.put",
+        "remote-storage.retrievals.collection.get",
+        "remote-storage.retrievals.item.put",
         "remote-storage.check-in.item.post"
       ]
     }

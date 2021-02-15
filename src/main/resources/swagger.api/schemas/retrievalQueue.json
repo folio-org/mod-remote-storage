@@ -1,0 +1,71 @@
+{
+  "description": "Retrieval queue",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "Retrieval queue id",
+      "$ref": "uuid.json"
+    },
+    "holdId": {
+      "description": "Hold/request id",
+      "type": "string"
+    },
+    "itemBarcode": {
+      "description": "Item barcode",
+      "type": "string"
+    },
+    "instanceTitle": {
+      "description": "Instance title",
+      "type": "string"
+    },
+    "instanceAuthor": {
+      "description": "Instance author",
+      "type": "string"
+    },
+    "callNumber": {
+      "description": "Call number",
+      "type": "string"
+    },
+    "patronBarcode": {
+      "description": "Patron barcode",
+      "type": "string"
+    },
+    "patronName": {
+      "description": "Patron name",
+      "type": "string"
+    },
+    "retrievedDateTime": {
+      "description": "Retrieved date",
+      "type": "string",
+      "format": "date-time"
+    },
+    "pickupLocation": {
+      "description": "Pickup location",
+      "type": "string"
+    },
+    "requestStatus": {
+      "description": "Request status",
+      "type": "string"
+    },
+    "requestNote": {
+      "description": "Request note",
+      "type": "string"
+    },
+    "createdDateTime": {
+      "description": "Request Date",
+      "type": "string",
+      "format": "date-time"
+    },
+    "remoteStorageId": {
+      "description": "Remote storage id",
+      "$ref": "uuid.json"
+    },
+    "metadata": {
+      "description": "Entity metadata",
+      "type": "object",
+      "$ref": "metadata.json"
+    }
+  },
+  "additionalProperties": false,
+  "required": []
+}

@@ -186,6 +186,7 @@ public class ConfigurationsTest extends TestBase {
     return new StorageConfiguration()
       .id(id)
       .name("Remote Storage")
+      .apiKey("i+X9dfNOztkBfoAmGTXf/w==")
       .providerName("Dematic")
       .url("https://rs.dematic.com")
       .accessionDelay(2)

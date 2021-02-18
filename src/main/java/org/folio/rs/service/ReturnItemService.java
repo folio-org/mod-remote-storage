@@ -5,15 +5,16 @@ import lombok.extern.log4j.Log4j2;
 import org.folio.rs.client.CirculationClient;
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.domain.dto.CheckInItem;
+import org.folio.rs.domain.dto.ContributorName;
+import org.folio.rs.domain.dto.Request;
 import org.folio.rs.domain.dto.ReturnItemResponse;
 import org.folio.rs.domain.entity.RetrievalQueueRecord;
-import org.folio.rs.dto.ContributorName;
-import org.folio.rs.dto.Request;
 import org.folio.rs.error.ItemReturnException;
 import org.folio.rs.repository.RetrievalQueueRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -65,7 +66,7 @@ public class ReturnItemService {
     var retrievalRecord = new RetrievalQueueRecord();
     retrievalRecord.setId(UUID.randomUUID());
     var requestedItem = request.getItem();
-    if (requestedItem != null) {
+    if (Objects.nonNull(requestedItem)) {
       retrievalRecord.setHoldId(requestedItem.getHoldingsRecordId());
       retrievalRecord.setItemBarcode(requestedItem.getBarcode());
       retrievalRecord.setInstanceTitle(requestedItem.getTitle());
@@ -74,18 +75,18 @@ public class ReturnItemService {
         .stream()
         .map(ContributorName::getName)
         .collect(Collectors.joining("; ")));
-      retrievalRecord.setCallNumber(requestedItem.getCallNumber());
+      var callNumberComponents = requestedItem.getCallNumberComponents();
+      if (Objects.nonNull(callNumberComponents)) {
+        retrievalRecord.setCallNumber(callNumberComponents.getCallNumber());
+      }
     }
     var requester = request.getRequester();
-    if (requester != null) {
+    if (Objects.nonNull(requester)) {
       retrievalRecord.setPatronBarcode(requester.getBarcode());
       retrievalRecord.setPatronName(requester.getFirstName() + " " + requester.getLastName());
 
     }
-    var pickUpServicePoint = request.getPickupServicePoint();
-    if (pickUpServicePoint != null) {
-      retrievalRecord.setPickupLocation(pickUpServicePoint.getPickupLocation().toString());
-    }
+    retrievalRecord.setPickupLocation(request.getPickupServicePointId());
     retrievalRecord.setRequestStatus(request.getStatus().value());
     retrievalRecord.setRequestNote(request.getPatronComments());
     retrievalRecord.setCreatedDateTime(LocalDateTime.now());

@@ -1,7 +1,8 @@
 package org.folio.rs.client;
 
 import org.folio.rs.domain.dto.CheckInCirculationRequest;
-import org.folio.rs.dto.ItemRequest;
+
+import org.folio.rs.domain.dto.ItemRequests;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,5 +16,5 @@ public interface CirculationClient {
   void checkIn(@RequestBody CheckInCirculationRequest checkInByBarcodeRequest);
 
   @GetMapping(value = "/requests/queue/{itemId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-  ItemRequest getItemRequests(@PathVariable("itemId") String itemId);
+  ItemRequests getItemRequests(@PathVariable("itemId") String itemId);
 }

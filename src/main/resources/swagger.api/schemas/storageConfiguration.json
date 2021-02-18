@@ -11,6 +11,10 @@
       "description": "configuration name",
       "type": "string"
     },
+    "apiKey": {
+      "description": "remote storage apiKey",
+      "type": "string"
+    },
     "providerName": {
       "description": "remote storage provider name",
       "type": "string"

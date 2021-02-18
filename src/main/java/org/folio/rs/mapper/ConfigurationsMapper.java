@@ -18,6 +18,7 @@ public interface ConfigurationsMapper {
     @Mapping(target = "id", expression = "java(org.folio.rs.util.MapperUtils.uuidToStringSafe(configuration.getId()))"),
     @Mapping(target = "name", source = "name"),
     @Mapping(target = "providerName", source = "providerName"),
+    @Mapping(target = "apiKey", source = "apiKey"),
     @Mapping(target = "url", source = "url"),
     @Mapping(target = "statusUrl", source = "statusUrl"),
     @Mapping(target = "accessionDelay", source = "accessionDelay"),

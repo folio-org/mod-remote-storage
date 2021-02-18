@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS remote_storage_configurations
     id                  UUID PRIMARY KEY,
     name                VARCHAR(256)
         CONSTRAINT unq_RemoteStorageConfigurations_Name UNIQUE NOT NULL,
+    api_key             VARCHAR(256),
     provider_name       VARCHAR(256),
     url                 VARCHAR(256),
     status_url          VARCHAR(256),

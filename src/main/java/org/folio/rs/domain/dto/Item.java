@@ -12,6 +12,7 @@ import lombok.With;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Item {
+  private String id;
   private String barcode;
   private String effectiveLocationId;
   private String instanceId;

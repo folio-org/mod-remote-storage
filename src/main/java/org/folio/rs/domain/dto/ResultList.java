@@ -10,6 +10,6 @@ import lombok.Data;
 public class ResultList<E> {
   @JsonAlias("total_records")
   private Integer totalRecords;
-  @JsonAlias({ "instances", "users" })
+  @JsonAlias({ "instances", "users", "items"})
   private List<E> result;
 }

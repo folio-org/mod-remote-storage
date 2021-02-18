@@ -17,7 +17,7 @@ import javax.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.folio.rs.client.InstancesClient;
+import org.folio.rs.client.InventoryClient;
 import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.rs.domain.dto.AccessionQueues;
 import org.folio.rs.domain.dto.Contributor;
@@ -50,7 +50,7 @@ public class AccessionQueueService {
   private static final String CREATED_DATE_TIME = "createdDateTime";
   private final AccessionQueueRepository accessionQueueRepository;
   private final LocationMappingsService locationMappingsService;
-  private final InstancesClient instancesClient;
+  private final InventoryClient inventoryClient;
   private final AccessionQueueMapper accessionQueueMapper;
   private final SecurityManagerService securityManagerService;
   private final FolioModuleMetadata moduleMetadata;
@@ -70,7 +70,7 @@ public class AccessionQueueService {
         var locationMapping = locationMappingsService
           .getMappingByFolioLocationId(effectiveLocationId);
         if (Objects.nonNull(locationMapping)) {
-          var instances = instancesClient.query("id==" + item.getInstanceId());
+          var instances = inventoryClient.getInstancesByQuery("id==" + item.getInstanceId());
           var instance = instances.getResult().get(0);
           var record = buildAccessionQueueRecord(item, instance, locationMapping);
           accessionQueueRepository.save(record);

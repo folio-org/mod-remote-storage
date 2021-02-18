@@ -2,8 +2,8 @@ package org.folio.rs.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.rs.client.ItemRequestsClient;
-import org.folio.rs.client.ItemsClient;
+import org.folio.rs.client.CirculationClient;
+import org.folio.rs.client.InventoryClient;
 import org.folio.rs.domain.dto.CheckInItem;
 import org.folio.rs.domain.dto.ReturnItemResponse;
 import org.folio.rs.domain.entity.RetrievalQueueRecord;
@@ -26,20 +26,20 @@ public class ReturnItemService {
 
   private static final String BARCODE_QUERY_PROPERTY = "barcode==";
 
-  private final ItemsClient itemsClient;
-  private final ItemRequestsClient itemRequestsClient;
+  private final InventoryClient inventoryClient;
+  private final CirculationClient circulationClient;
   private final RetrievalQueueRepository retrievalQueueRepository;
   private final CheckInItemService checkInItemService;
 
   public ReturnItemResponse returnItem(String remoteStorageConfigurationId, CheckInItem checkInItem) {
     log.info("Start return for item with barcode " + checkInItem.getItemBarcode());
     var itemReturnResponse = new ReturnItemResponse();
-    var items = itemsClient.query(BARCODE_QUERY_PROPERTY + checkInItem.getItemBarcode());
+    var items = inventoryClient.getItemsByQuery(BARCODE_QUERY_PROPERTY + checkInItem.getItemBarcode());
     if (items.getTotalRecords() == 0) {
       throw new ItemReturnException("Item does not exist for barcode " + checkInItem.getItemBarcode());
     }
     var item = items.getResult().get(0);
-    var requests = itemRequestsClient.getItemRequests(item.getId());
+    var requests = circulationClient.getItemRequests(item.getId());
     if (requests.getTotalRecords() != 0) {
       var holdRecallRequests = requests.getRequests().stream()
         .filter(request -> request.getRequestType() == Request.RequestType.HOLD

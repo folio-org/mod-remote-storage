@@ -48,13 +48,13 @@ public class ReturnItemService {
         .collect(toList());
       if (!holdRecallRequests.isEmpty()) {
         itemReturnResponse.isHoldRecallRequestExist(true);
-      }
-      var firstRequest = holdRecallRequests.stream()
-        .filter(request -> request.getPosition() == 1)
-        .findFirst();
-      if (firstRequest.isPresent()) {
-        var retrievalQueueRecord = getRetrievalRecord(firstRequest.get(), remoteStorageConfigurationId);
-        retrievalQueueRepository.save(retrievalQueueRecord);
+        var firstRequest = holdRecallRequests.stream()
+          .filter(request -> request.getPosition() == 1)
+          .findFirst();
+        if (firstRequest.isPresent()) {
+          var retrievalQueueRecord = getRetrievalRecord(firstRequest.get(), remoteStorageConfigurationId);
+          retrievalQueueRepository.save(retrievalQueueRecord);
+        }
       }
     }
     checkInItemService.checkInItemByBarcode(remoteStorageConfigurationId, checkInItem);

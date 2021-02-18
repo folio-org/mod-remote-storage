@@ -47,7 +47,7 @@ public class ReturnItemServiceTest {
   private ReturnItemService returnItemService;
 
   @Test
-  public void testReturnItemService() {
+  void testReturnItem() {
     var checkInItem = new CheckInItem();
     checkInItem.setItemBarcode(ITEM_BARCODE);
 
@@ -78,7 +78,36 @@ public class ReturnItemServiceTest {
   }
 
   @Test
-  public void testReturnItemServiceIfItemRequestsNotExist() {
+  void testReturnItemIfRequestIsNotRecallOrHold() {
+    var checkInItem = new CheckInItem();
+    checkInItem.setItemBarcode(ITEM_BARCODE);
+
+    var item = new Item();
+    item.setId(ITEM_ID);
+    item.setBarcode(ITEM_BARCODE);
+    var itemResult = new ResultList<Item>();
+    itemResult.setTotalRecords(1);
+    itemResult.setResult(Collections.singletonList(item));
+
+    var request = new Request();
+    request.setRequestType(Request.RequestType.PAGE);
+    request.setPosition(1);
+    request.setStatus(Request.Status.CLOSED_CANCELLED);
+    ItemRequests itemRequests = new ItemRequests();
+    itemRequests.setRequests(Collections.singletonList(request));
+    itemRequests.setTotalRecords(1);
+
+    when(inventoryClient.getItemsByQuery("barcode==" + item.getBarcode())).thenReturn(itemResult);
+    when(circulationClient.getItemRequests(item.getId())).thenReturn(itemRequests);
+
+    var returnItemResponse = returnItemService.returnItem(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
+
+    verify(retrievalQueueRepository, times(0)).save(isA(RetrievalQueueRecord.class));
+    assertThat(returnItemResponse.getIsHoldRecallRequestExist(), is(false));
+  }
+
+  @Test
+  void testReturnItemIfItemRequestsNotExist() {
     var checkInItem = new CheckInItem();
     checkInItem.setItemBarcode(ITEM_BARCODE);
 
@@ -103,7 +132,7 @@ public class ReturnItemServiceTest {
   }
 
   @Test
-  public void testReturnItemServiceIfItemByBarcodeNotExist() {
+  void testReturnItemIfItemByBarcodeNotExist() {
     var checkInItem = new CheckInItem();
     checkInItem.setItemBarcode(ITEM_BARCODE);
 

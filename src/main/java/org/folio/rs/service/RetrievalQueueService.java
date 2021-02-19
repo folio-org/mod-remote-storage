@@ -167,7 +167,7 @@ public class RetrievalQueueService {
         .pickupLocation(movedEventRequest.getPickupServicePointId())
         .requestStatus(movedEventRequest.getRequestStatus())
         .requestNote(movedEventRequest.getRequestNote())
-        .remoteStorageId(stringToUUIDSafe(mapping.getFolioLocationId()))
+        .remoteStorageId(stringToUUIDSafe(mapping.getConfigurationId()))
         .instanceTitle(instance.getTitle())
         .instanceAuthor(String.join(";", getInstanceAuthorsNames(instance)))
         .build();

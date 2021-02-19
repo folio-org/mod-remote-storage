@@ -24,5 +24,4 @@ public class Item {
   private String holdingsRecordId;
   private String title;
   private List<ContributorName> contributorNames;
-  private CallNumberComponents callNumberComponents;
 }

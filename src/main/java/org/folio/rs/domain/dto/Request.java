@@ -19,8 +19,7 @@ public class Request {
   private String patronComments;
   private Status status;
   private Integer position;
-  private Item item;
-  private Requester requester;
+  private String requesterId;
   private String pickupServicePointId;
 
   @AllArgsConstructor

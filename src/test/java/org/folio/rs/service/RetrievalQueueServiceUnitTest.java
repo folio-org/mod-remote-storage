@@ -104,7 +104,7 @@ public class RetrievalQueueServiceUnitTest {
     when(callNumberComponents.getCallNumber()).thenReturn(CALL_NUMBER);
     when(locationMappingsService.getMappingByFolioLocationId(LOCATION_ID))
         .thenReturn(locationMapping);
-    when(locationMapping.getFolioLocationId()).thenReturn(REMOTE_STORAGE_ID);
+    when(locationMapping.getConfigurationId()).thenReturn(REMOTE_STORAGE_ID);
     when(usersClient.query("id==" + REQUESTER_ID)).thenReturn(users);
     when(users.getResult()).thenReturn(Collections.singletonList(user));
     when(user.getBarcode()).thenReturn(PATRON_BARCODE);

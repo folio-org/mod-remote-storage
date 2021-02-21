@@ -5,6 +5,7 @@ import static org.folio.rs.util.Utils.randomIdAsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDateTime;
@@ -127,11 +128,25 @@ public class AccessionQueueServiceTest extends TestBase {
     accessionQueueRecord.setAccessionedDateTime(LocalDateTime.now());
     accessionQueueRepository.save(accessionQueueRecord);
 
-    ResponseEntity<AccessionQueues> responseEntity = get(formattedAccessionUrl + "?accessioned=true", AccessionQueues.class);
+    ResponseEntity<AccessionQueues> allAccessionQueueRecords = get(formattedAccessionUrl, AccessionQueues.class);
 
-    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().get(0), notNullValue());
-    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(1));
-    assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(1));
+    assertThat(Objects.requireNonNull(allAccessionQueueRecords.getBody()).getAccessions(), notNullValue());
+    assertThat(Objects.requireNonNull(allAccessionQueueRecords.getBody()).getAccessions().size(), equalTo(2));
+    assertThat(Objects.requireNonNull(allAccessionQueueRecords.getBody()).getTotalRecords(), equalTo(2));
+
+    ResponseEntity<AccessionQueues> accessionedRecords = get(formattedAccessionUrl + "?accessioned=true", AccessionQueues.class);
+
+    assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getAccessions().get(0), notNullValue());
+    assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getAccessions().size(), equalTo(1));
+    assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getTotalRecords(), equalTo(1));
+    assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getAccessions().get(0).getAccessionedDateTime(), notNullValue());
+
+    ResponseEntity<AccessionQueues> notAccessionedRecords = get(formattedAccessionUrl + "?accessioned=false", AccessionQueues.class);
+    assertThat(Objects.requireNonNull(notAccessionedRecords.getBody()).getAccessions().get(0), notNullValue());
+    assertThat(Objects.requireNonNull(notAccessionedRecords.getBody()).getAccessions().size(), equalTo(1));
+    assertThat(Objects.requireNonNull(notAccessionedRecords.getBody()).getTotalRecords(), equalTo(1));
+    assertThat(Objects.requireNonNull(notAccessionedRecords.getBody()).getAccessions().get(0).getAccessionedDateTime(), nullValue());
+
   }
 
   @Test

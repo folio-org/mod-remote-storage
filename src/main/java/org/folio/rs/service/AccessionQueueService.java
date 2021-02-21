@@ -151,6 +151,9 @@ public class AccessionQueueService {
       if (Boolean.TRUE.equals(filterData.getIsPresented())) {
         predicates.add(builder.isNotNull(record.get(ACCESSIONED_DATE_TIME)));
       }
+      if (Boolean.FALSE.equals(filterData.getIsPresented())) {
+        predicates.add(builder.isNull(record.get(ACCESSIONED_DATE_TIME)));
+      }
       if (Objects.nonNull(filterData.getStorageId())) {
         predicates.add(builder.equal(record.get(REMOTE_STORAGE_ID), stringToUUIDSafe(filterData.getStorageId())));
       }

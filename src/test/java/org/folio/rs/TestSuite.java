@@ -3,6 +3,7 @@ package org.folio.rs;
 import org.folio.rs.controller.CheckInRetrieveTest;
 import org.folio.rs.controller.ConfigurationsTest;
 import org.folio.rs.controller.LocationMappingsTest;
+import org.folio.rs.controller.ReturnItemTest;
 import org.folio.rs.service.AccessionQueueServiceTest;
 import org.folio.rs.service.CheckInItemServiceTest;
 import org.folio.rs.service.RetrievalQueueServiceTest;
@@ -49,6 +50,11 @@ public class TestSuite {
 
   @Nested
   class ReturnItemServiceTestNested extends ReturnItemServiceTest {
+
+  }
+
+  @Nested
+  class ReturnItemTestNested extends ReturnItemTest {
 
   }
 }

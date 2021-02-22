@@ -12,6 +12,19 @@
           "Content-Type": "application/json"
         }
       }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/inventory/items?query=barcode==not-exist-item-barcode"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"items\": [ ],\n  \"totalRecords\": 0\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
     }
   ]
 }

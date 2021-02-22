@@ -4,7 +4,6 @@ import org.folio.rs.client.CirculationClient;
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.client.UsersClient;
 import org.folio.rs.domain.dto.CheckInItem;
-import org.folio.rs.domain.dto.ItemRequests;
 import org.folio.rs.domain.dto.Request;
 import org.folio.rs.domain.dto.ResultList;
 import org.folio.rs.domain.dto.User;
@@ -73,8 +72,8 @@ public class ReturnItemServiceTest {
     request.setPosition(1);
     request.setRequesterId(USER_ID);
     request.setStatus(Request.Status.CLOSED_CANCELLED);
-    ItemRequests itemRequests = new ItemRequests();
-    itemRequests.setRequests(Collections.singletonList(request));
+    var itemRequests = new ResultList<Request>();
+    itemRequests.setResult(Collections.singletonList(request));
     itemRequests.setTotalRecords(1);
 
     when(inventoryClient.getItemsByQuery("barcode==" + item.getBarcode())).thenReturn(itemResult);
@@ -106,8 +105,8 @@ public class ReturnItemServiceTest {
     request.setPosition(1);
     request.setStatus(Request.Status.CLOSED_CANCELLED);
     request.setRequesterId(USER_ID);
-    ItemRequests itemRequests = new ItemRequests();
-    itemRequests.setRequests(Collections.singletonList(request));
+    var itemRequests = new ResultList<Request>();
+    itemRequests.setResult(Collections.singletonList(request));
     itemRequests.setTotalRecords(1);
 
     when(inventoryClient.getItemsByQuery("barcode==" + item.getBarcode())).thenReturn(itemResult);
@@ -131,8 +130,8 @@ public class ReturnItemServiceTest {
     itemResult.setTotalRecords(1);
     itemResult.setResult(Collections.singletonList(item));
 
-    ItemRequests itemRequests = new ItemRequests();
-    itemRequests.setRequests(Collections.emptyList());
+    var itemRequests = new ResultList<Request>();
+    itemRequests.setResult(Collections.emptyList());
     itemRequests.setTotalRecords(0);
 
     when(inventoryClient.getItemsByQuery("barcode==" + item.getBarcode())).thenReturn(itemResult);
@@ -183,8 +182,8 @@ public class ReturnItemServiceTest {
     request.setPosition(1);
     request.setRequesterId(USER_ID);
     request.setStatus(Request.Status.CLOSED_CANCELLED);
-    ItemRequests itemRequests = new ItemRequests();
-    itemRequests.setRequests(Collections.singletonList(request));
+    var itemRequests = new ResultList<Request>();
+    itemRequests.setResult(Collections.singletonList(request));
     itemRequests.setTotalRecords(1);
 
     when(inventoryClient.getItemsByQuery("barcode==" + item.getBarcode())).thenReturn(itemResult);

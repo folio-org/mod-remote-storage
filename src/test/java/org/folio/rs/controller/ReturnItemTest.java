@@ -67,8 +67,8 @@ public class ReturnItemTest extends TestBase {
   }
 
   @Test
-  void shouldReturnBadRequestForInvalidRemoteStorageId() {
-    var itemBarcode = "{\"itemBarcode\": \"" + ITEM_BARCODE + "\"}";
+  void shouldReturnBadRequestForBarcodeWhenItemNotExist() {
+    var itemBarcode = "{\"itemBarcode\": \"not-exist-item-barcode\"}";
     var exception = assertThrows(HttpClientErrorException.class, () -> post(errorCheckInUrl, itemBarcode, String.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
   }

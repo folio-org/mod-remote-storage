@@ -48,8 +48,8 @@ public class ReturnItemService {
     }
     var item = items.getResult().get(0);
     var requests = circulationClient.getItemRequests(item.getId());
-    if (!requests.getRequests().isEmpty()) {
-      var holdRecallRequests = requests.getRequests().stream()
+    if (!requests.getResult().isEmpty()) {
+      var holdRecallRequests = requests.getResult().stream()
         .filter(request -> request.getRequestType() == Request.RequestType.HOLD
         || request.getRequestType() == Request.RequestType.RECALL)
         .collect(toList());

@@ -4,6 +4,7 @@ import static org.folio.rs.util.MapperUtils.stringToUUIDSafe;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDateTime;
@@ -75,16 +76,25 @@ public class RetrievalQueueServiceTest extends TestBase {
     retrievalQueueRecord.setRetrievedDateTime(LocalDateTime.now());
     retrievalQueueRepository.save(retrievalQueueRecord);
 
-    ResponseEntity<RetrievalQueues> responseEntity = get(formattedRetrievalUrl + "?retrieved=true", RetrievalQueues.class);
+    ResponseEntity<RetrievalQueues> allRecords = get(formattedRetrievalUrl, RetrievalQueues.class);
 
-    assertThat(Objects.requireNonNull(responseEntity.getBody())
-      .getRetrievals()
-      .get(0), notNullValue());
-    assertThat(Objects.requireNonNull(responseEntity.getBody())
-      .getRetrievals()
-      .size(), equalTo(1));
-    assertThat(Objects.requireNonNull(responseEntity.getBody())
-      .getTotalRecords(), equalTo(1));
+    assertThat(Objects.requireNonNull(allRecords.getBody()).getRetrievals(), notNullValue());
+    assertThat(Objects.requireNonNull(allRecords.getBody()).getRetrievals().size(), equalTo(2));
+    assertThat(Objects.requireNonNull(allRecords.getBody()).getTotalRecords(), equalTo(2));
+
+    ResponseEntity<RetrievalQueues> retrievedRecord = get(formattedRetrievalUrl + "?retrieved=true", RetrievalQueues.class);
+
+    assertThat(Objects.requireNonNull(retrievedRecord.getBody()).getRetrievals().get(0), notNullValue());
+    assertThat(Objects.requireNonNull(retrievedRecord.getBody()).getRetrievals().size(), equalTo(1));
+    assertThat(Objects.requireNonNull(retrievedRecord.getBody()).getTotalRecords(), equalTo(1));
+    assertThat(Objects.requireNonNull(retrievedRecord.getBody()).getRetrievals().get(0).getRetrievedDateTime(), notNullValue());
+
+    ResponseEntity<RetrievalQueues> nonRetrievedRecord = get(formattedRetrievalUrl + "?retrieved=false", RetrievalQueues.class);
+
+    assertThat(Objects.requireNonNull(nonRetrievedRecord.getBody()).getRetrievals().get(0), notNullValue());
+    assertThat(Objects.requireNonNull(nonRetrievedRecord.getBody()).getRetrievals().size(), equalTo(1));
+    assertThat(Objects.requireNonNull(nonRetrievedRecord.getBody()).getTotalRecords(), equalTo(1));
+    assertThat(Objects.requireNonNull(nonRetrievedRecord.getBody()).getRetrievals().get(0).getRetrievedDateTime(), nullValue());
   }
 
   @Test

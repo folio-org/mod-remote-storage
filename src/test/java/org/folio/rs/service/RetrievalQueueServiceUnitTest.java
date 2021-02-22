@@ -1,7 +1,7 @@
 package org.folio.rs.service;
 
+import static org.folio.rs.util.JsonUtils.readJson;
 import static org.folio.rs.util.MapperUtils.mapJsonToMovedEventRequest;
-import static org.folio.rs.util.Utils.readJson;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -102,8 +102,7 @@ public class RetrievalQueueServiceUnitTest {
     when(item.getEffectiveCallNumberComponents()).thenReturn(callNumberComponents);
     when(item.getInstanceId()).thenReturn(INSTANCE_ID);
     when(callNumberComponents.getCallNumber()).thenReturn(CALL_NUMBER);
-    when(locationMappingsService.getMappingByFolioLocationId(LOCATION_ID))
-        .thenReturn(locationMapping);
+    when(locationMappingsService.getMappingByFolioLocationId(LOCATION_ID)).thenReturn(locationMapping);
     when(locationMapping.getConfigurationId()).thenReturn(REMOTE_STORAGE_ID);
     when(usersClient.query("id==" + REQUESTER_ID)).thenReturn(users);
     when(users.getResult()).thenReturn(Collections.singletonList(user));
@@ -114,7 +113,7 @@ public class RetrievalQueueServiceUnitTest {
 
   @Test
   void shouldSaveMovedEventRequest() {
-    service.processRetrievalQueueRecord(request);
+    service.processMovedEventRequest(request);
 
     verify(retrievalQueueRepository, times(1)).save(captor.capture());
     RetrievalQueueRecord record = captor.getValue();
@@ -136,7 +135,7 @@ public class RetrievalQueueServiceUnitTest {
   void shouldNotSaveRequestWhenRequestIsNotPaged() {
     request.setItemStatusName("Hold");
 
-    service.processRetrievalQueueRecord(request);
+    service.processMovedEventRequest(request);
 
     verify(retrievalQueueRepository, never()).save(any());
   }
@@ -145,14 +144,14 @@ public class RetrievalQueueServiceUnitTest {
   void shouldThrowExceptionWhenItemByBarcodeIsNotFound() {
     when(inventoryClient.getItem("barcode==" + ITEM_BARCODE)).thenReturn(null);
 
-    assertThrows(EntityNotFoundException.class, () -> service.processRetrievalQueueRecord(request));
+    assertThrows(EntityNotFoundException.class, () -> service.processMovedEventRequest(request));
   }
 
   @Test
   void shouldNotProcessRecordsWhenLocationIsNotRemote() {
     when(locationMappingsService.getMappingByFolioLocationId(LOCATION_ID)).thenReturn(null);
 
-    service.processRetrievalQueueRecord(request);
+    service.processMovedEventRequest(request);
 
     verify(retrievalQueueRepository, never()).save(any());
   }
@@ -161,14 +160,14 @@ public class RetrievalQueueServiceUnitTest {
   void shouldThrowExceptionWhenPatronIsNotFound() {
     when(usersClient.query("id==" + REQUESTER_ID)).thenReturn(null);
 
-    assertThrows(EntityNotFoundException.class, () -> service.processRetrievalQueueRecord(request));
+    assertThrows(EntityNotFoundException.class, () -> service.processMovedEventRequest(request));
   }
 
   @Test
   void shouldThrowExceptionWhenInstanceIsNotFound() {
     when(inventoryClient.getInstance("id==" + INSTANCE_ID)).thenReturn(null);
 
-    assertThrows(EntityNotFoundException.class, () -> service.processRetrievalQueueRecord(request));
+    assertThrows(EntityNotFoundException.class, () -> service.processMovedEventRequest(request));
 
   }
 }

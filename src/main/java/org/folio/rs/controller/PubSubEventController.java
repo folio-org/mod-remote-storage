@@ -19,13 +19,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(value = "/remote-storage/")
 public class PubSubEventController implements PubSubHandlersApi {
 
-  private RetrievalQueueService retrievalQueueService;
+  private final RetrievalQueueService retrievalQueueService;
 
   @Override
   public ResponseEntity<String> pubSubHandlersMovedEventPost(@Valid String event) {
     MovedEventRequest movedEventRequest = mapJsonToMovedEventRequest(event);
     if (Objects.nonNull(movedEventRequest)) {
-      retrievalQueueService.processRetrievalQueueRecord(movedEventRequest);
+      retrievalQueueService.processMovedEventRequest(movedEventRequest);
     }
     return ResponseEntity.noContent().build();
   }

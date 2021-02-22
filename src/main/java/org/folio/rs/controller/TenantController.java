@@ -3,6 +3,8 @@ package org.folio.rs.controller;
 import static java.util.Objects.nonNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,6 +20,10 @@ import lombok.extern.log4j.Log4j2;
 import org.folio.rest.util.OkapiConnectionParams;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
+import org.folio.rs.domain.entity.AccessionQueueRecord;
+import org.folio.rs.domain.entity.RetrievalQueueRecord;
+import org.folio.rs.repository.AccessionQueueRepository;
+import org.folio.rs.repository.RetrievalQueueRepository;
 import org.folio.rs.service.ConfigurationsService;
 import org.folio.rs.service.LocationMappingsService;
 import org.folio.rs.service.SecurityManagerService;
@@ -49,10 +55,13 @@ public class TenantController implements TenantApi {
   private final ConfigurationsService configurationsService;
   private final LocationMappingsService locationMappingsService;
   private final SecurityManagerService securityManagerService;
-
+  private final RetrievalQueueRepository retrievalQueueRepository;
+  private final AccessionQueueRepository accessionQueueRepository;
 
   private final List<String> configurationSamples = Collections.singletonList("dematic.json");
   private final List<String> mappingSamples = Collections.singletonList("annex_to_dematic.json");
+  private final List<String> retrievalQueueSamples = Collections.singletonList("retrieval_queue_record.json");
+  private final List<String> accessionQueueSamples = Collections.singletonList("accession_queue_record.json");
 
   public static final String SYSTEM_USER = "system-user";
 
@@ -81,8 +90,8 @@ public class TenantController implements TenantApi {
           .body("Liquibase error: " + e.getMessage());
       }
     }
-    initializeSystemUser(tenantId);
     registerModuleToPubSub();
+    initializeSystemUser(tenantId);
     return ResponseEntity.ok().body("true");
   }
 
@@ -112,13 +121,20 @@ public class TenantController implements TenantApi {
       .forEach(configurationsService::postConfiguration);
     readEntitiesFromFiles(mappingSamples, LocationMapping.class)
       .forEach(locationMappingsService::postMapping);
+    readEntitiesFromFiles(retrievalQueueSamples, RetrievalQueueRecord.class)
+        .forEach(retrievalQueueRepository::save);
+    readEntitiesFromFiles(accessionQueueSamples, AccessionQueueRecord.class)
+        .forEach(accessionQueueRepository::save);
   }
 
   private <T> List<T> readEntitiesFromFiles(List<String> filenames, Class<T> type) {
     return filenames.stream()
       .map(fileName -> {
         try {
-          return new ObjectMapper().readValue(new ClassPathResource(SAMPLES_DIR + "/" + fileName).getFile(), type);
+          return new ObjectMapper()
+              .registerModule(new JavaTimeModule())
+              .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+              .readValue(new ClassPathResource(SAMPLES_DIR + "/" + fileName).getFile(), type);
         } catch (IOException e) {
           log.error("Error loading " + fileName, e);
           return null;

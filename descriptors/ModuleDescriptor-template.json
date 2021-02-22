@@ -196,8 +196,13 @@
         {
           "methods": ["POST"],
           "pathPattern": "/pub-sub-handlers/moved-event",
-          "permissionsRequired": [],
-          "modulePermissions": []
+          "permissionsRequired": [
+            "remote-storage-data.events.post"
+          ],
+          "modulePermissions": [
+            "inventory.items.collection.get",
+            "users.collection.get"
+          ]
         }
       ]
     },
@@ -216,7 +221,8 @@
             "login.item.post",
             "perms.users.item.post",
             "pubsub.event-types.post",
-            "pubsub.subscribers.post"
+            "pubsub.subscribers.post",
+            "pubsub.publishers.post"
           ]
         }, {
           "methods": ["DELETE"],

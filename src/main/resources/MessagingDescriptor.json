@@ -1,5 +1,12 @@
 {
-  "publications": [],
+  "publications": [
+    {
+      "eventType": "REQUEST_MOVED_EVENT",
+      "description": "Created request moved event",
+      "eventTTL": 1,
+      "signed": false
+    }
+  ],
   "subscriptions": [
     {
       "eventType": "REQUEST_MOVED_EVENT",

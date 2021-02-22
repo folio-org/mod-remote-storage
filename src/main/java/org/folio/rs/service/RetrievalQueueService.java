@@ -74,19 +74,19 @@ public class RetrievalQueueService {
     saveRetrievalQueueWithCurrentDate(retrievalQueueRecord.get());
   }
 
-  public void processRetrievalQueueRecord(MovedEventRequest movedEventRequest) {
+  public void processMovedEventRequest(MovedEventRequest movedEventRequest) {
     if (PAGED_REQUEST.equals(movedEventRequest.getItemStatusName())) {
       log.info("Process moved request with id " + movedEventRequest.getHoldId());
       Item item = getOriginalItemByBarcode(movedEventRequest);
       LocationMapping locationMapping = getLocationMapping(item);
       if (Objects.nonNull(locationMapping)) {
         log.info("Item location is remote, saving retrieval queue record");
-        processRetrievalQueueRecord(movedEventRequest, item, locationMapping);
+        processMovedEventRequest(movedEventRequest, item, locationMapping);
       }
     }
   }
 
-  private void processRetrievalQueueRecord(MovedEventRequest movedEventRequest, Item item, LocationMapping locationMapping) {
+  private void processMovedEventRequest(MovedEventRequest movedEventRequest, Item item, LocationMapping locationMapping) {
     RetrievalQueueRecord record = buildRetrievalQueueRecord(movedEventRequest, item,
         getUserByRequesterId(movedEventRequest), locationMapping, getInstanceByInstanceId(item));
     retrievalQueueRepository.save(record);

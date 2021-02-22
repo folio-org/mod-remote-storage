@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "pickupServicePointId": {
+      "description": "",
+      "$ref": "uuid.json"
+    },
+    "id": {
+      "description": "",
+      "$ref": "uuid.json"
+    },
+    "requesterId": {
+      "description": "",
+      "$ref": "uuid.json"
+    },
+    "status": {
+      "description": "",
+      "type": "string"
+    },
+    "patronComments": {
+      "description": "",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": []
+}

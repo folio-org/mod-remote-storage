@@ -21,11 +21,13 @@ import org.folio.rs.domain.dto.FilterData;
 import org.folio.rs.domain.dto.Instance;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.LocationMapping;
+import org.folio.rs.domain.dto.MovedEvent;
 import org.folio.rs.domain.dto.MovedEventRequest;
 import org.folio.rs.domain.dto.ResultList;
 import org.folio.rs.domain.dto.RetrievalQueues;
 import org.folio.rs.domain.dto.User;
 import org.folio.rs.domain.entity.RetrievalQueueRecord;
+import org.folio.rs.mapper.MovedEventMapper;
 import org.folio.rs.mapper.RetrievalQueueMapper;
 import org.folio.rs.repository.RetrievalQueueRepository;
 import org.folio.spring.data.OffsetRequest;
@@ -47,6 +49,7 @@ public class RetrievalQueueService {
   private static final String NOT_FOUND = " not found";
   private final RetrievalQueueRepository retrievalQueueRepository;
   private final RetrievalQueueMapper retrievalQueueMapper;
+  private final MovedEventMapper movedEventMapper;
   private final LocationMappingsService locationMappingsService;
   private final InventoryClient inventoryClient;
   private final UsersClient usersClient;
@@ -74,7 +77,8 @@ public class RetrievalQueueService {
     saveRetrievalQueueWithCurrentDate(retrievalQueueRecord.get());
   }
 
-  public void processMovedEventRequest(MovedEventRequest movedEventRequest) {
+  public void processMovedEventRequest(MovedEvent movedEvent) {
+    MovedEventRequest movedEventRequest = movedEventMapper.mapDtoToEntity(movedEvent);
     if (PAGED_REQUEST.equals(movedEventRequest.getItemStatusName())) {
       log.info("Process moved request with id " + movedEventRequest.getHoldId());
       Item item = getOriginalItemByBarcode(movedEventRequest);

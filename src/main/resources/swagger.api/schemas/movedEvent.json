@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "payload": {
+      "description": "",
+      "type": "object",
+      "properties": {
+        "itemBarcode": {
+          "description": "",
+          "type": "string"
+        },
+        "itemStatusName": {
+          "description": "",
+          "type": "string"
+        },
+        "requests": {
+          "description": "",
+          "type": "object",
+          "properties": {
+            "updated": {
+              "description": "",
+              "$ref": "eventRequest.json"
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": []
+}

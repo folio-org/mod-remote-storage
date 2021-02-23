@@ -132,14 +132,14 @@ public class AccessionQueueServiceTest extends TestBase {
     ResponseEntity<AccessionQueues> allAccessionQueueRecords = get(formattedAccessionUrl, AccessionQueues.class);
 
     assertThat(Objects.requireNonNull(allAccessionQueueRecords.getBody()).getAccessions(), notNullValue());
-    assertThat(Objects.requireNonNull(allAccessionQueueRecords.getBody()).getAccessions().size(), equalTo(2));
-    assertThat(Objects.requireNonNull(allAccessionQueueRecords.getBody()).getTotalRecords(), equalTo(2));
+    assertThat(Objects.requireNonNull(allAccessionQueueRecords.getBody()).getAccessions().size(), equalTo(3));
+    assertThat(Objects.requireNonNull(allAccessionQueueRecords.getBody()).getTotalRecords(), equalTo(3));
 
     ResponseEntity<AccessionQueues> accessionedRecords = get(formattedAccessionUrl + "?accessioned=true", AccessionQueues.class);
 
     assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getAccessions().get(0), notNullValue());
-    assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getAccessions().size(), equalTo(1));
-    assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getTotalRecords(), equalTo(1));
+    assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getAccessions().size(), equalTo(2));
+    assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getTotalRecords(), equalTo(2));
     assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getAccessions().get(0).getAccessionedDateTime(), notNullValue());
 
     ResponseEntity<AccessionQueues> notAccessionedRecords = get(formattedAccessionUrl + "?accessioned=false", AccessionQueues.class);

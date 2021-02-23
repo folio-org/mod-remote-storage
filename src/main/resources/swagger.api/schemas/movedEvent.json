@@ -4,23 +4,23 @@
   "type": "object",
   "properties": {
     "payload": {
-      "description": "",
+      "description": "Payload of moved event request",
       "type": "object",
       "properties": {
         "itemBarcode": {
-          "description": "",
+          "description": "Item barcode from moved event",
           "type": "string"
         },
         "itemStatusName": {
-          "description": "",
+          "description": "Status tame of request",
           "type": "string"
         },
         "requests": {
-          "description": "",
+          "description": "Original and updated requests from moved event",
           "type": "object",
           "properties": {
             "updated": {
-              "description": "",
+              "description": "Updated request",
               "$ref": "eventRequest.json"
             }
           }

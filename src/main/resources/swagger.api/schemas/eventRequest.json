@@ -4,23 +4,23 @@
   "type": "object",
   "properties": {
     "pickupServicePointId": {
-      "description": "",
+      "description": "Id of pickup service point",
       "$ref": "uuid.json"
     },
     "id": {
-      "description": "",
+      "description": "Hold id",
       "$ref": "uuid.json"
     },
     "requesterId": {
-      "description": "",
+      "description": "Requester id",
       "$ref": "uuid.json"
     },
     "status": {
-      "description": "",
+      "description": "Request status",
       "type": "string"
     },
     "patronComments": {
-      "description": "",
+      "description": "Request note",
       "type": "string"
     }
   },

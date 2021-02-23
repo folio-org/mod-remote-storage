@@ -5,20 +5,21 @@ import static org.folio.rs.util.MapperUtils.stringToUUIDSafe;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.rs.client.InventoryClient;
+import org.folio.rs.client.LocationClient;
 import org.folio.rs.client.UsersClient;
 import org.folio.rs.domain.dto.Contributor;
 import org.folio.rs.domain.dto.EffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.FilterData;
-import org.folio.rs.domain.dto.Instance;
+import org.folio.rs.domain.dto.FolioLocation;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.MovedEvent;
@@ -53,6 +54,7 @@ public class RetrievalQueueService {
   private final LocationMappingsService locationMappingsService;
   private final InventoryClient inventoryClient;
   private final UsersClient usersClient;
+  private final LocationClient locationClient;
 
 
   public RetrievalQueues getRetrievals(FilterData filterData) {
@@ -92,8 +94,12 @@ public class RetrievalQueueService {
 
   private void processMovedEventRequest(MovedEventRequest movedEventRequest, Item item, LocationMapping locationMapping) {
     RetrievalQueueRecord record = buildRetrievalQueueRecord(movedEventRequest, item,
-        getUserByRequesterId(movedEventRequest), locationMapping, getInstanceByInstanceId(item));
+        getUserByRequesterId(movedEventRequest), locationMapping, getFolioLocation(item.getEffectiveLocation().getId()));
     retrievalQueueRepository.save(record);
+  }
+
+  private FolioLocation getFolioLocation(String effectiveLocationId) {
+    return locationClient.getLocation(effectiveLocationId);
   }
 
   private Specification<RetrievalQueueRecord> getCriteriaSpecification(FilterData filterData) {
@@ -133,7 +139,9 @@ public class RetrievalQueueService {
   }
 
   private LocationMapping getLocationMapping(Item item) {
-    return locationMappingsService.getMappingByFolioLocationId(item.getEffectiveLocationId());
+    return Objects.nonNull(item.getEffectiveLocation())
+        ? locationMappingsService.getMappingByFolioLocationId(item.getEffectiveLocation().getId())
+        : null;
   }
 
   private Item getOriginalItemByBarcode(MovedEventRequest movedEventRequest) {
@@ -152,36 +160,26 @@ public class RetrievalQueueService {
     return users.getResult().get(0);
   }
 
-  private Instance getInstanceByInstanceId(Item item) {
-    ResultList<Instance> instances = inventoryClient.getInstance("id==" + item.getInstanceId());
-    if (Objects.isNull(instances)) {
-      throw new EntityNotFoundException("Instance with id " + item.getInstanceId() + NOT_FOUND);
-    }
-    return instances.getResult().get(0);
-  }
-
-  private RetrievalQueueRecord buildRetrievalQueueRecord(MovedEventRequest movedEventRequest, Item item, User patron, LocationMapping mapping, Instance instance) {
+  private RetrievalQueueRecord buildRetrievalQueueRecord(MovedEventRequest movedEventRequest,
+      Item item, User patron, LocationMapping mapping, FolioLocation folioLocation) {
     return RetrievalQueueRecord.builder()
+        .id(UUID.randomUUID())
         .holdId(movedEventRequest.getHoldId())
         .patronBarcode(patron.getBarcode())
         .patronName(patron.getUsername())
         .callNumber(getCallNumber(item))
         .itemBarcode(movedEventRequest.getItemBarCode())
         .createdDateTime(LocalDateTime.now())
-        .pickupLocation(movedEventRequest.getPickupServicePointId())
+        .pickupLocation(folioLocation.getCode())
         .requestStatus(movedEventRequest.getRequestStatus())
         .requestNote(movedEventRequest.getRequestNote())
         .remoteStorageId(stringToUUIDSafe(mapping.getConfigurationId()))
-        .instanceTitle(instance.getTitle())
-        .instanceAuthor(String.join(";", getInstanceAuthorsNames(instance)))
+        .instanceTitle(item.getTitle())
+        .instanceAuthor(item.getContributorNames()
+            .stream()
+            .map(Contributor::getName)
+            .collect(Collectors.joining("; ")))
         .build();
-  }
-
-  private List<String> getInstanceAuthorsNames(Instance instance) {
-    return instance.getContributors().stream()
-        .map(Contributor::getName)
-        .filter(Objects::nonNull)
-        .collect(Collectors.toList());
   }
 
   private String getCallNumber(Item item) {

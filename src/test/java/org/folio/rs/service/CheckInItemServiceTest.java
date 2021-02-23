@@ -1,5 +1,6 @@
 package org.folio.rs.service;
 
+import joptsimple.internal.Strings;
 import org.folio.rs.client.CirculationClient;
 import org.folio.rs.client.LocationClient;
 import org.folio.rs.domain.dto.CheckInCirculationRequest;
@@ -49,7 +50,7 @@ public class CheckInItemServiceTest {
     locationMapping = new LocationMapping();
     locationMapping.setFolioLocationId(UUID.fromString(FOLIO_LOCATION_ID));
     locationMapping.setConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID));
-    folioLocation = FolioLocation.of(FOLIO_LOCATION_ID, PRIMARY_SERVICE_POINT);
+    folioLocation = FolioLocation.of(FOLIO_LOCATION_ID, Strings.EMPTY, PRIMARY_SERVICE_POINT);
     checkInItem = new CheckInItem();
     checkInItem.setItemBarcode("item-barcode");
   }
@@ -78,7 +79,7 @@ public class CheckInItemServiceTest {
 
   @Test
   void testCheckInItemByBarcodeIfLocationClientReturnEmptyPrimaryServicePoint() {
-    var folioLocation = FolioLocation.of(FOLIO_LOCATION_ID, "");
+    var folioLocation = FolioLocation.of(FOLIO_LOCATION_ID, Strings.EMPTY, Strings.EMPTY);
 
     when(locationMappingsRepository.getFirstByConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
       .thenReturn(Optional.of(locationMapping));

@@ -12,4 +12,8 @@ public class ResultList<E> {
   private Integer totalRecords;
   @JsonAlias({ "instances", "users", "items", "requests"})
   private List<E> result;
+
+  public boolean isEmpty() {
+    return result.isEmpty();
+  }
 }

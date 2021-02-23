@@ -43,7 +43,7 @@ public class ReturnItemService {
     log.info("Start return for item with barcode " + checkInItem.getItemBarcode());
     var itemReturnResponse = new ReturnItemResponse();
     var items = inventoryClient.getItemsByQuery(BARCODE_QUERY_PROPERTY + checkInItem.getItemBarcode());
-    if (items.getResult().isEmpty()) {
+    if (items.isEmpty()) {
       throw new ItemReturnException("Item does not exist for barcode " + checkInItem.getItemBarcode());
     }
     var item = items.getResult().get(0);
@@ -51,23 +51,19 @@ public class ReturnItemService {
     if (!requests.getResult().isEmpty()) {
       var holdRecallRequests = requests.getResult().stream()
         .filter(request -> request.getRequestType() == Request.RequestType.HOLD
-        || request.getRequestType() == Request.RequestType.RECALL)
+          || request.getRequestType() == Request.RequestType.RECALL)
         .collect(toList());
       if (!holdRecallRequests.isEmpty()) {
         itemReturnResponse.isHoldRecallRequestExist(true);
-        var firstPositionRequest = holdRecallRequests.stream()
+        holdRecallRequests.stream()
           .filter(request -> request.getPosition() == 1)
-          .findFirst();
-        if (firstPositionRequest.isPresent()) {
-          var request = firstPositionRequest.get();
-          var users = usersClient.getUsersByQuery(USER_ID_QUERY_PROPERTY + request.getRequesterId());
-          if (users.getResult().isEmpty()) {
-            throw new ItemReturnException("User does not exist for requester id " + request.getRequesterId());
-          }
-          var user = users.getResult().get(0);
-          var retrievalQueueRecord = getRetrievalRecord(firstPositionRequest.get(), item, user, remoteStorageConfigurationId);
-          retrievalQueueRepository.save(retrievalQueueRecord);
-        }
+          .findFirst().ifPresent(request-> {
+            var users = usersClient.getUsersByQuery(USER_ID_QUERY_PROPERTY + request.getRequesterId());
+            if (users.getResult().isEmpty()) {
+              throw new ItemReturnException("User does not exist for requester id " + request.getRequesterId());
+            }
+            retrievalQueueRepository.save(buildRetrievalRecord(request, item, users.getResult().get(0), remoteStorageConfigurationId));
+        });
       }
     }
     checkInItemService.checkInItemByBarcode(remoteStorageConfigurationId, checkInItem);
@@ -75,7 +71,7 @@ public class ReturnItemService {
     return itemReturnResponse;
   }
 
-  private RetrievalQueueRecord getRetrievalRecord(Request request, Item item, User patron, String remoteStorageId) {
+  private RetrievalQueueRecord buildRetrievalRecord(Request request, Item item, User patron, String remoteStorageId) {
     return RetrievalQueueRecord.builder()
       .id(UUID.randomUUID())
       .holdId(item.getHoldingsRecordId())

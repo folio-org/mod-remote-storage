@@ -14,6 +14,6 @@ public class ResultList<E> {
   private List<E> result;
 
   public boolean isEmpty() {
-    return result.isEmpty();
+    return result == null || result.isEmpty();
   }
 }

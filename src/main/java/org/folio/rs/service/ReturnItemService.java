@@ -48,7 +48,7 @@ public class ReturnItemService {
     }
     var item = items.getResult().get(0);
     var requests = circulationClient.getItemRequests(item.getId());
-    if (!requests.getResult().isEmpty()) {
+    if (!requests.isEmpty()) {
       var holdRecallRequests = requests.getResult().stream()
         .filter(request -> request.getRequestType() == Request.RequestType.HOLD
           || request.getRequestType() == Request.RequestType.RECALL)
@@ -56,13 +56,13 @@ public class ReturnItemService {
       if (!holdRecallRequests.isEmpty()) {
         itemReturnResponse.isHoldRecallRequestExist(true);
         holdRecallRequests.stream()
-          .filter(request -> request.getPosition() == 1)
-          .findFirst().ifPresent(request-> {
-            var users = usersClient.getUsersByQuery(USER_ID_QUERY_PROPERTY + request.getRequesterId());
-            if (users.getResult().isEmpty()) {
-              throw new ItemReturnException("User does not exist for requester id " + request.getRequesterId());
+          .filter(itemRequest -> itemRequest.getPosition() == 1)
+          .findFirst().ifPresent(itemRequest-> {
+            var users = usersClient.getUsersByQuery(USER_ID_QUERY_PROPERTY + itemRequest.getRequesterId());
+            if (users.isEmpty()) {
+              throw new ItemReturnException("User does not exist for requester id " + itemRequest.getRequesterId());
             }
-            retrievalQueueRepository.save(buildRetrievalRecord(request, item, users.getResult().get(0), remoteStorageConfigurationId));
+            retrievalQueueRepository.save(buildRetrievalRecord(itemRequest, item, users.getResult().get(0), remoteStorageConfigurationId));
         });
       }
     }
@@ -71,7 +71,7 @@ public class ReturnItemService {
     return itemReturnResponse;
   }
 
-  private RetrievalQueueRecord buildRetrievalRecord(Request request, Item item, User patron, String remoteStorageId) {
+  private RetrievalQueueRecord buildRetrievalRecord(Request itemRequest, Item item, User patron, String remoteStorageId) {
     return RetrievalQueueRecord.builder()
       .id(UUID.randomUUID())
       .holdId(item.getHoldingsRecordId())
@@ -87,10 +87,10 @@ public class ReturnItemService {
         .orElse(null))
       .patronBarcode(patron.getBarcode())
       .patronName(patron.getUsername())
-      .pickupLocation(request.getPickupServicePointId())
-      .requestStatus(ofNullable(request.getStatus())
+      .pickupLocation(itemRequest.getPickupServicePointId())
+      .requestStatus(ofNullable(itemRequest.getStatus())
         .map(Request.Status::value).orElse(null))
-      .requestNote(request.getPatronComments())
+      .requestNote(itemRequest.getPatronComments())
       .createdDateTime(LocalDateTime.now())
       .remoteStorageId(UUID.fromString(remoteStorageId))
       .build();

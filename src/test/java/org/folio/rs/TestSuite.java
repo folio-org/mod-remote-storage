@@ -48,10 +48,10 @@ public class TestSuite {
 
   }
 
-//  @Nested
-//  class ReturnItemServiceTestNested extends ReturnItemServiceTest {
-//
-//  }
+  @Nested
+  class ReturnItemServiceTestNested extends ReturnItemServiceTest {
+
+  }
 
   @Nested
   class ReturnItemTestNested extends ReturnItemTest {

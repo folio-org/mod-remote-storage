@@ -44,11 +44,7 @@ public class ReturnItemService {
   public ReturnItemResponse returnItem(String remoteStorageConfigurationId, CheckInItem checkInItem) {
     log.info("Start return for item with barcode " + checkInItem.getItemBarcode());
     var itemReturnResponse = new ReturnItemResponse();
-    var items = inventoryClient.getItemsByQuery(BARCODE_QUERY_PROPERTY + checkInItem.getItemBarcode());
-    if (items.isEmpty()) {
-      throw new ItemReturnException("Item does not exist for barcode " + checkInItem.getItemBarcode());
-    }
-    var item = items.getResult().get(0);
+    var item = getItem(checkInItem);
     var requests = circulationClient.getItemRequests(item.getId());
     if (!requests.isEmpty()) {
       var holdRecallRequests = requests.getResult().stream()
@@ -60,11 +56,7 @@ public class ReturnItemService {
         holdRecallRequests.stream()
           .filter(itemRequest -> itemRequest.getPosition() == 1)
           .findFirst().ifPresent(itemRequest-> {
-            var users = usersClient.getUsersByQuery(USER_ID_QUERY_PROPERTY + itemRequest.getRequesterId());
-            if (users.isEmpty()) {
-              throw new ItemReturnException("User does not exist for requester id " + itemRequest.getRequesterId());
-            }
-            var user = users.getResult().get(0);
+            var user = getUser(itemRequest.getRequesterId());
             var servicePointCode = servicePointsClient.getServicePoint(itemRequest.getPickupServicePointId()).getCode();
             retrievalQueueRepository.save(buildRetrievalRecord(itemRequest, item, user, servicePointCode, remoteStorageConfigurationId));
         });
@@ -73,6 +65,22 @@ public class ReturnItemService {
     checkInItemService.checkInItemByBarcode(remoteStorageConfigurationId, checkInItem);
     log.info("Return success for item with barcode " + checkInItem.getItemBarcode());
     return itemReturnResponse;
+  }
+
+  private Item getItem(CheckInItem checkInItem) {
+    var items = inventoryClient.getItemsByQuery(BARCODE_QUERY_PROPERTY + checkInItem.getItemBarcode());
+    if (items.isEmpty()) {
+      throw new ItemReturnException("Item does not exist for barcode " + checkInItem.getItemBarcode());
+    }
+    return items.getResult().get(0);
+  }
+
+  private User getUser(String requesterId) {
+    var users = usersClient.getUsersByQuery(USER_ID_QUERY_PROPERTY + requesterId);
+    if (users.isEmpty()) {
+      throw new ItemReturnException("User does not exist for requester id " + requesterId);
+    }
+    return users.getResult().get(0);
   }
 
   private RetrievalQueueRecord buildRetrievalRecord(Request itemRequest, Item item, User patron, String servicePointCode, String remoteStorageId) {

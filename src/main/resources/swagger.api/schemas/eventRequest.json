@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "",
   "type": "object",
+  "description": "Updated request from pubsub moved event",
   "properties": {
     "pickupServicePointId": {
       "description": "Id of pickup service point",

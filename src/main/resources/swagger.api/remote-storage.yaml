@@ -593,9 +593,3 @@ components:
         minimum: 0
         maximum: 2147483647
         type: integer
-    trait_queryable_pubsub_event:
-      name: event
-      in: query
-      description: Entity from pubsub event
-      schema:
-        type: string

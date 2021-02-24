@@ -2,8 +2,10 @@ package org.folio.rs.service;
 
 import org.folio.rs.client.CirculationClient;
 import org.folio.rs.client.InventoryClient;
+import org.folio.rs.client.ServicePointsClient;
 import org.folio.rs.client.UsersClient;
 import org.folio.rs.domain.dto.CheckInItem;
+import org.folio.rs.domain.dto.PickupServicePoint;
 import org.folio.rs.domain.dto.Request;
 import org.folio.rs.domain.dto.ResultList;
 import org.folio.rs.domain.dto.User;
@@ -45,6 +47,8 @@ public class ReturnItemServiceTest {
   private RetrievalQueueRepository retrievalQueueRepository;
   @Mock
   private CheckInItemService checkInItemService;
+  @Mock
+  private ServicePointsClient servicePointsClient;
 
   @InjectMocks
   private ReturnItemService returnItemService;
@@ -72,14 +76,20 @@ public class ReturnItemServiceTest {
     request.setPosition(1);
     request.setRequesterId(USER_ID);
     request.setStatus(Request.Status.CLOSED_CANCELLED);
+    request.setPickupServicePointId("service-point-id");
     var itemRequests = new ResultList<Request>();
     itemRequests.setResult(Collections.singletonList(request));
     itemRequests.setTotalRecords(1);
+
+    var pickUpServicePoint = new PickupServicePoint();
+    pickUpServicePoint.setId("service-point-id");
+    pickUpServicePoint.setCode("service-point-code");
 
     when(inventoryClient.getItemsByQuery("barcode==" + item.getBarcode())).thenReturn(itemResult);
     when(circulationClient.getItemRequests(item.getId())).thenReturn(itemRequests);
     when(usersClient.getUsersByQuery("id==" + USER_ID)).thenReturn(userResult);
     when(retrievalQueueRepository.save(isA(RetrievalQueueRecord.class))).thenReturn(null);
+    when(servicePointsClient.getServicePoint(request.getPickupServicePointId())).thenReturn(pickUpServicePoint);
     doNothing().when(checkInItemService).checkInItemByBarcode(isA(String.class), isA(CheckInItem.class));
 
     var returnItemResponse = returnItemService.returnItem(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);

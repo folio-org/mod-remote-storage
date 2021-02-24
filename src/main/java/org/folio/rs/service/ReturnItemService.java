@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.rs.client.CirculationClient;
 import org.folio.rs.client.InventoryClient;
+import org.folio.rs.client.ServicePointsClient;
 import org.folio.rs.client.UsersClient;
 import org.folio.rs.domain.dto.CheckInItem;
 import org.folio.rs.domain.dto.ContributorName;
@@ -38,6 +39,7 @@ public class ReturnItemService {
   private final UsersClient usersClient;
   private final RetrievalQueueRepository retrievalQueueRepository;
   private final CheckInItemService checkInItemService;
+  private final ServicePointsClient servicePointsClient;
 
   public ReturnItemResponse returnItem(String remoteStorageConfigurationId, CheckInItem checkInItem) {
     log.info("Start return for item with barcode " + checkInItem.getItemBarcode());
@@ -62,7 +64,9 @@ public class ReturnItemService {
             if (users.isEmpty()) {
               throw new ItemReturnException("User does not exist for requester id " + itemRequest.getRequesterId());
             }
-            retrievalQueueRepository.save(buildRetrievalRecord(itemRequest, item, users.getResult().get(0), remoteStorageConfigurationId));
+            var user = users.getResult().get(0);
+            var servicePointCode = servicePointsClient.getServicePoint(itemRequest.getPickupServicePointId()).getCode();
+            retrievalQueueRepository.save(buildRetrievalRecord(itemRequest, item, user, servicePointCode, remoteStorageConfigurationId));
         });
       }
     }
@@ -71,10 +75,10 @@ public class ReturnItemService {
     return itemReturnResponse;
   }
 
-  private RetrievalQueueRecord buildRetrievalRecord(Request itemRequest, Item item, User patron, String remoteStorageId) {
+  private RetrievalQueueRecord buildRetrievalRecord(Request itemRequest, Item item, User patron, String servicePointCode, String remoteStorageId) {
     return RetrievalQueueRecord.builder()
       .id(UUID.randomUUID())
-      .holdId(item.getHoldingsRecordId())
+      .holdId(itemRequest.getId())
       .itemBarcode(item.getBarcode())
       .instanceTitle(item.getTitle())
       .instanceAuthor(ofNullable(item
@@ -87,7 +91,7 @@ public class ReturnItemService {
         .orElse(null))
       .patronBarcode(patron.getBarcode())
       .patronName(patron.getUsername())
-      .pickupLocation(itemRequest.getPickupServicePointId())
+      .pickupLocation(servicePointCode)
       .requestStatus(ofNullable(itemRequest.getStatus())
         .map(Request.Status::value).orElse(null))
       .requestNote(itemRequest.getPatronComments())

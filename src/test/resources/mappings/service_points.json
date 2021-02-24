@@ -1,0 +1,17 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "url": "/service-points/73115c06-dbdb-4aa1-9695-d5d19c973170"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"id\": \"79faacf1-4ba4-42c7-8b2a-566b259e4641\",\n  \"name\": \"Circ Desk 1\",\n  \"code\": \"cd1\",\n  \"discoveryDisplayName\": \"Circulation Desk -- Hallway\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}

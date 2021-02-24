@@ -29,6 +29,10 @@
     {
       "id": "item-storage",
       "version": "8.8"
+    },
+    {
+      "id": "service-points",
+      "version": "3.2"
     }
   ],
   "provides": [
@@ -167,7 +171,8 @@
             "inventory.items.collection.get",
             "circulation.requests.queue.collection.get",
             "inventory-storage.locations.item.get",
-            "circulation.check-in-by-barcode.post"
+            "circulation.check-in-by-barcode.post",
+            "inventory-storage.service-points.item.get"
           ]
         }
       ]

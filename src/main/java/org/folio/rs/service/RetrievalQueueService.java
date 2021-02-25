@@ -20,7 +20,6 @@ import org.folio.rs.client.UsersClient;
 import org.folio.rs.domain.dto.Contributor;
 import org.folio.rs.domain.dto.EffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.FilterData;
-import org.folio.rs.domain.dto.FolioLocation;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.MovedEvent;

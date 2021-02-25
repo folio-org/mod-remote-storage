@@ -23,6 +23,9 @@ public class Configuration {
   @NotNull
   private String name;
 
+  @Column(name = "api_key")
+  private String apiKey;
+
   @Column(name = "provider_name")
   private String providerName;
 

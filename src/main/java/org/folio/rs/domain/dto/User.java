@@ -9,6 +9,7 @@ import lombok.Data;
 public class User {
   private String id;
   private String username;
+  private String barcode;
   private boolean active;
   private Personal personal;
 
@@ -16,6 +17,5 @@ public class User {
   @JsonIgnoreProperties(ignoreUnknown = true)
   public static class Personal {
     private String lastName;
-
   }
 }

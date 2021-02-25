@@ -72,9 +72,8 @@ public class CheckInItemServiceTest {
     when(locationMappingsRepository.getFirstByConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
       .thenReturn(Optional.empty());
 
-    Assertions.assertThrows(CheckInException.class, () -> {
-      checkInItemService.checkInItemByBarcode(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
-    });
+    Assertions.assertThrows(CheckInException.class,
+      () -> checkInItemService.checkInItemByBarcode(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem));
   }
 
   @Test
@@ -86,8 +85,7 @@ public class CheckInItemServiceTest {
     when(locationClient.getLocation(FOLIO_LOCATION_ID))
       .thenReturn(folioLocation);
 
-    Assertions.assertThrows(CheckInException.class, () -> {
-      checkInItemService.checkInItemByBarcode(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
-    });
+    Assertions.assertThrows(CheckInException.class,
+      () -> checkInItemService.checkInItemByBarcode(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem));
   }
 }

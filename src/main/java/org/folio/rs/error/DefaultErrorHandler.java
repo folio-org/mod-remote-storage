@@ -4,6 +4,7 @@ import static java.util.Objects.isNull;
 import static org.folio.rs.error.ErrorCode.CHECK_IN_ERROR;
 import static org.folio.rs.error.ErrorCode.CONSTRAINT_VIOLATION;
 import static org.folio.rs.error.ErrorCode.DATE_FORMAT_ERROR;
+import static org.folio.rs.error.ErrorCode.ITEM_RETURN_ERROR;
 import static org.folio.rs.error.ErrorCode.NOT_FOUND_ERROR;
 import static org.folio.rs.error.ErrorCode.UNKNOWN_ERROR;
 import static org.folio.rs.error.ErrorCode.VALIDATION_ERROR;
@@ -94,6 +95,19 @@ public class DefaultErrorHandler {
     errors.addErrorsItem(new Error()
       .message(exception.getMessage())
       .code(CHECK_IN_ERROR.getDescription())
+      .type(INTERNAL.getValue()));
+    errors.setTotalRecords(1);
+    return ResponseEntity
+      .badRequest()
+      .body(errors);
+  }
+
+  @ExceptionHandler(ItemReturnException.class)
+  public ResponseEntity<Errors> handleItemReturnErrors(final ItemReturnException exception) {
+    Errors errors = new Errors();
+    errors.addErrorsItem(new Error()
+      .message(exception.getMessage())
+      .code(ITEM_RETURN_ERROR.getDescription())
       .type(INTERNAL.getValue()));
     errors.setTotalRecords(1);
     return ResponseEntity

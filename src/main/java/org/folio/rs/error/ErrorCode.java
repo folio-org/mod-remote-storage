@@ -6,7 +6,8 @@ public enum ErrorCode {
   CONSTRAINT_VIOLATION("Constraint violation error"),
   CHECK_IN_ERROR("Check in by barcode error"),
   NOT_FOUND_ERROR("Not found"),
-  DATE_FORMAT_ERROR("Date format error");
+  DATE_FORMAT_ERROR("Date format error"),
+  ITEM_RETURN_ERROR("Item return error");
 
   private final String description;
 

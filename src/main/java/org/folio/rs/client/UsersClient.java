@@ -12,11 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient("users")
-public interface UsersClient extends QueryableClient<User> {
+public interface UsersClient {
 
-  @Override
   @GetMapping
-  ResultList<User> query(@RequestParam("query") String query);
+  ResultList<User> getUsersByQuery(@RequestParam("query") String query);
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   void saveUser(@RequestBody User user);

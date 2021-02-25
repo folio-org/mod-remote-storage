@@ -103,7 +103,7 @@ public class SecurityManagerService {
 
   private Optional<User> getFolioUser(String username) {
     var query = "username==" + username;
-    var results = usersClient.query(query);
+    var results = usersClient.getUsersByQuery(query);
     return results.getResult().stream().findFirst();
   }
 

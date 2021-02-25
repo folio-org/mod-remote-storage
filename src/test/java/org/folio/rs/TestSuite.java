@@ -3,9 +3,11 @@ package org.folio.rs;
 import org.folio.rs.controller.CheckInRetrieveTest;
 import org.folio.rs.controller.ConfigurationsTest;
 import org.folio.rs.controller.LocationMappingsTest;
+import org.folio.rs.controller.ReturnItemTest;
 import org.folio.rs.service.AccessionQueueServiceTest;
 import org.folio.rs.service.CheckInItemServiceTest;
 import org.folio.rs.service.RetrievalQueueServiceTest;
+import org.folio.rs.service.ReturnItemServiceTest;
 import org.folio.rs.service.SecurityManagerServiceTest;
 import org.junit.jupiter.api.Nested;
 
@@ -43,6 +45,16 @@ public class TestSuite {
 
   @Nested
   class CheckInItemServiceTestNested extends CheckInItemServiceTest {
+
+  }
+
+  @Nested
+  class ReturnItemServiceTestNested extends ReturnItemServiceTest {
+
+  }
+
+  @Nested
+  class ReturnItemTestNested extends ReturnItemTest {
 
   }
 }

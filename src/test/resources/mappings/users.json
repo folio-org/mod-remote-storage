@@ -54,6 +54,19 @@
     },
     {
       "request": {
+        "method": "GET",
+        "url": "/users?query=id==21932a85-bd00-446b-9565-46e0c1a5490b"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"users\": [{\n      \"username\": \"jhandey\",\n      \"id\": \"21932a85-bd00-446b-9565-46e0c1a5490b\",\n      \"active\": true,\n      \"patronGroup\": \"4bb563d9-3f9d-4e1e-8d1d-04e75666d68f\"\n    }\n  ],\n  \"totalRecords\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
         "method": "POST",
         "url": "/users"
       },

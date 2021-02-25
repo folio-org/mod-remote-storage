@@ -8,10 +8,10 @@ import lombok.Data;
 public class MovedEventRequest {
 
   private String itemBarCode;
-  private String itemStatusName;
   private String pickupServicePointId;
   private String holdId;
   private String requesterId;
   private String requestStatus;
   private String requestNote;
+  private String requestType;
 }

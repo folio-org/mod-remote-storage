@@ -1,5 +1,6 @@
 package org.folio.rs.service;
 
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.folio.rs.util.MapperUtils.stringToUUIDSafe;
 
 import java.time.LocalDateTime;
@@ -46,7 +47,7 @@ public class RetrievalQueueService {
   private static final String RETRIEVED_DATE_TIME = "retrievedDateTime";
   private static final String REMOTE_STORAGE_ID = "remoteStorageId";
   private static final String REQUEST_DATE_TIME = "createdDateTime";
-  private static final String PAGED_REQUEST = "Paged";
+  private static final String PAGE_REQUEST = "Page";
   private static final String NOT_FOUND = " not found";
   private final RetrievalQueueRepository retrievalQueueRepository;
   private final RetrievalQueueMapper retrievalQueueMapper;
@@ -81,7 +82,7 @@ public class RetrievalQueueService {
 
   public void processMovedEventRequest(MovedEvent movedEvent) {
     MovedEventRequest movedEventRequest = movedEventMapper.mapDtoToEntity(movedEvent);
-    if (PAGED_REQUEST.equals(movedEventRequest.getItemStatusName())) {
+    if (PAGE_REQUEST.equals(movedEventRequest.getRequestType())) {
       log.info("Process moved request with id " + movedEventRequest.getHoldId());
       Item item = getOriginalItemByBarcode(movedEventRequest);
       LocationMapping locationMapping = getLocationMapping(item);
@@ -146,7 +147,7 @@ public class RetrievalQueueService {
 
   private Item getOriginalItemByBarcode(MovedEventRequest movedEventRequest) {
     ResultList<Item> items = inventoryClient.getItem("barcode==" + movedEventRequest.getItemBarCode());
-    if (Objects.isNull(items)) {
+    if (isEmpty(items.getResult())) {
       throw new EntityNotFoundException("Item with barcode " + movedEventRequest.getItemBarCode() + NOT_FOUND);
     }
     return items.getResult().get(0);
@@ -154,7 +155,7 @@ public class RetrievalQueueService {
 
   private User getUserByRequesterId(MovedEventRequest movedEventRequest) {
     ResultList<User> users = usersClient.query("id==" + movedEventRequest.getRequesterId());
-    if (Objects.isNull(users)) {
+    if (isEmpty(users.getResult())) {
       throw new EntityNotFoundException("User with id " + movedEventRequest.getRequesterId() + NOT_FOUND);
     }
     return users.getResult().get(0);
@@ -175,11 +176,16 @@ public class RetrievalQueueService {
         .requestNote(movedEventRequest.getRequestNote())
         .remoteStorageId(stringToUUIDSafe(mapping.getConfigurationId()))
         .instanceTitle(item.getTitle())
-        .instanceAuthor(item.getContributorNames()
-            .stream()
-            .map(Contributor::getName)
-            .collect(Collectors.joining("; ")))
+        .instanceAuthor(getContributorNames(item))
         .build();
+  }
+
+  private String getContributorNames(Item item) {
+    return isEmpty(item.getContributorNames())
+        ? null
+        : item.getContributorNames().stream()
+            .map(Contributor::getName)
+            .collect(Collectors.joining("; "));
   }
 
   private String getCallNumber(Item item) {

@@ -1,9 +1,10 @@
 package org.folio.rs.service;
 
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -55,7 +56,7 @@ public class RetrievalQueueServiceUnitTest {
   private static final String STATUS = "Open - Not yet filled";
   private static final String REQUEST_NOTE = "request note";
   private static final String INSTANCE_TITLE = "Title";
-  private static final String ITEM_STATUS_NAME = "Paged";
+  private static final String REQUEST_TYPE = "Page";
   private static final String LOCATION_CODE = "KU/CC/DI";
 
   @InjectMocks
@@ -96,11 +97,13 @@ public class RetrievalQueueServiceUnitTest {
   private MovedEventRequest movedEventRequest;
   @Mock
   private MovedEventMapper movedEventMapper;
+  @Mock
+  private ResultList resultList;
 
   @BeforeEach
   void prepareTestData() {
     when(movedEventRequest.getItemBarCode()).thenReturn(ITEM_BARCODE);
-    when(movedEventRequest.getItemStatusName()).thenReturn(ITEM_STATUS_NAME);
+    when(movedEventRequest.getRequestType()).thenReturn(REQUEST_TYPE);
     when(movedEventRequest.getRequesterId()).thenReturn(REQUESTER_ID);
     when(movedEventRequest.getPickupServicePointId()).thenReturn(PICKUP_LOCATION);
     when(movedEventRequest.getHoldId()).thenReturn(HOLD_ID);
@@ -148,16 +151,17 @@ public class RetrievalQueueServiceUnitTest {
 
   @Test
   void shouldNotSaveRequestWhenRequestIsNotPaged() {
-    when(movedEventRequest.getItemStatusName()).thenReturn("Hold");
+    when(movedEventRequest.getRequestType()).thenReturn("Hold");
 
     service.processMovedEventRequest(movedEvent);
 
-    verify(retrievalQueueRepository, never()).save(any());
+    verify(retrievalQueueRepository, never()).save(isA(RetrievalQueueRecord.class));
   }
 
   @Test()
   void shouldThrowExceptionWhenItemByBarcodeIsNotFound() {
-    when(inventoryClient.getItem("barcode==" + ITEM_BARCODE)).thenReturn(null);
+    when(inventoryClient.getItem("barcode==" + ITEM_BARCODE)).thenReturn(resultList);
+    when(resultList.getResult()).thenReturn(Collections.EMPTY_LIST);
 
     assertThrows(EntityNotFoundException.class, () -> service.processMovedEventRequest(movedEvent));
   }
@@ -168,12 +172,13 @@ public class RetrievalQueueServiceUnitTest {
 
     service.processMovedEventRequest(movedEvent);
 
-    verify(retrievalQueueRepository, never()).save(any());
+    verify(retrievalQueueRepository, never()).save(isA(RetrievalQueueRecord.class));
   }
 
   @Test
   void shouldThrowExceptionWhenPatronIsNotFound() {
-    when(usersClient.query("id==" + REQUESTER_ID)).thenReturn(null);
+    when(usersClient.query("id==" + REQUESTER_ID)).thenReturn(resultList);
+    when(resultList.getResult()).thenReturn(Collections.EMPTY_LIST);
 
     assertThrows(EntityNotFoundException.class, () -> service.processMovedEventRequest(movedEvent));
   }
@@ -182,6 +187,6 @@ public class RetrievalQueueServiceUnitTest {
   void shouldNotSaveRequestWhenEffectiveLocationIsNotFound() {
     when(item.getEffectiveLocation()).thenReturn(null);
 
-    verify(retrievalQueueRepository, never()).save(any());
+    verify(retrievalQueueRepository, never()).save(isA(RetrievalQueueRecord.class));
   }
 }

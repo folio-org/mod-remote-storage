@@ -13,16 +13,16 @@ import static org.mockito.Mockito.when;
 import java.util.Collections;
 import javax.persistence.EntityNotFoundException;
 import org.folio.rs.client.InventoryClient;
-import org.folio.rs.client.LocationClient;
+import org.folio.rs.client.ServicePointsClient;
 import org.folio.rs.client.UsersClient;
 import org.folio.rs.domain.dto.Contributor;
 import org.folio.rs.domain.dto.EffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.EffectiveLocation;
-import org.folio.rs.domain.dto.FolioLocation;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.MovedEvent;
 import org.folio.rs.domain.dto.MovedEventRequest;
+import org.folio.rs.domain.dto.PickupServicePoint;
 import org.folio.rs.domain.dto.ResultList;
 import org.folio.rs.domain.dto.User;
 import org.folio.rs.domain.entity.RetrievalQueueRecord;
@@ -47,9 +47,9 @@ public class RetrievalQueueServiceUnitTest {
   private static final String PATRON_BARCODE = "543285216734";
   private static final String CALL_NUMBER = "1234567890";
   private static final String EFFECTIVE_LOCATION_ID = "53cf956f-c1df-410b-8bea-27f721cca8c0";
+  private static final String PICKUP_SERVICE_POINT_ID = "3a40852d-49fd-4df2-a1f9-6e2641a6e92f";
   private static final String REQUESTER_ID = "e546d50a-926a-421f-8400-a041a2e9db79";
   private static final String HOLD_ID = "7babb1ab-f46f-4c74-8950-bda779440f6f";
-  private static final String PICKUP_LOCATION = "3a40852d-49fd-4df2-a1f9-6e2641a6e91f";
   private static final String REMOTE_STORAGE_ID = "d3cfdb9e-e364-4209-85e5-8f49fc0969b5";
   private static final String PATRON_NAME = "John Smith";
   private static final String INSTANCE_AUTHOR = "Matt Gordon";
@@ -57,7 +57,7 @@ public class RetrievalQueueServiceUnitTest {
   private static final String REQUEST_NOTE = "request note";
   private static final String INSTANCE_TITLE = "Title";
   private static final String REQUEST_TYPE = "Page";
-  private static final String LOCATION_CODE = "KU/CC/DI";
+  private static final String PICKUP_SERVICE_POINT_CODE = "cd1";
 
   @InjectMocks
   private RetrievalQueueService service;
@@ -72,7 +72,7 @@ public class RetrievalQueueServiceUnitTest {
   @Mock
   private UsersClient usersClient;
   @Mock
-  private LocationClient locationClient;
+  private ServicePointsClient servicePointsClient;
   @Mock
   private Item item;
   @Mock
@@ -84,7 +84,7 @@ public class RetrievalQueueServiceUnitTest {
   @Mock
   private EffectiveLocation effectiveLocation;
   @Mock
-  private FolioLocation folioLocation;
+  private PickupServicePoint pickupServicePoint;
   @Mock
   private ResultList<User> users;
   @Mock
@@ -97,15 +97,13 @@ public class RetrievalQueueServiceUnitTest {
   private MovedEventRequest movedEventRequest;
   @Mock
   private MovedEventMapper movedEventMapper;
-  @Mock
-  private ResultList resultList;
 
   @BeforeEach
   void prepareTestData() {
     when(movedEventRequest.getItemBarCode()).thenReturn(ITEM_BARCODE);
     when(movedEventRequest.getRequestType()).thenReturn(REQUEST_TYPE);
     when(movedEventRequest.getRequesterId()).thenReturn(REQUESTER_ID);
-    when(movedEventRequest.getPickupServicePointId()).thenReturn(PICKUP_LOCATION);
+    when(movedEventRequest.getPickupServicePointId()).thenReturn(PICKUP_SERVICE_POINT_ID);
     when(movedEventRequest.getHoldId()).thenReturn(HOLD_ID);
     when(movedEventRequest.getRequestNote()).thenReturn(REQUEST_NOTE);
     when(movedEventRequest.getRequestStatus()).thenReturn(STATUS);
@@ -121,8 +119,8 @@ public class RetrievalQueueServiceUnitTest {
     when(callNumberComponents.getCallNumber()).thenReturn(CALL_NUMBER);
     when(locationMappingsService.getMappingByFolioLocationId(EFFECTIVE_LOCATION_ID)).thenReturn(locationMapping);
     when(locationMapping.getConfigurationId()).thenReturn(REMOTE_STORAGE_ID);
-    when(locationClient.getLocation(EFFECTIVE_LOCATION_ID)).thenReturn(folioLocation);
-    when(folioLocation.getCode()).thenReturn(LOCATION_CODE);
+    when(servicePointsClient.getServicePoint(PICKUP_SERVICE_POINT_ID)).thenReturn(pickupServicePoint);
+    when(pickupServicePoint.getCode()).thenReturn(PICKUP_SERVICE_POINT_CODE);
     when(usersClient.query("id==" + REQUESTER_ID)).thenReturn(users);
     when(users.getResult()).thenReturn(Collections.singletonList(user));
     when(user.getBarcode()).thenReturn(PATRON_BARCODE);
@@ -140,7 +138,7 @@ public class RetrievalQueueServiceUnitTest {
     assertEquals(CALL_NUMBER, record.getCallNumber());
     assertEquals(PATRON_BARCODE, record.getPatronBarcode());
     assertEquals(PATRON_NAME, record.getPatronName());
-    assertEquals(LOCATION_CODE, record.getPickupLocation());
+    assertEquals(PICKUP_SERVICE_POINT_CODE, record.getPickupLocation());
     assertEquals(STATUS, record.getRequestStatus());
     assertEquals(REQUEST_NOTE, record.getRequestNote());
     assertEquals(INSTANCE_TITLE, record.getInstanceTitle());
@@ -160,8 +158,8 @@ public class RetrievalQueueServiceUnitTest {
 
   @Test()
   void shouldThrowExceptionWhenItemByBarcodeIsNotFound() {
-    when(inventoryClient.getItem("barcode==" + ITEM_BARCODE)).thenReturn(resultList);
-    when(resultList.getResult()).thenReturn(Collections.EMPTY_LIST);
+    when(inventoryClient.getItem("barcode==" + ITEM_BARCODE)).thenReturn(items);
+    when(items.getResult()).thenReturn(Collections.EMPTY_LIST);
 
     assertThrows(EntityNotFoundException.class, () -> service.processMovedEventRequest(movedEvent));
   }
@@ -177,8 +175,8 @@ public class RetrievalQueueServiceUnitTest {
 
   @Test
   void shouldThrowExceptionWhenPatronIsNotFound() {
-    when(usersClient.query("id==" + REQUESTER_ID)).thenReturn(resultList);
-    when(resultList.getResult()).thenReturn(Collections.EMPTY_LIST);
+    when(usersClient.query("id==" + REQUESTER_ID)).thenReturn(users);
+    when(users.getResult()).thenReturn(Collections.EMPTY_LIST);
 
     assertThrows(EntityNotFoundException.class, () -> service.processMovedEventRequest(movedEvent));
   }

@@ -15,7 +15,7 @@ import javax.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.rs.client.InventoryClient;
-import org.folio.rs.client.LocationClient;
+import org.folio.rs.client.ServicePointsClient;
 import org.folio.rs.client.UsersClient;
 import org.folio.rs.domain.dto.Contributor;
 import org.folio.rs.domain.dto.EffectiveCallNumberComponents;
@@ -25,6 +25,7 @@ import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.MovedEvent;
 import org.folio.rs.domain.dto.MovedEventRequest;
+import org.folio.rs.domain.dto.PickupServicePoint;
 import org.folio.rs.domain.dto.ResultList;
 import org.folio.rs.domain.dto.RetrievalQueues;
 import org.folio.rs.domain.dto.User;
@@ -55,7 +56,7 @@ public class RetrievalQueueService {
   private final LocationMappingsService locationMappingsService;
   private final InventoryClient inventoryClient;
   private final UsersClient usersClient;
-  private final LocationClient locationClient;
+  private final ServicePointsClient servicePointsClient;
 
 
   public RetrievalQueues getRetrievals(FilterData filterData) {
@@ -95,12 +96,12 @@ public class RetrievalQueueService {
 
   private void processMovedEventRequest(MovedEventRequest movedEventRequest, Item item, LocationMapping locationMapping) {
     RetrievalQueueRecord record = buildRetrievalQueueRecord(movedEventRequest, item,
-        getUserByRequesterId(movedEventRequest), locationMapping, getFolioLocation(item.getEffectiveLocation().getId()));
+        getUserByRequesterId(movedEventRequest), locationMapping, getPickupServicePoint(movedEventRequest.getPickupServicePointId()));
     retrievalQueueRepository.save(record);
   }
 
-  private FolioLocation getFolioLocation(String effectiveLocationId) {
-    return locationClient.getLocation(effectiveLocationId);
+  private PickupServicePoint getPickupServicePoint(String pickupServicePointId) {
+    return servicePointsClient.getServicePoint(pickupServicePointId);
   }
 
   private Specification<RetrievalQueueRecord> getCriteriaSpecification(FilterData filterData) {
@@ -162,7 +163,7 @@ public class RetrievalQueueService {
   }
 
   private RetrievalQueueRecord buildRetrievalQueueRecord(MovedEventRequest movedEventRequest,
-      Item item, User patron, LocationMapping mapping, FolioLocation folioLocation) {
+      Item item, User patron, LocationMapping mapping, PickupServicePoint pickupServicePoint) {
     return RetrievalQueueRecord.builder()
         .id(UUID.randomUUID())
         .holdId(movedEventRequest.getHoldId())
@@ -171,7 +172,7 @@ public class RetrievalQueueService {
         .callNumber(getCallNumber(item))
         .itemBarcode(movedEventRequest.getItemBarCode())
         .createdDateTime(LocalDateTime.now())
-        .pickupLocation(folioLocation.getCode())
+        .pickupLocation(pickupServicePoint.getCode())
         .requestStatus(movedEventRequest.getRequestStatus())
         .requestNote(movedEventRequest.getRequestNote())
         .remoteStorageId(stringToUUIDSafe(mapping.getConfigurationId()))

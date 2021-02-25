@@ -22,6 +22,10 @@
     "patronComments": {
       "description": "Request note",
       "type": "string"
+    },
+    "requestType": {
+      "description": "Request type",
+      "type": "string"
     }
   },
   "additionalProperties": false,

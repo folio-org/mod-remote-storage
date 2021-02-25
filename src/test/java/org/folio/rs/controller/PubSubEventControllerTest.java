@@ -1,6 +1,6 @@
 package org.folio.rs.controller;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -38,6 +38,6 @@ public class PubSubEventControllerTest extends TestBase {
   void shouldNotProcessMovedEventWhenEventIsNull() {
     controller.pubSubHandlersMovedEventPost(null);
 
-    verify(retrievalQueueService, never()).processMovedEventRequest(any());
+    verify(retrievalQueueService, never()).processMovedEventRequest(isA((MovedEvent.class)));
   }
 }

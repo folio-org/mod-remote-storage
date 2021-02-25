@@ -11,10 +11,6 @@
           "description": "Item barcode from moved event",
           "type": "string"
         },
-        "itemStatusName": {
-          "description": "Status tame of request",
-          "type": "string"
-        },
         "requests": {
           "description": "Original and updated requests from moved event",
           "type": "object",

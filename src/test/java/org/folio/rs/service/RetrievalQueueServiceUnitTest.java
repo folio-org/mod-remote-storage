@@ -108,7 +108,7 @@ public class RetrievalQueueServiceUnitTest {
     when(movedEventRequest.getRequestNote()).thenReturn(REQUEST_NOTE);
     when(movedEventRequest.getRequestStatus()).thenReturn(STATUS);
     when(movedEventMapper.mapDtoToEntity(movedEvent)).thenReturn(movedEventRequest);
-    when(inventoryClient.getItem("barcode==" + ITEM_BARCODE)).thenReturn(items);
+    when(inventoryClient.getItemsByQuery("barcode==" + ITEM_BARCODE)).thenReturn(items);
     when(items.getResult()).thenReturn(Collections.singletonList(item));
     when(item.getTitle()).thenReturn(INSTANCE_TITLE);
     when(item.getContributorNames()).thenReturn(Collections.singletonList(contributor));
@@ -121,7 +121,7 @@ public class RetrievalQueueServiceUnitTest {
     when(locationMapping.getConfigurationId()).thenReturn(REMOTE_STORAGE_ID);
     when(servicePointsClient.getServicePoint(PICKUP_SERVICE_POINT_ID)).thenReturn(pickupServicePoint);
     when(pickupServicePoint.getCode()).thenReturn(PICKUP_SERVICE_POINT_CODE);
-    when(usersClient.query("id==" + REQUESTER_ID)).thenReturn(users);
+    when(usersClient.getUsersByQuery("id==" + REQUESTER_ID)).thenReturn(users);
     when(users.getResult()).thenReturn(Collections.singletonList(user));
     when(user.getBarcode()).thenReturn(PATRON_BARCODE);
     when(user.getUsername()).thenReturn(PATRON_NAME);
@@ -158,7 +158,7 @@ public class RetrievalQueueServiceUnitTest {
 
   @Test()
   void shouldThrowExceptionWhenItemByBarcodeIsNotFound() {
-    when(inventoryClient.getItem("barcode==" + ITEM_BARCODE)).thenReturn(items);
+    when(inventoryClient.getItemsByQuery("barcode==" + ITEM_BARCODE)).thenReturn(items);
     when(items.getResult()).thenReturn(Collections.EMPTY_LIST);
 
     assertThrows(EntityNotFoundException.class, () -> service.processMovedEventRequest(movedEvent));
@@ -175,7 +175,7 @@ public class RetrievalQueueServiceUnitTest {
 
   @Test
   void shouldThrowExceptionWhenPatronIsNotFound() {
-    when(usersClient.query("id==" + REQUESTER_ID)).thenReturn(users);
+    when(usersClient.getUsersByQuery("id==" + REQUESTER_ID)).thenReturn(users);
     when(users.getResult()).thenReturn(Collections.EMPTY_LIST);
 
     assertThrows(EntityNotFoundException.class, () -> service.processMovedEventRequest(movedEvent));

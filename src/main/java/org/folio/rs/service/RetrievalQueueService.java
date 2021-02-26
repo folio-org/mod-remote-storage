@@ -96,6 +96,7 @@ public class RetrievalQueueService {
   private void processMovedEventRequest(MovedEventRequest movedEventRequest, Item item, LocationMapping locationMapping) {
     RetrievalQueueRecord record = buildRetrievalQueueRecord(movedEventRequest, item,
         getUserByRequesterId(movedEventRequest), locationMapping, getPickupServicePoint(movedEventRequest.getPickupServicePointId()));
+    log.info("Saving retrieval queue record with id {}", record.getId());
     retrievalQueueRepository.save(record);
   }
 

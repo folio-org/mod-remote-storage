@@ -195,10 +195,8 @@
       "handlers": [
         {
           "methods": ["POST"],
-          "pathPattern": "/pub-sub-handlers/moved-event",
-          "permissionsRequired": [
-            "remote-storage-data.events.post"
-          ],
+          "pathPattern": "/remote-storage/pub-sub-handlers/moved-event",
+          "permissionsRequired": [],
           "modulePermissions": [
             "inventory.items.collection.get",
             "users.collection.get",

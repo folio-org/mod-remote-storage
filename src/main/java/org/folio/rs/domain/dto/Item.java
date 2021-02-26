@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.With;
 
-import java.util.List;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
 @Setter
@@ -22,10 +20,8 @@ public class Item {
   private String effectiveLocationId;
   private String instanceId;
   private EffectiveLocation effectiveLocation;
-  private String title;
-  private List<Contributor> contributorNames;
   private EffectiveCallNumberComponents effectiveCallNumberComponents;
   private String holdingsRecordId;
   private String title;
-  private List<ContributorName> contributorNames;
+  private List<Contributor> contributorNames;
 }

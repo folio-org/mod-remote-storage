@@ -147,7 +147,7 @@ public class RetrievalQueueService {
   }
 
   private Item getOriginalItemByBarcode(MovedEventRequest movedEventRequest) {
-    ResultList<Item> items = inventoryClient.getItem("barcode==" + movedEventRequest.getItemBarCode());
+    ResultList<Item> items = inventoryClient.getItemsByQuery("barcode==" + movedEventRequest.getItemBarCode());
     if (isEmpty(items.getResult())) {
       throw new EntityNotFoundException("Item with barcode " + movedEventRequest.getItemBarCode() + NOT_FOUND);
     }
@@ -155,7 +155,7 @@ public class RetrievalQueueService {
   }
 
   private User getUserByRequesterId(MovedEventRequest movedEventRequest) {
-    ResultList<User> users = usersClient.query("id==" + movedEventRequest.getRequesterId());
+    ResultList<User> users = usersClient.getUsersByQuery("id==" + movedEventRequest.getRequesterId());
     if (isEmpty(users.getResult())) {
       throw new EntityNotFoundException("User with id " + movedEventRequest.getRequesterId() + NOT_FOUND);
     }

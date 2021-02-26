@@ -10,7 +10,7 @@
   "subscriptions": [
     {
       "eventType": "REQUEST_MOVED_EVENT",
-      "callbackAddress": "/pub-sub-handlers/moved-event"
+      "callbackAddress": "/remote-storage/pub-sub-handlers/moved-event"
     }
   ]
 }

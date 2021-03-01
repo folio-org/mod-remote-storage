@@ -196,7 +196,7 @@
         {
           "methods": ["POST"],
           "pathPattern": "/remote-storage/pub-sub-handlers/moved-event",
-          "permissionsRequired": [],
+          "permissionsRequired": ["pubsub.events.post"],
           "modulePermissions": [
             "inventory.items.collection.get",
             "users.collection.get",

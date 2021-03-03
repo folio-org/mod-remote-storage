@@ -1,13 +1,12 @@
 package org.folio.rs.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.With;
-
-import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
@@ -20,8 +19,9 @@ public class Item {
   private String barcode;
   private String effectiveLocationId;
   private String instanceId;
+  private EffectiveLocation effectiveLocation;
   private EffectiveCallNumberComponents effectiveCallNumberComponents;
   private String holdingsRecordId;
   private String title;
-  private List<ContributorName> contributorNames;
+  private List<Contributor> contributorNames;
 }

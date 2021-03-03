@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FolioLocation {
   private String id;
+  private String code;
   private String primaryServicePoint;
 }

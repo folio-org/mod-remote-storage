@@ -33,18 +33,6 @@
     {
       "id": "service-points",
       "version": "3.2"
-    },
-    {
-      "id": "pubsub-event-types",
-      "version": "0.1"
-    },
-    {
-      "id": "pubsub-publishers",
-      "version": "0.1"
-    },
-    {
-      "id": "pubsub-subscribers",
-      "version": "0.1"
     }
   ],
   "provides": [
@@ -190,22 +178,6 @@
       ]
     },
     {
-      "id": "remote-storage-event-handlers",
-      "version": "1.0",
-      "handlers": [
-        {
-          "methods": ["POST"],
-          "pathPattern": "/remote-storage/pub-sub-handlers/moved-event",
-          "permissionsRequired": ["pubsub.events.post"],
-          "modulePermissions": [
-            "inventory.items.collection.get",
-            "users.collection.get",
-            "inventory-storage.service-points.item.get"
-          ]
-        }
-      ]
-    },
-    {
       "id": "_tenant",
       "version": "1.2",
       "interfaceType": "system",
@@ -218,10 +190,7 @@
             "users.item.post",
             "users.item.put",
             "login.item.post",
-            "perms.users.item.post",
-            "pubsub.event-types.post",
-            "pubsub.subscribers.post",
-            "pubsub.publishers.post"
+            "perms.users.item.post"
           ]
         }, {
           "methods": ["DELETE"],

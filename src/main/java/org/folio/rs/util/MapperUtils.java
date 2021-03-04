@@ -1,12 +1,11 @@
 package org.folio.rs.util;
 
-import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 
-public class MapperUtils {
+import java.util.UUID;
 
-  private MapperUtils() {
-  }
+public class MapperUtils {
+  private MapperUtils(){}
 
   public static UUID stringToUUIDSafe(String uuid) {
     return (StringUtils.isBlank(uuid)) ? null : UUID.fromString(uuid);

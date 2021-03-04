@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
@@ -105,9 +104,9 @@ public class AccessionQueueServiceTest extends TestBase {
     accessionQueueService.processAccessionQueueRecord(
       Collections.singletonList(resourceBodyWithoutRemoteConfig));
 
-    AccessionQueueRecord accessionQueueRecord = new AccessionQueueRecord();
-    accessionQueueRecord.setItemBarcode(BARCODE);
-    verifyCreatedAccessionQueueRecord(accessionQueueRepository.findAll(Example.of(accessionQueueRecord)).get(0));
+    var actualAccessionQueueRecord = accessionQueueRepository.findAll()
+      .get(0);
+    verifyCreatedAccessionQueueRecord(actualAccessionQueueRecord);
 
   }
 
@@ -132,14 +131,14 @@ public class AccessionQueueServiceTest extends TestBase {
     ResponseEntity<AccessionQueues> allAccessionQueueRecords = get(formattedAccessionUrl, AccessionQueues.class);
 
     assertThat(Objects.requireNonNull(allAccessionQueueRecords.getBody()).getAccessions(), notNullValue());
-    assertThat(Objects.requireNonNull(allAccessionQueueRecords.getBody()).getAccessions().size(), equalTo(3));
-    assertThat(Objects.requireNonNull(allAccessionQueueRecords.getBody()).getTotalRecords(), equalTo(3));
+    assertThat(Objects.requireNonNull(allAccessionQueueRecords.getBody()).getAccessions().size(), equalTo(2));
+    assertThat(Objects.requireNonNull(allAccessionQueueRecords.getBody()).getTotalRecords(), equalTo(2));
 
     ResponseEntity<AccessionQueues> accessionedRecords = get(formattedAccessionUrl + "?accessioned=true", AccessionQueues.class);
 
     assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getAccessions().get(0), notNullValue());
-    assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getAccessions().size(), equalTo(2));
-    assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getTotalRecords(), equalTo(2));
+    assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getAccessions().size(), equalTo(1));
+    assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getTotalRecords(), equalTo(1));
     assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getAccessions().get(0).getAccessionedDateTime(), notNullValue());
 
     ResponseEntity<AccessionQueues> notAccessionedRecords = get(formattedAccessionUrl + "?accessioned=false", AccessionQueues.class);
@@ -156,8 +155,8 @@ public class AccessionQueueServiceTest extends TestBase {
     accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID)));
 
     ResponseEntity<AccessionQueues> responseEntity = get(formattedAccessionUrl + "?offset=1", AccessionQueues.class);
-    assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(3));
-    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(2));
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(2));
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(1));
   }
 
   @Test
@@ -166,7 +165,7 @@ public class AccessionQueueServiceTest extends TestBase {
     accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID)));
 
     ResponseEntity<AccessionQueues> responseEntity = get(formattedAccessionUrl + "?limit=1", AccessionQueues.class);
-    assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(3));
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(2));
     assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(1));
   }
 
@@ -177,18 +176,17 @@ public class AccessionQueueServiceTest extends TestBase {
 
     put(formattedAccessionUrl + "/id/" + id,null);
 
-    var actualAccessionQueueRecord = accessionQueueRepository.findById(id).get();
+    var actualAccessionQueueRecord = accessionQueueRepository.findAll().get(0);
     assertThat(actualAccessionQueueRecord.getAccessionedDateTime(), notNullValue());
   }
 
   @Test
   void shouldSetAccessionedByBarcode() {
-    UUID uuid = UUID.randomUUID();
-    accessionQueueRepository.save(buildAccessionQueueRecord(uuid));
+    accessionQueueRepository.save(buildAccessionQueueRecord(UUID.randomUUID()));
 
     put(formattedAccessionUrl + "/barcode/" + BARCODE,null);
 
-    var actualAccessionQueueRecord = accessionQueueRepository.findById(uuid).get();
+    var actualAccessionQueueRecord = accessionQueueRepository.findAll().get(0);
     assertThat(actualAccessionQueueRecord.getItemBarcode(), equalTo(BARCODE));
     assertThat(actualAccessionQueueRecord.getAccessionedDateTime(), notNullValue());
   }

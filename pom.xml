@@ -36,7 +36,7 @@
     <spring-kafka-test.version>2.6.4</spring-kafka-test.version>
     <embedded.db.version>1.6.2</embedded.db.version>
     <pubsub.client.version>2.0.0</pubsub.client.version>
-    <maven.model.version>3.6.3</maven.model.version>
+    <plexus.utils.version>3.3.0</plexus.utils.version>
     <sonar.exclusions>src/main/java/org/folio/rs/domain/**, src/main/java/org/folio/rs/client/AuthnClient.java, src/main/java/org/folio/rs/config/properties/** </sonar.exclusions>
     <remote-storage.yaml.file>${project.basedir}/src/main/resources/swagger.api/remote-storage.yaml</remote-storage.yaml.file>
   </properties>
@@ -170,10 +170,11 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-model</artifactId>
-      <version>${maven.model.version}</version>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-utils</artifactId>
+      <version>${plexus.utils.version}</version>
     </dependency>
+
   </dependencies>
 
   <build>

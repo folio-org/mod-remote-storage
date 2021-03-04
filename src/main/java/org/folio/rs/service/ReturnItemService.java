@@ -7,7 +7,7 @@ import org.folio.rs.client.InventoryClient;
 import org.folio.rs.client.ServicePointsClient;
 import org.folio.rs.client.UsersClient;
 import org.folio.rs.domain.dto.CheckInItem;
-import org.folio.rs.domain.dto.Contributor;
+import org.folio.rs.domain.dto.ContributorName;
 import org.folio.rs.domain.dto.EffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.Request;
@@ -92,7 +92,7 @@ public class ReturnItemService {
       .instanceAuthor(ofNullable(item
         .getContributorNames()).orElse(Collections.emptyList())
         .stream()
-        .map(Contributor::getName)
+        .map(ContributorName::getName)
         .collect(Collectors.joining(";")))
       .callNumber(ofNullable(item.getEffectiveCallNumberComponents())
         .map(EffectiveCallNumberComponents::getCallNumber)

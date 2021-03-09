@@ -6,7 +6,34 @@
         "url": "/pubsub/event-types"
       },
       "response": {
-        "status": 200
+        "status": 201
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "url": "/pubsub/event-types/declare/subscriber"
+      },
+      "response": {
+        "status": 201
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "url": "/pubsub/event-types/declare/publisher"
+      },
+      "response": {
+        "status": 201
+      }
+    },
+    {
+      "request": {
+        "method": "DELETE",
+        "url": "/pubsub/messaging-modules?moduleId=mod-remote-storage-1.1.0-SNAPSHOT&moduleRole=PUBLISHER&"
+      },
+      "response": {
+        "status": 204
       }
     }
   ]

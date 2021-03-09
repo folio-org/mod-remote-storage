@@ -5,14 +5,14 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.folio.rest.jaxrs.model.MessagingModule.ModuleRole.PUBLISHER;
 import static org.folio.rest.jaxrs.model.MessagingModule.ModuleRole.SUBSCRIBER;
 
-import java.io.FileReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.folio.HttpStatus;
 import org.folio.rest.client.PubsubClient;
 import org.folio.rest.jaxrs.model.EventDescriptor;
@@ -165,10 +165,10 @@ public class PubSubService {
   }
 
   public String constructModuleName() {
+    var xmlMapper = new XmlMapper();
     try {
-      var reader = new MavenXpp3Reader();
-      var model = reader.read(new FileReader(POM_XML));
-      return String.format("%s-%s", model.getArtifactId(), model.getVersion());
+      var json = xmlMapper.readTree(new File(POM_XML));
+      return String.format("%s-%s", json.get("artifactId").asText(), json.get("version").asText());
     } catch (Exception e) {
       throw new PubSubException("Error in constructing module name", e);
     }

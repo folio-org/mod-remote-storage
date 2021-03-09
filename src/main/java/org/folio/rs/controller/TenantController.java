@@ -87,8 +87,19 @@ public class TenantController implements TenantApi {
           .body("Liquibase error: " + e.getMessage());
       }
     }
-    pubSubService.registerPubSubModule(context.getOkapiUrl(), tenantId, context.getToken());
-    initializeSystemUser(tenantId);
+
+    try {
+      pubSubService.registerPubSubModule(context.getOkapiUrl(), tenantId, context.getToken());
+    } catch(Exception e) {
+      log.error("Error during pub-sub registration:", e);
+    }
+
+    try {
+      initializeSystemUser(tenantId);
+    } catch(Exception e) {
+      log.error("Error during system-user initialization:", e);
+    }
+
     return ResponseEntity.ok().body("true");
   }
 

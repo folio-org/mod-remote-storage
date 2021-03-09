@@ -68,8 +68,6 @@ public class TestBase {
           .okapiUrl(getOkapiUrl()).build());
       tenantController.postTenant(new TenantAttributes().moduleTo("mod_remote_storage")
         .addParametersItem(new Parameter().key(PARAMETER_LOAD_SAMPLE).value("true")));
-
-      wireMockServer.resetAll();
   }
 
   public static String getOkapiUrl() {
@@ -79,6 +77,7 @@ public class TestBase {
   @AfterEach
   void eachTearDown() {
     tenantController.deleteTenant();
+    wireMockServer.resetAll();
   }
 
 

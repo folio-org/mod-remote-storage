@@ -7,9 +7,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -17,7 +15,6 @@ import liquibase.exception.LiquibaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.folio.rest.util.OkapiConnectionParams;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
@@ -27,13 +24,12 @@ import org.folio.rs.repository.RetrievalQueueRepository;
 import org.folio.rs.service.ConfigurationsService;
 import org.folio.rs.service.LocationMappingsService;
 import org.folio.rs.service.SecurityManagerService;
+import org.folio.rs.service.PubSubService;
 import org.folio.spring.FolioExecutionContext;
-import org.folio.spring.integration.XOkapiHeaders;
 import org.folio.spring.liquibase.FolioSpringLiquibase;
 import org.folio.tenant.domain.dto.Parameter;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.folio.tenant.rest.resource.TenantApi;
-import org.folio.util.pubsub.PubSubClientUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,6 +53,7 @@ public class TenantController implements TenantApi {
   private final SecurityManagerService securityManagerService;
   private final RetrievalQueueRepository retrievalQueueRepository;
   private final AccessionQueueRepository accessionQueueRepository;
+  private final PubSubService pubSubService;
 
   private final List<String> configurationSamples = Collections.singletonList("dematic.json");
   private final List<String> mappingSamples = Collections.singletonList("annex_to_dematic.json");
@@ -90,9 +87,15 @@ public class TenantController implements TenantApi {
           .body("Liquibase error: " + e.getMessage());
       }
     }
-    registerModuleToPubSub();
+    pubSubService.registerPubSubModule(context.getOkapiUrl(), tenantId, context.getToken());
     initializeSystemUser(tenantId);
     return ResponseEntity.ok().body("true");
+  }
+
+  @Override
+  public ResponseEntity<Void> deleteTenant() {
+    pubSubService.unregisterPubSubModule(context.getOkapiUrl(), context.getTenantId(), context.getToken());
+    return ResponseEntity.noContent().build();
   }
 
   private void initializeSystemUser(String tenantId) {
@@ -103,17 +106,6 @@ public class TenantController implements TenantApi {
     }
   }
 
-  private void registerModuleToPubSub() {
-    PubSubClientUtils.registerModule(new OkapiConnectionParams(getHeadersMap(), null));
-  }
-
-  private Map<String, String> getHeadersMap() {
-    Map<String, String> headers = new HashMap<>();
-    headers.put(XOkapiHeaders.URL, context.getOkapiUrl());
-    headers.put(XOkapiHeaders.TENANT, context.getTenantId());
-    headers.put(XOkapiHeaders.TOKEN, context.getToken());
-    return headers;
-  }
 
   private void loadSampleData() {
     log.info("Loading sample data");

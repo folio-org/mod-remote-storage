@@ -1,0 +1,13 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "POST",
+        "url": "/pubsub/event-types"
+      },
+      "response": {
+        "status": 200
+      }
+    }
+  ]
+}

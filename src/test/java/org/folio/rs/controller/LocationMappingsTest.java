@@ -17,7 +17,6 @@ import org.folio.rs.TestBase;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.LocationMappings;
 import org.folio.rs.domain.dto.StorageConfiguration;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

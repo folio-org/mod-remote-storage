@@ -337,6 +337,23 @@ paths:
           required: true
           schema:
             type: string
+  /pub-sub-handlers/moved-event:
+    description: "Handler for REQUEST_MOVED_EVENT"
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/movedEvent"
+        required: true
+      responses:
+        '204':
+          description: No content
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: No content
   /retrievals:
     get:
       responses:
@@ -525,6 +542,8 @@ components:
       $ref: schemas/checkInItem.json
     returnItemResponse:
       $ref: schemas/returnItemResponse.json
+    movedEvent:
+      $ref: schemas/movedEvent.json
   parameters:
     trait_queryable_storage_id:
       name: storageId

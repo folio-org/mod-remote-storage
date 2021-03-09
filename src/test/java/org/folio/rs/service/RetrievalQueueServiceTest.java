@@ -79,14 +79,14 @@ public class RetrievalQueueServiceTest extends TestBase {
     ResponseEntity<RetrievalQueues> allRecords = get(formattedRetrievalUrl, RetrievalQueues.class);
 
     assertThat(Objects.requireNonNull(allRecords.getBody()).getRetrievals(), notNullValue());
-    assertThat(Objects.requireNonNull(allRecords.getBody()).getRetrievals().size(), equalTo(2));
-    assertThat(Objects.requireNonNull(allRecords.getBody()).getTotalRecords(), equalTo(2));
+    assertThat(Objects.requireNonNull(allRecords.getBody()).getRetrievals().size(), equalTo(3));
+    assertThat(Objects.requireNonNull(allRecords.getBody()).getTotalRecords(), equalTo(3));
 
     ResponseEntity<RetrievalQueues> retrievedRecord = get(formattedRetrievalUrl + "?retrieved=true", RetrievalQueues.class);
 
     assertThat(Objects.requireNonNull(retrievedRecord.getBody()).getRetrievals().get(0), notNullValue());
-    assertThat(Objects.requireNonNull(retrievedRecord.getBody()).getRetrievals().size(), equalTo(1));
-    assertThat(Objects.requireNonNull(retrievedRecord.getBody()).getTotalRecords(), equalTo(1));
+    assertThat(Objects.requireNonNull(retrievedRecord.getBody()).getRetrievals().size(), equalTo(2));
+    assertThat(Objects.requireNonNull(retrievedRecord.getBody()).getTotalRecords(), equalTo(2));
     assertThat(Objects.requireNonNull(retrievedRecord.getBody()).getRetrievals().get(0).getRetrievedDateTime(), notNullValue());
 
     ResponseEntity<RetrievalQueues> nonRetrievedRecord = get(formattedRetrievalUrl + "?retrieved=false", RetrievalQueues.class);
@@ -104,10 +104,10 @@ public class RetrievalQueueServiceTest extends TestBase {
 
     ResponseEntity<RetrievalQueues> responseEntity = get(formattedRetrievalUrl + "?offset=1", RetrievalQueues.class);
     assertThat(Objects.requireNonNull(responseEntity.getBody())
-      .getTotalRecords(), equalTo(2));
+      .getTotalRecords(), equalTo(3));
     assertThat(Objects.requireNonNull(responseEntity.getBody())
       .getRetrievals()
-      .size(), equalTo(1));
+      .size(), equalTo(2));
   }
 
   @Test
@@ -117,7 +117,7 @@ public class RetrievalQueueServiceTest extends TestBase {
 
     ResponseEntity<RetrievalQueues> responseEntity = get(formattedRetrievalUrl + "?limit=1", RetrievalQueues.class);
     assertThat(Objects.requireNonNull(responseEntity.getBody())
-      .getTotalRecords(), equalTo(2));
+      .getTotalRecords(), equalTo(3));
     assertThat(Objects.requireNonNull(responseEntity.getBody())
       .getRetrievals()
       .size(), equalTo(1));
@@ -137,12 +137,12 @@ public class RetrievalQueueServiceTest extends TestBase {
 
   @Test
   void shouldSetRetrievedByBarcode() {
-    retrievalQueueRepository.save(buildRetrievalQueueRecord(UUID.randomUUID()));
+    UUID uuid = UUID.randomUUID();
+    retrievalQueueRepository.save(buildRetrievalQueueRecord(uuid));
 
     put(formattedRetrievalUrl + "/barcode/" + BARCODE, null);
 
-    var actualRetrievalQueueRecord = retrievalQueueRepository.findAll()
-      .get(0);
+    var actualRetrievalQueueRecord = retrievalQueueRepository.findById(uuid).get();
     assertThat(actualRetrievalQueueRecord.getItemBarcode(), equalTo(BARCODE));
     assertThat(actualRetrievalQueueRecord.getRetrievedDateTime(), notNullValue());
   }

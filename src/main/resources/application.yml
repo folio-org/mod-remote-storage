@@ -1,6 +1,7 @@
 spring:
   application:
-    name: mod-remote-storage
+    name: @project.artifactId@
+    version: @project.version@
   jackson:
     default-property-inclusion: non_null
   kafka:

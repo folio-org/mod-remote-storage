@@ -5,14 +5,11 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.folio.rest.jaxrs.model.MessagingModule.ModuleRole.PUBLISHER;
 import static org.folio.rest.jaxrs.model.MessagingModule.ModuleRole.SUBSCRIBER;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.folio.HttpStatus;
 import org.folio.rest.client.PubsubClient;
 import org.folio.rest.jaxrs.model.EventDescriptor;
@@ -22,23 +19,27 @@ import org.folio.rest.jaxrs.model.PublisherDescriptor;
 import org.folio.rest.jaxrs.model.SubscriberDescriptor;
 import org.folio.rs.error.PubSubException;
 import org.folio.util.pubsub.support.DescriptorHolder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.log4j.Log4j2;
 
 /**
-  Temporary solution for fixing issue with PomReader from RMB
+ * Temporary solution for fixing issue with PomReader from RMB
  */
 @Component
 @Log4j2
 public class PubSubService {
 
   private static final String MESSAGING_CONFIG_FILE_NAME = "MessagingDescriptor.json";
-  public static final String POM_XML = "pom.xml";
+
+  @Value("${spring.application.name}")
+  private String moduleName;
+
+  @Value("${spring.application.version}")
+  private String moduleVersion;
 
   public boolean registerPubSubModule(String okapiUrl, String tenantId, String token) {
     boolean isCompleted = false;
@@ -137,7 +138,7 @@ public class PubSubService {
     return isComplete.get();
   }
 
-  private DescriptorHolder readMessagingDescriptor() throws IOException {
+  private DescriptorHolder readMessagingDescriptor() {
     ObjectMapper objectMapper = new ObjectMapper();
     try {
       MessagingDescriptor messagingDescriptor = objectMapper.readValue(getMessagingDescriptorInputStream(), MessagingDescriptor.class);
@@ -145,18 +146,18 @@ public class PubSubService {
         .withEventDescriptors(messagingDescriptor.getPublications()))
         .withSubscriberDescriptor(new SubscriberDescriptor().withModuleId(constructModuleName())
           .withSubscriptionDefinitions(messagingDescriptor.getSubscriptions()));
-    } catch (JsonParseException | JsonMappingException e) {
+    } catch (Exception e) {
       throw new PubSubException("Can not read messaging descriptor, cause: " + e.getMessage());
     }
   }
 
   private InputStream getMessagingDescriptorInputStream() {
-    return getFileInputStreamFromClassPath(MESSAGING_CONFIG_FILE_NAME)
+    return getFileInputStreamFromClassPath()
       .orElseThrow(() -> new PubSubException("Messaging descriptor file 'MessagingDescriptor.json' not found"));
   }
 
-  private Optional<InputStream> getFileInputStreamFromClassPath(String path) {
-    String preparedPath = path.replace('\\', '/');
+  private Optional<InputStream> getFileInputStreamFromClassPath() {
+    String preparedPath = MESSAGING_CONFIG_FILE_NAME.replace('\\', '/');
     InputStream fis = PubSubService.class.getClassLoader().getResourceAsStream(preparedPath);
     if (fis == null) {
       return Optional.empty();
@@ -165,12 +166,6 @@ public class PubSubService {
   }
 
   public String constructModuleName() {
-    var xmlMapper = new XmlMapper();
-    try {
-      var json = xmlMapper.readTree(new File(POM_XML));
-      return String.format("%s-%s", json.get("artifactId").asText(), json.get("version").asText());
-    } catch (Exception e) {
-      throw new PubSubException("Error in constructing module name", e);
-    }
+    return String.format("%s-%s", moduleName, moduleVersion);
   }
 }

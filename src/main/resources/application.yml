@@ -26,6 +26,11 @@ spring:
   flyway:
     enabled: false
 
+management:
+  endpoints:
+    web:
+      base-path: /admin
+
 feign:
   client:
     config:

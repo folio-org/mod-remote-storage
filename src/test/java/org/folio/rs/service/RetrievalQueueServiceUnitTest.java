@@ -1,6 +1,7 @@
 package org.folio.rs.service;
 
 
+import static org.folio.rs.domain.dto.Request.RequestType.HOLD;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -18,15 +19,13 @@ import org.folio.rs.client.UsersClient;
 import org.folio.rs.domain.dto.Contributor;
 import org.folio.rs.domain.dto.EffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.EffectiveLocation;
+import org.folio.rs.domain.dto.EventRequest;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.LocationMapping;
-import org.folio.rs.domain.dto.MovedEvent;
-import org.folio.rs.domain.dto.MovedEventRequest;
 import org.folio.rs.domain.dto.PickupServicePoint;
 import org.folio.rs.domain.dto.ResultList;
 import org.folio.rs.domain.dto.User;
 import org.folio.rs.domain.entity.RetrievalQueueRecord;
-import org.folio.rs.mapper.MovedEventMapper;
 import org.folio.rs.repository.RetrievalQueueRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -92,22 +91,18 @@ public class RetrievalQueueServiceUnitTest {
   @Mock
   private EffectiveCallNumberComponents callNumberComponents;
   @Mock
-  private MovedEvent movedEvent;
-  @Mock
-  private MovedEventRequest movedEventRequest;
-  @Mock
-  private MovedEventMapper movedEventMapper;
+  private EventRequest eventRequest;
+
 
   @BeforeEach
   void prepareTestData() {
-    when(movedEventRequest.getItemBarCode()).thenReturn(ITEM_BARCODE);
-    when(movedEventRequest.getRequestType()).thenReturn(REQUEST_TYPE);
-    when(movedEventRequest.getRequesterId()).thenReturn(REQUESTER_ID);
-    when(movedEventRequest.getPickupServicePointId()).thenReturn(PICKUP_SERVICE_POINT_ID);
-    when(movedEventRequest.getHoldId()).thenReturn(HOLD_ID);
-    when(movedEventRequest.getRequestNote()).thenReturn(REQUEST_NOTE);
-    when(movedEventRequest.getRequestStatus()).thenReturn(STATUS);
-    when(movedEventMapper.mapDtoToEntity(movedEvent)).thenReturn(movedEventRequest);
+    when(eventRequest.getItemBarCode()).thenReturn(ITEM_BARCODE);
+    when(eventRequest.getRequestType()).thenReturn(REQUEST_TYPE);
+    when(eventRequest.getRequesterId()).thenReturn(REQUESTER_ID);
+    when(eventRequest.getPickupServicePointId()).thenReturn(PICKUP_SERVICE_POINT_ID);
+    when(eventRequest.getHoldId()).thenReturn(HOLD_ID);
+    when(eventRequest.getRequestNote()).thenReturn(REQUEST_NOTE);
+    when(eventRequest.getRequestStatus()).thenReturn(STATUS);
     when(inventoryClient.getItemsByQuery("barcode==" + ITEM_BARCODE)).thenReturn(items);
     when(items.getResult()).thenReturn(Collections.singletonList(item));
     when(item.getTitle()).thenReturn(INSTANCE_TITLE);
@@ -129,7 +124,7 @@ public class RetrievalQueueServiceUnitTest {
 
   @Test
   void shouldSaveMovedEventRequest() {
-    service.processMovedEventRequest(movedEvent);
+    service.processMovedEventRequest(eventRequest);
 
     verify(retrievalQueueRepository, times(1)).save(captor.capture());
     RetrievalQueueRecord record = captor.getValue();
@@ -147,28 +142,19 @@ public class RetrievalQueueServiceUnitTest {
     assertNotNull(record.getCreatedDateTime());
   }
 
-  @Test
-  void shouldNotSaveRequestWhenRequestIsNotPaged() {
-    when(movedEventRequest.getRequestType()).thenReturn("Hold");
-
-    service.processMovedEventRequest(movedEvent);
-
-    verify(retrievalQueueRepository, never()).save(isA(RetrievalQueueRecord.class));
-  }
-
   @Test()
   void shouldThrowExceptionWhenItemByBarcodeIsNotFound() {
     when(inventoryClient.getItemsByQuery("barcode==" + ITEM_BARCODE)).thenReturn(items);
     when(items.getResult()).thenReturn(Collections.EMPTY_LIST);
 
-    assertThrows(EntityNotFoundException.class, () -> service.processMovedEventRequest(movedEvent));
+    assertThrows(EntityNotFoundException.class, () -> service.processMovedEventRequest(eventRequest));
   }
 
   @Test
   void shouldNotProcessRecordsWhenLocationIsNotRemote() {
     when(locationMappingsService.getMappingByFolioLocationId(EFFECTIVE_LOCATION_ID)).thenReturn(null);
 
-    service.processMovedEventRequest(movedEvent);
+    service.processMovedEventRequest(eventRequest);
 
     verify(retrievalQueueRepository, never()).save(isA(RetrievalQueueRecord.class));
   }
@@ -178,7 +164,7 @@ public class RetrievalQueueServiceUnitTest {
     when(usersClient.getUsersByQuery("id==" + REQUESTER_ID)).thenReturn(users);
     when(users.getResult()).thenReturn(Collections.EMPTY_LIST);
 
-    assertThrows(EntityNotFoundException.class, () -> service.processMovedEventRequest(movedEvent));
+    assertThrows(EntityNotFoundException.class, () -> service.processMovedEventRequest(eventRequest));
   }
 
   @Test

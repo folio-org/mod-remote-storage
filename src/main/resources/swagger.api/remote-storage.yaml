@@ -338,13 +338,13 @@ paths:
           schema:
             type: string
   /pub-sub-handlers/moved-event:
-    description: "Handler for REQUEST_MOVED_EVENT"
+    description: "Handler for PubSub event"
     post:
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/movedEvent"
+              $ref: "#/components/schemas/pubSubEvent"
         required: true
       responses:
         '204':
@@ -542,8 +542,8 @@ components:
       $ref: schemas/checkInItem.json
     returnItemResponse:
       $ref: schemas/returnItemResponse.json
-    movedEvent:
-      $ref: schemas/movedEvent.json
+    pubSubEvent:
+      $ref: schemas/pubSubEvent.json
   parameters:
     trait_queryable_storage_id:
       name: storageId

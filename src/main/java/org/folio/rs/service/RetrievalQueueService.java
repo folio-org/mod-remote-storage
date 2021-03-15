@@ -22,14 +22,12 @@ import org.folio.rs.domain.dto.EffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.FilterData;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.LocationMapping;
-import org.folio.rs.domain.dto.MovedEvent;
-import org.folio.rs.domain.dto.MovedEventRequest;
+import org.folio.rs.domain.dto.EventRequest;
 import org.folio.rs.domain.dto.PickupServicePoint;
 import org.folio.rs.domain.dto.ResultList;
 import org.folio.rs.domain.dto.RetrievalQueues;
 import org.folio.rs.domain.dto.User;
 import org.folio.rs.domain.entity.RetrievalQueueRecord;
-import org.folio.rs.mapper.MovedEventMapper;
 import org.folio.rs.mapper.RetrievalQueueMapper;
 import org.folio.rs.repository.RetrievalQueueRepository;
 import org.folio.spring.data.OffsetRequest;
@@ -51,7 +49,6 @@ public class RetrievalQueueService {
   private static final String NOT_FOUND = " not found";
   private final RetrievalQueueRepository retrievalQueueRepository;
   private final RetrievalQueueMapper retrievalQueueMapper;
-  private final MovedEventMapper movedEventMapper;
   private final LocationMappingsService locationMappingsService;
   private final InventoryClient inventoryClient;
   private final UsersClient usersClient;
@@ -80,22 +77,20 @@ public class RetrievalQueueService {
     saveRetrievalQueueWithCurrentDate(retrievalQueueRecord.get());
   }
 
-  public void processMovedEventRequest(MovedEvent movedEvent) {
-    MovedEventRequest movedEventRequest = movedEventMapper.mapDtoToEntity(movedEvent);
-    if (PAGE_REQUEST.equals(movedEventRequest.getRequestType())) {
-      log.info("Process moved request with id " + movedEventRequest.getHoldId());
-      Item item = getOriginalItemByBarcode(movedEventRequest);
+  public void processMovedEventRequest(EventRequest eventRequest) {
+      log.info("Process moved request with id " + eventRequest.getHoldId());
+      Item item = getOriginalItemByBarcode(eventRequest);
       LocationMapping locationMapping = getLocationMapping(item);
       if (Objects.nonNull(locationMapping)) {
         log.info("Item location is remote, saving retrieval queue record");
-        processMovedEventRequest(movedEventRequest, item, locationMapping);
+        processMovedEventRequest(eventRequest, item, locationMapping);
       }
-    }
+
   }
 
-  private void processMovedEventRequest(MovedEventRequest movedEventRequest, Item item, LocationMapping locationMapping) {
-    RetrievalQueueRecord record = buildRetrievalQueueRecord(movedEventRequest, item,
-        getUserByRequesterId(movedEventRequest), locationMapping, getPickupServicePoint(movedEventRequest.getPickupServicePointId()));
+  private void processMovedEventRequest(EventRequest eventRequest, Item item, LocationMapping locationMapping) {
+    RetrievalQueueRecord record = buildRetrievalQueueRecord(eventRequest, item,
+        getUserByRequesterId(eventRequest), locationMapping, getPickupServicePoint(eventRequest.getPickupServicePointId()));
     log.info("Saving retrieval queue record with id {}", record.getId());
     retrievalQueueRepository.save(record);
   }
@@ -146,35 +141,35 @@ public class RetrievalQueueService {
         : null;
   }
 
-  private Item getOriginalItemByBarcode(MovedEventRequest movedEventRequest) {
-    ResultList<Item> items = inventoryClient.getItemsByQuery("barcode==" + movedEventRequest.getItemBarCode());
+  private Item getOriginalItemByBarcode(EventRequest eventRequest) {
+    ResultList<Item> items = inventoryClient.getItemsByQuery("barcode==" + eventRequest.getItemBarCode());
     if (isEmpty(items.getResult())) {
-      throw new EntityNotFoundException("Item with barcode " + movedEventRequest.getItemBarCode() + NOT_FOUND);
+      throw new EntityNotFoundException("Item with barcode " + eventRequest.getItemBarCode() + NOT_FOUND);
     }
     return items.getResult().get(0);
   }
 
-  private User getUserByRequesterId(MovedEventRequest movedEventRequest) {
-    ResultList<User> users = usersClient.getUsersByQuery("id==" + movedEventRequest.getRequesterId());
+  private User getUserByRequesterId(EventRequest eventRequest) {
+    ResultList<User> users = usersClient.getUsersByQuery("id==" + eventRequest.getRequesterId());
     if (isEmpty(users.getResult())) {
-      throw new EntityNotFoundException("User with id " + movedEventRequest.getRequesterId() + NOT_FOUND);
+      throw new EntityNotFoundException("User with id " + eventRequest.getRequesterId() + NOT_FOUND);
     }
     return users.getResult().get(0);
   }
 
-  private RetrievalQueueRecord buildRetrievalQueueRecord(MovedEventRequest movedEventRequest,
-      Item item, User patron, LocationMapping mapping, PickupServicePoint pickupServicePoint) {
+  private RetrievalQueueRecord buildRetrievalQueueRecord(EventRequest eventRequest,
+                                                         Item item, User patron, LocationMapping mapping, PickupServicePoint pickupServicePoint) {
     return RetrievalQueueRecord.builder()
         .id(UUID.randomUUID())
-        .holdId(movedEventRequest.getHoldId())
+        .holdId(eventRequest.getHoldId())
         .patronBarcode(patron.getBarcode())
         .patronName(patron.getUsername())
         .callNumber(getCallNumber(item))
-        .itemBarcode(movedEventRequest.getItemBarCode())
+        .itemBarcode(eventRequest.getItemBarCode())
         .createdDateTime(LocalDateTime.now())
         .pickupLocation(pickupServicePoint.getCode())
-        .requestStatus(movedEventRequest.getRequestStatus())
-        .requestNote(movedEventRequest.getRequestNote())
+        .requestStatus(eventRequest.getRequestStatus())
+        .requestNote(eventRequest.getRequestNote())
         .remoteStorageId(stringToUUIDSafe(mapping.getConfigurationId()))
         .instanceTitle(item.getTitle())
         .instanceAuthor(getContributorNames(item))

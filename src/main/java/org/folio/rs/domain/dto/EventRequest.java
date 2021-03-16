@@ -1,17 +1,19 @@
 package org.folio.rs.domain.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.With;
 
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class MovedEventRequest {
-
+@With
+@AllArgsConstructor
+@NoArgsConstructor
+public class EventRequest {
   private String itemBarCode;
   private String pickupServicePointId;
   private String holdId;
   private String requesterId;
   private String requestStatus;
   private String requestNote;
-  private String requestType;
 }

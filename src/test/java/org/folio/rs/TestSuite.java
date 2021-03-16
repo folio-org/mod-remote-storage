@@ -8,9 +8,9 @@ import org.folio.rs.controller.ReturnItemTest;
 import org.folio.rs.service.AccessionQueueServiceTest;
 import org.folio.rs.service.CheckInItemServiceTest;
 import org.folio.rs.service.RetrievalQueueServiceTest;
+import org.folio.rs.service.RetrievalQueueServiceUnitTest;
 import org.folio.rs.service.ReturnItemServiceTest;
 import org.folio.rs.service.SecurityManagerServiceTest;
-import org.folio.rs.service.RetrievalQueueServiceUnitTest;
 import org.junit.jupiter.api.Nested;
 
 public class TestSuite {

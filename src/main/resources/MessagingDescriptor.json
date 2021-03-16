@@ -10,7 +10,7 @@
   "subscriptions": [
     {
       "eventType": "LOG_RECORD",
-      "callbackAddress": "/remote-storage/pub-sub-handlers/moved-event"
+      "callbackAddress": "/remote-storage/pub-sub-handlers/log-record-event"
     }
   ]
 }

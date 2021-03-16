@@ -45,7 +45,6 @@ public class RetrievalQueueService {
   private static final String RETRIEVED_DATE_TIME = "retrievedDateTime";
   private static final String REMOTE_STORAGE_ID = "remoteStorageId";
   private static final String REQUEST_DATE_TIME = "createdDateTime";
-  private static final String PAGE_REQUEST = "Page";
   private static final String NOT_FOUND = " not found";
   private final RetrievalQueueRepository retrievalQueueRepository;
   private final RetrievalQueueMapper retrievalQueueMapper;
@@ -77,18 +76,18 @@ public class RetrievalQueueService {
     saveRetrievalQueueWithCurrentDate(retrievalQueueRecord.get());
   }
 
-  public void processMovedEventRequest(EventRequest eventRequest) {
+  public void processEventRequest(EventRequest eventRequest) {
       log.info("Process moved request with id " + eventRequest.getHoldId());
       Item item = getOriginalItemByBarcode(eventRequest);
       LocationMapping locationMapping = getLocationMapping(item);
       if (Objects.nonNull(locationMapping)) {
         log.info("Item location is remote, saving retrieval queue record");
-        processMovedEventRequest(eventRequest, item, locationMapping);
+        processEventRequest(eventRequest, item, locationMapping);
       }
 
   }
 
-  private void processMovedEventRequest(EventRequest eventRequest, Item item, LocationMapping locationMapping) {
+  private void processEventRequest(EventRequest eventRequest, Item item, LocationMapping locationMapping) {
     RetrievalQueueRecord record = buildRetrievalQueueRecord(eventRequest, item,
         getUserByRequesterId(eventRequest), locationMapping, getPickupServicePoint(eventRequest.getPickupServicePointId()));
     log.info("Saving retrieval queue record with id {}", record.getId());

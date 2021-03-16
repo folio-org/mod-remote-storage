@@ -45,8 +45,8 @@ public class PubSubEventControllerTest extends TestBase {
     log.info("=== Should process moved event ===");
     var pubSubEvent = new PubSubEvent();
     pubSubEvent.setEventPayload(buildRequestChangedEventPayload(logEventType, HOLD.value(), PAGE.value()));
-    controller.pubSubHandlersMovedEventPost(pubSubEvent);
-    verify(retrievalQueueService).processMovedEventRequest(isA(EventRequest.class));
+    controller.pubSubHandlersLogRecordEventPost(pubSubEvent);
+    verify(retrievalQueueService).processEventRequest(isA(EventRequest.class));
   }
 
   @ParameterizedTest
@@ -55,8 +55,8 @@ public class PubSubEventControllerTest extends TestBase {
     log.info("=== Should not process changed event ===");
     var pubSubEvent = new PubSubEvent();
     pubSubEvent.setEventPayload(buildRequestChangedEventPayload(logEventType, PAGE.value(), PAGE.value()));
-    controller.pubSubHandlersMovedEventPost(pubSubEvent);
-    verify(retrievalQueueService, never()).processMovedEventRequest(any(EventRequest.class));
+    controller.pubSubHandlersLogRecordEventPost(pubSubEvent);
+    verify(retrievalQueueService, never()).processEventRequest(any(EventRequest.class));
   }
 
   @ParameterizedTest
@@ -66,8 +66,8 @@ public class PubSubEventControllerTest extends TestBase {
     log.info("=== Should process changed event ===");
     var pubSubEvent = new PubSubEvent();
     pubSubEvent.setEventPayload(buildRequestCreatedEventPayload(logEventType, PAGE.value()));
-    controller.pubSubHandlersMovedEventPost(pubSubEvent);
-    verify(retrievalQueueService).processMovedEventRequest(isA(EventRequest.class));
+    controller.pubSubHandlersLogRecordEventPost(pubSubEvent);
+    verify(retrievalQueueService).processEventRequest(isA(EventRequest.class));
   }
 
   @ParameterizedTest
@@ -77,8 +77,8 @@ public class PubSubEventControllerTest extends TestBase {
     log.info("=== Should not process created event ===");
     var pubSubEvent = new PubSubEvent();
     pubSubEvent.setEventPayload(buildRequestCreatedEventPayload(logEventType, HOLD.value()));
-    controller.pubSubHandlersMovedEventPost(pubSubEvent);
-    verify(retrievalQueueService, never()).processMovedEventRequest(any(EventRequest.class));
+    controller.pubSubHandlersLogRecordEventPost(pubSubEvent);
+    verify(retrievalQueueService, never()).processEventRequest(any(EventRequest.class));
   }
 
   @ParameterizedTest
@@ -88,15 +88,15 @@ public class PubSubEventControllerTest extends TestBase {
     log.info("=== Should not process event ===");
     var pubSubEvent = new PubSubEvent();
     pubSubEvent.setEventPayload(buildBaseEventPayload(logEventType));
-    controller.pubSubHandlersMovedEventPost(pubSubEvent);
-    verify(retrievalQueueService, never()).processMovedEventRequest(any(EventRequest.class));
+    controller.pubSubHandlersLogRecordEventPost(pubSubEvent);
+    verify(retrievalQueueService, never()).processEventRequest(any(EventRequest.class));
   }
 
   @ParameterizedTest
   @EnumSource(LogEventType.class)
   void shouldNotProcessMovedEventWhenEventIsNull(LogEventType logEventType) {
     log.info("=== Should not process moved event ===");
-    controller.pubSubHandlersMovedEventPost(null);
-    verify(retrievalQueueService, never()).processMovedEventRequest(isA((EventRequest.class)));
+    controller.pubSubHandlersLogRecordEventPost(null);
+    verify(retrievalQueueService, never()).processEventRequest(isA((EventRequest.class)));
   }
 }

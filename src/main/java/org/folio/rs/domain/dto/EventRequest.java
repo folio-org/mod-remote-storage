@@ -16,5 +16,4 @@ public class EventRequest {
   private String requesterId;
   private String requestStatus;
   private String requestNote;
-  private String requestType;
 }

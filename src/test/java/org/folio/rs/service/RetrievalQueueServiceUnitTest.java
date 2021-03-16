@@ -1,7 +1,6 @@
 package org.folio.rs.service;
 
 
-import static org.folio.rs.domain.dto.Request.RequestType.HOLD;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -97,7 +96,6 @@ public class RetrievalQueueServiceUnitTest {
   @BeforeEach
   void prepareTestData() {
     when(eventRequest.getItemBarCode()).thenReturn(ITEM_BARCODE);
-    when(eventRequest.getRequestType()).thenReturn(REQUEST_TYPE);
     when(eventRequest.getRequesterId()).thenReturn(REQUESTER_ID);
     when(eventRequest.getPickupServicePointId()).thenReturn(PICKUP_SERVICE_POINT_ID);
     when(eventRequest.getHoldId()).thenReturn(HOLD_ID);
@@ -124,7 +122,7 @@ public class RetrievalQueueServiceUnitTest {
 
   @Test
   void shouldSaveMovedEventRequest() {
-    service.processMovedEventRequest(eventRequest);
+    service.processEventRequest(eventRequest);
 
     verify(retrievalQueueRepository, times(1)).save(captor.capture());
     RetrievalQueueRecord record = captor.getValue();
@@ -147,14 +145,14 @@ public class RetrievalQueueServiceUnitTest {
     when(inventoryClient.getItemsByQuery("barcode==" + ITEM_BARCODE)).thenReturn(items);
     when(items.getResult()).thenReturn(Collections.EMPTY_LIST);
 
-    assertThrows(EntityNotFoundException.class, () -> service.processMovedEventRequest(eventRequest));
+    assertThrows(EntityNotFoundException.class, () -> service.processEventRequest(eventRequest));
   }
 
   @Test
   void shouldNotProcessRecordsWhenLocationIsNotRemote() {
     when(locationMappingsService.getMappingByFolioLocationId(EFFECTIVE_LOCATION_ID)).thenReturn(null);
 
-    service.processMovedEventRequest(eventRequest);
+    service.processEventRequest(eventRequest);
 
     verify(retrievalQueueRepository, never()).save(isA(RetrievalQueueRecord.class));
   }
@@ -164,7 +162,7 @@ public class RetrievalQueueServiceUnitTest {
     when(usersClient.getUsersByQuery("id==" + REQUESTER_ID)).thenReturn(users);
     when(users.getResult()).thenReturn(Collections.EMPTY_LIST);
 
-    assertThrows(EntityNotFoundException.class, () -> service.processMovedEventRequest(eventRequest));
+    assertThrows(EntityNotFoundException.class, () -> service.processEventRequest(eventRequest));
   }
 
   @Test

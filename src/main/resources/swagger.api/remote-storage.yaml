@@ -337,7 +337,7 @@ paths:
           required: true
           schema:
             type: string
-  /pub-sub-handlers/moved-event:
+  /pub-sub-handlers/log-record-event:
     description: "Handler for PubSub event"
     post:
       requestBody:

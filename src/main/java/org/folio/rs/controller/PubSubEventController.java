@@ -9,6 +9,7 @@ import javax.validation.Valid;
 
 import com.jayway.jsonpath.DocumentContext;
 import org.folio.rs.domain.dto.ChangeRequestEvent;
+import org.folio.rs.domain.dto.CreateRequestEvent;
 import org.folio.rs.domain.dto.EventRequest;
 import org.folio.rs.domain.dto.PubSubEvent;
 import org.folio.rs.rest.resource.PubSubHandlersApi;
@@ -36,7 +37,7 @@ public class PubSubEventController implements PubSubHandlersApi {
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
   @Override
-  public ResponseEntity<String> pubSubHandlersMovedEventPost(@Valid PubSubEvent pubSubEvent) {
+  public ResponseEntity<String> pubSubHandlersLogRecordEventPost(@Valid PubSubEvent pubSubEvent) {
     if (Objects.nonNull(pubSubEvent)) {
       EventRequest eventRequest = null;
       var payload = pubSubEvent.getEventPayload();
@@ -44,7 +45,7 @@ public class PubSubEventController implements PubSubHandlersApi {
 
       try {
         if (isPagedRequestCreated(documentContext)) {
-          eventRequest = MAPPER.readValue(payload, ChangeRequestEvent.class);
+          eventRequest = MAPPER.readValue(payload, CreateRequestEvent.class);
         }
         if (isRequestChangedToPaged(documentContext)) {
           eventRequest = MAPPER.readValue(payload, ChangeRequestEvent.class);
@@ -53,7 +54,7 @@ public class PubSubEventController implements PubSubHandlersApi {
         log.error("Error processing event: {}", payload, e);
       }
 
-      ofNullable(eventRequest).ifPresent(retrievalQueueService::processMovedEventRequest);
+      ofNullable(eventRequest).ifPresent(retrievalQueueService::processEventRequest);
 
     }
     return ResponseEntity.noContent()

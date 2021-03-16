@@ -36,6 +36,7 @@
     <embedded.db.version>1.6.2</embedded.db.version>
     <pubsub.client.version>2.0.0</pubsub.client.version>
     <jackson.version>2.11.1</jackson.version>
+    <json.path.version>2.5.0</json.path.version>
     <sonar.exclusions>src/main/java/org/folio/rs/domain/**, src/main/java/org/folio/rs/client/AuthnClient.java,
       src/main/java/org/folio/rs/config/properties/**, src/main/java/org/folio/rs/service/PubSubService.java, src/main/java/org/folio/rs/error/PubSubException.java </sonar.exclusions>
     <remote-storage.yaml.file>${project.basedir}/src/main/resources/swagger.api/remote-storage.yaml</remote-storage.yaml.file>
@@ -88,7 +89,7 @@
     <dependency>
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path</artifactId>
-      <version>2.5.0</version>
+      <version>${json.path.version}</version>
     </dependency>
 
     <dependency>

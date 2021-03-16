@@ -121,7 +121,7 @@ public class RetrievalQueueServiceUnitTest {
   }
 
   @Test
-  void shouldSaveMovedEventRequest() {
+  void shouldSaveEventRequest() {
     service.processEventRequest(eventRequest);
 
     verify(retrievalQueueRepository, times(1)).save(captor.capture());

@@ -42,7 +42,7 @@ public class PubSubEventControllerTest extends TestBase {
   @ParameterizedTest
   @EnumSource(value = LogEventType.class, names = { "REQUEST_MOVED", "REQUEST_UPDATED" }, mode = EnumSource.Mode.INCLUDE)
   void shouldProcessChangedEvent(LogEventType logEventType) {
-    log.info("=== Should process moved event ===");
+    log.info("=== Should process created event ===");
     var pubSubEvent = new PubSubEvent();
     pubSubEvent.setEventPayload(buildRequestChangedEventPayload(logEventType, HOLD.value(), PAGE.value()));
     controller.pubSubHandlersLogRecordEventPost(pubSubEvent);
@@ -94,8 +94,8 @@ public class PubSubEventControllerTest extends TestBase {
 
   @ParameterizedTest
   @EnumSource(LogEventType.class)
-  void shouldNotProcessMovedEventWhenEventIsNull(LogEventType logEventType) {
-    log.info("=== Should not process moved event ===");
+  void shouldNotProcessRequestEventWhenEventIsNull(LogEventType logEventType) {
+    log.info("=== Should not process event ===");
     controller.pubSubHandlersLogRecordEventPost(null);
     verify(retrievalQueueService, never()).processEventRequest(isA((EventRequest.class)));
   }

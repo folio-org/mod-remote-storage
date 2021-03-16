@@ -184,7 +184,8 @@
             "circulation.requests.queue.collection.get",
             "inventory-storage.locations.item.get",
             "circulation.check-in-by-barcode.post",
-            "inventory-storage.service-points.item.get"
+            "inventory-storage.service-points.item.get",
+            "users.collection.get"
           ]
         }
       ]

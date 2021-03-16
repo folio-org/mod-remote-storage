@@ -33,7 +33,7 @@ public class PubSubEventController implements PubSubHandlersApi {
 
   private final RetrievalQueueService retrievalQueueService;
 
-  private final static ObjectMapper MAPPER = new ObjectMapper();
+  private static final ObjectMapper MAPPER = new ObjectMapper();
 
   @Override
   public ResponseEntity<String> pubSubHandlersMovedEventPost(@Valid PubSubEvent pubSubEvent) {

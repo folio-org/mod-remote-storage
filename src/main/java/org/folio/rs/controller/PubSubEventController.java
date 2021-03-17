@@ -62,13 +62,10 @@ public class PubSubEventController implements PubSubHandlersApi {
   }
 
   private boolean isRequestChangedToPaged(String logEventType, String payload) {
-    if (isRequestChanged(logEventType)) {
-      var dc = JsonPath.parse(payload);
-      return !Objects.equals(dc.read("$.requests.original.requestType"), dc.read("$.requests.updated.requestType"))
-        && Objects.equals(PAGE.value(), dc.read("$.requests.updated.requestType"));
-    } else {
-      return false;
-    }
+    var dc = JsonPath.parse(payload);
+    return isRequestChanged(logEventType) &&
+      !Objects.equals(dc.read("$.requests.original.requestType"), dc.read("$.requests.updated.requestType"))
+      && Objects.equals(PAGE.value(), dc.read("$.requests.updated.requestType"));
   }
 
   private boolean isRequestChanged(String logEventType) {
@@ -78,11 +75,8 @@ public class PubSubEventController implements PubSubHandlersApi {
 
   private boolean isPagedRequestCreated(String logEventType, String payload) {
     var dc = JsonPath.parse(payload);
-    if (isRequestCreated(logEventType)) {
-      return Objects.equals(PAGE.value(), dc.read("$.requests.created.requestType"));
-    } else {
-      return false;
-    }
+    return isRequestCreated(logEventType)
+      && Objects.equals(PAGE.value(), dc.read("$.requests.created.requestType"));
   }
 
   private boolean isRequestCreated(String logEventType) {

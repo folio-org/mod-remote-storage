@@ -13,11 +13,11 @@ public class CreateRequestEventDeserializer extends RequestEventDeserializerBase
   @Override
   public EventRequest deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
     var documentContext = getDocumentContext(jsonParser);
-    return new CreateRequestEvent().withItemBarCode(documentContext.read("$.payload.itemBarcode"))
-      .withPickupServicePointId(documentContext.read("$.payload.requests.created.pickupServicePointId"))
-      .withHoldId(documentContext.read("$.payload.requests.created.id"))
-      .withRequesterId(documentContext.read("$.payload.requests.created.requesterId"))
-      .withRequestStatus(documentContext.read("$.payload.requests.created.status"))
-      .withRequestNote(documentContext.read("$.payload.requests.created.patronComments"));
+    return new CreateRequestEvent().withItemBarCode(documentContext.read("$.itemBarcode"))
+      .withPickupServicePointId(documentContext.read("$.requests.created.pickupServicePointId"))
+      .withHoldId(documentContext.read("$.requests.created.id"))
+      .withRequesterId(documentContext.read("$.requests.created.requesterId"))
+      .withRequestStatus(documentContext.read("$.requests.created.status"))
+      .withRequestNote(documentContext.read("$.requests.created.patronComments"));
   }
 }

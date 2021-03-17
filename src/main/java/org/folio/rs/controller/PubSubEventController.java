@@ -7,7 +7,6 @@ import java.util.Objects;
 
 import javax.validation.Valid;
 
-import com.jayway.jsonpath.DocumentContext;
 import org.folio.rs.domain.dto.ChangeRequestEvent;
 import org.folio.rs.domain.dto.CreateRequestEvent;
 import org.folio.rs.domain.dto.EventRequest;
@@ -40,18 +39,19 @@ public class PubSubEventController implements PubSubHandlersApi {
   public ResponseEntity<String> pubSubHandlersLogRecordEventPost(@Valid PubSubEvent pubSubEvent) {
     if (Objects.nonNull(pubSubEvent)) {
       EventRequest eventRequest = null;
-      var payload = pubSubEvent.getEventPayload();
-      var documentContext = JsonPath.parse(payload);
-
       try {
-        if (isPagedRequestCreated(documentContext)) {
+
+        var logEventType = pubSubEvent.getLogEventType();
+        var payload = MAPPER.writeValueAsString(pubSubEvent.getPayload());
+
+        if (isPagedRequestCreated(logEventType, payload)) {
           eventRequest = MAPPER.readValue(payload, CreateRequestEvent.class);
         }
-        if (isRequestChangedToPaged(documentContext)) {
+        if (isRequestChangedToPaged(logEventType, payload)) {
           eventRequest = MAPPER.readValue(payload, ChangeRequestEvent.class);
         }
       } catch (JsonProcessingException e) {
-        log.error("Error processing event: {}", payload, e);
+        log.error("Error processing event: {}", pubSubEvent, e);
       }
 
       ofNullable(eventRequest).ifPresent(retrievalQueueService::processEventRequest);
@@ -61,12 +61,11 @@ public class PubSubEventController implements PubSubHandlersApi {
       .build();
   }
 
-  private boolean isRequestChangedToPaged(DocumentContext documentContext) {
-
-    var logEventType = documentContext.read("$.logEventType", String.class);
-    return isRequestChanged(logEventType)
-        && !Objects.equals(documentContext.read("$.payload.requests.original.requestType"), documentContext.read("$.payload.requests.updated.requestType"))
-        && Objects.equals(PAGE.value(), documentContext.read("$.payload.requests.updated.requestType"));
+  private boolean isRequestChangedToPaged(String logEventType, String payload) {
+    var dc = JsonPath.parse(payload);
+    return isRequestChanged(logEventType) &&
+      !Objects.equals(dc.read("$.requests.original.requestType"), dc.read("$.requests.updated.requestType"))
+      && Objects.equals(PAGE.value(), dc.read("$.requests.updated.requestType"));
   }
 
   private boolean isRequestChanged(String logEventType) {
@@ -74,9 +73,10 @@ public class PubSubEventController implements PubSubHandlersApi {
         || LogEventType.REQUEST_UPDATED.value().equals(logEventType);
   }
 
-  private boolean isPagedRequestCreated(DocumentContext documentContext) {
-    var logEventType = documentContext.read("$.logEventType", String.class);
-    return isRequestCreated(logEventType) && Objects.equals(PAGE.value(), documentContext.read("$.payload.requests.created.requestType"));
+  private boolean isPagedRequestCreated(String logEventType, String payload) {
+    var dc = JsonPath.parse(payload);
+    return isRequestCreated(logEventType)
+      && Objects.equals(PAGE.value(), dc.read("$.requests.created.requestType"));
   }
 
   private boolean isRequestCreated(String logEventType) {

@@ -13,11 +13,11 @@ public class ChangeRequestEventDeserializer extends RequestEventDeserializerBase
   @Override
   public EventRequest deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
     var documentContext = getDocumentContext(jsonParser);
-    return new ChangeRequestEvent().withItemBarCode(documentContext.read("$.payload.itemBarcode"))
-      .withPickupServicePointId(documentContext.read("$.payload.requests.updated.pickupServicePointId"))
-      .withHoldId(documentContext.read("$.payload.requests.updated.id"))
-      .withRequesterId(documentContext.read("$.payload.requests.updated.requesterId"))
-      .withRequestStatus(documentContext.read("$.payload.requests.updated.status"))
-      .withRequestNote(documentContext.read("$.payload.requests.updated.patronComments"));
+    return new ChangeRequestEvent().withItemBarCode(documentContext.read("$.itemBarcode"))
+      .withPickupServicePointId(documentContext.read("$.requests.updated.pickupServicePointId"))
+      .withHoldId(documentContext.read("$.requests.updated.id"))
+      .withRequesterId(documentContext.read("$.requests.updated.requesterId"))
+      .withRequestStatus(documentContext.read("$.requests.updated.status"))
+      .withRequestNote(documentContext.read("$.requests.updated.patronComments"));
   }
 }

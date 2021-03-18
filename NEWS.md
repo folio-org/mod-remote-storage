@@ -1,4 +1,4 @@
-## 1.0.1 Unreleased
+## 1.1.0 Unreleased
 
 ## 1.0.0 Released
 The primary focus of this release was to implement Remote Storage logic

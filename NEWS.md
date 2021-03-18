@@ -14,6 +14,7 @@ The primary focus of this release was to implement Remote Storage logic
 * [MODRS-4](https://issues.folio.org/browse/MODRS-4) FOLIO-initiated sending items to the accession queue
 * [MODRS-3](https://issues.folio.org/browse/MODRS-3) Remote storages configuration in FOLIO
 * [MODRS-2](https://issues.folio.org/browse/MODRS-2) Work with remote storage locations
+* [MODRS-1](https://issues.folio.org/browse/MODRS-1) Project Setup: mod-remote-storage
 
 ### Bug Fixes
 * [MODRS-21](https://issues.folio.org/browse/MODRS-21) - mod-remote-storage tenant initialization fails with 500 error

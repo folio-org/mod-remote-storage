@@ -34,7 +34,6 @@ import org.springframework.web.client.HttpClientErrorException;
 public class ConfigurationsTest extends TestBase {
 
   private static final String CONFIGURATIONS_URL = "http://localhost:%s/remote-storage/configurations/";
-  private static final String PROVIDERS_URL = "http://localhost:%s/remote-storage/providers/";
   private static final String TENANT_URL = "http://localhost:%s/_/tenant";
 
   private String configurationsUrl;
@@ -174,12 +173,6 @@ public class ConfigurationsTest extends TestBase {
     String urlWithAnotherUuid = configurationsUrl + randomIdAsString();
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> put(urlWithAnotherUuid, configurationDto));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
-  }
-
-  @Test
-  void shouldReturnAllProviders() {
-    ResponseEntity<List> response = get(String.format(PROVIDERS_URL, okapiPort), List.class);
-    assertEquals(2, requireNonNull(response.getBody()).size());
   }
 
   private StorageConfiguration buildConfiguration(String id) {

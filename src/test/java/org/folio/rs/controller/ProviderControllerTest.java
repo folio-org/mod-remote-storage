@@ -2,7 +2,6 @@ package org.folio.rs.controller;
 
 import org.folio.rs.TestBase;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -15,7 +14,7 @@ public class ProviderControllerTest extends TestBase {
 
   @Test
   void shouldReturnAllProviders() {
-    ResponseEntity<List> response = get(String.format(PROVIDERS_URL, okapiPort), List.class);
+    var response = get(String.format(PROVIDERS_URL, okapiPort), List.class);
     assertEquals(3, requireNonNull(response.getBody()).size());
   }
 }

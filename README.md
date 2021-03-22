@@ -42,6 +42,12 @@ API provides the following URL to retrieve by check-in and return item using bar
 | POST | /remote-storage/retrieve/{remoteStorageConfigurationId}/checkInItem | remote-storage.check-in.item.post | Check-in item by barcode |
 | POST | /remote-storage/return/{remoteStorageConfigurationId} | remote-storage.return.item.post | Return item by barcode |
 
+API provides the following URL to retrieve providers:
+
+|  Method | URL| Permissions  | Description  | 
+|---|---|---|---|
+| GET |  /remote-storage/providers | remote-storage.providers.collection.get | Get list of providers |
+
 ### Required Permissions
 Institutional users should be granted the following permissions in order to use this remote storage API:
 - `remote-storage.all`

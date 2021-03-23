@@ -3,6 +3,7 @@ package org.folio.rs;
 import org.folio.rs.controller.CheckInRetrieveTest;
 import org.folio.rs.controller.ConfigurationsTest;
 import org.folio.rs.controller.LocationMappingsTest;
+import org.folio.rs.controller.ProviderControllerTest;
 import org.folio.rs.controller.PubSubEventControllerTest;
 import org.folio.rs.controller.ReturnItemTest;
 import org.folio.rs.service.AccessionQueueServiceTest;
@@ -67,6 +68,11 @@ public class TestSuite {
 
   @Nested
   class PubSubEventControllerTestNested extends PubSubEventControllerTest {
+
+  }
+
+  @Nested
+  class ProviderControllerTestNested extends ProviderControllerTest {
 
   }
 }

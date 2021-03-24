@@ -88,7 +88,7 @@ public class ConfigurationsTest extends TestBase {
 
   @Test
   void canPostAndPutConfigurationWithReturningWorkFlow() {
-    var requestBody =  "{\"name\":\"CaiaSoft\", \"accessionTimeUnit\" : \"minutes\",  \"returningWorkflowDetails\":\"Scanned to caiasoft\"}";
+    var requestBody =  "{\"name\":\"CaiaSoft\", \"accessionTimeUnit\" : \"minutes\",  \"returningWorkflowDetails\":\"Scanned to CaiaSoft\"}";
     var configuration = post(configurationsUrl, requestBody, StorageConfiguration.class).getBody();
     assertThat(configuration.getReturningWorkflowDetails(), is(ReturningWorkflowDetails.CAIASOFT));
     configuration.returningWorkflowDetails(ReturningWorkflowDetails.FOLIO);

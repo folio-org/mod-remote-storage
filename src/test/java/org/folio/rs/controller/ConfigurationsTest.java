@@ -8,19 +8,16 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.List;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.folio.rs.TestBase;
+import org.folio.rs.domain.dto.AccessionWorkflowDetails;
+import org.folio.rs.domain.dto.ReturningWorkflowDetails;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.dto.StorageConfigurations;
 import org.folio.rs.domain.dto.TimeUnits;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +72,30 @@ public class ConfigurationsTest extends TestBase {
     assertTrue(EqualsBuilder.reflectionEquals(
       requireNonNull(
         requireNonNull(cacheManager.getCache("configurations")).get(responseEntity.getBody().getId())).get(), configuration, true, StorageConfiguration.class, "metadata"));
+  }
+
+  @Test
+  void canPostAndPutConfigurationWithAccessionWorkFlow() {
+    var requestBody =  "{\"name\":\"CaiaSoft\", \"accessionTimeUnit\" : \"minutes\",  \"accessionWorkflowDetails\":\"Create new holdings record\"}";
+    var configuration = post(configurationsUrl, requestBody, StorageConfiguration.class).getBody();
+    assertThat(configuration.getAccessionWorkflowDetails(), is(AccessionWorkflowDetails.CREATE_NEW_HOLDINGS_RECORD));
+    configuration.accessionWorkflowDetails(AccessionWorkflowDetails.ASSIGN_TO_EXISTING_HOLDINGS_RECORD);
+    put(configurationsUrl + configuration.getId(), configuration).getBody();
+    var updatedConfiguration = get(configurationsUrl + configuration.getId(), StorageConfiguration.class).getBody();
+    assertThat(updatedConfiguration.getAccessionWorkflowDetails(), is(AccessionWorkflowDetails.ASSIGN_TO_EXISTING_HOLDINGS_RECORD));
+    delete(configurationsUrl + configuration.getId());
+  }
+
+  @Test
+  void canPostAndPutConfigurationWithReturningWorkFlow() {
+    var requestBody =  "{\"name\":\"CaiaSoft\", \"accessionTimeUnit\" : \"minutes\",  \"returningWorkflowDetails\":\"Scanned to caiasoft\"}";
+    var configuration = post(configurationsUrl, requestBody, StorageConfiguration.class).getBody();
+    assertThat(configuration.getReturningWorkflowDetails(), is(ReturningWorkflowDetails.CAIASOFT));
+    configuration.returningWorkflowDetails(ReturningWorkflowDetails.FOLIO);
+    put(configurationsUrl + configuration.getId(), configuration).getBody();
+    var updatedConfiguration = get(configurationsUrl + configuration.getId(), StorageConfiguration.class).getBody();
+    assertThat(updatedConfiguration.getReturningWorkflowDetails(), is(ReturningWorkflowDetails.FOLIO));
+    delete(configurationsUrl + configuration.getId());
   }
 
   @Test

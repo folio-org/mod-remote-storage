@@ -1,0 +1,9 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Return workflow details",
+  "type": "string",
+  "enum": [
+    "Scanned to folio",
+    "Scanned to CaiaSoft"
+  ]
+}

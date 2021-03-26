@@ -1,5 +1,11 @@
 ## 1.1.0 Unreleased
 
+## 1.0.1 Released
+The focus of this release was to fix deployment issue
+
+### Bug Fixes
+* [MODRS-30](https://issues.folio.org/browse/MODRS-30) - mod-remote-storage building failure due to unit test
+
 ## 1.0.0 Released
 The primary focus of this release was to implement Remote Storage logic
 

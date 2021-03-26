@@ -30,7 +30,7 @@
     {
       "request": {
         "method": "DELETE",
-        "url": "/pubsub/messaging-modules?moduleId=mod-remote-storage-1.1.0-SNAPSHOT&moduleRole=PUBLISHER&"
+        "urlPath": "/pubsub/messaging-modules"
       },
       "response": {
         "status": 204

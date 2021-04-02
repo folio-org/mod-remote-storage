@@ -28,6 +28,10 @@ spring:
     enabled: false
 
 management:
+  metrics:
+    export:
+      influx:
+        enabled: false
   endpoints:
     web:
       base-path: /admin

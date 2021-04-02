@@ -72,7 +72,6 @@ public class TestBase {
   @AfterEach
   void eachTearDown() {
     tenantController.deleteTenant();
-    wireMockServer.resetAll();
   }
 
 

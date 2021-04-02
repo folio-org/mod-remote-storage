@@ -11,7 +11,7 @@ buildMvn {
     buildDocker {
       publishMaster = true
       healthChk = true
-      healthChkCmd = 'curl -sS --fail -o /dev/null  http://localhost:8081/admin/helth || exit 1'
+      healthChkCmd = 'curl -sS --fail -o /dev/null  http://localhost:8081/admin/health || exit 1'
     }
   }
 }

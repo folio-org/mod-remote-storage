@@ -2,11 +2,7 @@ package org.folio.rs;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.io.IOUtils;
 import org.folio.rs.controller.TenantController;
 import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.spring.FolioModuleMetadata;
@@ -32,7 +28,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.util.SocketUtils;
 import org.springframework.web.client.RestTemplate;
 
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.folio.rs.controller.TenantController.PARAMETER_LOAD_SAMPLE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -102,10 +97,6 @@ public class TestBase {
     return restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), clazz);
   }
 
-  public <T> ResponseEntity<T> get(String url, HttpHeaders headers, Class<T> clazz) {
-    return restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), clazz);
-  }
-
   public <T> ResponseEntity<T> post(String url, Object entity, Class<T> clazz) {
     return restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(entity, headers), clazz);
   }
@@ -116,9 +107,5 @@ public class TestBase {
 
   public ResponseEntity<String> delete(String url) {
     return restTemplate.exchange(url, HttpMethod.DELETE, new HttpEntity<>(headers), String.class);
-  }
-
-  protected HttpHeaders getEmptyHeaders() {
-    return new HttpHeaders();
   }
 }

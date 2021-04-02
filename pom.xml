@@ -23,7 +23,7 @@
 
   <properties>
     <java.version>11</java.version>
-    <folio-spring-base-version>1.0.1</folio-spring-base-version>
+    <folio-spring-base-version>1.0.4</folio-spring-base-version>
     <openapi-generator.version>4.3.1</openapi-generator.version>
     <mapstruct.version>1.4.1.Final</mapstruct.version>
     <json.version>20200518</json.version>
@@ -82,6 +82,11 @@
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-openfeign</artifactId>
       <version>2.2.1.RELEASE</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
 
     <dependency>

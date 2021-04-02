@@ -102,6 +102,10 @@ public class TestBase {
     return restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), clazz);
   }
 
+  public <T> ResponseEntity<T> get(String url, HttpHeaders headers, Class<T> clazz) {
+    return restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), clazz);
+  }
+
   public <T> ResponseEntity<T> post(String url, Object entity, Class<T> clazz) {
     return restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(entity, headers), clazz);
   }
@@ -112,5 +116,9 @@ public class TestBase {
 
   public ResponseEntity<String> delete(String url) {
     return restTemplate.exchange(url, HttpMethod.DELETE, new HttpEntity<>(headers), String.class);
+  }
+
+  protected HttpHeaders getEmptyHeaders() {
+    return new HttpHeaders();
   }
 }

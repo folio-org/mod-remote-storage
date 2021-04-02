@@ -9,9 +9,9 @@ buildMvn {
 
   doDocker = {
     buildDocker {
-      publishMaster = 'yes'
-      healthChk = 'yes'
-      healthChkCmd = 'curl -sS --fail -o /dev/null http://localhost:8081/admin/health || exit 1'
+      publishMaster = true
+      healthChk = false
+      healthChkCmd = 'curl -sS --fail -o /dev/null  http://localhost:8081/apidocs/ || exit 1'
     }
   }
 }

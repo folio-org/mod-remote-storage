@@ -6,7 +6,6 @@ The focus of this release was to create health-check and update circulation inte
 [Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.0.1...v1.0.2)
 
 ### Bug Fixes
-* [MODRS-32](https://issues.folio.org/browse/MODRS-32) - Update circulation interface version to 10.0
 * [MODRS-31](https://issues.folio.org/browse/MODRS-31) - Standard health check endpoint
 
 ## 1.0.1 Released

@@ -71,7 +71,7 @@ public class SecurityManagerService {
   }
 
   private String loginSystemUser(SystemUserParameters params) {
-    var response = authnClient.getApiKey(params);
+    var response = authnClient.getApiKey(params, params.getTenantId());
     var headers = response.getHeaders().get(XOkapiHeaders.TOKEN);
     if (CollectionUtils.isEmpty(headers)) {
       throw new IllegalStateException(String.format("User [%s] cannot log in", params.getUsername()));

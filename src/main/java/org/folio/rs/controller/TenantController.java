@@ -137,7 +137,7 @@ public class TenantController implements TenantApi {
           return new ObjectMapper()
               .registerModule(new JavaTimeModule())
               .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-              .readValue(new ClassPathResource(SAMPLES_DIR + "/" + fileName).getInputStream(), type);
+              .readValue(this.getClass().getClassLoader().getResourceAsStream(SAMPLES_DIR + "/" + fileName), type);
         } catch (IOException e) {
           log.error("Error loading " + fileName, e);
           return null;

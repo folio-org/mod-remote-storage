@@ -54,8 +54,8 @@ public class LocationMappingsTest extends TestBase {
     assertThat(responseEntity.getBody().getConfigurationId(), notNullValue());
 
     // Verify caching disable via MODRS-42
-    // LocationMapping mapping = get(mappingsUrl + "/" + responseEntity.getBody().getFolioLocationId(), LocationMapping.class).getBody();
-    // assertTrue(EqualsBuilder.reflectionEquals(responseEntity.getBody(), mapping, true, StorageConfiguration.class, METADATA));
+    LocationMapping mapping = get(mappingsUrl + "/" + responseEntity.getBody().getFolioLocationId(), LocationMapping.class).getBody();
+    assertTrue(EqualsBuilder.reflectionEquals(responseEntity.getBody(), mapping, true, StorageConfiguration.class, METADATA));
     // assertTrue(EqualsBuilder.reflectionEquals(
     //  requireNonNull(
     //    requireNonNull(cacheManager.getCache(MAPPINGS)).get(responseEntity.getBody().getFolioLocationId())).get(), mapping, true, StorageConfiguration.class, METADATA));
@@ -66,7 +66,7 @@ public class LocationMappingsTest extends TestBase {
   void canGetAllMappings() {
     ResponseEntity<LocationMappings> responseEntity = get(mappingsUrl, LocationMappings.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-    assertThat(responseEntity.getBody().getTotalRecords(), is(3));
+    assertThat(responseEntity.getBody().getTotalRecords(), is(2));
   }
 
   @Test
@@ -79,9 +79,9 @@ public class LocationMappingsTest extends TestBase {
     // Verify cache disable via MODRS-42
     // Object cachedMapping = requireNonNull(requireNonNull(cacheManager.getCache(MAPPINGS)).get(mapping.getFolioLocationId())).get();
 
-    // ResponseEntity<LocationMapping> secondResponse = get(mappingsUrl + mapping.getFolioLocationId(), LocationMapping.class);
-    // assertThat(secondResponse.getStatusCode(), is(HttpStatus.OK));
-    // assertTrue(EqualsBuilder.reflectionEquals(mapping, secondResponse.getBody(), true, LocationMapping.class, "metadata"));
+    ResponseEntity<LocationMapping> secondResponse = get(mappingsUrl + mapping.getFolioLocationId(), LocationMapping.class);
+    assertThat(secondResponse.getStatusCode(), is(HttpStatus.OK));
+    assertTrue(EqualsBuilder.reflectionEquals(mapping, secondResponse.getBody(), true, LocationMapping.class, "metadata"));
     // assertTrue(EqualsBuilder.reflectionEquals(cachedMapping, secondResponse.getBody(), true, LocationMapping.class, "metadata"));
   }
 
@@ -94,7 +94,7 @@ public class LocationMappingsTest extends TestBase {
         LocationMapping.class);
     // Verify cache disable via MODRS-42
     // assertThat(requireNonNull(cacheManager.getCache(MAPPINGS)).get(requireNonNull(responseEntity.getBody()).getFolioLocationId()), notNullValue());
-    // assertThat(delete(mappingsUrl + responseEntity.getBody().getFolioLocationId()).getStatusCode(), is(HttpStatus.NO_CONTENT));
+    assertThat(delete(mappingsUrl + responseEntity.getBody().getFolioLocationId()).getStatusCode(), is(HttpStatus.NO_CONTENT));
     // assertThat(requireNonNull(cacheManager.getCache(MAPPINGS)).get(requireNonNull(responseEntity.getBody()).getFolioLocationId()), nullValue());
   }
 

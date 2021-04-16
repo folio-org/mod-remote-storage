@@ -59,13 +59,14 @@ public class ConfigurationsService {
 
   @CachePut(value = CONFIGURATIONS, key = "#storageConfiguration.id")
   public StorageConfiguration updateConfiguration(String id, StorageConfiguration storageConfiguration) {
+    Configuration configuration;
     if (id.equals(storageConfiguration.getId())) {
-      var configuration = configurationsMapper.mapDtoToEntity(storageConfiguration);
-      configurationsRepository.save(copyForUpdate(configurationsRepository.getOne(configuration.getId()), configuration));
+      var conf = configurationsMapper.mapDtoToEntity(storageConfiguration);
+      configuration = configurationsRepository.save(copyForUpdate(configurationsRepository.getOne(conf.getId()), conf));
     } else {
       throw new IdMismatchException();
     }
-    return storageConfiguration;
+    return configurationsMapper.mapEntityToDto(configuration);
   }
 
   private Configuration copyForUpdate(Configuration dest, Configuration source) {

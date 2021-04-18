@@ -1,4 +1,6 @@
 spring:
+  cache:
+    type: none
   application:
     name: @project.artifactId@
     version: @project.version@

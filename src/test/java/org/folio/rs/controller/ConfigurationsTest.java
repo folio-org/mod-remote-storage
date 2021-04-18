@@ -66,12 +66,12 @@ public class ConfigurationsTest extends TestBase {
     assertThat(responseEntity.getBody().getMetadata().getCreatedDate(), notNullValue());
     assertThat(fetchConfigurations().getTotalRecords(), is(2));
 
-    // Verify caching
+    // Verify caching disable via MODRS-42
     StorageConfiguration configuration = get(configurationsUrl + "/" + responseEntity.getBody().getId(), StorageConfiguration.class).getBody();
     assertTrue(EqualsBuilder.reflectionEquals(responseEntity.getBody(), configuration, true, StorageConfiguration.class, "metadata"));
-    assertTrue(EqualsBuilder.reflectionEquals(
-      requireNonNull(
-        requireNonNull(cacheManager.getCache("configurations")).get(responseEntity.getBody().getId())).get(), configuration, true, StorageConfiguration.class, "metadata"));
+    // assertTrue(EqualsBuilder.reflectionEquals(
+    //  requireNonNull(
+    //   requireNonNull(cacheManager.getCache("configurations")).get(responseEntity.getBody().getId())).get(), configuration, true, StorageConfiguration.class, "metadata"));
   }
 
   @Test
@@ -112,13 +112,13 @@ public class ConfigurationsTest extends TestBase {
     ResponseEntity<StorageConfiguration> firstResponse = get(configurationsUrl + configurationDto.getId(), StorageConfiguration.class);
     assertThat(firstResponse.getStatusCode(), is(HttpStatus.OK));
 
-    // Verify cache
-    Object cachedConfiguration = requireNonNull(requireNonNull(cacheManager.getCache("configurations")).get(configurationDto.getId())).get();
+    // Verify cache disable via MODRS-42
+    // Object cachedConfiguration = requireNonNull(requireNonNull(cacheManager.getCache("configurations")).get(configurationDto.getId())).get();
 
     ResponseEntity<StorageConfiguration> secondResponse = get(configurationsUrl + configurationDto.getId(), StorageConfiguration.class);
     assertThat(secondResponse.getStatusCode(), is(HttpStatus.OK));
     assertTrue(EqualsBuilder.reflectionEquals(configurationDto, secondResponse.getBody(), true, StorageConfiguration.class, "metadata"));
-    assertTrue(EqualsBuilder.reflectionEquals(cachedConfiguration, secondResponse.getBody(), true, StorageConfiguration.class, "metadata"));
+    // assertTrue(EqualsBuilder.reflectionEquals(cachedConfiguration, secondResponse.getBody(), true, StorageConfiguration.class, "metadata"));
 
   }
 
@@ -129,10 +129,10 @@ public class ConfigurationsTest extends TestBase {
     ResponseEntity<String> response = put(configurationsUrl + configurationDto.getId(),configurationDto);
     assertThat(response.getStatusCode(), equalTo(HttpStatus.NO_CONTENT));
 
-    // Verify caching
+    // Verify caching disable via MODRS-42
     StorageConfiguration configuration = get(configurationsUrl + "/" + configurationDto.getId(), StorageConfiguration.class).getBody();
     assertTrue(EqualsBuilder.reflectionEquals(configurationDto, configuration, true, StorageConfiguration.class, "metadata"));
-    assertTrue(EqualsBuilder.reflectionEquals(requireNonNull(requireNonNull(cacheManager.getCache("configurations")).get(configurationDto.getId())).get(), configuration, true, StorageConfiguration.class, "metadata"));
+    // assertTrue(EqualsBuilder.reflectionEquals(requireNonNull(requireNonNull(cacheManager.getCache("configurations")).get(configurationDto.getId())).get(), configuration, true, StorageConfiguration.class, "metadata"));
 
   }
 

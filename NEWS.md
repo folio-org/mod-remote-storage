@@ -1,5 +1,13 @@
 ## 1.1.0 Unreleased
 
+## 1.0.3 Released
+The focus of this release was to fix issues related to the cache
+
+[Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.0.2...v1.0.3)
+
+### Bug Fixes
+* [MODRS-42](https://issues.folio.org/browse/MODRS-42) - Unable to view configuration edits in third pane
+
 ## 1.0.2 Released
 The focus of this release was to create health-check and update circulation interface version
 

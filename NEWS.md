@@ -1,5 +1,29 @@
 ## 1.1.0 Unreleased
 
+## 1.0.3 Released
+The focus of this release was to fix issues related to the cache
+
+[Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.0.2...v1.0.3)
+
+### Bug Fixes
+* [MODRS-42](https://issues.folio.org/browse/MODRS-42) - Unable to view configuration edits in third pane
+
+## 1.0.2 Released
+The focus of this release was to create health-check and update circulation interface version
+
+[Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.0.1...v1.0.2)
+
+### Bug Fixes
+* [MODRS-31](https://issues.folio.org/browse/MODRS-31) - Standard health check endpoint
+
+## 1.0.1 Released
+The focus of this release was to fix deployment issue
+
+[Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.0.0...v1.0.1)
+
+### Bug Fixes
+* [MODRS-30](https://issues.folio.org/browse/MODRS-30) - mod-remote-storage building failure due to unit test
+
 ## 1.0.0 Released
 The primary focus of this release was to implement Remote Storage logic
 

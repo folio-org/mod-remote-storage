@@ -76,7 +76,7 @@ public class ConfigurationsTest extends TestBase {
 
   @Test
   void canPostAndPutConfigurationWithAccessionWorkflow() {
-    var requestBody =  "{\"name\":\"CaiaSoft\", \"accessionTimeUnit\":\"minutes\", \"accessionWorkflowDetails\":\"Create new holdings record\"}";
+    var requestBody =  "{\"name\":\"RemoteStorage\", \"providerName\": \"Dematic EMS\", \"accessionTimeUnit\":\"minutes\", \"accessionWorkflowDetails\":\"Create new holdings record\"}";
     var configuration = post(configurationsUrl, requestBody, StorageConfiguration.class).getBody();
     assertThat(configuration.getAccessionWorkflowDetails(), is(AccessionWorkflowDetails.CREATE_NEW_HOLDINGS_RECORD));
     configuration.accessionWorkflowDetails(AccessionWorkflowDetails.ASSIGN_TO_EXISTING_HOLDINGS_RECORD);
@@ -88,7 +88,7 @@ public class ConfigurationsTest extends TestBase {
 
   @Test
   void canPostAndPutConfigurationWithReturningWorkflow() {
-    var requestBody =  "{\"name\":\"CaiaSoft\", \"accessionTimeUnit\":\"minutes\", \"returningWorkflowDetails\":\"Scanned to CaiaSoft\"}";
+    var requestBody =  "{\"name\":\"RemoteStorage\", \"providerName\": \"CaiaSoft\", \"accessionTimeUnit\":\"minutes\", \"returningWorkflowDetails\":\"Scanned to CaiaSoft\"}";
     var configuration = post(configurationsUrl, requestBody, StorageConfiguration.class).getBody();
     assertThat(configuration.getReturningWorkflowDetails(), is(ReturningWorkflowDetails.CAIASOFT));
     configuration.returningWorkflowDetails(ReturningWorkflowDetails.FOLIO);

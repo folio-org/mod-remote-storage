@@ -30,7 +30,6 @@ import org.folio.spring.liquibase.FolioSpringLiquibase;
 import org.folio.tenant.domain.dto.Parameter;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.folio.tenant.rest.resource.TenantApi;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -137,7 +136,7 @@ public class TenantController implements TenantApi {
           return new ObjectMapper()
               .registerModule(new JavaTimeModule())
               .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-              .readValue(new ClassPathResource(SAMPLES_DIR + "/" + fileName).getFile(), type);
+              .readValue(this.getClass().getClassLoader().getResourceAsStream(SAMPLES_DIR + "/" + fileName), type);
         } catch (IOException e) {
           log.error("Error loading " + fileName, e);
           return null;

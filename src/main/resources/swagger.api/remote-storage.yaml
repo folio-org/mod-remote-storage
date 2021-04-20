@@ -267,7 +267,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/provider"
+                $ref: "#/components/schemas/providers"
         '500':
           description: Internal server error
           content:
@@ -534,8 +534,10 @@ components:
             - mappings
     errors:
       $ref: schemas/errors.json
-    provider:
-      $ref: schemas/provider.json
+    providers:
+      type: array
+      items:
+        $ref: schemas/provider.json
     uuid:
       $ref: schemas/uuid.json
     checkInItem:

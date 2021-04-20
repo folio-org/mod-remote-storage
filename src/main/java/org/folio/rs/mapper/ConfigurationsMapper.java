@@ -23,6 +23,8 @@ public interface ConfigurationsMapper {
     @Mapping(target = "statusUrl", source = "statusUrl"),
     @Mapping(target = "accessionDelay", source = "accessionDelay"),
     @Mapping(target = "accessionTimeUnit", expression = "java(org.folio.rs.domain.dto.TimeUnits.fromValue(configuration.getAccessionTimeUnit()))"),
+    @Mapping(target = "accessionWorkflowDetails", source = "accessionWorkflowDetails"),
+    @Mapping(target = "returningWorkflowDetails", source = "returningWorkflowDetails"),
     @Mapping(target = "metadata.createdDate", source = "createdDate"),
     @Mapping(target = "metadata.updatedDate", source = "updatedDate"),
     @Mapping(target = "metadata.createdByUserId", expression = "java(configuration.getCreatedByUserId() == null ? null : String.valueOf(configuration.getCreatedByUserId()))"),

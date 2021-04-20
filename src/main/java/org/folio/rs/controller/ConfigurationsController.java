@@ -2,7 +2,6 @@ package org.folio.rs.controller;
 
 import static java.util.Objects.isNull;
 
-import java.util.List;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -10,17 +9,14 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.rs.domain.dto.Provider;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.dto.StorageConfigurations;
 import org.folio.rs.rest.resource.ConfigurationsApi;
 import org.folio.rs.service.ConfigurationsService;
-import org.folio.rs.service.ProvidersService;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,7 +28,6 @@ public class ConfigurationsController implements ConfigurationsApi {
   private static final String CONFIGURATION_NOT_FOUND = "Configuration not found";
 
   private final ConfigurationsService configurationsService;
-  private final ProvidersService providersService;
 
   @Override
   public ResponseEntity<String> deleteConfigurationById(String configId) {
@@ -69,10 +64,5 @@ public class ConfigurationsController implements ConfigurationsApi {
   @ExceptionHandler({EmptyResultDataAccessException.class, EntityNotFoundException.class})
   public ResponseEntity<String> handleNotFoundExceptions() {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CONFIGURATION_NOT_FOUND);
-  }
-
-  @GetMapping(value = "/providers")
-  public ResponseEntity<List<Provider>> getProviders() {
-    return new ResponseEntity<>(providersService.getProviders(), HttpStatus.OK);
   }
 }

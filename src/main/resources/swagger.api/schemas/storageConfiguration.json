@@ -36,11 +36,6 @@
       "type": "object",
       "$ref": "timeUnits.json"
     },
-    "accessionWorkflowDetails": {
-      "description": "accession workflow details",
-      "type": "object",
-      "$ref": "accessionWorkflowDetails.json"
-    },
     "returningWorkflowDetails": {
       "description": "return workflow details",
       "type": "object",

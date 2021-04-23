@@ -1,9 +1,0 @@
-{
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Accession workflow details",
-  "type": "string",
-  "enum": [
-    "Create new holdings record",
-    "Assign to existing holdings record"
-  ]
-}

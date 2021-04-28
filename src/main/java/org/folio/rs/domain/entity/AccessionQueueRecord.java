@@ -35,6 +35,8 @@ public class AccessionQueueRecord {
 
   private String instanceAuthor;
 
+  private String instanceCreator;
+
   private String instanceContributors;
 
   private String publisher;

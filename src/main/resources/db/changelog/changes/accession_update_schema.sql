@@ -1,5 +1,4 @@
 ALTER TABLE accession_queue
- ADD instance_creator       TEXT,
  ADD instance_contributors  TEXT,
  ADD publisher              TEXT,
  ADD publish_year           VARCHAR(100),

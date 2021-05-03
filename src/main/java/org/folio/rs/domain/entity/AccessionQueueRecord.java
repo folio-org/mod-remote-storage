@@ -34,4 +34,32 @@ public class AccessionQueueRecord {
   private String instanceTitle;
 
   private String instanceAuthor;
+
+  private String instanceContributors;
+
+  private String publisher;
+
+  private String publishYear;
+
+  private String publishPlace;
+
+  private String volume;
+
+  private String enumeration;
+
+  private String chronology;
+
+  private String issn;
+
+  private String isbn;
+
+  private String oclc;
+
+  private String physicalDescription;
+
+  private String materialType;
+
+  private String copyNumber;
+
+  private UUID permanentLocationId;
 }

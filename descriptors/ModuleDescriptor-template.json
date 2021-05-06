@@ -7,6 +7,14 @@
       "version": "10.7"
     },
     {
+      "id": "inventory-move",
+      "version": "0.2"
+    },
+    {
+      "id": "holdings-storage",
+      "version": "4.6"
+    },
+    {
       "id": "users",
       "version": "15.3"
     },
@@ -124,6 +132,19 @@
       "id": "remote-storage-accessions",
       "version": "1.0",
       "handlers": [
+        {
+          "methods": ["POST"],
+          "pathPattern": "/remote-storage/accessions",
+          "permissionsRequired" : [ "remote-storage.accessions.item.post" ],
+          "modulePermissions" : [
+            "inventory.items.collection.get",
+            "inventory.items.item.put",
+            "inventory.instances.collection.get",
+            "inventory.items.move.item.post",
+            "inventory-storage.holdings.collection.get",
+            "inventory-storage.holdings.item.put"
+          ]
+        },
         {
           "methods": ["GET"],
           "pathPattern": "/remote-storage/accessions",
@@ -283,6 +304,11 @@
       "description": "Get list of remote storage providers"
     },
     {
+      "permissionName": "remote-storage.accessions.item.post",
+      "displayName": "post remote storage accession item",
+      "description": "Perform item accession initiated by remote storage"
+    },
+    {
       "permissionName": "remote-storage.accessions.collection.get",
       "displayName": "get remote storage accession queues collection",
       "description": "Get list of remote storage accession queues"
@@ -327,6 +353,7 @@
         "remote-storage.mappings.item.get",
         "remote-storage.mappings.item.delete",
         "remote-storage.providers.collection.get",
+        "remote-storage.accessions.item.post",
         "remote-storage.accessions.collection.get",
         "remote-storage.accessions.item.put",
         "remote-storage.retrievals.collection.get",

@@ -278,6 +278,38 @@ paths:
       description: Get a list of providers
       operationId: getProviders
   /accessions:
+    post:
+      responses:
+        '201':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/accessionQueue"
+        '400':
+          description: Bad request
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Bad request
+        '422':
+          $ref: "#/components/responses/trait_validate_422"
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Internal server error
+      description: Perform remote storage initiated accession
+      operationId: postAccession
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/accessionRequest"
+        required: true
     get:
       responses:
         '200':
@@ -546,6 +578,16 @@ components:
       $ref: schemas/returnItemResponse.json
     pubSubEvent:
       $ref: schemas/pubSubEvent.json
+    accessionRequest:
+      $ref: schemas/accessionRequest.json
+    inventoryItem:
+      $ref: schemas/inventoryItem.json
+    inventoryHoldingsRecord:
+      $ref: schemas/inventoryHoldingsRecord.json
+    inventoryInstance:
+      $ref: schemas/iInventoryInstance.json
+    itemsMove:
+      $ref: schemas/itemsMove.json
   parameters:
     trait_queryable_storage_id:
       name: storageId

@@ -15,6 +15,14 @@
       "version": "4.6"
     },
     {
+      "id": "identifier-types",
+      "version": "1.2"
+    },
+    {
+      "id": "contributor-types",
+      "version": "2.0"
+    },
+    {
       "id": "users",
       "version": "15.3"
     },
@@ -142,7 +150,9 @@
             "inventory.instances.collection.get",
             "inventory.items.move.item.post",
             "inventory-storage.holdings.collection.get",
-            "inventory-storage.holdings.item.put"
+            "inventory-storage.holdings.item.put",
+            "inventory-storage.identifier-types.collection.get",
+            "inventory-storage.contributor-types.collection.get"
           ]
         },
         {

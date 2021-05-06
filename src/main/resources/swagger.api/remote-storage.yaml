@@ -588,6 +588,10 @@ components:
       $ref: schemas/iInventoryInstance.json
     itemsMove:
       $ref: schemas/itemsMove.json
+    identifierType:
+      $ref: schemas/identifierType.json
+    contributorType:
+      $ref: schemas/contributorType.json
   parameters:
     trait_queryable_storage_id:
       name: storageId

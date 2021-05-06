@@ -2,6 +2,8 @@ package org.folio.rs.service;
 
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.folio.rs.util.ContributorType.AUTHOR;
 import static org.folio.rs.util.IdentifierType.ISBN;
 import static org.folio.rs.util.IdentifierType.ISSN;
 import static org.folio.rs.util.IdentifierType.OCLC;
@@ -22,13 +24,16 @@ import javax.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.folio.rs.client.ContributorTypesClient;
 import org.folio.rs.client.HoldingsStorageClient;
+import org.folio.rs.client.IdentifierTypesClient;
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.rs.domain.dto.AccessionQueue;
 import org.folio.rs.domain.dto.AccessionQueues;
 import org.folio.rs.domain.dto.AccessionRequest;
 import org.folio.rs.domain.dto.Contributor;
+import org.folio.rs.domain.dto.ContributorType;
 import org.folio.rs.domain.dto.DomainEvent;
 import org.folio.rs.domain.dto.DomainEventType;
 import org.folio.rs.domain.dto.EffectiveCallNumberComponents;
@@ -66,7 +71,6 @@ public class AccessionQueueService {
   private static final String ACCESSIONED_DATE_TIME = "accessionedDateTime";
   private static final String REMOTE_STORAGE_ID = "remoteStorageId";
   private static final String CREATED_DATE_TIME = "createdDateTime";
-  private static final String AUTHOR_CONTRIBUTOR_TYPE_ID = "6e09d47d-95e2-4d8a-831b-f777b8ef6d81";
   private final AccessionQueueRepository accessionQueueRepository;
   private final LocationMappingsService locationMappingsService;
   private final InventoryClient inventoryClient;
@@ -74,6 +78,8 @@ public class AccessionQueueService {
   private final SecurityManagerService securityManagerService;
   private final FolioModuleMetadata moduleMetadata;
   private final HoldingsStorageClient holdingsStorageClient;
+  private final IdentifierTypesClient identifierTypesClient;
+  private final ContributorTypesClient contributorTypesClient;
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -266,8 +272,14 @@ public class AccessionQueueService {
   }
 
   private String extractAuthors(InventoryInstance instance) {
+    var contributorTypeId = contributorTypesClient.getContributorTypesByQuery("name==" + AUTHOR)
+      .getResult()
+      .stream()
+      .findFirst()
+      .map(ContributorType::getId)
+      .orElse(EMPTY);
     var authors = instance.getContributors().stream()
-      .filter(c -> AUTHOR_CONTRIBUTOR_TYPE_ID.equals(c.getContributorTypeId()))
+      .filter(c -> contributorTypeId.equals(c.getContributorTypeId()))
       .map(InventoryInstanceContributors::getName)
       .collect(Collectors.toList());
     return authors.isEmpty() ? extractContributors(instance) : String.join("; ", authors);
@@ -281,8 +293,15 @@ public class AccessionQueueService {
   }
 
   private String extractIdentifier(InventoryInstance instance, IdentifierType type) {
+    var identifierTypeId = identifierTypesClient.getIdentifierTypesByQuery("name==" + type)
+      .getResult()
+      .stream()
+      .findFirst()
+      .map(org.folio.rs.domain.dto.IdentifierType::getId)
+      .orElse(EMPTY);
+
     return instance.getIdentifiers().stream()
-      .filter(i -> type.getId().equals(i.getIdentifierTypeId()))
+      .filter(i -> identifierTypeId.equals(i.getIdentifierTypeId()))
       .findFirst()
       .map(InventoryInstanceIdentifiers::getValue)
       .orElse(null); //NOSONAR

@@ -25,6 +25,83 @@
           "Content-Type": "application/json"
         }
       }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/inventory/items?query=barcode==38268030"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"items\" : [ {\n    \"id\" : \"a31301dc-0a28-49e6-9fa2-499e07c0bb42\",\n    \"status\" : {\n      \"name\" : \"Available\",\n      \"date\" : \"2020-03-24T16:59:44.076+00:00\"\n    },\n    \"title\" : \"1000 proverbes créoles de la Caraïbe francophone.\",\n    \"callNumber\" : \"PN6519.C8A170 1987\",\n    \"hrid\" : \"it2691524\",\n    \"contributorNames\" : [ {\n      \"name\" : \"Agence de coopération culturelle et technique. Service de la protection du patrimoine culturel\"\n    } ],\n    \"formerIds\" : [ ],\n    \"discoverySuppress\" : null,\n    \"holdingsRecordId\" : \"336034b4-0524-45d7-b778-c769274baccf\",\n    \"barcode\" : \"38268030\",\n    \"copyNumber\" : \"c.1\",\n    \"notes\" : [ ],\n    \"circulationNotes\" : [ ],\n    \"tags\" : {\n      \"tagList\" : [ ]\n    },\n    \"yearCaption\" : [ ],\n    \"electronicAccess\" : [ ],\n    \"statisticalCodeIds\" : [ \"c6de6928-bb6e-4458-97f4-9145b27abb24\" ],\n    \"purchaseOrderLineIdentifier\" : null,\n    \"materialType\" : {\n      \"id\" : \"025ba2c5-5e96-4667-a677-8186463aee69\",\n      \"name\" : \"book\"\n    },\n    \"permanentLoanType\" : {\n      \"id\" : \"23e4f1ec-cf31-4098-959e-de64ce4781ce\",\n      \"name\" : \"stks\"\n    },\n    \"metadata\" : {\n      \"createdDate\" : \"2014-08-09T06:07:08.000+00:00\",\n      \"updatedDate\" : \"2014-08-09T06:07:08.000+00:00\"\n    },\n    \"links\" : {\n      \"self\" : \"http://127.0.0.1:8082/inventory/items/a31301dc-0a28-49e6-9fa2-499e07c0bb42\"\n    },\n    \"effectiveCallNumberComponents\" : {\n      \"callNumber\" : \"PN6519.C8A170 1987\",\n      \"prefix\" : null,\n      \"suffix\" : null,\n      \"typeId\" : \"c73c17f4-9660-421b-bdfc-e1c6093dec13\"\n    },\n    \"effectiveShelvingOrder\" : \"PN 46519 C8 A170 41987 C 11\",\n    \"effectiveLocation\" : {\n      \"id\" : \"b9dc25a2-a7fb-48ad-8da5-8f68e35ba0af\",\n      \"name\" : \"UC/HP/JRL/Gen\"\n    }\n  } ],\n  \"totalRecords\" : 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/inventory/items?query=barcode==38268031"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"items\" : [ {\n    \"id\" : \"a31301dc-0a28-49e6-9fa2-499e07c0bb42\",\n    \"status\" : {\n      \"name\" : \"Available\",\n      \"date\" : \"2020-03-24T16:59:44.076+00:00\"\n    },\n    \"title\" : \"1000 proverbes créoles de la Caraïbe francophone.\",\n    \"callNumber\" : \"PN6519.C8A170 1987\",\n    \"hrid\" : \"it2691524\",\n    \"contributorNames\" : [ {\n      \"name\" : \"Agence de coopération culturelle et technique. Service de la protection du patrimoine culturel\"\n    } ],\n    \"formerIds\" : [ ],\n    \"discoverySuppress\" : null,\n    \"holdingsRecordId\" : \"cfade499-67c3-4583-949f-948638ddef16\",\n    \"barcode\" : \"38268031\",\n    \"copyNumber\" : \"c.1\",\n    \"notes\" : [ ],\n    \"circulationNotes\" : [ ],\n    \"tags\" : {\n      \"tagList\" : [ ]\n    },\n    \"yearCaption\" : [ ],\n    \"electronicAccess\" : [ ],\n    \"statisticalCodeIds\" : [ \"c6de6928-bb6e-4458-97f4-9145b27abb24\" ],\n    \"purchaseOrderLineIdentifier\" : null,\n    \"materialType\" : {\n      \"id\" : \"025ba2c5-5e96-4667-a677-8186463aee69\",\n      \"name\" : \"book\"\n    },\n    \"permanentLoanType\" : {\n      \"id\" : \"23e4f1ec-cf31-4098-959e-de64ce4781ce\",\n      \"name\" : \"stks\"\n    },\n    \"metadata\" : {\n      \"createdDate\" : \"2014-08-09T06:07:08.000+00:00\",\n      \"updatedDate\" : \"2014-08-09T06:07:08.000+00:00\"\n    },\n    \"links\" : {\n      \"self\" : \"http://127.0.0.1:8082/inventory/items/a31301dc-0a28-49e6-9fa2-499e07c0bb42\"\n    },\n    \"effectiveCallNumberComponents\" : {\n      \"callNumber\" : \"PN6519.C8A170 1987\",\n      \"prefix\" : null,\n      \"suffix\" : null,\n      \"typeId\" : \"c73c17f4-9660-421b-bdfc-e1c6093dec13\"\n    },\n    \"effectiveShelvingOrder\" : \"PN 46519 C8 A170 41987 C 11\",\n    \"effectiveLocation\" : {\n      \"id\" : \"b9dc25a2-a7fb-48ad-8da5-8f68e35ba0af\",\n      \"name\" : \"UC/HP/JRL/Gen\"\n    }\n  } ],\n  \"totalRecords\" : 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/inventory/items?query=holdingsRecordId==cfade499-67c3-4583-949f-948638ddef16"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"items\" : [ {\n    \"id\" : \"a31301dc-0a28-49e6-9fa2-499e07c0bb42\",\n    \"status\" : {\n      \"name\" : \"Available\",\n      \"date\" : \"2020-03-24T16:59:44.076+00:00\"\n    },\n    \"title\" : \"1000 proverbes créoles de la Caraïbe francophone.\",\n    \"callNumber\" : \"PN6519.C8A170 1987\",\n    \"hrid\" : \"it2691524\",\n    \"contributorNames\" : [ {\n      \"name\" : \"Agence de coopération culturelle et technique. Service de la protection du patrimoine culturel\"\n    } ],\n    \"formerIds\" : [ ],\n    \"discoverySuppress\" : null,\n    \"holdingsRecordId\" : \"cfade499-67c3-4583-949f-948638ddef16\",\n    \"barcode\" : \"38268031\",\n    \"copyNumber\" : \"c.1\",\n    \"notes\" : [ ],\n    \"circulationNotes\" : [ ],\n    \"tags\" : {\n      \"tagList\" : [ ]\n    },\n    \"yearCaption\" : [ ],\n    \"electronicAccess\" : [ ],\n    \"statisticalCodeIds\" : [ \"c6de6928-bb6e-4458-97f4-9145b27abb24\" ],\n    \"purchaseOrderLineIdentifier\" : null,\n    \"materialType\" : {\n      \"id\" : \"025ba2c5-5e96-4667-a677-8186463aee69\",\n      \"name\" : \"book\"\n    },\n    \"permanentLoanType\" : {\n      \"id\" : \"23e4f1ec-cf31-4098-959e-de64ce4781ce\",\n      \"name\" : \"stks\"\n    },\n    \"permanentLocation\": {\n    \"id\" : \"53cf956f-c1df-410b-8bea-27f712cca7c0\",\n      \"name\": null\n    },\n    \"metadata\" : {\n      \"createdDate\" : \"2014-08-09T06:07:08.000+00:00\",\n      \"updatedDate\" : \"2014-08-09T06:07:08.000+00:00\"\n    },\n    \"links\" : {\n      \"self\" : \"http://127.0.0.1:8082/inventory/items/a31301dc-0a28-49e6-9fa2-499e07c0bb42\"\n    },\n    \"effectiveCallNumberComponents\" : {\n      \"callNumber\" : \"PN6519.C8A170 1987\",\n      \"prefix\" : null,\n      \"suffix\" : null,\n      \"typeId\" : \"c73c17f4-9660-421b-bdfc-e1c6093dec13\"\n    },\n    \"effectiveShelvingOrder\" : \"PN 46519 C8 A170 41987 C 11\",\n    \"effectiveLocation\" : {\n      \"id\" : \"53cf956f-c1df-410b-8bea-27f712cca7c0\",\n      \"name\": null\n    }\n  },\n  {\n    \"id\" : \"de8e925f-6488-4840-9c34-39d33fb428a9\",\n    \"status\" : {\n      \"name\" : \"Available\",\n      \"date\" : \"2020-03-24T16:59:44.076+00:00\"\n    },\n    \"title\" : \"1000 proverbes créoles de la Caraïbe francophone.\",\n    \"callNumber\" : \"PN6519.C8A170 1987\",\n    \"hrid\" : \"it2691524\",\n    \"contributorNames\" : [ {\n      \"name\" : \"Agence de coopération culturelle et technique. Service de la protection du patrimoine culturel\"\n    } ],\n    \"formerIds\" : [ ],\n    \"discoverySuppress\" : null,\n    \"holdingsRecordId\" : \"cfade499-67c3-4583-949f-948638ddef16\",\n    \"barcode\" : \"38268033\",\n    \"copyNumber\" : \"c.1\",\n    \"notes\" : [ ],\n    \"circulationNotes\" : [ ],\n    \"tags\" : {\n      \"tagList\" : [ ]\n    },\n    \"yearCaption\" : [ ],\n    \"electronicAccess\" : [ ],\n    \"statisticalCodeIds\" : [ \"c6de6928-bb6e-4458-97f4-9145b27abb24\" ],\n    \"purchaseOrderLineIdentifier\" : null,\n    \"materialType\" : {\n      \"id\" : \"025ba2c5-5e96-4667-a677-8186463aee69\",\n      \"name\" : \"book\"\n    },\n    \"permanentLoanType\" : {\n      \"id\" : \"23e4f1ec-cf31-4098-959e-de64ce4781ce\",\n      \"name\" : \"stks\"\n    },\n    \"metadata\" : {\n      \"createdDate\" : \"2014-08-09T06:07:08.000+00:00\",\n      \"updatedDate\" : \"2014-08-09T06:07:08.000+00:00\"\n    },\n    \"links\" : {\n      \"self\" : \"http://127.0.0.1:8082/inventory/items/a31301dc-0a28-49e6-9fa2-499e07c0bb42\"\n    },\n    \"effectiveCallNumberComponents\" : {\n      \"callNumber\" : \"PN6519.C8A170 1987\",\n      \"prefix\" : null,\n      \"suffix\" : null,\n      \"typeId\" : \"c73c17f4-9660-421b-bdfc-e1c6093dec13\"\n    },\n    \"effectiveShelvingOrder\" : \"PN 46519 C8 A170 41987 C 11\",\n    \"effectiveLocation\" : {\n      \"id\" : \"53cf956f-c1df-410b-8bea-27f712cca7c0\",\n      \"name\" : null\n    },\n    \"permanentLocation\": {\n    \"id\" : \"53cf956f-c1df-410b-8bea-27f712cca7c0\",\n      \"name\": null\n    }\n  } ],\n  \"totalRecords\" : 2\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/inventory/items?query=barcode==38268032"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"items\" : [ {\n    \"id\" : \"a31301dc-0a28-49e6-9fa2-499e07c0bb42\",\n    \"status\" : {\n      \"name\" : \"Available\",\n      \"date\" : \"2020-03-24T16:59:44.076+00:00\"\n    },\n    \"title\" : \"1000 proverbes créoles de la Caraïbe francophone.\",\n    \"callNumber\" : \"PN6519.C8A170 1987\",\n    \"hrid\" : \"it2691524\",\n    \"contributorNames\" : [ {\n      \"name\" : \"Agence de coopération culturelle et technique. Service de la protection du patrimoine culturel\"\n    } ],\n    \"formerIds\" : [ ],\n    \"discoverySuppress\" : null,\n    \"holdingsRecordId\" : \"ee4025c8-893e-4283-b0e6-36cf818c0605\",\n    \"barcode\" : \"38268032\",\n    \"copyNumber\" : \"c.1\",\n    \"notes\" : [ ],\n    \"circulationNotes\" : [ ],\n    \"tags\" : {\n      \"tagList\" : [ ]\n    },\n    \"yearCaption\" : [ ],\n    \"electronicAccess\" : [ ],\n    \"statisticalCodeIds\" : [ \"c6de6928-bb6e-4458-97f4-9145b27abb24\" ],\n    \"purchaseOrderLineIdentifier\" : null,\n    \"materialType\" : {\n      \"id\" : \"025ba2c5-5e96-4667-a677-8186463aee69\",\n      \"name\" : \"book\"\n    },\n    \"permanentLoanType\" : {\n      \"id\" : \"23e4f1ec-cf31-4098-959e-de64ce4781ce\",\n      \"name\" : \"stks\"\n    },\n    \"metadata\" : {\n      \"createdDate\" : \"2014-08-09T06:07:08.000+00:00\",\n      \"updatedDate\" : \"2014-08-09T06:07:08.000+00:00\"\n    },\n    \"links\" : {\n      \"self\" : \"http://127.0.0.1:8082/inventory/items/a31301dc-0a28-49e6-9fa2-499e07c0bb42\"\n    },\n    \"effectiveCallNumberComponents\" : {\n      \"callNumber\" : \"PN6519.C8A170 1987\",\n      \"prefix\" : null,\n      \"suffix\" : null,\n      \"typeId\" : \"c73c17f4-9660-421b-bdfc-e1c6093dec13\"\n    },\n    \"effectiveShelvingOrder\" : \"PN 46519 C8 A170 41987 C 11\",\n    \"effectiveLocation\" : {\n      \"id\" : \"b9dc25a2-a7fb-48ad-8da5-8f68e35ba0af\",\n      \"name\" : \"UC/HP/JRL/Gen\"\n    }\n  } ],\n  \"totalRecords\" : 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/inventory/items?query=holdingsRecordId==ee4025c8-893e-4283-b0e6-36cf818c0605"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"items\" : [ {\n    \"id\" : \"a31301dc-0a28-49e6-9fa2-499e07c0bb42\",\n    \"status\" : {\n      \"name\" : \"Available\",\n      \"date\" : \"2020-03-24T16:59:44.076+00:00\"\n    },\n    \"title\" : \"1000 proverbes créoles de la Caraïbe francophone.\",\n    \"callNumber\" : \"PN6519.C8A170 1987\",\n    \"hrid\" : \"it2691524\",\n    \"contributorNames\" : [ {\n      \"name\" : \"Agence de coopération culturelle et technique. Service de la protection du patrimoine culturel\"\n    } ],\n    \"formerIds\" : [ ],\n    \"discoverySuppress\" : null,\n    \"holdingsRecordId\" : \"ee4025c8-893e-4283-b0e6-36cf818c0605\",\n    \"barcode\" : \"38268032\",\n    \"copyNumber\" : \"c.1\",\n    \"notes\" : [ ],\n    \"circulationNotes\" : [ ],\n    \"tags\" : {\n      \"tagList\" : [ ]\n    },\n    \"yearCaption\" : [ ],\n    \"electronicAccess\" : [ ],\n    \"statisticalCodeIds\" : [ \"c6de6928-bb6e-4458-97f4-9145b27abb24\" ],\n    \"purchaseOrderLineIdentifier\" : null,\n    \"materialType\" : {\n      \"id\" : \"025ba2c5-5e96-4667-a677-8186463aee69\",\n      \"name\" : \"book\"\n    },\n    \"permanentLoanType\" : {\n      \"id\" : \"23e4f1ec-cf31-4098-959e-de64ce4781ce\",\n      \"name\" : \"stks\"\n    },\n    \"metadata\" : {\n      \"createdDate\" : \"2014-08-09T06:07:08.000+00:00\",\n      \"updatedDate\" : \"2014-08-09T06:07:08.000+00:00\"\n    },\n    \"links\" : {\n      \"self\" : \"http://127.0.0.1:8082/inventory/items/a31301dc-0a28-49e6-9fa2-499e07c0bb42\"\n    },\n    \"effectiveCallNumberComponents\" : {\n      \"callNumber\" : \"PN6519.C8A170 1987\",\n      \"prefix\" : null,\n      \"suffix\" : null,\n      \"typeId\" : \"c73c17f4-9660-421b-bdfc-e1c6093dec13\"\n    },\n    \"effectiveShelvingOrder\" : \"PN 46519 C8 A170 41987 C 11\",\n    \"effectiveLocation\" : {\n      \"id\" : \"b9dc25a2-a7fb-48ad-8da5-8f68e35ba0af\",\n      \"name\" : \"UC/HP/JRL/Gen\"\n    }\n  } ],\n  \"totalRecords\" : 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "PUT",
+        "urlPathPattern": "/inventory/items/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[1-5][a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
     }
   ]
 }

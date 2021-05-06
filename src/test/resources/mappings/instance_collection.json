@@ -1,18 +1,36 @@
 {
-  "request": {
-    "method": "GET",
-    "url": "/inventory/instances?query=id==a89eccf0-57a6-495e-898d-32b9b2210f2f",
-    "headers" : {
-      "x-okapi-token": {
-        "equalTo": "AAA-BBB-CCC"
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "url": "/inventory/instances?query=id==a89eccf0-57a6-495e-898d-32b9b2210f2f",
+        "headers" : {
+          "x-okapi-token": {
+            "equalTo": "AAA-BBB-CCC"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n    \"instances\": [\n        {\n            \"@context\": \"http://folio-testing-okapi.dev.folio.org/inventory/instances/context\",\n            \"id\": \"a89eccf0-57a6-495e-898d-32b9b2210f2f\",\n            \"hrid\": \"inst000000000017\",\n            \"source\": \"FOLIO\",\n            \"title\": \"Interesting Times\",\n            \"alternativeTitles\": [],\n            \"editions\": [],\n            \"series\": [],\n            \"identifiers\": [\n                {\n                    \"identifierTypeId\": \"8261054f-be78-422d-bd51-4ed9f33c3422\",\n                    \"value\": \"0552142352\"\n                },\n                {\n                    \"identifierTypeId\": \"8261054f-be78-422d-bd51-4ed9f33c3422\",\n                    \"value\": \"9780552142352\"\n                }\n            ],\n            \"contributors\": [\n                {\n                    \"contributorNameTypeId\": \"2b94c631-fca9-4892-a730-03ee529ffe2a\",\n                    \"name\": \"Pratchett, Terry\",\n                    \"contributorTypeId\": null,\n                    \"contributorTypeText\": null,\n                    \"primary\": null\n                }\n            ],\n            \"subjects\": [],\n            \"classifications\": [],\n            \"publication\": [],\n            \"publicationFrequency\": [],\n            \"publicationRange\": [],\n            \"electronicAccess\": [],\n            \"instanceTypeId\": \"6312d172-f0cf-40f6-b27d-9fa8feaf332f\",\n            \"instanceFormatIds\": [],\n            \"physicalDescriptions\": [],\n            \"languages\": [],\n            \"notes\": [],\n            \"discoverySuppress\": false,\n            \"statisticalCodeIds\": [],\n            \"statusUpdatedDate\": \"2021-01-03T03:19:22.548+0000\",\n            \"metadata\": {\n                \"createdDate\": \"2021-01-03T03:19:22.548+00:00\",\n                \"createdByUserId\": null,\n                \"updatedDate\": \"2021-01-03T03:19:22.548+00:00\",\n                \"updatedByUserId\": null\n            },\n            \"tags\": {\n                \"tagList\": []\n            },\n            \"natureOfContentTermIds\": [],\n            \"links\": {\n                \"self\": \"http://folio-testing-okapi.dev.folio.org/inventory/instances/a89eccf0-57a6-495e-898d-32b9b2210f2f\"\n            }\n        }\n    ],\n    \"totalRecords\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/inventory/instances?query=id==7e1d6794-55d6-4f43-aeb7-222dd97d18be"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"instances\" : [ {\n    \"@context\" : \"http://127.0.0.1:8082/inventory/instances/context\",\n    \"id\" : \"7e1d6794-55d6-4f43-aeb7-222dd97d18be\",\n    \"hrid\" : \"in1348512\",\n    \"source\" : \"MARC\",\n    \"title\" : \"1000 proverbes créoles de la Caraïbe francophone.\",\n    \"indexTitle\" : \"1000 proverbes créoles de la Caraïbe francophone.\",\n    \"alternativeTitles\" : [ ],\n    \"editions\" : [ ],\n    \"series\" : [ ],\n    \"identifiers\" : [ {\n      \"identifierTypeId\" : \"8261054f-be78-422d-bd51-4ed9f33c3422\",\n      \"value\" : \"978-3-16-148410-0\"\n    }, {\n      \"identifierTypeId\" : \"59378436-9645-4add-b05f-6afc69bdc8d0\",\n      \"value\" : \"2876790009\"\n    }, {\n      \"identifierTypeId\" : \"2baf4cec-6abf-438b-abd0-a6c512c3c173\",\n      \"value\" : \"(ICU)BID15913350\"\n    }, {\n      \"identifierTypeId\" : \"01ca9cda-7027-4d64-abed-9e3c4943daf2\",\n      \"value\" : \"(OCoLC)20695009\"\n    } ],\n    \"contributors\" : [ {\n      \"contributorNameTypeId\" : \"2b4007a7-2d96-4262-a360-c9f760e355c3\",\n      \"name\" : \"Sample author\",\n      \"contributorTypeId\" : \"6e09d47d-95e2-4d8a-831b-f777b8ef6d81\",\n      \"contributorTypeText\" : null,\n      \"primary\" : false\n    }, \n    {\n      \"contributorNameTypeId\" : \"2b4007a7-2d96-4262-a360-c9f760e355c3\",\n      \"name\" : \"Agence de coopération culturelle et technique. Service de la protection du patrimoine culturel\",\n      \"contributorTypeId\" : null,\n      \"contributorTypeText\" : null,\n      \"primary\" : false\n    } ],\n    \"subjects\" : [ \"Proverbs, Creole--Dictionaries--French.\", \"Creole dialects, French--Caribbean Area.\", \"Creole dialects, French.\", \"Proverbs, Creole.\", \"Caribbean Area.\" ],\n    \"classifications\" : [ {\n      \"classificationNumber\" : \"PN6519.C8 A17 1987\",\n      \"classificationTypeId\" : \"d53b02bb-1ced-4a29-93eb-40c17c96cba7\"\n    } ],\n    \"publication\" : [ {\n      \"publisher\" : \"Agence de coopération culturelle et technique\",\n      \"place\" : \"[Paris] :\",\n      \"dateOfPublication\" : \"[1987]\",\n      \"role\" : null\n    } ],\n    \"publicationFrequency\" : [ ],\n    \"publicationRange\" : [ ],\n    \"electronicAccess\" : [ ],\n    \"instanceTypeId\" : \"1c43b4c1-b138-4386-a91d-0d305e4ddf23\",\n    \"instanceFormatIds\" : [ ],\n    \"physicalDescriptions\" : [ \"114 p. : ill. ; 24 cm.\" ],\n    \"languages\" : [ \"fre\", \"cpf\" ],\n    \"notes\" : [ {\n      \"instanceNoteTypeId\" : \"5b15c7bf-3f86-4e1a-9b05-6895467147c9\",\n      \"note\" : \"French and French Creole.\",\n      \"staffOnly\" : false\n    } ],\n    \"modeOfIssuanceId\" : \"7b143a6c-84e8-4168-94b1-24220a3d14cc\",\n    \"discoverySuppress\" : false,\n    \"statisticalCodeIds\" : [ ],\n    \"statusId\" : \"7cc3837e-c4f1-4584-a3ae-b0c0bfce4bb2\",\n    \"statusUpdatedDate\" : \"2019-12-18T21:40:06Z\",\n    \"metadata\" : {\n      \"createdDate\" : \"1992-07-08T00:00:00.000+00:00\",\n      \"createdByUserId\" : null,\n      \"updatedDate\" : \"2018-10-18T12:52:18.000+00:00\",\n      \"updatedByUserId\" : null\n    },\n    \"tags\" : {\n      \"tagList\" : [ ]\n    },\n    \"natureOfContentTermIds\" : [ ],\n    \"links\" : {\n      \"self\" : \"http://127.0.0.1:8082/inventory/instances/7e1d6794-55d6-4f43-aeb7-222dd97d18be\"\n    }\n  } ],\n  \"totalRecords\" : 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
       }
     }
-  },
-  "response": {
-    "status": 200,
-    "body": "{\n    \"instances\": [\n        {\n            \"@context\": \"http://folio-testing-okapi.dev.folio.org/inventory/instances/context\",\n            \"id\": \"a89eccf0-57a6-495e-898d-32b9b2210f2f\",\n            \"hrid\": \"inst000000000017\",\n            \"source\": \"FOLIO\",\n            \"title\": \"Interesting Times\",\n            \"alternativeTitles\": [],\n            \"editions\": [],\n            \"series\": [],\n            \"identifiers\": [\n                {\n                    \"identifierTypeId\": \"8261054f-be78-422d-bd51-4ed9f33c3422\",\n                    \"value\": \"0552142352\"\n                },\n                {\n                    \"identifierTypeId\": \"8261054f-be78-422d-bd51-4ed9f33c3422\",\n                    \"value\": \"9780552142352\"\n                }\n            ],\n            \"contributors\": [\n                {\n                    \"contributorNameTypeId\": \"2b94c631-fca9-4892-a730-03ee529ffe2a\",\n                    \"name\": \"Pratchett, Terry\",\n                    \"contributorTypeId\": null,\n                    \"contributorTypeText\": null,\n                    \"primary\": null\n                }\n            ],\n            \"subjects\": [],\n            \"classifications\": [],\n            \"publication\": [],\n            \"publicationFrequency\": [],\n            \"publicationRange\": [],\n            \"electronicAccess\": [],\n            \"instanceTypeId\": \"6312d172-f0cf-40f6-b27d-9fa8feaf332f\",\n            \"instanceFormatIds\": [],\n            \"physicalDescriptions\": [],\n            \"languages\": [],\n            \"notes\": [],\n            \"discoverySuppress\": false,\n            \"statisticalCodeIds\": [],\n            \"statusUpdatedDate\": \"2021-01-03T03:19:22.548+0000\",\n            \"metadata\": {\n                \"createdDate\": \"2021-01-03T03:19:22.548+00:00\",\n                \"createdByUserId\": null,\n                \"updatedDate\": \"2021-01-03T03:19:22.548+00:00\",\n                \"updatedByUserId\": null\n            },\n            \"tags\": {\n                \"tagList\": []\n            },\n            \"natureOfContentTermIds\": [],\n            \"links\": {\n                \"self\": \"http://folio-testing-okapi.dev.folio.org/inventory/instances/a89eccf0-57a6-495e-898d-32b9b2210f2f\"\n            }\n        }\n    ],\n    \"totalRecords\": 1\n}",
-    "headers": {
-      "Content-Type": "application/json"
-    }
-  }
+  ]
 }
+

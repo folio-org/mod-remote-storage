@@ -17,10 +17,10 @@ import lombok.extern.log4j.Log4j2;
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.client.ServicePointsClient;
 import org.folio.rs.client.UsersClient;
-import org.folio.rs.domain.dto.Contributor;
-import org.folio.rs.domain.dto.EffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.FilterData;
 import org.folio.rs.domain.dto.Item;
+import org.folio.rs.domain.dto.ItemContributorNames;
+import org.folio.rs.domain.dto.ItemEffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.EventRequest;
 import org.folio.rs.domain.dto.PickupServicePoint;
@@ -179,12 +179,12 @@ public class RetrievalQueueService {
     return isEmpty(item.getContributorNames())
         ? null
         : item.getContributorNames().stream()
-            .map(Contributor::getName)
+            .map(ItemContributorNames::getName)
             .collect(Collectors.joining("; "));
   }
 
   private String getCallNumber(Item item) {
-    EffectiveCallNumberComponents components = item.getEffectiveCallNumberComponents();
+    ItemEffectiveCallNumberComponents components = item.getEffectiveCallNumberComponents();
     return Objects.nonNull(components) ? components.getCallNumber() : null;
   }
 }

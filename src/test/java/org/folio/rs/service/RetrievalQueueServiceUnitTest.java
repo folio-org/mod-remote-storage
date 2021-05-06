@@ -15,11 +15,11 @@ import javax.persistence.EntityNotFoundException;
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.client.ServicePointsClient;
 import org.folio.rs.client.UsersClient;
-import org.folio.rs.domain.dto.Contributor;
-import org.folio.rs.domain.dto.EffectiveCallNumberComponents;
-import org.folio.rs.domain.dto.EffectiveLocation;
 import org.folio.rs.domain.dto.EventRequest;
 import org.folio.rs.domain.dto.Item;
+import org.folio.rs.domain.dto.ItemContributorNames;
+import org.folio.rs.domain.dto.ItemEffectiveCallNumberComponents;
+import org.folio.rs.domain.dto.ItemEffectiveLocation;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.PickupServicePoint;
 import org.folio.rs.domain.dto.ResultList;
@@ -76,11 +76,11 @@ public class RetrievalQueueServiceUnitTest {
   @Mock
   private ResultList<Item> items;
   @Mock
-  private Contributor contributor;
+  private ItemContributorNames contributor;
   @Mock
   private LocationMapping locationMapping;
   @Mock
-  private EffectiveLocation effectiveLocation;
+  private ItemEffectiveLocation effectiveLocation;
   @Mock
   private PickupServicePoint pickupServicePoint;
   @Mock
@@ -88,7 +88,7 @@ public class RetrievalQueueServiceUnitTest {
   @Mock
   private User user;
   @Mock
-  private EffectiveCallNumberComponents callNumberComponents;
+  private ItemEffectiveCallNumberComponents callNumberComponents;
   @Mock
   private EventRequest eventRequest;
 

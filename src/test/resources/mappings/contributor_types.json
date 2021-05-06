@@ -1,0 +1,17 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "url": "/contributor-types?query=name==AUTHOR"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n    \"contributorTypes\": [\n        {\n            \"id\": \"6e09d47d-95e2-4d8a-831b-f777b8ef6d81\",\n            \"name\": \"Author\",\n            \"code\": \"aut\",\n            \"source\": \"marcrelator\",\n            \"metadata\": {\n                \"createdDate\": \"2021-05-06T01:50:38.142+00:00\",\n                \"updatedDate\": \"2021-05-06T01:50:38.142+00:00\"\n            }\n        }\n    ],\n    \"totalRecords\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}

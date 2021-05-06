@@ -5,12 +5,15 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 
+import org.folio.rs.domain.dto.AccessionQueue;
 import org.folio.rs.domain.dto.AccessionQueues;
+import org.folio.rs.domain.dto.AccessionRequest;
 import org.folio.rs.domain.dto.FilterData;
 import org.folio.rs.rest.resource.AccessionsApi;
 import org.folio.rs.service.AccessionQueueService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,6 +33,11 @@ public class AccessionController implements AccessionsApi {
       @Valid String createdDate, @Min(0) @Max(2147483647) @Valid Integer offset, @Min(0) @Max(2147483647) @Valid Integer limit) {
     var accessionQueues = accessionQueueService.getAccessions(getFilterData(accessioned, storageId, createdDate, offset, limit));
     return new ResponseEntity<>(accessionQueues, HttpStatus.OK);
+  }
+
+  @Override
+  public ResponseEntity<AccessionQueue> postAccession(@RequestBody AccessionRequest accessionRequest) {
+    return new ResponseEntity<>(accessionQueueService.processPostAccession(accessionRequest), HttpStatus.CREATED);
   }
 
   @Override

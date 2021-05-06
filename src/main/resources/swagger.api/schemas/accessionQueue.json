@@ -37,6 +37,62 @@
       "description": "Instance author",
       "type": "string"
     },
+    "instanceContributors": {
+      "description": "Instance contributors",
+      "type": "string"
+    },
+    "publisher": {
+      "description": "Instance publisher",
+      "type": "string"
+    },
+    "publishYear": {
+      "description": "Year of publication",
+      "type": "string"
+    },
+    "publishPlace": {
+      "description": "Place of publication",
+      "type": "string"
+    },
+    "volume": {
+      "description": "Volume",
+      "type": "string"
+    },
+    "enumeration": {
+      "description": "Enumeration",
+      "type": "string"
+    },
+    "chronology": {
+      "description": "Chronology",
+      "type": "string"
+    },
+    "issn": {
+      "description": "ISSN identifier",
+      "type": "string"
+    },
+    "isbn": {
+      "description": "ISBN identifier",
+      "type": "string"
+    },
+    "oclc": {
+      "description": "OCLC identifier",
+      "type": "string"
+    },
+    "physicalDescription": {
+      "description": "Physical description",
+      "type": "string"
+    },
+    "materialType": {
+      "description": "Material type",
+      "type": "string"
+    },
+    "copyNumber": {
+      "description": "Copy number",
+      "type": "string"
+    },
+    "permanentLocationId": {
+      "description": "Permanent location id",
+      "$ref": "uuid.json"
+    },
     "metadata": {
       "description": "Entity metadata",
       "type": "object",

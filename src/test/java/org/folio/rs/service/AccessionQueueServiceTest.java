@@ -12,14 +12,23 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.regex.Pattern;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.http.RequestMethod;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang.StringUtils;
 import org.folio.rs.TestBase;
+import org.folio.rs.domain.dto.AccessionQueue;
 import org.folio.rs.domain.dto.AccessionQueues;
+import org.folio.rs.domain.dto.AccessionRequest;
 import org.folio.rs.domain.dto.DomainEvent;
 import org.folio.rs.domain.dto.DomainEventType;
-import org.folio.rs.domain.dto.EffectiveCallNumberComponents;
+import org.folio.rs.domain.dto.HoldingsRecord;
 import org.folio.rs.domain.dto.Item;
+import org.folio.rs.domain.dto.ItemEffectiveCallNumberComponents;
+import org.folio.rs.domain.dto.ItemsMove;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
 import org.folio.rs.repository.AccessionQueueRepository;
@@ -53,6 +62,11 @@ public class AccessionQueueServiceTest extends TestBase {
   private static final String ACCESSION_RECORD_0_ID = "4a38cc7d-b8c8-4a43-ad07-14c784dfbcbb";
   private static final String ACCESSION_RECORD_1_ID = "5a38cc7d-b8c8-4a43-ad07-14c784dfbcbb";
   private static final String ACCESSION_URL = "http://localhost:%s/remote-storage/accessions";
+  private static final String REMOTE_LOCATION_ID = "53cf956f-c1df-410b-8bea-27f712cca7c0";
+  private static final Pattern ITEM_STORAGE_ITEMS_PATTERN = Pattern
+    .compile("/inventory/items/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[1-5][a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}");
+  private static final Pattern HOLDINGS_STORAGE_HOLDINGS_PATTERN = Pattern
+    .compile("/holdings-storage/holdings/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[1-5][a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}");
   private String formattedAccessionUrl;
 
   @Autowired
@@ -76,23 +90,23 @@ public class AccessionQueueServiceTest extends TestBase {
     locationMapping.setConfigurationId(REMOTE_STORAGE_ID);
     locationMappingsService.postMapping(locationMapping);
 
-    var originalItem = new Item().withEffectiveLocationId(OLD_EFFECTIVE_LOCATION_ID)
-      .withInstanceId(INSTANCE_ID)
-      .withBarcode(BARCODE)
-      .withEffectiveCallNumberComponents(
-        new EffectiveCallNumberComponents().withCallNumber(CALL_NUMBER));
+    var originalItem = new Item().effectiveLocationId(OLD_EFFECTIVE_LOCATION_ID)
+      .instanceId(INSTANCE_ID)
+      .barcode(BARCODE)
+      .effectiveCallNumberComponents(
+        new ItemEffectiveCallNumberComponents().callNumber(CALL_NUMBER));
 
-    var newItem = new Item().withEffectiveLocationId(NEW_EFFECTIVE_LOCATION_ID)
-      .withInstanceId(INSTANCE_ID)
-      .withBarcode(BARCODE)
-      .withEffectiveCallNumberComponents(
-        new EffectiveCallNumberComponents().withCallNumber(CALL_NUMBER));
+    var newItem = new Item().effectiveLocationId(NEW_EFFECTIVE_LOCATION_ID)
+      .instanceId(INSTANCE_ID)
+      .barcode(BARCODE)
+      .effectiveCallNumberComponents(
+        new ItemEffectiveCallNumberComponents().callNumber(CALL_NUMBER));
 
-    var newItemWithoutRemoteConfig = new Item().withEffectiveLocationId(randomIdAsString())
-      .withInstanceId(INSTANCE_ID)
-      .withBarcode(BARCODE)
-      .withEffectiveCallNumberComponents(
-        new EffectiveCallNumberComponents().withCallNumber(CALL_NUMBER));
+    var newItemWithoutRemoteConfig = new Item().effectiveLocationId(randomIdAsString())
+      .instanceId(INSTANCE_ID)
+      .barcode(BARCODE)
+      .effectiveCallNumberComponents(
+        new ItemEffectiveCallNumberComponents().callNumber(CALL_NUMBER));
 
     var resourceBodyWithRemoteConfig = DomainEvent
       .of(originalItem, newItem, DomainEventType.UPDATE, TEST_TENANT);
@@ -256,6 +270,117 @@ public class AccessionQueueServiceTest extends TestBase {
         get(formattedAccessionUrl + "?createdDate=123", AccessionQueues.class), StringUtils.EMPTY);
 
     assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.BAD_REQUEST));
+  }
+
+  @Test
+  void shouldChangeItemPermanentLocationIfHoldingHasTheSameOne() {
+    var accessionRequest = buildAccessionRequest("38268030");
+    ResponseEntity<AccessionQueue> response = post(formattedAccessionUrl, accessionRequest, AccessionQueue.class);
+    var actualAccessionQueueRecord = accessionQueueRepository.findAll().get(0);
+    assertThat(actualAccessionQueueRecord.getAccessionedDateTime(), notNullValue());
+    assertThatItemPermanentLocationWasChangedToRemote();
+    assertThat(response.getBody().getAccessionedDateTime(), notNullValue());
+    assertThat(response.getBody().getPermanentLocationId(), equalTo(REMOTE_LOCATION_ID));
+    assertThat(response.getBody().getRemoteStorageId(), equalTo(accessionRequest.getRemoteStorageId()));
+  }
+
+  @Test
+  void shouldChangeHoldingPermanentLocationIfAllItemsWithinHoldingHasRemoteLocation() {
+    var accessionRequest = buildAccessionRequest("38268031");
+    post(formattedAccessionUrl, accessionRequest, AccessionQueue.class);
+    assertThatHoldingPermanentLocationWasChangedToRemote();
+  }
+
+  @Test
+  void shouldMoveItemToHoldingWithRemoteLocationIfItExists() {
+    var accessionRequest = buildAccessionRequest("38268032");
+    post(formattedAccessionUrl, accessionRequest, AccessionQueue.class);
+    assertThatItemWasMovedToHoldingWithRemoteLocation();
+  }
+
+  @Test
+  void shouldRespondWithNotFoundIfRemoteStorageIdDoesNotExist() {
+    var accessionRequest = new AccessionRequest()
+      .remoteStorageId("9b26007e-9df2-4c9c-a6d2-bdd3c93de6c9")
+      .itemBarcode("12345");
+
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
+      post(formattedAccessionUrl, accessionRequest, AccessionQueue.class), StringUtils.EMPTY);
+
+    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.NOT_FOUND));
+  }
+
+  @Test
+  void shouldRespondWithUnprocessableEntityIfRemoteStorageIdIsInvalid() {
+    var accessionRequest = new AccessionRequest()
+      .remoteStorageId("invalid-uuid")
+      .itemBarcode("12345");
+
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
+      post(formattedAccessionUrl, accessionRequest, AccessionQueue.class), StringUtils.EMPTY);
+
+    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.UNPROCESSABLE_ENTITY));
+  }
+
+
+  @Test
+  void shouldRespondWithNotFoundIfItemWasNotFound() {
+    var accessionRequest = buildAccessionRequest("not-exist-item-barcode");
+
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
+      post(formattedAccessionUrl, accessionRequest, AccessionQueue.class), StringUtils.EMPTY);
+
+    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.NOT_FOUND));
+  }
+
+  private AccessionRequest buildAccessionRequest(String itemBarcode) {
+    return new AccessionRequest()
+      .remoteStorageId("de17bad7-2a30-4f1c-bee5-f653ded15629")
+      .itemBarcode(itemBarcode);
+  }
+
+  @SneakyThrows
+  private void assertThatItemPermanentLocationWasChangedToRemote() {
+    var requestBody = wireMockServer.getAllServeEvents().stream()
+      .filter(e -> RequestMethod.PUT.equals(e.getRequest().getMethod()) &&
+        ITEM_STORAGE_ITEMS_PATTERN.matcher(e.getRequest().getUrl()).matches())
+      .findFirst()
+      .get()
+      .getRequest()
+      .getBody();
+    ObjectMapper mapper = new ObjectMapper();
+    var item = mapper.readValue(requestBody, Item.class);
+    assertThat(item.getPermanentLocation().getId(), equalTo(REMOTE_LOCATION_ID));
+  }
+
+  @SneakyThrows
+  private void assertThatHoldingPermanentLocationWasChangedToRemote() {
+    var requestBody = wireMockServer.getAllServeEvents().stream()
+      .filter(e -> RequestMethod.PUT.equals(e.getRequest().getMethod()) &&
+        HOLDINGS_STORAGE_HOLDINGS_PATTERN.matcher(e.getRequest().getUrl()).matches())
+      .findFirst()
+      .get()
+      .getRequest()
+      .getBody();
+    ObjectMapper mapper = new ObjectMapper();
+    var holding = mapper.readValue(requestBody, HoldingsRecord.class);
+    assertThat(holding.getPermanentLocationId(), equalTo(REMOTE_LOCATION_ID));
+  }
+
+  @SneakyThrows
+  private void assertThatItemWasMovedToHoldingWithRemoteLocation() {
+    var requestBody = wireMockServer.getAllServeEvents().stream()
+      .filter(e -> RequestMethod.POST.equals(e.getRequest().getMethod()) &&
+        "/inventory/items/move".equals(e.getRequest().getUrl()))
+      .findFirst()
+      .get()
+      .getRequest()
+      .getBody();
+    ObjectMapper mapper = new ObjectMapper();
+    var itemsMoveRequest = mapper.readValue(requestBody, ItemsMove.class);
+    assertThat(itemsMoveRequest.getToHoldingsRecordId(), equalTo("336034b4-0524-45d7-b778-c769274baccf"));
+    assertThat(itemsMoveRequest.getItemIds().size(), equalTo(1));
+    assertThat(itemsMoveRequest.getItemIds().get(0), equalTo("a31301dc-0a28-49e6-9fa2-499e07c0bb42"));
   }
 
   private AccessionQueueRecord createBaseAccessionQueueRecord() {

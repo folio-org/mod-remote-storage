@@ -5,24 +5,20 @@ import java.util.stream.Collectors;
 import org.folio.rs.domain.dto.AccessionQueue;
 import org.folio.rs.domain.dto.AccessionQueues;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
+import org.folio.rs.util.MapperUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.NullValueCheckStrategy;
 import org.springframework.data.domain.Page;
 
-@Mapper(componentModel = "spring", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+@Mapper(componentModel = "spring", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS, imports = MapperUtils.class)
 public interface AccessionQueueMapper {
 
   @Mappings({
-      @Mapping(target = "id", expression = "java(org.folio.rs.util.MapperUtils.uuidToStringSafe(accessionQueueRecord.getId()))"),
-      @Mapping(target = "itemBarcode", source = "itemBarcode"),
-      @Mapping(target = "createdDateTime", source = "createdDateTime"),
-      @Mapping(target = "accessionedDateTime", source = "accessionedDateTime"),
-      @Mapping(target = "remoteStorageId", expression = "java(org.folio.rs.util.MapperUtils.uuidToStringSafe(accessionQueueRecord.getRemoteStorageId()))"),
-      @Mapping(target = "callNumber", source = "callNumber"),
-      @Mapping(target = "instanceTitle", source = "instanceTitle"),
-      @Mapping(target = "instanceAuthor", source = "instanceAuthor")
+      @Mapping(target = "id", expression = "java(MapperUtils.uuidToStringSafe(accessionQueueRecord.getId()))"),
+      @Mapping(target = "remoteStorageId", expression = "java(MapperUtils.uuidToStringSafe(accessionQueueRecord.getRemoteStorageId()))"),
+      @Mapping(target = "permanentLocationId", expression = "java(MapperUtils.uuidToStringSafe(accessionQueueRecord.getPermanentLocationId()))")
   })
   AccessionQueue mapEntityToDto(AccessionQueueRecord accessionQueueRecord);
 

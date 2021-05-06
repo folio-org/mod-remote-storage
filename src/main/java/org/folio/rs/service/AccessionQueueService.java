@@ -1,12 +1,19 @@
 package org.folio.rs.service;
 
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.folio.rs.util.ContributorType.AUTHOR;
+import static org.folio.rs.util.IdentifierType.ISBN;
+import static org.folio.rs.util.IdentifierType.ISSN;
+import static org.folio.rs.util.IdentifierType.OCLC;
 import static org.folio.rs.util.MapperUtils.stringToUUIDSafe;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -17,20 +24,33 @@ import javax.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.folio.rs.client.ContributorTypesClient;
+import org.folio.rs.client.HoldingsStorageClient;
+import org.folio.rs.client.IdentifierTypesClient;
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.domain.AsyncFolioExecutionContext;
+import org.folio.rs.domain.dto.AccessionQueue;
 import org.folio.rs.domain.dto.AccessionQueues;
-import org.folio.rs.domain.dto.Contributor;
+import org.folio.rs.domain.dto.AccessionRequest;
+import org.folio.rs.domain.dto.ContributorType;
 import org.folio.rs.domain.dto.DomainEvent;
 import org.folio.rs.domain.dto.DomainEventType;
-import org.folio.rs.domain.dto.EffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.FilterData;
+import org.folio.rs.domain.dto.HoldingsRecord;
 import org.folio.rs.domain.dto.Instance;
+import org.folio.rs.domain.dto.InstanceContributors;
+import org.folio.rs.domain.dto.InstanceIdentifiers;
+import org.folio.rs.domain.dto.InstancePublication;
 import org.folio.rs.domain.dto.Item;
+import org.folio.rs.domain.dto.ItemEffectiveCallNumberComponents;
+import org.folio.rs.domain.dto.ItemMaterialType;
+import org.folio.rs.domain.dto.ItemPermanentLocation;
+import org.folio.rs.domain.dto.ItemsMove;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
 import org.folio.rs.mapper.AccessionQueueMapper;
 import org.folio.rs.repository.AccessionQueueRepository;
+import org.folio.rs.util.IdentifierType;
 import org.folio.spring.FolioModuleMetadata;
 import org.folio.spring.data.OffsetRequest;
 import org.folio.spring.scope.FolioExecutionScopeExecutionContextManager;
@@ -54,6 +74,9 @@ public class AccessionQueueService {
   private final AccessionQueueMapper accessionQueueMapper;
   private final SecurityManagerService securityManagerService;
   private final FolioModuleMetadata moduleMetadata;
+  private final HoldingsStorageClient holdingsStorageClient;
+  private final IdentifierTypesClient identifierTypesClient;
+  private final ContributorTypesClient contributorTypesClient;
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -69,7 +92,7 @@ public class AccessionQueueService {
         var effectiveLocationId = item.getEffectiveLocationId();
         var locationMapping = locationMappingsService
           .getMappingByFolioLocationId(effectiveLocationId);
-        if (Objects.nonNull(locationMapping)) {
+        if (nonNull(locationMapping)) {
           var instances = inventoryClient.getInstancesByQuery("id==" + item.getInstanceId());
           var instance = instances.getResult().get(0);
           var record = buildAccessionQueueRecord(item, instance, locationMapping);
@@ -80,6 +103,83 @@ public class AccessionQueueService {
         }
       }
     });
+  }
+
+  public AccessionQueue processPostAccession(AccessionRequest accessionRequest) {
+    var locationMapping = getLocationMapping(accessionRequest);
+    var item = getItem(accessionRequest);
+    var holdingsRecord = holdingsStorageClient.getHoldingsRecordsByQuery("id==" + item.getHoldingsRecordId()).getResult().get(0);
+    var instance = inventoryClient.getInstancesByQuery("id==" + holdingsRecord.getInstanceId()).getResult().get(0);
+
+    var accessionQueueRecord = buildAccessionQueueRecord(item, instance, locationMapping);
+    accessionQueueRepository.save(accessionQueueRecord);
+
+    item.setPermanentLocation(new ItemPermanentLocation().id(locationMapping.getFolioLocationId()));
+    inventoryClient.putItem(item.getId(), item);
+
+    if (isPermanentLocationsMismatch(holdingsRecord, item)) {
+      if (isAllItemsInHoldingHaveSamePermanentLocation(item)) {
+        changeHoldingsRecordPermanentLocation(holdingsRecord, item.getPermanentLocation().getId());
+      } else {
+        var holdingId = findHoldingWithSameRemoteLocation(holdingsRecord.getInstanceId(), item.getPermanentLocation().getId());
+        if (isHoldingExists(holdingId)) {
+          moveItemToHolding(item, holdingId);
+        }
+        // holding splitting will be implemented in scope of https://issues.folio.org/browse/MODRS-40
+      }
+    }
+    return accessionQueueMapper.mapEntityToDto(accessionQueueRecord);
+  }
+
+  private boolean isPermanentLocationsMismatch(HoldingsRecord holdingsRecord, Item item) {
+    return !item.getPermanentLocation().getId().equals(holdingsRecord.getPermanentLocationId());
+  }
+
+  private void changeHoldingsRecordPermanentLocation(HoldingsRecord holdingsRecord, String locationId) {
+    holdingsRecord.setPermanentLocationId(locationId);
+    holdingsStorageClient.putHoldingsRecord(holdingsRecord.getId(), holdingsRecord);
+  }
+
+  private String findHoldingWithSameRemoteLocation(String instanceId, String remoteLocationId) {
+    return holdingsStorageClient.getHoldingsRecordsByQuery("instanceId==" + instanceId)
+      .getResult().stream()
+      .filter(h -> remoteLocationId.equals(h.getPermanentLocationId()))
+      .map(HoldingsRecord::getId)
+      .findFirst().orElse(null);
+  }
+
+  private boolean isHoldingExists(String holdingsRecordId) {
+    return nonNull(holdingsRecordId);
+  }
+
+  private void moveItemToHolding(Item item, String holdingRecordId) {
+    inventoryClient.moveItemsToHolding(new ItemsMove()
+      .itemIds(Collections.singletonList(item.getId()))
+      .toHoldingsRecordId(holdingRecordId));
+  }
+
+  private boolean isAllItemsInHoldingHaveSamePermanentLocation(Item item) {
+    return inventoryClient.getItemsByQuery("holdingsRecordId==" + item.getHoldingsRecordId())
+      .getResult()
+      .stream()
+      .allMatch(i -> nonNull(i.getPermanentLocation()) && item.getPermanentLocation().getId().equals(i.getPermanentLocation().getId()));
+  }
+
+  private LocationMapping getLocationMapping(AccessionRequest accessionRequest) {
+    return locationMappingsService.getMappings(0, Integer.MAX_VALUE)
+      .getMappings()
+      .stream()
+      .filter(lm -> accessionRequest.getRemoteStorageId().equals(lm.getConfigurationId()))
+      .findFirst()
+      .orElseThrow(() -> new EntityNotFoundException("No location was found for provided remote storage id"));
+  }
+
+  private Item getItem(AccessionRequest accessionRequest) {
+    var items = inventoryClient.getItemsByQuery("barcode==" + accessionRequest.getItemBarcode());
+    if (items.isEmpty()) {
+      throw new EntityNotFoundException(String.format("Item with barcode=%s was not found", accessionRequest.getItemBarcode()));
+    }
+    return items.getResult().get(0);
   }
 
   public AccessionQueues getAccessions(FilterData filterData) {
@@ -128,21 +228,77 @@ public class AccessionQueueService {
    * @param instance {@link Instance} entity
    * @return accession queue record with populated data
    */
-  private AccessionQueueRecord buildAccessionQueueRecord(Item item, Instance instance, LocationMapping locationMapping) {
+  private AccessionQueueRecord buildAccessionQueueRecord(Item item, Instance instance,
+    LocationMapping locationMapping) {
+    var publication = instance.getPublication().stream().findFirst();
     return AccessionQueueRecord.builder()
       .id(UUID.randomUUID())
       .itemBarcode(item.getBarcode())
       .createdDateTime(LocalDateTime.now())
+      .accessionedDateTime(LocalDateTime.now())
       .remoteStorageId(UUID.fromString(locationMapping.getConfigurationId()))
       .callNumber(ofNullable(item.getEffectiveCallNumberComponents())
-        .map(EffectiveCallNumberComponents::getCallNumber)
+        .map(ItemEffectiveCallNumberComponents::getCallNumber)
         .orElse(null))
       .instanceTitle(instance.getTitle())
-      .instanceAuthor(instance.getContributors()
-        .stream()
-        .map(Contributor::getName)
-        .collect(Collectors.joining("; ")))
+      .instanceAuthor(extractAuthors(instance))
+      .instanceContributors(extractContributors(instance))
+      .publisher(publication
+        .map(InstancePublication::getPublisher)
+        .orElse(null))
+      .publishYear(publication
+        .map(InstancePublication::getDateOfPublication)
+        .orElse(null))
+      .publishPlace(publication
+        .map(InstancePublication::getPlace)
+        .orElse(null))
+      .volume(item.getVolume())
+      .enumeration(item.getEnumeration())
+      .chronology(item.getChronology())
+      .isbn(extractIdentifier(instance, ISBN))
+      .issn(extractIdentifier(instance, ISSN))
+      .oclc(extractIdentifier(instance, OCLC))
+      .physicalDescription(String.join("; ", instance.getPhysicalDescriptions()))
+      .materialType(ofNullable(item.getMaterialType()).map(ItemMaterialType::getName).orElse(null))
+      .copyNumber(item.getCopyNumber())
+      .permanentLocationId(UUID.fromString(locationMapping.getFolioLocationId()))
       .build();
+  }
+
+  private String extractAuthors(Instance instance) {
+    var contributorTypeId = contributorTypesClient.getContributorTypesByQuery("name==" + AUTHOR)
+      .getResult()
+      .stream()
+      .findFirst()
+      .map(ContributorType::getId)
+      .orElse(EMPTY);
+    var authors = instance.getContributors().stream()
+      .filter(c -> contributorTypeId.equals(c.getContributorTypeId()))
+      .map(InstanceContributors::getName)
+      .collect(Collectors.toList());
+    return authors.isEmpty() ? extractContributors(instance) : String.join("; ", authors);
+  }
+
+  private String extractContributors(Instance instance) {
+    return instance.getContributors()
+      .stream()
+      .map(InstanceContributors::getName)
+      .collect(Collectors.joining("; "));
+  }
+
+  private String extractIdentifier(Instance instance, IdentifierType type) {
+    var identifierTypeId = identifierTypesClient.getIdentifierTypesByQuery("name==" + type)
+      .getResult()
+      .stream()
+      .findFirst()
+      .map(org.folio.rs.domain.dto.IdentifierType::getId)
+      .orElse(EMPTY);
+
+    return instance.getIdentifiers().stream()
+      .filter(i -> identifierTypeId.equals(i.getIdentifierTypeId()))
+      .findFirst()
+      .map(InstanceIdentifiers::getValue)
+      .orElse(null); //NOSONAR
   }
 
   private Specification<AccessionQueueRecord> getCriteriaSpecification(FilterData filterData){
@@ -154,10 +310,10 @@ public class AccessionQueueService {
       if (Boolean.FALSE.equals(filterData.getIsPresented())) {
         predicates.add(builder.isNull(record.get(ACCESSIONED_DATE_TIME)));
       }
-      if (Objects.nonNull(filterData.getStorageId())) {
+      if (nonNull(filterData.getStorageId())) {
         predicates.add(builder.equal(record.get(REMOTE_STORAGE_ID), stringToUUIDSafe(filterData.getStorageId())));
       }
-      if (Objects.nonNull(filterData.getCreateDate())) {
+      if (nonNull(filterData.getCreateDate())) {
         predicates.add(builder.equal(record.get(CREATED_DATE_TIME), LocalDateTime.parse(filterData.getCreateDate())));
       }
       return builder.and(predicates.toArray(new Predicate[0]));

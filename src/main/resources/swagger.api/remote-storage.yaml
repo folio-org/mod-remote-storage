@@ -580,12 +580,12 @@ components:
       $ref: schemas/pubSubEvent.json
     accessionRequest:
       $ref: schemas/accessionRequest.json
-    inventoryItem:
-      $ref: schemas/inventoryItem.json
-    inventoryHoldingsRecord:
-      $ref: schemas/inventoryHoldingsRecord.json
-    inventoryInstance:
-      $ref: schemas/iInventoryInstance.json
+    item:
+      $ref: schemas/item.json
+    instance:
+      $ref: schemas/instance.json
+    holdingsRecord:
+      $ref: schemas/holdingsRecord.json
     itemsMove:
       $ref: schemas/itemsMove.json
     identifierType:

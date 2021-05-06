@@ -32,22 +32,19 @@ import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.rs.domain.dto.AccessionQueue;
 import org.folio.rs.domain.dto.AccessionQueues;
 import org.folio.rs.domain.dto.AccessionRequest;
-import org.folio.rs.domain.dto.Contributor;
 import org.folio.rs.domain.dto.ContributorType;
 import org.folio.rs.domain.dto.DomainEvent;
 import org.folio.rs.domain.dto.DomainEventType;
-import org.folio.rs.domain.dto.EffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.FilterData;
+import org.folio.rs.domain.dto.HoldingsRecord;
 import org.folio.rs.domain.dto.Instance;
-import org.folio.rs.domain.dto.InventoryHoldingsRecord;
-import org.folio.rs.domain.dto.InventoryInstance;
-import org.folio.rs.domain.dto.InventoryInstanceContributors;
-import org.folio.rs.domain.dto.InventoryInstanceIdentifiers;
-import org.folio.rs.domain.dto.InventoryInstancePublication;
-import org.folio.rs.domain.dto.InventoryItem;
-import org.folio.rs.domain.dto.InventoryItemEffectiveCallNumberComponents;
-import org.folio.rs.domain.dto.InventoryItemPermanentLocation;
+import org.folio.rs.domain.dto.InstanceContributors;
+import org.folio.rs.domain.dto.InstanceIdentifiers;
+import org.folio.rs.domain.dto.InstancePublication;
 import org.folio.rs.domain.dto.Item;
+import org.folio.rs.domain.dto.ItemEffectiveCallNumberComponents;
+import org.folio.rs.domain.dto.ItemMaterialType;
+import org.folio.rs.domain.dto.ItemPermanentLocation;
 import org.folio.rs.domain.dto.ItemsMove;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
@@ -111,27 +108,22 @@ public class AccessionQueueService {
   public AccessionQueue processPostAccession(AccessionRequest accessionRequest) {
     var locationMapping = getLocationMapping(accessionRequest);
     var item = getItem(accessionRequest);
-    var holding = holdingsStorageClient.getHoldingsRecordsByQuery("id==" + item.getHoldingsRecordId())
-      .getResult().get(0);
-    var instance = inventoryClient.getInventoryInstancesByQuery("id==" + holding.getInstanceId())
-      .getResult().get(0);
+    var holdingsRecord = holdingsStorageClient.getHoldingsRecordsByQuery("id==" + item.getHoldingsRecordId()).getResult().get(0);
+    var instance = inventoryClient.getInstancesByQuery("id==" + holdingsRecord.getInstanceId()).getResult().get(0);
 
     var accessionQueueRecord = buildAccessionQueueRecord(item, instance, locationMapping);
     accessionQueueRepository.save(accessionQueueRecord);
 
-    item.setPermanentLocation(new InventoryItemPermanentLocation().id(locationMapping.getFolioLocationId()));
-    inventoryClient.putInventoryItem(item.getId(), item);
+    item.setPermanentLocation(new ItemPermanentLocation().id(locationMapping.getFolioLocationId()));
+    inventoryClient.putItem(item.getId(), item);
 
-    if (!item.getPermanentLocation().getId().equals(holding.getPermanentLocationId())) {
-      if (isAllItemsHaveRemoteLocation(item.getHoldingsRecordId(), item.getPermanentLocation().getId())) {
-        holding.setPermanentLocationId(item.getPermanentLocation().getId());
-        holdingsStorageClient.putHoldingsRecord(holding.getId(), holding);
+    if (isPermanentLocationsMismatch(holdingsRecord, item)) {
+      if (isAllItemsInHoldingHaveSamePermanentLocation(item)) {
+        changeHoldingsRecordPermanentLocation(holdingsRecord, item.getPermanentLocation().getId());
       } else {
-        var existingHoldingId = findHoldingWithRemoteLocation(holding.getInstanceId(), item.getPermanentLocation().getId());
-        if (nonNull(existingHoldingId)) {
-          inventoryClient.moveItemsToHolding(new ItemsMove()
-            .itemIds(Collections.singletonList(item.getId()))
-            .toHoldingsRecordId(existingHoldingId));
+        var holdingId = findHoldingWithSameRemoteLocation(holdingsRecord.getInstanceId(), item.getPermanentLocation().getId());
+        if (isHoldingExists(holdingId)) {
+          moveItemToHolding(item, holdingId);
         }
         // holding splitting will be implemented in scope of https://issues.folio.org/browse/MODRS-40
       }
@@ -139,19 +131,38 @@ public class AccessionQueueService {
     return accessionQueueMapper.mapEntityToDto(accessionQueueRecord);
   }
 
-  private String findHoldingWithRemoteLocation(String instanceId, String remoteLocationId) {
+  private boolean isPermanentLocationsMismatch(HoldingsRecord holdingsRecord, Item item) {
+    return !item.getPermanentLocation().getId().equals(holdingsRecord.getPermanentLocationId());
+  }
+
+  private void changeHoldingsRecordPermanentLocation(HoldingsRecord holdingsRecord, String locationId) {
+    holdingsRecord.setPermanentLocationId(locationId);
+    holdingsStorageClient.putHoldingsRecord(holdingsRecord.getId(), holdingsRecord);
+  }
+
+  private String findHoldingWithSameRemoteLocation(String instanceId, String remoteLocationId) {
     return holdingsStorageClient.getHoldingsRecordsByQuery("instanceId==" + instanceId)
       .getResult().stream()
       .filter(h -> remoteLocationId.equals(h.getPermanentLocationId()))
-      .map(InventoryHoldingsRecord::getId)
+      .map(HoldingsRecord::getId)
       .findFirst().orElse(null);
   }
 
-  private boolean isAllItemsHaveRemoteLocation(String holdingsRecordId, String locationId) {
-    return inventoryClient.getInventoryItemsByQuery("holdingsRecordId==" + holdingsRecordId)
+  private boolean isHoldingExists(String holdingsRecordId) {
+    return nonNull(holdingsRecordId);
+  }
+
+  private void moveItemToHolding(Item item, String holdingRecordId) {
+    inventoryClient.moveItemsToHolding(new ItemsMove()
+      .itemIds(Collections.singletonList(item.getId()))
+      .toHoldingsRecordId(holdingRecordId));
+  }
+
+  private boolean isAllItemsInHoldingHaveSamePermanentLocation(Item item) {
+    return inventoryClient.getItemsByQuery("holdingsRecordId==" + item.getHoldingsRecordId())
       .getResult()
       .stream()
-      .allMatch(i -> nonNull(i.getPermanentLocation()) && locationId.equals(i.getPermanentLocation().getId()));
+      .allMatch(i -> nonNull(i.getPermanentLocation()) && item.getPermanentLocation().getId().equals(i.getPermanentLocation().getId()));
   }
 
   private LocationMapping getLocationMapping(AccessionRequest accessionRequest) {
@@ -163,8 +174,8 @@ public class AccessionQueueService {
       .orElseThrow(() -> new EntityNotFoundException("No location was found for provided remote storage id"));
   }
 
-  private InventoryItem getItem(AccessionRequest accessionRequest) {
-    var items = inventoryClient.getInventoryItemsByQuery("barcode==" + accessionRequest.getItemBarcode());
+  private Item getItem(AccessionRequest accessionRequest) {
+    var items = inventoryClient.getItemsByQuery("barcode==" + accessionRequest.getItemBarcode());
     if (items.isEmpty()) {
       throw new EntityNotFoundException(String.format("Item with barcode=%s was not found", accessionRequest.getItemBarcode()));
     }
@@ -217,24 +228,7 @@ public class AccessionQueueService {
    * @param instance {@link Instance} entity
    * @return accession queue record with populated data
    */
-  private AccessionQueueRecord buildAccessionQueueRecord(Item item, Instance instance, LocationMapping locationMapping) {
-    return AccessionQueueRecord.builder()
-      .id(UUID.randomUUID())
-      .itemBarcode(item.getBarcode())
-      .createdDateTime(LocalDateTime.now())
-      .remoteStorageId(UUID.fromString(locationMapping.getConfigurationId()))
-      .callNumber(ofNullable(item.getEffectiveCallNumberComponents())
-        .map(EffectiveCallNumberComponents::getCallNumber)
-        .orElse(null))
-      .instanceTitle(instance.getTitle())
-      .instanceAuthor(instance.getContributors()
-        .stream()
-        .map(Contributor::getName)
-        .collect(Collectors.joining("; ")))
-      .build();
-  }
-
-  private AccessionQueueRecord buildAccessionQueueRecord(InventoryItem item, InventoryInstance instance,
+  private AccessionQueueRecord buildAccessionQueueRecord(Item item, Instance instance,
     LocationMapping locationMapping) {
     var publication = instance.getPublication().stream().findFirst();
     return AccessionQueueRecord.builder()
@@ -244,19 +238,19 @@ public class AccessionQueueService {
       .accessionedDateTime(LocalDateTime.now())
       .remoteStorageId(UUID.fromString(locationMapping.getConfigurationId()))
       .callNumber(ofNullable(item.getEffectiveCallNumberComponents())
-        .map(InventoryItemEffectiveCallNumberComponents::getCallNumber)
+        .map(ItemEffectiveCallNumberComponents::getCallNumber)
         .orElse(null))
       .instanceTitle(instance.getTitle())
       .instanceAuthor(extractAuthors(instance))
       .instanceContributors(extractContributors(instance))
       .publisher(publication
-        .map(InventoryInstancePublication::getPublisher)
+        .map(InstancePublication::getPublisher)
         .orElse(null))
       .publishYear(publication
-        .map(InventoryInstancePublication::getDateOfPublication)
+        .map(InstancePublication::getDateOfPublication)
         .orElse(null))
       .publishPlace(publication
-        .map(InventoryInstancePublication::getPlace)
+        .map(InstancePublication::getPlace)
         .orElse(null))
       .volume(item.getVolume())
       .enumeration(item.getEnumeration())
@@ -265,13 +259,13 @@ public class AccessionQueueService {
       .issn(extractIdentifier(instance, ISSN))
       .oclc(extractIdentifier(instance, OCLC))
       .physicalDescription(String.join("; ", instance.getPhysicalDescriptions()))
-      .materialType(item.getMaterialType().getName())
+      .materialType(ofNullable(item.getMaterialType()).map(ItemMaterialType::getName).orElse(null))
       .copyNumber(item.getCopyNumber())
       .permanentLocationId(UUID.fromString(locationMapping.getFolioLocationId()))
       .build();
   }
 
-  private String extractAuthors(InventoryInstance instance) {
+  private String extractAuthors(Instance instance) {
     var contributorTypeId = contributorTypesClient.getContributorTypesByQuery("name==" + AUTHOR)
       .getResult()
       .stream()
@@ -280,19 +274,19 @@ public class AccessionQueueService {
       .orElse(EMPTY);
     var authors = instance.getContributors().stream()
       .filter(c -> contributorTypeId.equals(c.getContributorTypeId()))
-      .map(InventoryInstanceContributors::getName)
+      .map(InstanceContributors::getName)
       .collect(Collectors.toList());
     return authors.isEmpty() ? extractContributors(instance) : String.join("; ", authors);
   }
 
-  private String extractContributors(InventoryInstance instance) {
+  private String extractContributors(Instance instance) {
     return instance.getContributors()
       .stream()
-      .map(InventoryInstanceContributors::getName)
+      .map(InstanceContributors::getName)
       .collect(Collectors.joining("; "));
   }
 
-  private String extractIdentifier(InventoryInstance instance, IdentifierType type) {
+  private String extractIdentifier(Instance instance, IdentifierType type) {
     var identifierTypeId = identifierTypesClient.getIdentifierTypesByQuery("name==" + type)
       .getResult()
       .stream()
@@ -303,7 +297,7 @@ public class AccessionQueueService {
     return instance.getIdentifiers().stream()
       .filter(i -> identifierTypeId.equals(i.getIdentifierTypeId()))
       .findFirst()
-      .map(InventoryInstanceIdentifiers::getValue)
+      .map(InstanceIdentifiers::getValue)
       .orElse(null); //NOSONAR
   }
 

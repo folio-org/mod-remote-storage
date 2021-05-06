@@ -25,10 +25,9 @@ import org.folio.rs.domain.dto.AccessionQueues;
 import org.folio.rs.domain.dto.AccessionRequest;
 import org.folio.rs.domain.dto.DomainEvent;
 import org.folio.rs.domain.dto.DomainEventType;
-import org.folio.rs.domain.dto.EffectiveCallNumberComponents;
-import org.folio.rs.domain.dto.InventoryHoldingsRecord;
-import org.folio.rs.domain.dto.InventoryItem;
+import org.folio.rs.domain.dto.HoldingsRecord;
 import org.folio.rs.domain.dto.Item;
+import org.folio.rs.domain.dto.ItemEffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.ItemsMove;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
@@ -91,23 +90,23 @@ public class AccessionQueueServiceTest extends TestBase {
     locationMapping.setConfigurationId(REMOTE_STORAGE_ID);
     locationMappingsService.postMapping(locationMapping);
 
-    var originalItem = new Item().withEffectiveLocationId(OLD_EFFECTIVE_LOCATION_ID)
-      .withInstanceId(INSTANCE_ID)
-      .withBarcode(BARCODE)
-      .withEffectiveCallNumberComponents(
-        new EffectiveCallNumberComponents().withCallNumber(CALL_NUMBER));
+    var originalItem = new Item().effectiveLocationId(OLD_EFFECTIVE_LOCATION_ID)
+      .instanceId(INSTANCE_ID)
+      .barcode(BARCODE)
+      .effectiveCallNumberComponents(
+        new ItemEffectiveCallNumberComponents().callNumber(CALL_NUMBER));
 
-    var newItem = new Item().withEffectiveLocationId(NEW_EFFECTIVE_LOCATION_ID)
-      .withInstanceId(INSTANCE_ID)
-      .withBarcode(BARCODE)
-      .withEffectiveCallNumberComponents(
-        new EffectiveCallNumberComponents().withCallNumber(CALL_NUMBER));
+    var newItem = new Item().effectiveLocationId(NEW_EFFECTIVE_LOCATION_ID)
+      .instanceId(INSTANCE_ID)
+      .barcode(BARCODE)
+      .effectiveCallNumberComponents(
+        new ItemEffectiveCallNumberComponents().callNumber(CALL_NUMBER));
 
-    var newItemWithoutRemoteConfig = new Item().withEffectiveLocationId(randomIdAsString())
-      .withInstanceId(INSTANCE_ID)
-      .withBarcode(BARCODE)
-      .withEffectiveCallNumberComponents(
-        new EffectiveCallNumberComponents().withCallNumber(CALL_NUMBER));
+    var newItemWithoutRemoteConfig = new Item().effectiveLocationId(randomIdAsString())
+      .instanceId(INSTANCE_ID)
+      .barcode(BARCODE)
+      .effectiveCallNumberComponents(
+        new ItemEffectiveCallNumberComponents().callNumber(CALL_NUMBER));
 
     var resourceBodyWithRemoteConfig = DomainEvent
       .of(originalItem, newItem, DomainEventType.UPDATE, TEST_TENANT);
@@ -350,7 +349,7 @@ public class AccessionQueueServiceTest extends TestBase {
       .getRequest()
       .getBody();
     ObjectMapper mapper = new ObjectMapper();
-    var item = mapper.readValue(requestBody, InventoryItem.class);
+    var item = mapper.readValue(requestBody, Item.class);
     assertThat(item.getPermanentLocation().getId(), equalTo(REMOTE_LOCATION_ID));
   }
 
@@ -364,7 +363,7 @@ public class AccessionQueueServiceTest extends TestBase {
       .getRequest()
       .getBody();
     ObjectMapper mapper = new ObjectMapper();
-    var holding = mapper.readValue(requestBody, InventoryHoldingsRecord.class);
+    var holding = mapper.readValue(requestBody, HoldingsRecord.class);
     assertThat(holding.getPermanentLocationId(), equalTo(REMOTE_LOCATION_ID));
   }
 

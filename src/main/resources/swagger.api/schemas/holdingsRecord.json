@@ -256,7 +256,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "$ref": "inventoryItem.json"
+        "$ref": "item.json"
       },
       "readonly": true,
       "folio:isVirtual": true,
@@ -270,7 +270,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "$ref": "inventoryItem.json"
+        "$ref": "item.json"
       },
       "readonly": true,
       "folio:isVirtual": true,

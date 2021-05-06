@@ -7,9 +7,9 @@ import org.folio.rs.client.InventoryClient;
 import org.folio.rs.client.ServicePointsClient;
 import org.folio.rs.client.UsersClient;
 import org.folio.rs.domain.dto.CheckInItem;
-import org.folio.rs.domain.dto.Contributor;
-import org.folio.rs.domain.dto.EffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.Item;
+import org.folio.rs.domain.dto.ItemContributorNames;
+import org.folio.rs.domain.dto.ItemEffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.Request;
 import org.folio.rs.domain.dto.ReturnItemResponse;
 import org.folio.rs.domain.dto.User;
@@ -92,10 +92,10 @@ public class ReturnItemService {
       .instanceAuthor(ofNullable(item
         .getContributorNames()).orElse(Collections.emptyList())
         .stream()
-        .map(Contributor::getName)
+        .map(ItemContributorNames::getName)
         .collect(Collectors.joining(";")))
       .callNumber(ofNullable(item.getEffectiveCallNumberComponents())
-        .map(EffectiveCallNumberComponents::getCallNumber)
+        .map(ItemEffectiveCallNumberComponents::getCallNumber)
         .orElse(null))
       .patronBarcode(patron.getBarcode())
       .patronName(patron.getUsername())

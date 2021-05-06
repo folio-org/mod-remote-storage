@@ -7,6 +7,14 @@
       "description": "Item id",
       "type": "string"
     },
+    "effectiveLocationId": {
+      "description": "effective location id",
+      "type": "string"
+    },
+    "instanceId": {
+      "description": "instance id",
+      "type": "string"
+    },
     "hrid": {
       "type": "string",
       "description": "The human readable ID, also called eye readable ID. A system-assigned sequential alternate ID"

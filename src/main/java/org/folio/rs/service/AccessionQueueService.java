@@ -285,7 +285,7 @@ public class AccessionQueueService {
       .filter(i -> type.getId().equals(i.getIdentifierTypeId()))
       .findFirst()
       .map(InventoryInstanceIdentifiers::getValue)
-      .orElse(null);
+      .orElse(null); //NOSONAR
   }
 
   private Specification<AccessionQueueRecord> getCriteriaSpecification(FilterData filterData){

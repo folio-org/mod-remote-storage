@@ -5,8 +5,10 @@
   "type": "object",
     "properties": {
       "tagList": {
+        "description": "List of tags",
         "type": "array",
         "items": {
+          "description": "Tag item",
           "type": "string"
       }
     }

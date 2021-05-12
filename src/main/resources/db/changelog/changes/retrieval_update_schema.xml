@@ -4,7 +4,11 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-  <include file="changes/initial_schema.xml" relativeToChangelogFile="true"/>
-  <include file="changes/accession_update_schema.xml" relativeToChangelogFile="true"/>
-  <include file="changes/retrieval_update_schema.xml" relativeToChangelogFile="true"/>
+  <changeSet author="FOLIO Firebird Team" id="retrieval_update_schema">
+    <sqlFile dbms="postgresql"
+             path="retrieval_update_schema.sql"
+             relativeToChangelogFile="true"
+             splitStatements="false"/>
+  </changeSet>
+
 </databaseChangeLog>

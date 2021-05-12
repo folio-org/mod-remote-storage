@@ -51,8 +51,7 @@ CREATE TABLE IF NOT EXISTS retrieval_queue
     patron_name         TEXT,
     pickup_location     TEXT,
     request_status      TEXT,
-    request_note        TEXT,
-    request_type        TEXT
+    request_note        TEXT
 );
 
 CREATE TABLE IF NOT EXISTS system_user_parameters

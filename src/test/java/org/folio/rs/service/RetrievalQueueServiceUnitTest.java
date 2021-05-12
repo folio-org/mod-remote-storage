@@ -54,7 +54,7 @@ public class RetrievalQueueServiceUnitTest {
   private static final String STATUS = "Open - Not yet filled";
   private static final String REQUEST_NOTE = "request note";
   private static final String INSTANCE_TITLE = "Title";
-  private static final String REQUEST_TYPE = "Page";
+  private static final String REQUEST_TYPE = "PYR";
   private static final String PICKUP_SERVICE_POINT_CODE = "cd1";
 
   @InjectMocks
@@ -138,6 +138,7 @@ public class RetrievalQueueServiceUnitTest {
     assertEquals(INSTANCE_AUTHOR, record.getInstanceAuthor());
     assertEquals(REMOTE_STORAGE_ID, record.getRemoteStorageId().toString());
     assertNotNull(record.getCreatedDateTime());
+    assertEquals(REQUEST_TYPE, record.getRequestType());
   }
 
   @Test()

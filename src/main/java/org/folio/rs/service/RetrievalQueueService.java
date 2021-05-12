@@ -46,6 +46,7 @@ public class RetrievalQueueService {
   private static final String REMOTE_STORAGE_ID = "remoteStorageId";
   private static final String REQUEST_DATE_TIME = "createdDateTime";
   private static final String NOT_FOUND = " not found";
+  private static final String REQUEST_TYPE_DEFAULT = "PYR";
   private final RetrievalQueueRepository retrievalQueueRepository;
   private final RetrievalQueueMapper retrievalQueueMapper;
   private final LocationMappingsService locationMappingsService;
@@ -119,6 +120,7 @@ public class RetrievalQueueService {
 
   private void saveRetrievalQueueWithCurrentDate(RetrievalQueueRecord record) {
     record.setRetrievedDateTime(LocalDateTime.now());
+    record.setRequestType(REQUEST_TYPE_DEFAULT);
     retrievalQueueRepository.save(record);
   }
 
@@ -172,6 +174,7 @@ public class RetrievalQueueService {
         .remoteStorageId(stringToUUIDSafe(mapping.getConfigurationId()))
         .instanceTitle(item.getTitle())
         .instanceAuthor(getContributorNames(item))
+        .requestType(REQUEST_TYPE_DEFAULT)
         .build();
   }
 

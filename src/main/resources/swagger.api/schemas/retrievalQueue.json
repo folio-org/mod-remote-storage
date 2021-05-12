@@ -61,6 +61,10 @@
       "description": "Remote storage id",
       "$ref": "uuid.json"
     },
+    "requestType": {
+      "description": "Request type",
+      "type": "string"
+    },
     "metadata": {
       "description": "Entity metadata",
       "type": "object",

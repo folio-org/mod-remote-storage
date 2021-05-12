@@ -34,4 +34,5 @@ public class RetrievalQueueRecord {
   private String requestNote;
   private LocalDateTime createdDateTime;
   private UUID remoteStorageId;
+  private String requestType;
 }

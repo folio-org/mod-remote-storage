@@ -5,6 +5,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDateTime;
@@ -41,6 +42,7 @@ public class RetrievalQueueServiceTest extends TestBase {
   private static final String RETRIEVAL_RECORD_0_ID = "4a38cc7d-b8c8-4a43-ad07-14c784dfbcbb";
   private static final String RETRIEVAL_RECORD_1_ID = "5a38cc7d-b8c8-4a43-ad07-14c784dfbcbb";
   private static final String RETRIEVALS_API_URL = "http://localhost:%s/remote-storage/retrievals";
+  private static final String REQUEST_TYPE = "PYR";
   private String formattedRetrievalUrl;
 
   @Autowired
@@ -181,6 +183,19 @@ public class RetrievalQueueServiceTest extends TestBase {
   }
 
   @Test
+  void shouldBeRequestTypeAfterSaving() {
+    UUID id = UUID.randomUUID();
+    retrievalQueueRepository.save(buildRetrievalQueueRecord(id));
+
+    put(formattedRetrievalUrl + "/id/" + id, null);
+
+    var actualRetrievalQueueRecord = retrievalQueueRepository.findAll()
+      .get(0);
+
+    assertEquals(REQUEST_TYPE, actualRetrievalQueueRecord.getRequestType());
+  }
+
+  @Test
   void shouldFindRetrievalQueuesByCreatedDate() {
     LocalDateTime createdDate = LocalDateTime.now();
     var retrievalQueueRecord = createBaseRetrievalQueueRecord();
@@ -232,6 +247,7 @@ public class RetrievalQueueServiceTest extends TestBase {
       .pickupLocation("pickup_location")
       .requestStatus("Request-Status")
       .requestNote("Request_Note")
+      .requestType(REQUEST_TYPE)
       .build();
   }
 

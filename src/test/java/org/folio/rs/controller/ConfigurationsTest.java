@@ -13,10 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.folio.rs.TestBase;
-import org.folio.rs.domain.dto.ReturningWorkflowDetails;
-import org.folio.rs.domain.dto.StorageConfiguration;
-import org.folio.rs.domain.dto.StorageConfigurations;
-import org.folio.rs.domain.dto.TimeUnits;
+import org.folio.rs.domain.dto.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +79,18 @@ public class ConfigurationsTest extends TestBase {
     put(configurationsUrl + configuration.getId(), configuration).getBody();
     var updatedConfiguration = get(configurationsUrl + configuration.getId(), StorageConfiguration.class).getBody();
     assertThat(updatedConfiguration.getReturningWorkflowDetails(), is(ReturningWorkflowDetails.FOLIO));
+    delete(configurationsUrl + configuration.getId());
+  }
+
+  @Test
+  void canPostAndPutConfigurationWithAccessionWorkflow() {
+    var requestBody =  "{\"name\":\"CaiaSoft\", \"providerName\":\"CaiaSoft\", \"accessionTimeUnit\":\"minutes\", \"accessionWorkflowDetails\":\"Duplicate holdings\"}";
+    var configuration = post(configurationsUrl, requestBody, StorageConfiguration.class).getBody();
+    assertThat(configuration.getAccessionWorkflowDetails(), is(AccessionWorkflowDetails.DUPLICATE_HOLDINGS));
+    configuration.accessionWorkflowDetails(AccessionWorkflowDetails.CHANGE_PERMANENT_LOCATION);
+    put(configurationsUrl + configuration.getId(), configuration).getBody();
+    var updatedConfiguration = get(configurationsUrl + configuration.getId(), StorageConfiguration.class).getBody();
+    assertThat(updatedConfiguration.getAccessionWorkflowDetails(), is(AccessionWorkflowDetails.CHANGE_PERMANENT_LOCATION));
     delete(configurationsUrl + configuration.getId());
   }
 

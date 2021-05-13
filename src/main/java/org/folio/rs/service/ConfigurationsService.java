@@ -78,6 +78,7 @@ public class ConfigurationsService {
     dest.setAccessionTimeUnit(source.getAccessionTimeUnit());
     dest.setUpdatedByUserId(source.getUpdatedByUserId());
     dest.setUpdatedByUsername(source.getUpdatedByUsername());
+    dest.setAccessionWorkflowDetails(source.getAccessionWorkflowDetails());
     dest.setReturningWorkflowDetails(source.getReturningWorkflowDetails());
     dest.setUpdatedDate(LocalDateTime.now());
     return dest;

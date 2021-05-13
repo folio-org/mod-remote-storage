@@ -1,5 +1,12 @@
 package org.folio.rs.service;
 
+import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
+import static org.folio.rs.domain.dto.Request.RequestType.HOLD;
+import static org.folio.rs.domain.dto.Request.RequestType.RECALL;
+import static org.folio.rs.domain.dto.ReturningWorkflowDetails.CAIASOFT;
+import static org.folio.rs.domain.entity.ProviderRecord.CAIA_SOFT;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.rs.client.CirculationClient;
@@ -12,6 +19,7 @@ import org.folio.rs.domain.dto.ItemContributorNames;
 import org.folio.rs.domain.dto.ItemEffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.Request;
 import org.folio.rs.domain.dto.ReturnItemResponse;
+import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.dto.User;
 import org.folio.rs.domain.entity.RetrievalQueueRecord;
 import org.folio.rs.error.ItemReturnException;
@@ -20,11 +28,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -40,31 +46,48 @@ public class ReturnItemService {
   private final RetrievalQueueRepository retrievalQueueRepository;
   private final CheckInItemService checkInItemService;
   private final ServicePointsClient servicePointsClient;
+  private final ConfigurationsService configurationsService;
 
   public ReturnItemResponse returnItem(String remoteStorageConfigurationId, CheckInItem checkInItem) {
     log.info("Start return for item with barcode " + checkInItem.getItemBarcode());
     var itemReturnResponse = new ReturnItemResponse();
     var item = getItem(checkInItem);
-    var requests = circulationClient.getItemRequests(item.getId());
-    if (!requests.isEmpty()) {
-      var holdRecallRequests = requests.getResult().stream()
-        .filter(request -> request.getRequestType() == Request.RequestType.HOLD
-          || request.getRequestType() == Request.RequestType.RECALL)
-        .collect(toList());
-      if (!holdRecallRequests.isEmpty()) {
+    var storageConfiguration = getStorageConfigurationById(remoteStorageConfigurationId);
+    if (isRequestsCheckNeeded(storageConfiguration)) {
+      findFirstHoldRecallRequest(item).ifPresent(request -> {
         itemReturnResponse.isHoldRecallRequestExist(true);
-        holdRecallRequests.stream()
-          .filter(itemRequest -> itemRequest.getPosition() == 1)
-          .findFirst().ifPresent(itemRequest-> {
-            var user = getUser(itemRequest.getRequesterId());
-            var servicePointCode = servicePointsClient.getServicePoint(itemRequest.getPickupServicePointId()).getCode();
-            retrievalQueueRepository.save(buildRetrievalRecord(itemRequest, item, user, servicePointCode, remoteStorageConfigurationId));
-        });
-      }
+        var user = getUser(request.getRequesterId());
+        var servicePointCode = servicePointsClient.getServicePoint(request.getPickupServicePointId()).getCode();
+        retrievalQueueRepository.save(buildRetrievalRecord(request, item, user, servicePointCode, remoteStorageConfigurationId));
+      });
     }
     checkInItemService.checkInItemByBarcode(remoteStorageConfigurationId, checkInItem);
     log.info("Return success for item with barcode " + checkInItem.getItemBarcode());
     return itemReturnResponse;
+  }
+
+  private StorageConfiguration getStorageConfigurationById(String remoteStorageConfigurationId) {
+    var configuration = configurationsService.getConfigurationById(remoteStorageConfigurationId);
+    if (isNull(configuration)) {
+      throw new ItemReturnException("Remote storage configuration does not exist for id " + remoteStorageConfigurationId);
+    }
+    return configuration;
+  }
+
+  private boolean isRequestsCheckNeeded(StorageConfiguration storageConfiguration) {
+    return !CAIA_SOFT.getId().equals(storageConfiguration.getProviderName()) ||
+      CAIASOFT.getValue().equals(storageConfiguration.getReturningWorkflowDetails().getValue());
+  }
+
+  private Optional<Request> findFirstHoldRecallRequest(Item item) {
+    var requests = circulationClient.getItemRequests(item.getId());
+    if (!requests.isEmpty()) {
+      return requests.getResult().stream()
+        .filter(request -> request.getPosition() == 1 &&
+          (request.getRequestType() == HOLD || request.getRequestType() == RECALL))
+        .findFirst();
+    }
+    return Optional.empty();
   }
 
   private Item getItem(CheckInItem checkInItem) {

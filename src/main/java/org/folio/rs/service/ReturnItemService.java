@@ -76,7 +76,7 @@ public class ReturnItemService {
 
   private boolean isRequestsCheckNeeded(StorageConfiguration storageConfiguration) {
     return !CAIA_SOFT.getId().equals(storageConfiguration.getProviderName()) ||
-      CAIASOFT.equals(storageConfiguration.getReturningWorkflowDetails());
+      CAIASOFT == storageConfiguration.getReturningWorkflowDetails();
   }
 
   private Optional<Request> findFirstHoldRecallRequest(Item item) {

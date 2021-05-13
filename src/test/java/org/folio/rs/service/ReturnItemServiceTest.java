@@ -6,6 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,6 +34,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -141,8 +143,9 @@ public class ReturnItemServiceTest {
     assertThat(returnItemResponse.getIsHoldRecallRequestExist(), is(false));
   }
 
-  @Test
-  void testReturnItemIfRequestIsNotRecallOrHold() {
+  @ParameterizedTest
+  @MethodSource("getAllConfigurations")
+  void testReturnItemIfRequestIsNotRecallOrHold(StorageConfiguration configuration) {
     var checkInItem = new CheckInItem();
     checkInItem.setItemBarcode(ITEM_BARCODE);
 
@@ -162,12 +165,8 @@ public class ReturnItemServiceTest {
     itemRequests.setResult(Collections.singletonList(request));
     itemRequests.setTotalRecords(1);
 
-    var configuration = new StorageConfiguration()
-      .name("test")
-      .providerName("DEMATIC_EMS");
-
     when(inventoryClient.getItemsByQuery("barcode==" + item.getBarcode())).thenReturn(itemResult);
-    when(circulationClient.getItemRequests(item.getId())).thenReturn(itemRequests);
+    lenient().when(circulationClient.getItemRequests(item.getId())).thenReturn(itemRequests);
     when(configurationsService.getConfigurationById(isA(String.class))).thenReturn(configuration);
 
     var returnItemResponse = returnItemService.returnItem(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
@@ -176,8 +175,9 @@ public class ReturnItemServiceTest {
     assertThat(returnItemResponse.getIsHoldRecallRequestExist(), is(false));
   }
 
-  @Test
-  void testReturnItemIfItemRequestsNotExist() {
+  @ParameterizedTest
+  @MethodSource("getAllConfigurations")
+  void testReturnItemIfItemRequestsNotExist(StorageConfiguration configuration) {
     var checkInItem = new CheckInItem();
     checkInItem.setItemBarcode(ITEM_BARCODE);
 
@@ -192,12 +192,8 @@ public class ReturnItemServiceTest {
     itemRequests.setResult(Collections.emptyList());
     itemRequests.setTotalRecords(0);
 
-    var configuration = new StorageConfiguration()
-      .name("test")
-      .providerName("DEMATIC_EMS");
-
     when(inventoryClient.getItemsByQuery("barcode==" + item.getBarcode())).thenReturn(itemResult);
-    when(circulationClient.getItemRequests(item.getId())).thenReturn(itemRequests);
+    lenient().when(circulationClient.getItemRequests(item.getId())).thenReturn(itemRequests);
     when(configurationsService.getConfigurationById(isA(String.class))).thenReturn(configuration);
 
     var returnItemResponse = returnItemService.returnItem(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
@@ -283,5 +279,11 @@ public class ReturnItemServiceTest {
       new StorageConfiguration().name("test").providerName("DEMATIC_SD"),
       new StorageConfiguration().name("test").providerName("CAIA_SOFT").returningWorkflowDetails(CAIASOFT)
     );
+  }
+
+  private static List<StorageConfiguration> getAllConfigurations() {
+    var configurations = new ArrayList<>(getConfigurationsWithRequestsCheckNeeded());
+    configurations.add(new StorageConfiguration().name("test").providerName("CAIA_SOFT").returningWorkflowDetails(FOLIO));
+    return configurations;
   }
 }

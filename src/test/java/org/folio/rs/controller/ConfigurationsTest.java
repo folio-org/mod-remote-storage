@@ -53,23 +53,30 @@ public class ConfigurationsTest extends TestBase {
 
   @Test
   void canPostConfiguration() {
-    ResponseEntity<StorageConfiguration> responseEntity = post(configurationsUrl, buildConfiguration(null), StorageConfiguration.class);
+    ResponseEntity<StorageConfiguration> responseEntity = post(configurationsUrl, buildConfiguration(null),
+        StorageConfiguration.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.CREATED));
-    assertThat(responseEntity.getBody().getId(), notNullValue());
-    assertThat(responseEntity.getBody().getMetadata().getCreatedDate(), notNullValue());
+    assertThat(responseEntity.getBody()
+      .getId(), notNullValue());
+    assertThat(responseEntity.getBody()
+      .getMetadata()
+      .getCreatedDate(), notNullValue());
     assertThat(fetchConfigurations().getTotalRecords(), is(2));
 
     // Verify caching disable via MODRS-42
-    StorageConfiguration configuration = get(configurationsUrl + "/" + responseEntity.getBody().getId(), StorageConfiguration.class).getBody();
-    assertTrue(EqualsBuilder.reflectionEquals(responseEntity.getBody(), configuration, true, StorageConfiguration.class, "metadata"));
+    StorageConfiguration configuration = get(configurationsUrl + "/" + responseEntity.getBody()
+      .getId(), StorageConfiguration.class).getBody();
+    assertTrue(
+        EqualsBuilder.reflectionEquals(responseEntity.getBody(), configuration, true, StorageConfiguration.class, "metadata"));
     // assertTrue(EqualsBuilder.reflectionEquals(
-    //  requireNonNull(
-    //   requireNonNull(cacheManager.getCache("configurations")).get(responseEntity.getBody().getId())).get(), configuration, true, StorageConfiguration.class, "metadata"));
+    // requireNonNull(
+    // requireNonNull(cacheManager.getCache("configurations")).get(responseEntity.getBody().getId())).get(), configuration, true,
+    // StorageConfiguration.class, "metadata"));
   }
 
   @Test
   void canPostAndPutConfigurationWithReturningWorkflow() {
-    var requestBody =  "{\"name\":\"RemoteStorage\", \"providerName\": \"CaiaSoft\", \"accessionTimeUnit\":\"minutes\", \"returningWorkflowDetails\":\"Scanned to CaiaSoft\"}";
+    var requestBody = "{\"name\":\"RemoteStorage\", \"providerName\": \"CaiaSoft\", \"accessionTimeUnit\":\"minutes\", \"returningWorkflowDetails\":\"Scanned to CaiaSoft\"}";
     var configuration = post(configurationsUrl, requestBody, StorageConfiguration.class).getBody();
     assertThat(configuration.getReturningWorkflowDetails(), is(ReturningWorkflowDetails.CAIASOFT));
     configuration.returningWorkflowDetails(ReturningWorkflowDetails.FOLIO);
@@ -81,7 +88,7 @@ public class ConfigurationsTest extends TestBase {
 
   @Test
   void canPostAndPutConfigurationWithAccessionWorkflow() {
-    var requestBody =  "{\"name\":\"CaiaSoft\", \"providerName\":\"CaiaSoft\", \"accessionTimeUnit\":\"minutes\", \"accessionWorkflowDetails\":\"Duplicate holdings\"}";
+    var requestBody = "{\"name\":\"CaiaSoft\", \"providerName\":\"CaiaSoft\", \"accessionTimeUnit\":\"minutes\", \"accessionWorkflowDetails\":\"Duplicate holdings\"}";
     var configuration = post(configurationsUrl, requestBody, StorageConfiguration.class).getBody();
     assertThat(configuration.getAccessionWorkflowDetails(), is(AccessionWorkflowDetails.DUPLICATE_HOLDINGS));
     configuration.accessionWorkflowDetails(AccessionWorkflowDetails.CHANGE_PERMANENT_LOCATION);
@@ -95,43 +102,55 @@ public class ConfigurationsTest extends TestBase {
   void canGetAllConfigurations() {
     ResponseEntity<StorageConfigurations> responseEntity = get(configurationsUrl, StorageConfigurations.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-    assertThat(responseEntity.getBody().getTotalRecords(), is(1));
+    assertThat(responseEntity.getBody()
+      .getTotalRecords(), is(1));
   }
 
   @Test
   void canGetConfigurationById() {
-    StorageConfiguration configurationDto = fetchConfigurations().getConfigurations().get(0);
+    StorageConfiguration configurationDto = fetchConfigurations().getConfigurations()
+      .get(0);
     assertThat(requireNonNull(cacheManager.getCache("configurations")).get(configurationDto.getId()), nullValue());
-    ResponseEntity<StorageConfiguration> firstResponse = get(configurationsUrl + configurationDto.getId(), StorageConfiguration.class);
+    ResponseEntity<StorageConfiguration> firstResponse = get(configurationsUrl + configurationDto.getId(),
+        StorageConfiguration.class);
     assertThat(firstResponse.getStatusCode(), is(HttpStatus.OK));
 
     // Verify cache disable via MODRS-42
-    // Object cachedConfiguration = requireNonNull(requireNonNull(cacheManager.getCache("configurations")).get(configurationDto.getId())).get();
+    // Object cachedConfiguration =
+    // requireNonNull(requireNonNull(cacheManager.getCache("configurations")).get(configurationDto.getId())).get();
 
-    ResponseEntity<StorageConfiguration> secondResponse = get(configurationsUrl + configurationDto.getId(), StorageConfiguration.class);
+    ResponseEntity<StorageConfiguration> secondResponse = get(configurationsUrl + configurationDto.getId(),
+        StorageConfiguration.class);
     assertThat(secondResponse.getStatusCode(), is(HttpStatus.OK));
-    assertTrue(EqualsBuilder.reflectionEquals(configurationDto, secondResponse.getBody(), true, StorageConfiguration.class, "metadata"));
-    // assertTrue(EqualsBuilder.reflectionEquals(cachedConfiguration, secondResponse.getBody(), true, StorageConfiguration.class, "metadata"));
+    assertTrue(
+        EqualsBuilder.reflectionEquals(configurationDto, secondResponse.getBody(), true, StorageConfiguration.class, "metadata"));
+    // assertTrue(EqualsBuilder.reflectionEquals(cachedConfiguration, secondResponse.getBody(), true, StorageConfiguration.class,
+    // "metadata"));
 
   }
 
   @Test
   void canPutConfiguration() {
-    StorageConfiguration configurationDto = fetchConfigurations().getConfigurations().get(0);
-    configurationDto.accessionDelay(5).accessionTimeUnit(TimeUnits.MINUTES);
-    ResponseEntity<String> response = put(configurationsUrl + configurationDto.getId(),configurationDto);
+    StorageConfiguration configurationDto = fetchConfigurations().getConfigurations()
+      .get(0);
+    configurationDto.accessionDelay(5)
+      .accessionTimeUnit(TimeUnits.MINUTES);
+    ResponseEntity<String> response = put(configurationsUrl + configurationDto.getId(), configurationDto);
     assertThat(response.getStatusCode(), equalTo(HttpStatus.NO_CONTENT));
 
     // Verify caching disable via MODRS-42
-    StorageConfiguration configuration = get(configurationsUrl + "/" + configurationDto.getId(), StorageConfiguration.class).getBody();
+    StorageConfiguration configuration = get(configurationsUrl + "/" + configurationDto.getId(), StorageConfiguration.class)
+      .getBody();
     assertTrue(EqualsBuilder.reflectionEquals(configurationDto, configuration, true, StorageConfiguration.class, "metadata"));
-    // assertTrue(EqualsBuilder.reflectionEquals(requireNonNull(requireNonNull(cacheManager.getCache("configurations")).get(configurationDto.getId())).get(), configuration, true, StorageConfiguration.class, "metadata"));
+    // assertTrue(EqualsBuilder.reflectionEquals(requireNonNull(requireNonNull(cacheManager.getCache("configurations")).get(configurationDto.getId())).get(),
+    // configuration, true, StorageConfiguration.class, "metadata"));
 
   }
 
   @Test
   void canDeleteConfiguration() {
-    StorageConfiguration configuration = fetchConfigurations().getConfigurations().get(0);
+    StorageConfiguration configuration = fetchConfigurations().getConfigurations()
+      .get(0);
     requireNonNull(cacheManager.getCache("configurations")).put(configuration.getId(), configuration);
     assertThat(delete(configurationsUrl + configuration.getId()).getStatusCode(), is(HttpStatus.NO_CONTENT));
     assertThat(fetchConfigurations().getTotalRecords(), is(0));
@@ -141,7 +160,8 @@ public class ConfigurationsTest extends TestBase {
   @Test
   void shouldReturnUnprocessableEntityForInvalidBody() {
     HttpEntity entityMissingName = new HttpEntity(new StorageConfiguration().name(null));
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> post(configurationsUrl, entityMissingName, StorageConfiguration.class));
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class,
+        () -> post(configurationsUrl, entityMissingName, StorageConfiguration.class));
     assertThat(exception.getStatusCode(), is(HttpStatus.UNPROCESSABLE_ENTITY));
   }
 
@@ -152,7 +172,7 @@ public class ConfigurationsTest extends TestBase {
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.CREATED));
 
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class,
-      () -> post(configurationsUrl, initialEntity, StorageConfiguration.class));
+        () -> post(configurationsUrl, initialEntity, StorageConfiguration.class));
     assertThat(exception.getStatusCode(), is(HttpStatus.UNPROCESSABLE_ENTITY));
   }
 
@@ -182,16 +202,18 @@ public class ConfigurationsTest extends TestBase {
 
   @Test
   void shouldReturnBadRequestForIdsMismatch() {
-    StorageConfiguration configurationDto = fetchConfigurations().getConfigurations().get(0)
-      .accessionDelay(5).accessionTimeUnit(TimeUnits.MINUTES);
+    StorageConfiguration configurationDto = fetchConfigurations().getConfigurations()
+      .get(0)
+      .accessionDelay(5)
+      .accessionTimeUnit(TimeUnits.MINUTES);
     String urlWithAnotherUuid = configurationsUrl + randomIdAsString();
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> put(urlWithAnotherUuid, configurationDto));
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class,
+        () -> put(urlWithAnotherUuid, configurationDto));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
   }
 
   private StorageConfiguration buildConfiguration(String id) {
-    return new StorageConfiguration()
-      .id(id)
+    return new StorageConfiguration().id(id)
       .name("Remote Storage")
       .apiKey("i+X9dfNOztkBfoAmGTXf/w==")
       .providerName("Dematic")

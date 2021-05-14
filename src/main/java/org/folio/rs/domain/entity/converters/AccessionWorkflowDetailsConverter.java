@@ -9,14 +9,16 @@ import org.folio.rs.domain.dto.AccessionWorkflowDetails;
 
 public class AccessionWorkflowDetailsConverter implements AttributeConverter<AccessionWorkflowDetails, String> {
 
-  @Override public String convertToDatabaseColumn(AccessionWorkflowDetails accessionDetails) {
+  @Override
+  public String convertToDatabaseColumn(AccessionWorkflowDetails accessionDetails) {
     if (Objects.isNull(accessionDetails)) {
       return StringUtils.EMPTY;
     }
     return accessionDetails.getValue();
   }
 
-  @Override public AccessionWorkflowDetails convertToEntityAttribute(String value) {
+  @Override
+  public AccessionWorkflowDetails convertToEntityAttribute(String value) {
     if (StringUtils.isEmpty(value)) {
       return null;
     }

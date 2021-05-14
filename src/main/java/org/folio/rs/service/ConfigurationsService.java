@@ -37,7 +37,9 @@ public class ConfigurationsService {
 
   @Cacheable(value = CONFIGURATIONS, key = "#id")
   public StorageConfiguration getConfigurationById(String id) {
-    return configurationsRepository.findById(UUID.fromString(id)).map(configurationsMapper::mapEntityToDto).orElse(null);
+    return configurationsRepository.findById(UUID.fromString(id))
+      .map(configurationsMapper::mapEntityToDto)
+      .orElse(null);
   }
 
   public StorageConfigurations getConfigurations(Integer offset, Integer limit) {
@@ -78,6 +80,7 @@ public class ConfigurationsService {
     dest.setAccessionTimeUnit(source.getAccessionTimeUnit());
     dest.setUpdatedByUserId(source.getUpdatedByUserId());
     dest.setUpdatedByUsername(source.getUpdatedByUsername());
+    dest.setAccessionWorkflowDetails(source.getAccessionWorkflowDetails());
     dest.setReturningWorkflowDetails(source.getReturningWorkflowDetails());
     dest.setUpdatedDate(LocalDateTime.now());
     return dest;

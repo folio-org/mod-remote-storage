@@ -1,15 +1,14 @@
 package org.folio.rs.domain.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+
+import org.folio.rs.domain.dto.AccessionWorkflowDetails;
 import org.folio.rs.domain.dto.ReturningWorkflowDetails;
+import org.folio.rs.domain.entity.converters.AccessionWorkflowDetailsConverter;
 import org.folio.rs.domain.entity.converters.ReturningWorkflowDetailsConverter;
 
 import lombok.Data;
@@ -43,6 +42,10 @@ public class Configuration {
 
   @Column(name = "accession_time_unit")
   private String accessionTimeUnit;
+
+  @Column(name = "accession_workflow_details")
+  @Convert(converter = AccessionWorkflowDetailsConverter.class)
+  private AccessionWorkflowDetails accessionWorkflowDetails;
 
   @Column(name = "returning_workflow_details")
   @Convert(converter = ReturningWorkflowDetailsConverter.class)

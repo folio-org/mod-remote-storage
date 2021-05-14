@@ -1,0 +1,9 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Accession workflow details",
+  "type": "string",
+  "enum": [
+    "Duplicate holdings",
+    "Change permanent location"
+  ]
+}

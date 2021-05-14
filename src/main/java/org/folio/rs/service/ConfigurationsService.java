@@ -21,22 +21,17 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
-@Service
-@RequiredArgsConstructor
-@Log4j2
-public class ConfigurationsService {
+@Service @RequiredArgsConstructor @Log4j2 public class ConfigurationsService {
 
   public static final String CONFIGURATIONS = "configurations";
   private final ConfigurationsRepository configurationsRepository;
   private final ConfigurationsMapper configurationsMapper;
 
-  @CacheEvict(value = CONFIGURATIONS, key = "#id")
-  public void deleteConfigurationById(String id) {
+  @CacheEvict(value = CONFIGURATIONS, key = "#id") public void deleteConfigurationById(String id) {
     configurationsRepository.deleteById(UUID.fromString(id));
   }
 
-  @Cacheable(value = CONFIGURATIONS, key = "#id")
-  public StorageConfiguration getConfigurationById(String id) {
+  @Cacheable(value = CONFIGURATIONS, key = "#id") public StorageConfiguration getConfigurationById(String id) {
     return configurationsRepository.findById(UUID.fromString(id)).map(configurationsMapper::mapEntityToDto).orElse(null);
   }
 
@@ -46,8 +41,8 @@ public class ConfigurationsService {
     return configurationsMapper.mapEntitiesToRemoteConfigCollection(configurationList);
   }
 
-  @CachePut(value = CONFIGURATIONS, key = "#storageConfiguration.id")
-  public StorageConfiguration postConfiguration(StorageConfiguration storageConfiguration) {
+  @CachePut(value = CONFIGURATIONS, key = "#storageConfiguration.id") public StorageConfiguration postConfiguration(
+    StorageConfiguration storageConfiguration) {
     if (isNull(storageConfiguration.getId())) {
       storageConfiguration.id(randomIdAsString());
     }
@@ -57,8 +52,8 @@ public class ConfigurationsService {
     return configurationsMapper.mapEntityToDto(configurationsRepository.save(configuration));
   }
 
-  @CachePut(value = CONFIGURATIONS, key = "#storageConfiguration.id")
-  public StorageConfiguration updateConfiguration(String id, StorageConfiguration storageConfiguration) {
+  @CachePut(value = CONFIGURATIONS, key = "#storageConfiguration.id") public StorageConfiguration updateConfiguration(String id,
+    StorageConfiguration storageConfiguration) {
     Configuration configuration;
     if (id.equals(storageConfiguration.getId())) {
       var conf = configurationsMapper.mapDtoToEntity(storageConfiguration);

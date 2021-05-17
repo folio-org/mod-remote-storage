@@ -4,29 +4,16 @@ import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.folio.rs.util.MapperUtils.stringToUUIDSafe;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
+
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.Predicate;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.client.ServicePointsClient;
 import org.folio.rs.client.UsersClient;
-import org.folio.rs.domain.dto.FilterData;
-import org.folio.rs.domain.dto.Item;
-import org.folio.rs.domain.dto.ItemContributorNames;
-import org.folio.rs.domain.dto.ItemEffectiveCallNumberComponents;
-import org.folio.rs.domain.dto.LocationMapping;
-import org.folio.rs.domain.dto.EventRequest;
-import org.folio.rs.domain.dto.PickupServicePoint;
-import org.folio.rs.domain.dto.ResultList;
-import org.folio.rs.domain.dto.RetrievalQueues;
-import org.folio.rs.domain.dto.User;
+import org.folio.rs.domain.dto.*;
 import org.folio.rs.domain.entity.RetrievalQueueRecord;
 import org.folio.rs.mapper.RetrievalQueueMapper;
 import org.folio.rs.repository.RetrievalQueueRepository;
@@ -34,6 +21,9 @@ import org.folio.spring.data.OffsetRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Service
 @Log4j2
@@ -138,7 +128,7 @@ public class RetrievalQueueService {
 
   private LocationMapping getLocationMapping(Item item) {
     return Objects.nonNull(item.getEffectiveLocation())
-        ? locationMappingsService.getMappingByFolioLocationId(item.getEffectiveLocation().getId())
+        ? locationMappingsService.getMappingByFinalLocationId(item.getEffectiveLocation().getId())
         : null;
   }
 
@@ -171,7 +161,7 @@ public class RetrievalQueueService {
         .pickupLocation(pickupServicePoint.getCode())
         .requestStatus(eventRequest.getRequestStatus())
         .requestNote(eventRequest.getRequestNote())
-        .remoteStorageId(stringToUUIDSafe(mapping.getConfigurationId()))
+        .remoteStorageId(stringToUUIDSafe(mapping.getRemoteConfigurationId()))
         .instanceTitle(item.getTitle())
         .instanceAuthor(getContributorNames(item))
         .requestType(REQUEST_TYPE_DEFAULT)

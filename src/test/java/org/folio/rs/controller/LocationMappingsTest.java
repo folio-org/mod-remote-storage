@@ -5,10 +5,7 @@ import static java.util.Optional.ofNullable;
 import static org.folio.rs.service.LocationMappingsService.MAPPINGS;
 import static org.folio.rs.util.Utils.randomIdAsString;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -30,8 +27,11 @@ import org.springframework.web.client.HttpClientErrorException;
 public class LocationMappingsTest extends TestBase {
 
   private static final String MAPPINGS_URL = "http://localhost:%s/remote-storage/mappings/";
+  private static final String MAPPINGS_LOCATIONS_URL = "http://localhost:%s/remote-storage/mappings/locations";
+  private static final String SAMPLE_FINAL_LOCATION_ID_IF_MAPPING_NOT_EXISTS = "53cf956f-c1df-410b-8bea-27f712cca7c1";
 
   private String mappingsUrl;
+  private String mappingsLocationsUrl;
 
   @Autowired
   private CacheManager cacheManager;
@@ -39,27 +39,28 @@ public class LocationMappingsTest extends TestBase {
   @BeforeEach
   void prepareUrl() {
     mappingsUrl = String.format(MAPPINGS_URL, okapiPort);
+    mappingsLocationsUrl = String.format(MAPPINGS_LOCATIONS_URL, okapiPort);
     ofNullable(cacheManager.getCache(MAPPINGS)).ifPresent(Cache::clear);
   }
 
   @Test
   void canPostMapping() {
-    ResponseEntity<LocationMapping> responseEntity = post(mappingsUrl,
-        new LocationMapping()
-          .folioLocationId(randomIdAsString())
-          .configurationId(randomIdAsString()),
-        LocationMapping.class);
+    ResponseEntity<LocationMapping> responseEntity = post(mappingsUrl, new LocationMapping().finalLocationId(randomIdAsString())
+      .remoteConfigurationId(randomIdAsString()).originalLocationId(randomIdAsString()), LocationMapping.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.CREATED));
-    assertThat(responseEntity.getBody().getFolioLocationId(), notNullValue());
-    assertThat(responseEntity.getBody().getConfigurationId(), notNullValue());
+    assertThat(responseEntity.getBody()
+      .getFinalLocationId(), notNullValue());
+    assertThat(responseEntity.getBody()
+      .getRemoteConfigurationId(), notNullValue());
 
     // Verify caching disable via MODRS-42
-    LocationMapping mapping = get(mappingsUrl + "/" + responseEntity.getBody().getFolioLocationId(), LocationMapping.class).getBody();
+    LocationMapping mapping = get(mappingsUrl + "/" + responseEntity.getBody()
+      .getFinalLocationId(), LocationMapping.class).getBody();
     assertTrue(EqualsBuilder.reflectionEquals(responseEntity.getBody(), mapping, true, StorageConfiguration.class, METADATA));
     // assertTrue(EqualsBuilder.reflectionEquals(
-    //  requireNonNull(
-    //    requireNonNull(cacheManager.getCache(MAPPINGS)).get(responseEntity.getBody().getFolioLocationId())).get(), mapping, true, StorageConfiguration.class, METADATA));
-
+    // requireNonNull(
+    // requireNonNull(cacheManager.getCache(MAPPINGS)).get(responseEntity.getBody().getFolioLocationId())).get(), mapping, true,
+    // StorageConfiguration.class, METADATA));
   }
 
   @Test
@@ -67,19 +68,39 @@ public class LocationMappingsTest extends TestBase {
     ResponseEntity<LocationMappings> responseEntity = get(mappingsUrl, LocationMappings.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
     assertThat(responseEntity.getBody().getTotalRecords(), is(2));
+
+    // Remote mapping with random UUID created in canPostMapping.
+    delete(mappingsUrl + responseEntity.getBody().getMappings().get(1).getFinalLocationId());
+  }
+
+  @Test
+  void canGetMappingsLocations() {
+    ResponseEntity<LocationMappings> responseEntity = get(mappingsLocationsUrl, LocationMappings.class);
+    assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+    assertThat(responseEntity.getBody().getTotalRecords(), is(1));
+    assertThat(responseEntity.getBody().getMappings().get(0).getOriginalLocationId(), notNullValue());
+    post(mappingsUrl, new LocationMapping().finalLocationId(SAMPLE_FINAL_LOCATION_ID_IF_MAPPING_NOT_EXISTS)
+      .remoteConfigurationId(randomIdAsString()).originalLocationId(randomIdAsString()), LocationMapping.class);
+    responseEntity = get(mappingsLocationsUrl, LocationMappings.class);
+    assertThat(responseEntity.getBody().getTotalRecords(), is(2));
+    assertThat(responseEntity.getBody().getMappings().get(1).getFinalLocationId(), nullValue());
+    delete(mappingsUrl + SAMPLE_FINAL_LOCATION_ID_IF_MAPPING_NOT_EXISTS);
   }
 
   @Test
   void canGetMappingById() {
-    LocationMapping mapping = get(mappingsUrl, LocationMappings.class).getBody().getMappings().get(0);
-    assertThat(requireNonNull(cacheManager.getCache(MAPPINGS)).get(mapping.getFolioLocationId()), nullValue());
-    ResponseEntity<LocationMapping> firstResponse = get(mappingsUrl + mapping.getFolioLocationId(), LocationMapping.class);
+    LocationMapping mapping = get(mappingsUrl, LocationMappings.class).getBody()
+      .getMappings()
+      .get(0);
+    assertThat(requireNonNull(cacheManager.getCache(MAPPINGS)).get(mapping.getFinalLocationId()), nullValue());
+    ResponseEntity<LocationMapping> firstResponse = get(mappingsUrl + mapping.getFinalLocationId(), LocationMapping.class);
     assertThat(firstResponse.getStatusCode(), is(HttpStatus.OK));
 
     // Verify cache disable via MODRS-42
-    // Object cachedMapping = requireNonNull(requireNonNull(cacheManager.getCache(MAPPINGS)).get(mapping.getFolioLocationId())).get();
+    // Object cachedMapping =
+    // requireNonNull(requireNonNull(cacheManager.getCache(MAPPINGS)).get(mapping.getFolioLocationId())).get();
 
-    ResponseEntity<LocationMapping> secondResponse = get(mappingsUrl + mapping.getFolioLocationId(), LocationMapping.class);
+    ResponseEntity<LocationMapping> secondResponse = get(mappingsUrl + mapping.getFinalLocationId(), LocationMapping.class);
     assertThat(secondResponse.getStatusCode(), is(HttpStatus.OK));
     assertTrue(EqualsBuilder.reflectionEquals(mapping, secondResponse.getBody(), true, LocationMapping.class, "metadata"));
     // assertTrue(EqualsBuilder.reflectionEquals(cachedMapping, secondResponse.getBody(), true, LocationMapping.class, "metadata"));
@@ -87,23 +108,24 @@ public class LocationMappingsTest extends TestBase {
 
   @Test
   void canDeleteMapping() {
-    ResponseEntity<LocationMapping> responseEntity = post(mappingsUrl,
-        new LocationMapping()
-          .folioLocationId(randomIdAsString())
-          .configurationId(randomIdAsString()),
-        LocationMapping.class);
+    ResponseEntity<LocationMapping> responseEntity = post(mappingsUrl, new LocationMapping().finalLocationId(randomIdAsString())
+      .remoteConfigurationId(randomIdAsString())
+      .originalLocationId(randomIdAsString()), LocationMapping.class);
     // Verify cache disable via MODRS-42
-    // assertThat(requireNonNull(cacheManager.getCache(MAPPINGS)).get(requireNonNull(responseEntity.getBody()).getFolioLocationId()), notNullValue());
-    assertThat(delete(mappingsUrl + responseEntity.getBody().getFolioLocationId()).getStatusCode(), is(HttpStatus.NO_CONTENT));
-    // assertThat(requireNonNull(cacheManager.getCache(MAPPINGS)).get(requireNonNull(responseEntity.getBody()).getFolioLocationId()), nullValue());
+    // assertThat(requireNonNull(cacheManager.getCache(MAPPINGS)).get(requireNonNull(responseEntity.getBody()).getFolioLocationId()),
+    // notNullValue());
+    assertThat(delete(mappingsUrl + responseEntity.getBody()
+      .getFinalLocationId()).getStatusCode(), is(HttpStatus.NO_CONTENT));
+    // assertThat(requireNonNull(cacheManager.getCache(MAPPINGS)).get(requireNonNull(responseEntity.getBody()).getFolioLocationId()),
+    // nullValue());
   }
 
   @Test
   void shouldReturnUnprocessableEntityForInvalidBody() {
-    HttpEntity invalidBody = new HttpEntity(new LocationMapping()
-      .folioLocationId("abcde")
-      .configurationId("abcde"));
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> post(mappingsUrl, invalidBody, StorageConfiguration.class));
+    HttpEntity invalidBody = new HttpEntity(new LocationMapping().finalLocationId("abcde")
+      .remoteConfigurationId("abcde"));
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class,
+        () -> post(mappingsUrl, invalidBody, StorageConfiguration.class));
     assertThat(exception.getStatusCode(), is(HttpStatus.UNPROCESSABLE_ENTITY));
   }
 

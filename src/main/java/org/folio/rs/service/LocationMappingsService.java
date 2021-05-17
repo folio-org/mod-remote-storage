@@ -1,7 +1,8 @@
 package org.folio.rs.service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import java.util.UUID;
+
+import org.folio.rs.client.HoldingsStorageClient;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.LocationMappings;
 import org.folio.rs.mapper.LocationMappingsMapper;
@@ -13,7 +14,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Service
 @RequiredArgsConstructor
@@ -22,17 +24,20 @@ public class LocationMappingsService {
   public static final String MAPPINGS = "mappings";
   private final LocationMappingsRepository locationMappingsRepository;
   private final LocationMappingsMapper locationMappingsMapper;
+  private final HoldingsStorageClient holdingsStorageClient;
 
-  @CachePut(value = MAPPINGS, key = "#locationMapping.folioLocationId")
+  @CachePut(value = MAPPINGS, key = "#locationMapping.finalLocationId")
   public LocationMapping postMapping(LocationMapping locationMapping) {
     return locationMappingsMapper
       .mapEntityToDto(locationMappingsRepository.save(locationMappingsMapper.mapDtoToEntity(locationMapping)));
   }
 
-  @Cacheable(value = MAPPINGS, key = "#folioLocationId")
-  public LocationMapping getMappingByFolioLocationId(String folioLocationId) {
-    var id = UUID.fromString(folioLocationId);
-    return locationMappingsRepository.findById(id).map(locationMappingsMapper::mapEntityToDto).orElse(null);
+  @Cacheable(value = MAPPINGS, key = "#finalLocationId")
+  public LocationMapping getMappingByFinalLocationId(String finalLocationId) {
+    var id = UUID.fromString(finalLocationId);
+    return locationMappingsRepository.findById(id)
+      .map(locationMappingsMapper::mapEntityToDto)
+      .orElse(null);
   }
 
   public LocationMappings getMappings(Integer offset, Integer limit) {
@@ -40,9 +45,23 @@ public class LocationMappingsService {
     return locationMappingsMapper.mapEntitiesToMappingCollection(mappings);
   }
 
-  @CacheEvict(value = MAPPINGS, key = "#folioLocationId")
-  public void deleteMappingById(String folioLocationId) {
-    var id = UUID.fromString(folioLocationId);
+  public LocationMappings getMappingsLocations(Integer offset, Integer limit) {
+    var mappings = locationMappingsRepository.findAll(new OffsetRequest(offset, limit, Sort.unsorted()))
+      .map(locationMapping -> {
+        var holdings = holdingsStorageClient
+          .getHoldingsRecordsByQuery("permanentLocationId==" + locationMapping.getFinalLocationId());
+        if (holdings.isEmpty()) {
+          locationMapping.setFinalLocationId(null); // Case when mapping does not exist.
+        }
+        locationMapping.setRemoteConfigurationId(null); // remoteConfigurationId is not needed in a new endpoint.
+        return locationMapping;
+      });
+    return locationMappingsMapper.mapEntitiesToMappingCollection(mappings);
+  }
+
+  @CacheEvict(value = MAPPINGS, key = "#finalLocationId")
+  public void deleteMappingById(String finalLocationId) {
+    var id = UUID.fromString(finalLocationId);
     locationMappingsRepository.deleteById(id);
   }
 }

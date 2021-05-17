@@ -86,8 +86,8 @@ public class AccessionQueueServiceTest extends TestBase {
   void testItemUpdatingEventHandling() {
 
     var locationMapping = new LocationMapping();
-    locationMapping.setFolioLocationId(NEW_EFFECTIVE_LOCATION_ID);
-    locationMapping.setConfigurationId(REMOTE_STORAGE_ID);
+    locationMapping.setFinalLocationId(NEW_EFFECTIVE_LOCATION_ID);
+    locationMapping.setRemoteConfigurationId(REMOTE_STORAGE_ID);
     locationMappingsService.postMapping(locationMapping);
 
     var originalItem = new Item().effectiveLocationId(OLD_EFFECTIVE_LOCATION_ID)

@@ -21,7 +21,7 @@ public class CheckInRetrieveTest extends TestBase {
 
   private static final String CHECK_IN_URL = "http://localhost:%s/remote-storage/retrieve/%s/checkInItem";
   private static final String REMOTE_STORAGE_CONFIGURATION_ID = "de17bad7-2a30-4f1c-bee5-f653ded15629";
-  private static final String FOLIO_LOCATION_ID = "53cf956f-c1df-410b-8bea-27f712cca7c0";
+  private static final String FINAL_LOCATION_ID = "53cf956f-c1df-410b-8bea-27f712cca7c0";
   private static final String REMOTE_STORAGE_ERROR_CONFIGURATION_ID = "de17bad7-2a30-4f1c-bee5-f653ded15628";
 
   private String checkInUrl;
@@ -33,8 +33,9 @@ public class CheckInRetrieveTest extends TestBase {
   @BeforeEach
   void prepare() {
     LocationMapping locationMapping = new LocationMapping();
-    locationMapping.setFolioLocationId(UUID.fromString(FOLIO_LOCATION_ID));
-    locationMapping.setConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID));
+    locationMapping.setFinalLocationId(UUID.fromString(FINAL_LOCATION_ID));
+    locationMapping.setRemoteConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID));
+    locationMapping.setOriginalLocationId(UUID.fromString(FINAL_LOCATION_ID));
     locationMappingsRepository.save(locationMapping);
     checkInUrl = String.format(CHECK_IN_URL, okapiPort, REMOTE_STORAGE_CONFIGURATION_ID);
     errorCheckInUrl = String.format(CHECK_IN_URL, okapiPort, REMOTE_STORAGE_ERROR_CONFIGURATION_ID);
@@ -42,7 +43,7 @@ public class CheckInRetrieveTest extends TestBase {
 
   @AfterEach
   void clear() {
-    locationMappingsRepository.deleteById(UUID.fromString(FOLIO_LOCATION_ID));
+    locationMappingsRepository.deleteById(UUID.fromString(FINAL_LOCATION_ID));
   }
 
   @Test

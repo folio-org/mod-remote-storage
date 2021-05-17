@@ -4,8 +4,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.LocationMappings;
 import org.folio.rs.rest.resource.MappingsApi;
@@ -16,6 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Controller
@@ -33,24 +35,34 @@ public class LocationMappingsController implements MappingsApi {
 
   @Override
   public ResponseEntity<LocationMapping> getMappingById(String id) {
-    return ResponseEntity.ok().body(locationMappingsService.getMappingByFolioLocationId(id));
+    return ResponseEntity.ok()
+      .body(locationMappingsService.getMappingByFinalLocationId(id));
   }
 
   @Override
   public ResponseEntity<LocationMappings> getMappings(@Min(0) @Max(2147483647) @Valid Integer offset,
-    @Min(0) @Max(2147483647) @Valid Integer limit, @Valid String query) {
+      @Min(0) @Max(2147483647) @Valid Integer limit, @Valid String query) {
     var mappings = locationMappingsService.getMappings(offset, limit);
+    return new ResponseEntity<>(mappings, HttpStatus.OK);
+  }
+
+  @Override
+  public ResponseEntity<LocationMappings> getMappingsLocations(@Min(0) @Max(2147483647) @Valid Integer offset,
+      @Min(0) @Max(2147483647) @Valid Integer limit, @Valid String query) {
+    var mappings = locationMappingsService.getMappingsLocations(offset, limit);
     return new ResponseEntity<>(mappings, HttpStatus.OK);
   }
 
   @Override
   public ResponseEntity<String> deleteMappingById(String mappingId) {
     locationMappingsService.deleteMappingById(mappingId);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.noContent()
+      .build();
   }
 
-  @ExceptionHandler({EmptyResultDataAccessException.class, EntityNotFoundException.class})
+  @ExceptionHandler({ EmptyResultDataAccessException.class, EntityNotFoundException.class })
   public ResponseEntity<String> handleNotFoundExceptions() {
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(MAPPING_NOT_FOUND);
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+      .body(MAPPING_NOT_FOUND);
   }
 }

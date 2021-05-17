@@ -155,11 +155,11 @@ public class RetrievalQueueService {
   }
 
   private Specification<RetrievalQueueRecord> hasHoldId(String id) {
-    return (record, criteria, builder) -> builder.equal(record.get(HOLD_ID), id);
+    return (rec, criteria, builder) -> builder.equal(rec.get(HOLD_ID), id);
   }
 
   private Specification<RetrievalQueueRecord> hasRemoteStorageId(String id) {
-    return (record, criteria, builder) -> builder.equal(record.get(REMOTE_STORAGE_ID), stringToUUIDSafe(id));
+    return (rec, criteria, builder) -> builder.equal(rec.get(REMOTE_STORAGE_ID), stringToUUIDSafe(id));
   }
 
   private LocationMapping getLocationMapping(Item item) {

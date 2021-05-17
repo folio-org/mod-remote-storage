@@ -319,8 +319,9 @@ public class AccessionQueueServiceTest extends TestBase {
     configurationsService.postConfiguration(storageConfiguration);
 
     var locationMapping = new LocationMapping()
-      .configurationId(remoteStorageId)
-      .folioLocationId(remoteLocationId);
+      .remoteConfigurationId(remoteStorageId)
+      .finalLocationId(remoteLocationId)
+      .originalLocationId(remoteLocationId);
     locationMappingsService.postMapping(locationMapping);
 
     var accessionRequest = new AccessionRequest()

@@ -21,7 +21,7 @@ import org.folio.rs.client.HoldingsStorageClient;
 import org.folio.rs.client.IdentifierTypesClient;
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.domain.AsyncFolioExecutionContext;
-<<<<<<<<< Temporary merge branch 1
+
 import org.folio.rs.domain.dto.AccessionQueue;
 import org.folio.rs.domain.dto.AccessionQueues;
 import org.folio.rs.domain.dto.AccessionRequest;
@@ -41,9 +41,7 @@ import org.folio.rs.domain.dto.ItemPermanentLocation;
 import org.folio.rs.domain.dto.ItemsMove;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
-=========
-import org.folio.rs.domain.dto.*;
->>>>>>>>> Temporary merge branch 2
+
 import org.folio.rs.domain.entity.AccessionQueueRecord;
 import org.folio.rs.error.AccessionException;
 import org.folio.rs.mapper.AccessionQueueMapper;
@@ -119,12 +117,7 @@ public class AccessionQueueService {
     var accessionQueueRecord = buildAccessionQueueRecord(item, instance, locationMapping);
     accessionQueueRepository.save(accessionQueueRecord);
 
-<<<<<<<<< Temporary merge branch 1
-    changeItemPermanentLocation(item, locationMapping.getFolioLocationId());
-=========
-    item.setPermanentLocation(new ItemPermanentLocation().id(locationMapping.getFinalLocationId()));
-    inventoryClient.putItem(item.getId(), item);
->>>>>>>>> Temporary merge branch 2
+    changeItemPermanentLocation(item, locationMapping.getFinalLocationId());
 
     if (isPermanentLocationsMismatch(holdingsRecord, item)) {
       if (shouldChangeHoldingsPermanentLocation(accessionRequest, item)) {

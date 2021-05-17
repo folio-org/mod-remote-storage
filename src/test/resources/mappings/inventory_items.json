@@ -93,6 +93,32 @@
     },
     {
       "request": {
+        "method": "GET",
+        "url": "/inventory/items?query=barcode==111"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"items\": [\n    {\n      \"id\": \"0b96a642-5e7f-452d-9cae-9cee66c9a892\",\n      \"title\": \"Uprooted\",\n      \"callNumber\": \"D11.J54 A3 2011\",\n      \"barcode\": \"111\",\n      \"holdingsRecordId\": \"65cb2bf0-d4c2-4886-8ad0-b76f1ba75d61\",\n      \"status\": {\n        \"name\": \"Available\"\n      },\n      \"materialType\": {\n        \"id\": \"fcf3d3dc-b27f-4ce4-a530-542ea53cacb5\",\n        \"name\": \"Book\"\n      },\n      \"permanentLoanType\": {\n        \"id\": \"8e570d0d-931c-43d1-9ca1-221e693ea8d2\",\n        \"name\": \"Can Circulate\"\n      },\n      \"temporaryLoanType\": {\n        \"id\": \"74c25903-4019-4d8a-9360-5cb7761f44e5\",\n        \"name\": \"Course Reserve\"\n      },\n      \"permanentLocation\": {\n        \"id\": \"d9cd0bed-1b49-4b5e-a7bd-064b8d177231\",\n        \"name\": \"Main Library\"\n      },\n      \"tags\" : {\n        \"tagList\" : [\n          \"important\"\n        ]\n      }\n    }\n  ],\n  \"totalRecords\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/inventory/items?query=holdingsRecordId==65cb2bf0-d4c2-4886-8ad0-b76f1ba75d61"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"items\": [\n    {\n      \"id\": \"0b96a642-5e7f-452d-9cae-9cee66c9a892\",\n      \"title\": \"Uprooted\",\n      \"callNumber\": \"D11.J54 A3 2011\",\n      \"barcode\": \"111\",\n      \"holdingsRecordId\": \"65cb2bf0-d4c2-4886-8ad0-b76f1ba75d61\",\n      \"status\": {\n        \"name\": \"Available\"\n      },\n      \"materialType\": {\n        \"id\": \"fcf3d3dc-b27f-4ce4-a530-542ea53cacb5\",\n        \"name\": \"Book\"\n      },\n      \"permanentLoanType\": {\n        \"id\": \"8e570d0d-931c-43d1-9ca1-221e693ea8d2\",\n        \"name\": \"Can Circulate\"\n      },\n      \"temporaryLoanType\": {\n        \"id\": \"74c25903-4019-4d8a-9360-5cb7761f44e5\",\n        \"name\": \"Course Reserve\"\n      },\n      \"permanentLocation\": {\n        \"id\": \"d9cd0bed-1b49-4b5e-a7bd-064b8d177231\",\n        \"name\": \"Main Library\"\n      },\n      \"tags\" : {\n        \"tagList\" : [\n          \"important\"\n        ]\n      }\n    },\n    {\n      \"id\": \"2b04ef41-b08d-432a-b27f-b434655b5aff\",\n      \"title\": \"Uprooted\",\n      \"callNumber\": \"D11.J54 A3 2011\",\n      \"barcode\": \"222\",\n      \"holdingsRecordId\": \"65cb2bf0-d4c2-4886-8ad0-b76f1ba75d61\",\n      \"status\": {\n        \"name\": \"Available\"\n      },\n      \"materialType\": {\n        \"id\": \"fcf3d3dc-b27f-4ce4-a530-542ea53cacb5\",\n        \"name\": \"Book\"\n      },\n      \"permanentLoanType\": {\n        \"id\": \"8e570d0d-931c-43d1-9ca1-221e693ea8d2\",\n        \"name\": \"Can Circulate\"\n      },\n      \"temporaryLoanType\": {\n        \"id\": \"74c25903-4019-4d8a-9360-5cb7761f44e5\",\n        \"name\": \"Course Reserve\"\n      },\n      \"tags\" : {\n        \"tagList\" : [\n          \"important\"\n        ]\n      }\n    },\n    {\n      \"id\": \"fc90dd2b-06d5-4f23-a8b9-e26ede8e4d03\",\n      \"title\": \"Uprooted\",\n      \"callNumber\": \"D11.J54 A3 2011\",\n      \"barcode\": \"333\",\n      \"holdingsRecordId\": \"65cb2bf0-d4c2-4886-8ad0-b76f1ba75d61\",\n      \"status\": {\n        \"name\": \"Available\"\n      },\n      \"materialType\": {\n        \"id\": \"fcf3d3dc-b27f-4ce4-a530-542ea53cacb5\",\n        \"name\": \"Book\"\n      },\n      \"permanentLoanType\": {\n        \"id\": \"8e570d0d-931c-43d1-9ca1-221e693ea8d2\",\n        \"name\": \"Can Circulate\"\n      },\n      \"temporaryLoanType\": {\n        \"id\": \"74c25903-4019-4d8a-9360-5cb7761f44e5\",\n        \"name\": \"Course Reserve\"\n      },\n      \"temporaryLocation\": {\n        \"id\": \"0df935eb-f3f4-4741-9ac6-33c500174b96\",\n        \"name\": \"Annex\"\n      },\n      \"tags\" : {\n        \"tagList\" : [\n          \"important\"\n        ]\n      }\n    }\n  ],\n  \"totalRecords\": 3\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
         "method": "PUT",
         "urlPathPattern": "/inventory/items/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[1-5][a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}"
       },

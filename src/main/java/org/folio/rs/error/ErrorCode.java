@@ -7,7 +7,8 @@ public enum ErrorCode {
   CHECK_IN_ERROR("Check in by barcode error"),
   NOT_FOUND_ERROR("Not found"),
   DATE_FORMAT_ERROR("Date format error"),
-  ITEM_RETURN_ERROR("Item return error");
+  ITEM_RETURN_ERROR("Item return error"),
+  ACCESSION_ERROR("Accession error");
 
   private final String description;
 

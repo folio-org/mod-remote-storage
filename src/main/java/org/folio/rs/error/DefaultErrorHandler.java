@@ -1,6 +1,7 @@
 package org.folio.rs.error;
 
 import static java.util.Objects.isNull;
+import static org.folio.rs.error.ErrorCode.ACCESSION_ERROR;
 import static org.folio.rs.error.ErrorCode.CHECK_IN_ERROR;
 import static org.folio.rs.error.ErrorCode.CONSTRAINT_VIOLATION;
 import static org.folio.rs.error.ErrorCode.DATE_FORMAT_ERROR;
@@ -108,6 +109,19 @@ public class DefaultErrorHandler {
     errors.addErrorsItem(new Error()
       .message(exception.getMessage())
       .code(ITEM_RETURN_ERROR.getDescription())
+      .type(INTERNAL.getValue()));
+    errors.setTotalRecords(1);
+    return ResponseEntity
+      .badRequest()
+      .body(errors);
+  }
+
+  @ExceptionHandler(AccessionException.class)
+  public ResponseEntity<Errors> handleAccessionErrors(final AccessionException exception) {
+    Errors errors = new Errors();
+    errors.addErrorsItem(new Error()
+      .message(exception.getMessage())
+      .code(ACCESSION_ERROR.getDescription())
       .type(INTERNAL.getValue()));
     errors.setTotalRecords(1);
     return ResponseEntity

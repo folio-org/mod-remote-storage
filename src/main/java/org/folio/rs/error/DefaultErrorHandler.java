@@ -118,7 +118,7 @@ public class DefaultErrorHandler {
 
   @ExceptionHandler(AccessionException.class)
   public ResponseEntity<Errors> handleAccessionErrors(final AccessionException exception) {
-    Errors errors = new Errors();
+    var errors = new Errors();
     errors.addErrorsItem(new Error()
       .message(exception.getMessage())
       .code(ACCESSION_ERROR.getDescription())

@@ -1,34 +1,27 @@
 package org.folio.rs.service;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.folio.rs.domain.dto.AccessionWorkflowDetails.CHANGE_PERMANENT_LOCATION;
 import static org.folio.rs.util.ContributorType.AUTHOR;
-import static org.folio.rs.util.IdentifierType.ISBN;
-import static org.folio.rs.util.IdentifierType.ISSN;
-import static org.folio.rs.util.IdentifierType.OCLC;
+import static org.folio.rs.util.IdentifierType.*;
 import static org.folio.rs.util.MapperUtils.stringToUUIDSafe;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
+
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.Predicate;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
+
 import org.folio.rs.client.ContributorTypesClient;
 import org.folio.rs.client.HoldingsStorageClient;
 import org.folio.rs.client.IdentifierTypesClient;
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.domain.AsyncFolioExecutionContext;
+<<<<<<<<< Temporary merge branch 1
 import org.folio.rs.domain.dto.AccessionQueue;
 import org.folio.rs.domain.dto.AccessionQueues;
 import org.folio.rs.domain.dto.AccessionRequest;
@@ -47,7 +40,12 @@ import org.folio.rs.domain.dto.ItemMaterialType;
 import org.folio.rs.domain.dto.ItemPermanentLocation;
 import org.folio.rs.domain.dto.ItemsMove;
 import org.folio.rs.domain.dto.LocationMapping;
+import org.folio.rs.domain.dto.StorageConfiguration;
+=========
+import org.folio.rs.domain.dto.*;
+>>>>>>>>> Temporary merge branch 2
 import org.folio.rs.domain.entity.AccessionQueueRecord;
+import org.folio.rs.error.AccessionException;
 import org.folio.rs.mapper.AccessionQueueMapper;
 import org.folio.rs.repository.AccessionQueueRepository;
 import org.folio.rs.util.IdentifierType;
@@ -57,6 +55,12 @@ import org.folio.spring.scope.FolioExecutionScopeExecutionContextManager;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 
 @Service
 @Log4j2
@@ -77,6 +81,7 @@ public class AccessionQueueService {
   private final HoldingsStorageClient holdingsStorageClient;
   private final IdentifierTypesClient identifierTypesClient;
   private final ContributorTypesClient contributorTypesClient;
+  private final ConfigurationsService configurationsService;
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -114,21 +119,46 @@ public class AccessionQueueService {
     var accessionQueueRecord = buildAccessionQueueRecord(item, instance, locationMapping);
     accessionQueueRepository.save(accessionQueueRecord);
 
+<<<<<<<<< Temporary merge branch 1
+    changeItemPermanentLocation(item, locationMapping.getFolioLocationId());
+=========
     item.setPermanentLocation(new ItemPermanentLocation().id(locationMapping.getFinalLocationId()));
     inventoryClient.putItem(item.getId(), item);
+>>>>>>>>> Temporary merge branch 2
 
     if (isPermanentLocationsMismatch(holdingsRecord, item)) {
-      if (isAllItemsInHoldingHaveSamePermanentLocation(item)) {
+      if (shouldChangeHoldingsPermanentLocation(accessionRequest, item)) {
+        var holdingsOriginalLocation = holdingsRecord.getPermanentLocationId();
         changeHoldingsRecordPermanentLocation(holdingsRecord, item.getPermanentLocation().getId());
+        if (isChangePermanentLocationSetting(accessionRequest)) {
+          setLocationsForItemsWithoutLocation(holdingsRecord, holdingsOriginalLocation);
+        }
       } else {
         var holdingId = findHoldingWithSameRemoteLocation(holdingsRecord.getInstanceId(), item.getPermanentLocation().getId());
         if (isHoldingExists(holdingId)) {
           moveItemToHolding(item, holdingId);
         }
-        // holding splitting will be implemented in scope of https://issues.folio.org/browse/MODRS-40
+          // holding splitting will be implemented in scope of https://issues.folio.org/browse/MODRS-40
       }
     }
     return accessionQueueMapper.mapEntityToDto(accessionQueueRecord);
+  }
+
+  private boolean shouldChangeHoldingsPermanentLocation(AccessionRequest accessionRequest, Item item) {
+    return isChangePermanentLocationSetting(accessionRequest) || isAllItemsInHoldingHaveSamePermanentLocation(item);
+  }
+
+  private boolean isChangePermanentLocationSetting(AccessionRequest accessionRequest) {
+    return CHANGE_PERMANENT_LOCATION == getStorageConfiguration(accessionRequest).getAccessionWorkflowDetails();
+  }
+
+  private void setLocationsForItemsWithoutLocation(HoldingsRecord holdingsRecord, String holdingsOriginalLocation) {
+    inventoryClient.getItemsByQuery("holdingsRecordId==" + holdingsRecord.getId())
+      .getResult().forEach(i -> {
+      if (isNull(i.getPermanentLocation()) && isNull(i.getTemporaryLocation())) {
+        changeItemPermanentLocation(i, holdingsOriginalLocation);
+      }
+    });
   }
 
   private boolean isPermanentLocationsMismatch(HoldingsRecord holdingsRecord, Item item) {
@@ -138,6 +168,11 @@ public class AccessionQueueService {
   private void changeHoldingsRecordPermanentLocation(HoldingsRecord holdingsRecord, String locationId) {
     holdingsRecord.setPermanentLocationId(locationId);
     holdingsStorageClient.putHoldingsRecord(holdingsRecord.getId(), holdingsRecord);
+  }
+
+  private void changeItemPermanentLocation(Item item, String locationId) {
+    item.setPermanentLocation(new ItemPermanentLocation().id(locationId));
+    inventoryClient.putItem(item.getId(), item);
   }
 
   private String findHoldingWithSameRemoteLocation(String instanceId, String remoteLocationId) {
@@ -171,15 +206,25 @@ public class AccessionQueueService {
       .stream()
       .filter(lm -> accessionRequest.getRemoteStorageId().equals(lm.getRemoteConfigurationId()))
       .findFirst()
-      .orElseThrow(() -> new EntityNotFoundException("No location was found for provided remote storage id"));
+      .orElseThrow(() -> new AccessionException(
+        String.format("No location was found for remote storage id=%s", accessionRequest.getRemoteStorageId())));
   }
 
   private Item getItem(AccessionRequest accessionRequest) {
     var items = inventoryClient.getItemsByQuery("barcode==" + accessionRequest.getItemBarcode());
     if (items.isEmpty()) {
-      throw new EntityNotFoundException(String.format("Item with barcode=%s was not found", accessionRequest.getItemBarcode()));
+      throw new AccessionException(String.format("Item with barcode=%s was not found", accessionRequest.getItemBarcode()));
     }
     return items.getResult().get(0);
+  }
+
+  private StorageConfiguration getStorageConfiguration(AccessionRequest accessionRequest) {
+    var storageConfiguration = configurationsService.getConfigurationById(accessionRequest.getRemoteStorageId());
+    if (isNull(storageConfiguration)) {
+      throw new AccessionException(
+        String.format("No configuration was found for remote storage id=%s", accessionRequest.getRemoteStorageId()));
+    }
+    return storageConfiguration;
   }
 
   public AccessionQueues getAccessions(FilterData filterData) {

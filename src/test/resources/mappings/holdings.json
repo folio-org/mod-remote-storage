@@ -54,6 +54,40 @@
     },
     {
       "request": {
+        "method": "GET",
+<<<<<<<<< Temporary merge branch 1
+        "url": "/holdings-storage/holdings?query=id==65cb2bf0-d4c2-4886-8ad0-b76f1ba75d61"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"holdingsRecords\": [\n    {\n      \"id\": \"65cb2bf0-d4c2-4886-8ad0-b76f1ba75d61\",\n      \"instanceId\": \"7e1d6794-55d6-4f43-aeb7-222dd97d18be\",\n      \"permanentLocationId\": \"d9cd0bed-1b49-4b5e-a7bd-064b8d177231\",\n      \"holdingsStatements\": [\n        {\n          \"statement\": \"Line 1\",\n          \"note\": \"Note to line 1\"\n        },\n        {\n          \"statement\": \"Line 2\",\n          \"note\": \"Note to line2\"\n        }\n      ],\n      \"tags\" : {\n        \"tagList\" : [\n          \"important\"\n        ]\n      }\n    }\n  ],\n  \"totalRecords\": 1\n}",
+=========
+        "url": "/holdings-storage/holdings?query=permanentLocationId==53cf956f-c1df-410b-8bea-27f712cca7c0"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n    \"holdingsRecords\": [\n        {\n            \"id\": \"ee4025c8-893e-4283-b0e6-36cf818c0605\",\n            \"hrid\": \"ho5855985\",\n            \"holdingsTypeId\": \"6581dafa-e11a-4bc1-89ab-a3119e84f2ed\",\n            \"formerIds\": [\n                \"hzn1348512\"\n            ],\n            \"instanceId\": \"7e1d6794-55d6-4f43-aeb7-222dd97d18be\",\n            \"permanentLocationId\": \"b9dc25a2-a7fb-48ad-8da5-8f68e35ba0af\",\n            \"electronicAccess\": [],\n            \"callNumberTypeId\": \"c73c17f4-9660-421b-bdfc-e1c6093dec13\",\n            \"callNumber\": \"PN6519.C8A170 1987\",\n            \"notes\": [],\n            \"illPolicyId\": \"0918830c-0eb0-4ec8-af13-deeb72612ddf\",\n            \"holdingsStatements\": [],\n            \"holdingsStatementsForIndexes\": [],\n            \"holdingsStatementsForSupplements\": [],\n            \"statisticalCodeIds\": [],\n            \"holdingsItems\": [],\n            \"bareHoldingsItems\": [],\n            \"metadata\": {\n                \"createdDate\": \"2014-08-09T06:07:08.000+00:00\",\n                \"updatedDate\": \"2014-08-09T06:07:08.000+00:00\"\n            }\n        },\n        {\n            \"id\": \"336034b4-0524-45d7-b778-c769274baccf\",\n            \"hrid\": \"ho5855985\",\n            \"holdingsTypeId\": \"6581dafa-e11a-4bc1-89ab-a3119e84f2ed\",\n            \"formerIds\": [\n                \"hzn1348512\"\n            ],\n            \"instanceId\": \"7e1d6794-55d6-4f43-aeb7-222dd97d18be\",\n            \"permanentLocationId\": \"53cf956f-c1df-410b-8bea-27f712cca7c0\",\n            \"electronicAccess\": [],\n            \"callNumberTypeId\": \"c73c17f4-9660-421b-bdfc-e1c6093dec13\",\n            \"callNumber\": \"PN6519.C8A170 1987\",\n            \"notes\": [],\n            \"illPolicyId\": \"0918830c-0eb0-4ec8-af13-deeb72612ddf\",\n            \"holdingsStatements\": [],\n            \"holdingsStatementsForIndexes\": [],\n            \"holdingsStatementsForSupplements\": [],\n            \"statisticalCodeIds\": [],\n            \"holdingsItems\": [],\n            \"bareHoldingsItems\": [],\n            \"metadata\": {\n                \"createdDate\": \"2014-08-09T06:07:08.000+00:00\",\n                \"updatedDate\": \"2014-08-09T06:07:08.000+00:00\"\n            }\n        }\n    ],\n    \"totalRecords\": 2,\n    \"resultInfo\": {\n        \"totalRecords\": 2,\n        \"facets\": [],\n        \"diagnostics\": []\n    }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/holdings-storage/holdings?query=permanentLocationId==53cf956f-c1df-410b-8bea-27f712cca7c1"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n    \"holdingsRecords\": [],\n    \"totalRecords\": 0,\n    \"resultInfo\": {\n        \"totalRecords\": 0,\n        \"facets\": [],\n        \"diagnostics\": []\n    }\n}",
+>>>>>>>>> Temporary merge branch 2
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
         "method": "PUT",
         "urlPathPattern": "/holdings-storage/holdings/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[1-5][a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}"
       },

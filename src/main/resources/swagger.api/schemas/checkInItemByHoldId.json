@@ -5,7 +5,7 @@
   "properties": {
     "holdId": {
       "description": "Id of request (hold) for which item should be checked in",
-      "type": "string"
+      "$ref": "uuid.json"
     }
   },
   "additionalProperties": false,

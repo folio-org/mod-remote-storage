@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.folio.rs.TestBase;
@@ -55,6 +56,7 @@ public class CheckInRetrieveTest extends TestBase {
       .holdId(HOLD_ID)
       .remoteStorageId(stringToUUIDSafe(REMOTE_STORAGE_CONFIGURATION_ID))
       .itemBarcode(ITEM_BARCODE)
+      .createdDateTime(LocalDateTime.now())
       .build());
     checkInUrl = String.format(CHECK_IN_URL, okapiPort, REMOTE_STORAGE_CONFIGURATION_ID);
     checkInByHoldIdUrl = String.format(CHECK_IN_BY_HOLD_ID_URL, okapiPort, REMOTE_STORAGE_CONFIGURATION_ID);
@@ -85,25 +87,35 @@ public class CheckInRetrieveTest extends TestBase {
 
   @Test
   void canCheckInItemByHoldIdWithRemoteStorageConfigurationIdPost() {
-    var checkInByHoldId = new CheckInItemByHoldId();
-    checkInByHoldId.setHoldId(HOLD_ID);
+    var checkInByHoldId = getCheckInItemByHoldIdSample(HOLD_ID);
     var response = post(checkInByHoldIdUrl, checkInByHoldId, String.class);
     assertThat(response.getStatusCode(), is(HttpStatus.OK));
   }
 
   @Test
-  void testCheckInByHoldIdForInvalidRemoteStorageId() {
-    var checkInByHoldId = new CheckInItemByHoldId();
-    checkInByHoldId.setHoldId(HOLD_ID);
+  void testCheckInByHoldIdForErrorRemoteStorageId() {
+    var checkInByHoldId = getCheckInItemByHoldIdSample(HOLD_ID);
     var exception = assertThrows(HttpClientErrorException.class, () -> post(errorCheckInByHoldIdUrl, checkInByHoldId, String.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
   }
 
   @Test
-  void testCheckInByHoldIdForInvalidHoldId() {
-    var checkInByHoldId = new CheckInItemByHoldId();
-    checkInByHoldId.setHoldId(HOLD_ID_NOT_FOUND);
+  void testCheckInByHoldIdForErrorHoldId() {
+    var checkInByHoldId = getCheckInItemByHoldIdSample(HOLD_ID_NOT_FOUND);
     var exception = assertThrows(HttpClientErrorException.class, () -> post(checkInByHoldIdUrl, checkInByHoldId, String.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
+  }
+
+  @Test
+  void testCheckInByHoldIdForInvalidHoldId() {
+    CheckInItemByHoldId checkInByHoldId = getCheckInItemByHoldIdSample("invalid-id");
+    var exception = assertThrows(HttpClientErrorException.class, () -> post(checkInByHoldIdUrl, checkInByHoldId, String.class));
+    assertThat(exception.getStatusCode(), equalTo(HttpStatus.UNPROCESSABLE_ENTITY));
+  }
+
+  private CheckInItemByHoldId getCheckInItemByHoldIdSample(String holdId) {
+    var checkInByHoldId = new CheckInItemByHoldId();
+    checkInByHoldId.setHoldId(holdId);
+    return checkInByHoldId;
   }
 }

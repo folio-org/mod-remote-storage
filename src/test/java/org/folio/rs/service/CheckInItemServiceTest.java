@@ -85,7 +85,7 @@ public class CheckInItemServiceTest {
       .thenReturn(Optional.of(locationMapping));
     when(locationClient.getLocation(FOLIO_LOCATION_ID))
       .thenReturn(folioLocation);
-    when(retrievalQueueService.getRetrievalByHoldId(HOLD_ID, REMOTE_STORAGE_CONFIGURATION_ID))
+    when(retrievalQueueService.getLastRetrievalByHoldId(HOLD_ID, REMOTE_STORAGE_CONFIGURATION_ID))
       .thenReturn(Optional.of(retrievalQueueRecord));
 
     checkInItemService.checkInItemByHoldId(REMOTE_STORAGE_CONFIGURATION_ID, checkInItemByHoldId);

@@ -65,8 +65,15 @@ public class RetrievalQueueService {
     return retrievalQueueMapper.mapEntitiesToRetrievalQueueCollection(queueRecords);
   }
 
-  public Optional<RetrievalQueueRecord> getRetrievalByHoldId(String holdId, String remoteStorageId) {
-    return retrievalQueueRepository.findOne(Specification.where(hasHoldId(holdId).and(hasRemoteStorageId(remoteStorageId))));
+  /**
+   * This method returns last by creation time retrieval queue record searched by holdId and remoteStorageConfigurationId
+   * @param holdId - request(hold) id
+   * @param remoteStorageId - remote storage configuration id
+   * @return retrieval queue record
+   */
+  public Optional<RetrievalQueueRecord> getLastRetrievalByHoldId(String holdId, String remoteStorageId) {
+    return retrievalQueueRepository.findAll(Specification.where(hasHoldId(holdId)
+      .and(hasRemoteStorageId(remoteStorageId))), Sort.by(Sort.Direction.DESC, REQUEST_DATE_TIME)).stream().findFirst();
   }
 
   public void setRetrievedById(String retrievalQueueId) {

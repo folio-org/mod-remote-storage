@@ -52,7 +52,7 @@ public class CheckInItemService {
   public void checkInItemByHoldId(String remoteStorageConfigurationId, CheckInItemByHoldId checkInItemByHoldId) {
     var holdId = checkInItemByHoldId.getHoldId();
     log.info("Start check-in process for item with associated request with id=" + holdId);
-    var retrievalQueueRecord = retrievalQueueService.getRetrievalByHoldId(holdId, remoteStorageConfigurationId);
+    var retrievalQueueRecord = retrievalQueueService.getLastRetrievalByHoldId(holdId, remoteStorageConfigurationId);
     var barcode = retrievalQueueRecord
       .orElseThrow(() -> new CheckInException(
         format("Retrieval Queue Record with holdId=%s not found for remoteStorageId=%s", holdId, remoteStorageConfigurationId)))

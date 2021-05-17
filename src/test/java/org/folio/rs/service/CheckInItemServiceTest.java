@@ -50,6 +50,7 @@ public class CheckInItemServiceTest {
     locationMapping = new LocationMapping();
     locationMapping.setFinalLocationId(UUID.fromString(FOLIO_LOCATION_ID));
     locationMapping.setRemoteConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID));
+    locationMapping.setOriginalLocationId(UUID.fromString(FOLIO_LOCATION_ID));
     folioLocation = FolioLocation.of(FOLIO_LOCATION_ID, Strings.EMPTY, PRIMARY_SERVICE_POINT);
     checkInItem = new CheckInItem();
     checkInItem.setItemBarcode("item-barcode");

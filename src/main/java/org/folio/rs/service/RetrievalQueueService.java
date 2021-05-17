@@ -10,19 +10,19 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.Predicate;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.client.ServicePointsClient;
 import org.folio.rs.client.UsersClient;
+import org.folio.rs.domain.dto.EventRequest;
 import org.folio.rs.domain.dto.FilterData;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.ItemContributorNames;
 import org.folio.rs.domain.dto.ItemEffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.LocationMapping;
-import org.folio.rs.domain.dto.EventRequest;
 import org.folio.rs.domain.dto.PickupServicePoint;
 import org.folio.rs.domain.dto.ResultList;
 import org.folio.rs.domain.dto.RetrievalQueues;
@@ -35,6 +35,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+
 @Service
 @Log4j2
 @RequiredArgsConstructor
@@ -45,6 +48,7 @@ public class RetrievalQueueService {
   private static final String RETRIEVED_DATE_TIME = "retrievedDateTime";
   private static final String REMOTE_STORAGE_ID = "remoteStorageId";
   private static final String REQUEST_DATE_TIME = "createdDateTime";
+  private static final String HOLD_ID = "holdId";
   private static final String NOT_FOUND = " not found";
   private static final String REQUEST_TYPE_DEFAULT = "PYR";
   private final RetrievalQueueRepository retrievalQueueRepository;
@@ -59,6 +63,10 @@ public class RetrievalQueueService {
     var queueRecords = retrievalQueueRepository.findAll(getCriteriaSpecification(filterData),
         new OffsetRequest(filterData.getOffset(), filterData.getLimit(), Sort.unsorted()));
     return retrievalQueueMapper.mapEntitiesToRetrievalQueueCollection(queueRecords);
+  }
+
+  public Optional<RetrievalQueueRecord> getRetrievalByHoldId(String holdId, String remoteStorageId) {
+    return retrievalQueueRepository.findOne(Specification.where(hasHoldId(holdId).and(hasRemoteStorageId(remoteStorageId))));
   }
 
   public void setRetrievedById(String retrievalQueueId) {
@@ -114,6 +122,9 @@ public class RetrievalQueueService {
       if (Objects.nonNull(filterData.getCreateDate())) {
         predicates.add(builder.equal(record.get(REQUEST_DATE_TIME), LocalDateTime.parse(filterData.getCreateDate())));
       }
+      if (Objects.nonNull(filterData.getCreateDate())) {
+        predicates.add(builder.equal(record.get(REQUEST_DATE_TIME), LocalDateTime.parse(filterData.getCreateDate())));
+      }
       return builder.and(predicates.toArray(new Predicate[0]));
     };
   }
@@ -134,6 +145,14 @@ public class RetrievalQueueService {
 
   private Specification<RetrievalQueueRecord> hasId(String id) {
     return (record, criteria, builder) -> builder.equal(record.get(ID), stringToUUIDSafe(id));
+  }
+
+  private Specification<RetrievalQueueRecord> hasHoldId(String id) {
+    return (record, criteria, builder) -> builder.equal(record.get(HOLD_ID), id);
+  }
+
+  private Specification<RetrievalQueueRecord> hasRemoteStorageId(String id) {
+    return (record, criteria, builder) -> builder.equal(record.get(REMOTE_STORAGE_ID), stringToUUIDSafe(id));
   }
 
   private LocationMapping getLocationMapping(Item item) {

@@ -52,7 +52,7 @@ public class LocationMappingsService {
       .map(folioLocation -> {
         var locationMappings = locationMappingsRepository
           .findById(UUID.fromString(folioLocation.getId()));
-        LocationMapping locationMapping = new LocationMapping();
+        var locationMapping = new LocationMapping();
         locationMapping.setOriginalLocationId(folioLocation.getId());
         if (locationMappings.isPresent()) { // Case when mapping exists.
           locationMapping.setFinalLocationId(locationMappings.get().getFinalLocationId().toString());
@@ -60,7 +60,7 @@ public class LocationMappingsService {
         return locationMappingsMapper.mapDtoToEntity(locationMapping);
       }).collect(Collectors.toList());
     return locationMappingsMapper.mapEntitiesToMappingCollection(
-      new PageImpl(mappings, new OffsetRequest(offset, limit, Sort.unsorted()), mappings.size()));
+      new PageImpl<>(mappings, new OffsetRequest(offset, limit, Sort.unsorted()), mappings.size()));
   }
 
   @CacheEvict(value = MAPPINGS, key = "#finalLocationId")

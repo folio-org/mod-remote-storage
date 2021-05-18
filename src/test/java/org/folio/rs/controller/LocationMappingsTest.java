@@ -6,14 +6,13 @@ import static org.folio.rs.service.LocationMappingsService.MAPPINGS;
 import static org.folio.rs.util.Utils.randomIdAsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.folio.rs.TestBase;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.LocationMappings;
 import org.folio.rs.domain.dto.StorageConfiguration;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +27,11 @@ public class LocationMappingsTest extends TestBase {
 
   private static final String MAPPINGS_URL = "http://localhost:%s/remote-storage/mappings/";
   private static final String MAPPINGS_LOCATIONS_URL = "http://localhost:%s/remote-storage/mappings/locations";
-  private static final String SAMPLE_FINAL_LOCATION_ID_IF_MAPPING_NOT_EXISTS = "53cf956f-c1df-410b-8bea-27f712cca7c1";
+  private static final String LOCATIONS_URL = "http://localhost:%s/locations";
 
   private String mappingsUrl;
   private String mappingsLocationsUrl;
+  private String locationsUrl;
 
   @Autowired
   private CacheManager cacheManager;
@@ -40,6 +40,7 @@ public class LocationMappingsTest extends TestBase {
   void prepareUrl() {
     mappingsUrl = String.format(MAPPINGS_URL, okapiPort);
     mappingsLocationsUrl = String.format(MAPPINGS_LOCATIONS_URL, okapiPort);
+    locationsUrl = String.format(LOCATIONS_URL, okapiPort);
     ofNullable(cacheManager.getCache(MAPPINGS)).ifPresent(Cache::clear);
   }
 
@@ -77,14 +78,9 @@ public class LocationMappingsTest extends TestBase {
   void canGetMappingsLocations() {
     ResponseEntity<LocationMappings> responseEntity = get(mappingsLocationsUrl, LocationMappings.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-    assertThat(responseEntity.getBody().getTotalRecords(), is(1));
-    assertThat(responseEntity.getBody().getMappings().get(0).getOriginalLocationId(), notNullValue());
-    post(mappingsUrl, new LocationMapping().finalLocationId(SAMPLE_FINAL_LOCATION_ID_IF_MAPPING_NOT_EXISTS)
-      .remoteConfigurationId(randomIdAsString()).originalLocationId(randomIdAsString()), LocationMapping.class);
-    responseEntity = get(mappingsLocationsUrl, LocationMappings.class);
     assertThat(responseEntity.getBody().getTotalRecords(), is(2));
+    assertThat(responseEntity.getBody().getMappings().get(0).getOriginalLocationId(), notNullValue());
     assertThat(responseEntity.getBody().getMappings().get(1).getFinalLocationId(), nullValue());
-    delete(mappingsUrl + SAMPLE_FINAL_LOCATION_ID_IF_MAPPING_NOT_EXISTS);
   }
 
   @Test

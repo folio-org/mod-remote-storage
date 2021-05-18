@@ -1,8 +1,9 @@
 package org.folio.rs.service;
 
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-import org.folio.rs.client.HoldingsStorageClient;
+import org.folio.rs.client.LocationClient;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.LocationMappings;
 import org.folio.rs.mapper.LocationMappingsMapper;
@@ -11,6 +12,7 @@ import org.folio.spring.data.OffsetRequest;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +26,7 @@ public class LocationMappingsService {
   public static final String MAPPINGS = "mappings";
   private final LocationMappingsRepository locationMappingsRepository;
   private final LocationMappingsMapper locationMappingsMapper;
-  private final HoldingsStorageClient holdingsStorageClient;
+  private final LocationClient locationClient;
 
   @CachePut(value = MAPPINGS, key = "#locationMapping.finalLocationId")
   public LocationMapping postMapping(LocationMapping locationMapping) {
@@ -46,17 +48,19 @@ public class LocationMappingsService {
   }
 
   public LocationMappings getMappingsLocations(Integer offset, Integer limit) {
-    var mappings = locationMappingsRepository.findAll(new OffsetRequest(offset, limit, Sort.unsorted()))
-      .map(locationMapping -> {
-        var holdings = holdingsStorageClient
-          .getHoldingsRecordsByQuery("permanentLocationId==" + locationMapping.getFinalLocationId());
-        if (holdings.isEmpty()) {
-          locationMapping.setFinalLocationId(null); // Case when mapping does not exist.
+    var mappings = locationClient.getLocations().getResult().stream()
+      .map(folioLocation -> {
+        var locationMappings = locationMappingsRepository
+          .findById(UUID.fromString(folioLocation.getId()));
+        LocationMapping locationMapping = new LocationMapping();
+        locationMapping.setOriginalLocationId(folioLocation.getId());
+        if (locationMappings.isPresent()) { // Case when mapping exists.
+          locationMapping.setFinalLocationId(locationMappings.get().getFinalLocationId().toString());
         }
-        locationMapping.setRemoteConfigurationId(null); // remoteConfigurationId is not needed in a new endpoint.
-        return locationMapping;
-      });
-    return locationMappingsMapper.mapEntitiesToMappingCollection(mappings);
+        return locationMappingsMapper.mapDtoToEntity(locationMapping);
+      }).collect(Collectors.toList());
+    return locationMappingsMapper.mapEntitiesToMappingCollection(
+      new PageImpl(mappings, new OffsetRequest(offset, limit, Sort.unsorted()), mappings.size()));
   }
 
   @CacheEvict(value = MAPPINGS, key = "#finalLocationId")

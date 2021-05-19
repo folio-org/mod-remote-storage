@@ -54,6 +54,19 @@
     },
     {
       "request": {
+        "method": "GET",
+        "url": "/holdings-storage/holdings?query=id==65cb2bf0-d4c2-4886-8ad0-b76f1ba75d61"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"holdingsRecords\": [\n    {\n      \"id\": \"65cb2bf0-d4c2-4886-8ad0-b76f1ba75d61\",\n      \"instanceId\": \"7e1d6794-55d6-4f43-aeb7-222dd97d18be\",\n      \"permanentLocationId\": \"d9cd0bed-1b49-4b5e-a7bd-064b8d177231\",\n      \"holdingsStatements\": [\n        {\n          \"statement\": \"Line 1\",\n          \"note\": \"Note to line 1\"\n        },\n        {\n          \"statement\": \"Line 2\",\n          \"note\": \"Note to line2\"\n        }\n      ],\n      \"tags\" : {\n        \"tagList\" : [\n          \"important\"\n        ]\n      }\n    }\n  ],\n  \"totalRecords\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
         "method": "PUT",
         "urlPathPattern": "/holdings-storage/holdings/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[1-5][a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}"
       },

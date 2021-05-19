@@ -6,11 +6,19 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.folio.rs.domain.dto.AccessionWorkflowDetails.CHANGE_PERMANENT_LOCATION;
 import static org.folio.rs.util.ContributorType.AUTHOR;
-import static org.folio.rs.util.IdentifierType.*;
+import static org.folio.rs.util.IdentifierType.ISBN;
+import static org.folio.rs.util.IdentifierType.ISSN;
+import static org.folio.rs.util.IdentifierType.OCLC;
 import static org.folio.rs.util.MapperUtils.stringToUUIDSafe;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
@@ -21,7 +29,6 @@ import org.folio.rs.client.HoldingsStorageClient;
 import org.folio.rs.client.IdentifierTypesClient;
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.domain.AsyncFolioExecutionContext;
-
 import org.folio.rs.domain.dto.AccessionQueue;
 import org.folio.rs.domain.dto.AccessionQueues;
 import org.folio.rs.domain.dto.AccessionRequest;
@@ -41,7 +48,6 @@ import org.folio.rs.domain.dto.ItemPermanentLocation;
 import org.folio.rs.domain.dto.ItemsMove;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
-
 import org.folio.rs.domain.entity.AccessionQueueRecord;
 import org.folio.rs.error.AccessionException;
 import org.folio.rs.mapper.AccessionQueueMapper;
@@ -94,7 +100,7 @@ public class AccessionQueueService {
           new AsyncFolioExecutionContext(systemUserParameters, moduleMetadata));
         var effectiveLocationId = item.getEffectiveLocationId();
         var locationMapping = locationMappingsService
-          .getMappingByFinalLocationId(effectiveLocationId);
+          .getLocationMapping(effectiveLocationId);
         if (nonNull(locationMapping)) {
           var instances = inventoryClient.getInstancesByQuery("id==" + item.getInstanceId());
           var instance = instances.getResult().get(0);
@@ -109,11 +115,15 @@ public class AccessionQueueService {
   }
 
   public AccessionQueue processPostAccession(AccessionRequest accessionRequest) {
-    var locationMapping = getLocationMapping(accessionRequest);
     var item = getItem(accessionRequest);
+    var locationMapping = locationMappingsService.getLocationMapping(
+      item.getEffectiveLocationId(),
+      accessionRequest.getRemoteStorageId());
+    if (locationMapping == null) {
+      throw new AccessionException(String.format("No location was found for remote storage id=%s", accessionRequest.getRemoteStorageId()));
+    }
     var holdingsRecord = holdingsStorageClient.getHoldingsRecordsByQuery("id==" + item.getHoldingsRecordId()).getResult().get(0);
     var instance = inventoryClient.getInstancesByQuery("id==" + holdingsRecord.getInstanceId()).getResult().get(0);
-
     var accessionQueueRecord = buildAccessionQueueRecord(item, instance, locationMapping);
     accessionQueueRepository.save(accessionQueueRecord);
 
@@ -191,16 +201,6 @@ public class AccessionQueueService {
       .getResult()
       .stream()
       .allMatch(i -> nonNull(i.getPermanentLocation()) && item.getPermanentLocation().getId().equals(i.getPermanentLocation().getId()));
-  }
-
-  private LocationMapping getLocationMapping(AccessionRequest accessionRequest) {
-    return locationMappingsService.getMappings(0, Integer.MAX_VALUE)
-      .getMappings()
-      .stream()
-      .filter(lm -> accessionRequest.getRemoteStorageId().equals(lm.getRemoteConfigurationId()))
-      .findFirst()
-      .orElseThrow(() -> new AccessionException(
-        String.format("No location was found for remote storage id=%s", accessionRequest.getRemoteStorageId())));
   }
 
   private Item getItem(AccessionRequest accessionRequest) {

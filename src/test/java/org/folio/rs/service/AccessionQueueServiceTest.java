@@ -15,10 +15,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.http.RequestMethod;
-import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang.StringUtils;
 import org.folio.rs.TestBase;
 import org.folio.rs.domain.dto.AccessionQueue;
@@ -48,6 +44,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.HttpClientErrorException;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.http.RequestMethod;
+
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 
 @ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

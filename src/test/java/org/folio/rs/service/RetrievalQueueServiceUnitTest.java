@@ -1,6 +1,5 @@
 package org.folio.rs.service;
 
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -11,7 +10,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
+
 import javax.persistence.EntityNotFoundException;
+
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.client.ServicePointsClient;
 import org.folio.rs.client.UsersClient;
@@ -92,7 +93,6 @@ public class RetrievalQueueServiceUnitTest {
   @Mock
   private EventRequest eventRequest;
 
-
   @BeforeEach
   void prepareTestData() {
     when(eventRequest.getItemBarCode()).thenReturn(ITEM_BARCODE);
@@ -110,7 +110,7 @@ public class RetrievalQueueServiceUnitTest {
     when(effectiveLocation.getId()).thenReturn(EFFECTIVE_LOCATION_ID);
     when(item.getEffectiveCallNumberComponents()).thenReturn(callNumberComponents);
     when(callNumberComponents.getCallNumber()).thenReturn(CALL_NUMBER);
-    when(locationMappingsService.getMappingByFinalLocationId(EFFECTIVE_LOCATION_ID)).thenReturn(locationMapping);
+    when(locationMappingsService.getLocationMapping(EFFECTIVE_LOCATION_ID)).thenReturn(locationMapping);
     when(locationMapping.getRemoteConfigurationId()).thenReturn(REMOTE_STORAGE_ID);
     when(servicePointsClient.getServicePoint(PICKUP_SERVICE_POINT_ID)).thenReturn(pickupServicePoint);
     when(pickupServicePoint.getCode()).thenReturn(PICKUP_SERVICE_POINT_CODE);
@@ -151,7 +151,7 @@ public class RetrievalQueueServiceUnitTest {
 
   @Test
   void shouldNotProcessRecordsWhenLocationIsNotRemote() {
-    when(locationMappingsService.getMappingByFinalLocationId(EFFECTIVE_LOCATION_ID)).thenReturn(null);
+    when(locationMappingsService.getLocationMapping(EFFECTIVE_LOCATION_ID)).thenReturn(null);
 
     service.processEventRequest(eventRequest);
 

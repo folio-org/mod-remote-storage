@@ -35,9 +35,18 @@ public class LocationMappingsService {
   }
 
   @Cacheable(value = MAPPINGS, key = "#finalLocationId")
-  public LocationMapping getMappingByFinalLocationId(String finalLocationId) {
+  public LocationMapping getLocationMapping(String finalLocationId) {
     var id = UUID.fromString(finalLocationId);
     return locationMappingsRepository.findById(id)
+      .map(locationMappingsMapper::mapEntityToDto)
+      .orElse(null);
+  }
+
+  @Cacheable(value = MAPPINGS, key = "{#originalLocationId, #remoteConfigurationId}")
+  public LocationMapping getLocationMapping(String originalLocationId, String remoteConfigurationId) {
+    var originalLocationUUID = originalLocationId == null ? null : UUID.fromString(originalLocationId);
+    var remoteConfigurationUUID = UUID.fromString(remoteConfigurationId);
+    return locationMappingsRepository.findByOriginalLocationIdAndRemoteConfigurationId(originalLocationUUID, remoteConfigurationUUID)
       .map(locationMappingsMapper::mapEntityToDto)
       .orElse(null);
   }

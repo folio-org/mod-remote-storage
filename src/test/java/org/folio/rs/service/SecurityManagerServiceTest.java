@@ -6,10 +6,10 @@ import static org.hamcrest.Matchers.hasItems;
 
 import java.util.List;
 import java.util.UUID;
+
 import org.folio.rs.TestBase;
 import org.folio.rs.domain.entity.SystemUserParameters;
 import org.folio.rs.repository.SystemUserParametersRepository;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

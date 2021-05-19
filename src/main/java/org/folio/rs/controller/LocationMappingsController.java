@@ -36,7 +36,7 @@ public class LocationMappingsController implements MappingsApi {
   @Override
   public ResponseEntity<LocationMapping> getMappingById(String id) {
     return ResponseEntity.ok()
-      .body(locationMappingsService.getMappingByFinalLocationId(id));
+      .body(locationMappingsService.getLocationMapping(id));
   }
 
   @Override

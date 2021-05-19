@@ -1,6 +1,13 @@
 package org.folio.rs.service;
 
-import joptsimple.internal.Strings;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Optional;
+import java.util.UUID;
+
 import org.folio.rs.client.CirculationClient;
 import org.folio.rs.client.LocationClient;
 import org.folio.rs.domain.dto.CheckInCirculationRequest;
@@ -17,13 +24,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import joptsimple.internal.Strings;
 
 @ExtendWith(MockitoExtension.class)
 public class CheckInItemServiceTest {

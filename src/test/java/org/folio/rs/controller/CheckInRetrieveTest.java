@@ -1,5 +1,12 @@
 package org.folio.rs.controller;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.UUID;
+
 import org.folio.rs.TestBase;
 import org.folio.rs.domain.entity.LocationMapping;
 import org.folio.rs.repository.LocationMappingsRepository;
@@ -9,13 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
-
-import java.util.UUID;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CheckInRetrieveTest extends TestBase {
 

@@ -111,40 +111,41 @@ public class AccessionQueueService {
   }
 
   public AccessionQueue processPostAccession(AccessionRequest accessionRequest) {
+    var storageConfiguration = getStorageConfiguration(accessionRequest);
     var locationMapping = getLocationMapping(accessionRequest);
     var item = getItem(accessionRequest);
     var holdingsRecord = holdingsStorageClient.getHoldingsRecordsByQuery("id==" + item.getHoldingsRecordId()).getResult().get(0);
     var instance = inventoryClient.getInstancesByQuery("id==" + holdingsRecord.getInstanceId()).getResult().get(0);
 
-    var accessionQueueRecord = buildAccessionQueueRecord(item, instance, locationMapping);
-    accessionQueueRepository.save(accessionQueueRecord);
+    var remoteLocationId = locationMapping.getFolioLocationId();
 
-    changeItemPermanentLocation(item, locationMapping.getFolioLocationId());
-
-    if (isPermanentLocationsMismatch(holdingsRecord, item)) {
-      if (shouldChangeHoldingsPermanentLocation(accessionRequest, item)) {
+    if (isPermanentLocationsMatch(holdingsRecord, remoteLocationId)) {
+      changeItemPermanentLocation(item, remoteLocationId);
+    } else {
+      if (shouldChangeHoldingsPermanentLocation(storageConfiguration, item, remoteLocationId)) {
+        changeItemPermanentLocation(item, remoteLocationId);
         var holdingsOriginalLocation = holdingsRecord.getPermanentLocationId();
-        changeHoldingsRecordPermanentLocation(holdingsRecord, item.getPermanentLocation().getId());
-        if (isChangePermanentLocationSetting(accessionRequest)) {
+        changeHoldingsRecordPermanentLocation(holdingsRecord, remoteLocationId);
+        if (isChangePermanentLocationSetting(storageConfiguration)) {
           setLocationsForItemsWithoutLocation(holdingsRecord, holdingsOriginalLocation);
         }
       } else {
-        var holdingId = findHoldingWithSameRemoteLocation(holdingsRecord.getInstanceId(), item.getPermanentLocation().getId());
-        if (isHoldingExists(holdingId)) {
-          moveItemToHolding(item, holdingId);
-        }
-          // holding splitting will be implemented in scope of https://issues.folio.org/browse/MODRS-40
+        var holdingId = findOrCreateHoldingWithSamePermanentLocation(holdingsRecord, remoteLocationId);
+        changeItemPermanentLocation(item, remoteLocationId);
+        moveItemToHolding(item, holdingId);
       }
     }
+    var accessionQueueRecord = buildAccessionQueueRecord(item, instance, locationMapping);
+    accessionQueueRepository.save(accessionQueueRecord);
     return accessionQueueMapper.mapEntityToDto(accessionQueueRecord);
   }
 
-  private boolean shouldChangeHoldingsPermanentLocation(AccessionRequest accessionRequest, Item item) {
-    return isChangePermanentLocationSetting(accessionRequest) || isAllItemsInHoldingHaveSamePermanentLocation(item);
+  private boolean shouldChangeHoldingsPermanentLocation(StorageConfiguration storageConfiguration, Item item, String location) {
+    return isChangePermanentLocationSetting(storageConfiguration) || isAllItemsInHoldingHaveSamePermanentLocation(item, location);
   }
 
-  private boolean isChangePermanentLocationSetting(AccessionRequest accessionRequest) {
-    return CHANGE_PERMANENT_LOCATION == getStorageConfiguration(accessionRequest).getAccessionWorkflowDetails();
+  private boolean isChangePermanentLocationSetting(StorageConfiguration storageConfiguration) {
+    return CHANGE_PERMANENT_LOCATION == storageConfiguration.getAccessionWorkflowDetails();
   }
 
   private void setLocationsForItemsWithoutLocation(HoldingsRecord holdingsRecord, String holdingsOriginalLocation) {
@@ -156,8 +157,8 @@ public class AccessionQueueService {
     });
   }
 
-  private boolean isPermanentLocationsMismatch(HoldingsRecord holdingsRecord, Item item) {
-    return !item.getPermanentLocation().getId().equals(holdingsRecord.getPermanentLocationId());
+  private boolean isPermanentLocationsMatch(HoldingsRecord holdingsRecord, String desiredLocationId) {
+    return desiredLocationId.equals(holdingsRecord.getPermanentLocationId());
   }
 
   private void changeHoldingsRecordPermanentLocation(HoldingsRecord holdingsRecord, String locationId) {
@@ -170,16 +171,21 @@ public class AccessionQueueService {
     inventoryClient.putItem(item.getId(), item);
   }
 
-  private String findHoldingWithSameRemoteLocation(String instanceId, String remoteLocationId) {
-    return holdingsStorageClient.getHoldingsRecordsByQuery("instanceId==" + instanceId)
+  private String findOrCreateHoldingWithSamePermanentLocation(HoldingsRecord holdingsRecord, String remoteLocationId) {
+    var holdings = holdingsStorageClient.getHoldingsRecordsByQuery("instanceId==" + holdingsRecord.getInstanceId())
       .getResult().stream()
       .filter(h -> remoteLocationId.equals(h.getPermanentLocationId()))
-      .map(HoldingsRecord::getId)
-      .findFirst().orElse(null);
-  }
-
-  private boolean isHoldingExists(String holdingsRecordId) {
-    return nonNull(holdingsRecordId);
+      .collect(Collectors.toList());
+    if (holdings.isEmpty()) {
+      return holdingsStorageClient.postHoldingsRecord(holdingsRecord
+        .id(UUID.randomUUID().toString())
+        .hrid(null)
+        .permanentLocationId(remoteLocationId)).getId();
+    } else if (holdings.size() == 1) {
+      return holdings.get(0).getId();
+    } else {
+      throw new AccessionException("More than one holdings record exist with permanent location id=" + remoteLocationId);
+    }
   }
 
   private void moveItemToHolding(Item item, String holdingRecordId) {
@@ -188,11 +194,12 @@ public class AccessionQueueService {
       .toHoldingsRecordId(holdingRecordId));
   }
 
-  private boolean isAllItemsInHoldingHaveSamePermanentLocation(Item item) {
+  private boolean isAllItemsInHoldingHaveSamePermanentLocation(Item item, String location) {
     return inventoryClient.getItemsByQuery("holdingsRecordId==" + item.getHoldingsRecordId())
       .getResult()
       .stream()
-      .allMatch(i -> nonNull(i.getPermanentLocation()) && item.getPermanentLocation().getId().equals(i.getPermanentLocation().getId()));
+      .filter(i -> !item.getId().equals(i.getId()))
+      .allMatch(i -> nonNull(i.getPermanentLocation()) && location.equals(i.getPermanentLocation().getId()));
   }
 
   private LocationMapping getLocationMapping(AccessionRequest accessionRequest) {
@@ -218,6 +225,8 @@ public class AccessionQueueService {
     if (isNull(storageConfiguration)) {
       throw new AccessionException(
         String.format("No configuration was found for remote storage id=%s", accessionRequest.getRemoteStorageId()));
+    } else if (isNull(storageConfiguration.getAccessionWorkflowDetails())) {
+      throw new AccessionException("Remote storage configuration does not contain accession details");
     }
     return storageConfiguration;
   }

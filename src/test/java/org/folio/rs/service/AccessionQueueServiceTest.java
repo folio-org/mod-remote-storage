@@ -282,7 +282,24 @@ public class AccessionQueueServiceTest extends TestBase {
 
   @Test
   void shouldChangeItemPermanentLocationIfHoldingHasTheSameOne() {
-    var accessionRequest = buildAccessionRequest("38268030");
+    var storageConfiguration = new StorageConfiguration()
+      .id(REMOTE_STORAGE_ID)
+      .name("Test")
+      .providerName("CAIA_SOFT")
+      .accessionDelay(1)
+      .accessionTimeUnit(TimeUnits.MINUTES)
+      .accessionWorkflowDetails(AccessionWorkflowDetails.CHANGE_PERMANENT_LOCATION);
+    configurationsService.postConfiguration(storageConfiguration);
+
+    var locationMapping = new LocationMapping()
+      .configurationId(REMOTE_STORAGE_ID)
+      .folioLocationId(REMOTE_LOCATION_ID);
+    locationMappingsService.postMapping(locationMapping);
+
+    var accessionRequest = new AccessionRequest()
+      .remoteStorageId(REMOTE_STORAGE_ID)
+      .itemBarcode("38268030");
+
     ResponseEntity<AccessionQueue> response = post(formattedAccessionUrl, accessionRequest, AccessionQueue.class);
     var actualAccessionQueueRecord = accessionQueueRepository.findAll().get(0);
     assertThat(actualAccessionQueueRecord.getAccessionedDateTime(), notNullValue());
@@ -294,16 +311,51 @@ public class AccessionQueueServiceTest extends TestBase {
 
   @Test
   void shouldChangeHoldingPermanentLocationIfAllItemsWithinHoldingHasRemoteLocation() {
-    var accessionRequest = buildAccessionRequest("38268031");
+    var storageConfiguration = new StorageConfiguration()
+      .id(REMOTE_STORAGE_ID)
+      .name("Test")
+      .providerName("CAIA_SOFT")
+      .accessionDelay(1)
+      .accessionTimeUnit(TimeUnits.MINUTES)
+      .accessionWorkflowDetails(AccessionWorkflowDetails.CHANGE_PERMANENT_LOCATION);
+    configurationsService.postConfiguration(storageConfiguration);
+
+    var locationMapping = new LocationMapping()
+      .configurationId(REMOTE_STORAGE_ID)
+      .folioLocationId(REMOTE_LOCATION_ID);
+    locationMappingsService.postMapping(locationMapping);
+
+    var accessionRequest = new AccessionRequest()
+      .remoteStorageId(REMOTE_STORAGE_ID)
+      .itemBarcode("38268031");
+
     post(formattedAccessionUrl, accessionRequest, AccessionQueue.class);
     assertThatHoldingPermanentLocationWasChanged(REMOTE_LOCATION_ID);
   }
 
   @Test
   void shouldMoveItemToHoldingWithRemoteLocationIfItExists() {
-    var accessionRequest = buildAccessionRequest("38268032");
+    var storageConfiguration = new StorageConfiguration()
+      .id(REMOTE_STORAGE_ID)
+      .name("Test")
+      .providerName("CAIA_SOFT")
+      .accessionDelay(1)
+      .accessionTimeUnit(TimeUnits.MINUTES)
+      .accessionWorkflowDetails(AccessionWorkflowDetails.DUPLICATE_HOLDINGS);
+    configurationsService.postConfiguration(storageConfiguration);
+
+    var locationMapping = new LocationMapping()
+      .configurationId(REMOTE_STORAGE_ID)
+      .folioLocationId(REMOTE_LOCATION_ID);
+    locationMappingsService.postMapping(locationMapping);
+
+    var accessionRequest = new AccessionRequest()
+      .remoteStorageId(REMOTE_STORAGE_ID)
+      .itemBarcode("38268032");
+
     post(formattedAccessionUrl, accessionRequest, AccessionQueue.class);
-    assertThatItemWasMovedToHoldingWithRemoteLocation();
+    assertThatItemWasMovedToHoldingWithRemoteLocation("336034b4-0524-45d7-b778-c769274baccf",
+      "a31301dc-0a28-49e6-9fa2-499e07c0bb42");
   }
 
   @Test
@@ -346,6 +398,78 @@ public class AccessionQueueServiceTest extends TestBase {
 
     // item containing either permanent or temporary location should not be modified
     assertThereWereNoPutItemRequests("fc90dd2b-06d5-4f23-a8b9-e26ede8e4d03");
+  }
+
+  @Test
+  void shouldDuplicateHoldingsRecordAndMoveItemIfDuplicateHoldingsSelectedAndNoHoldingExists() {
+    var storageConfiguration = new StorageConfiguration()
+      .id(REMOTE_STORAGE_ID)
+      .name("Test")
+      .providerName("CAIA_SOFT")
+      .accessionDelay(1)
+      .accessionTimeUnit(TimeUnits.MINUTES)
+      .accessionWorkflowDetails(AccessionWorkflowDetails.DUPLICATE_HOLDINGS);
+    configurationsService.postConfiguration(storageConfiguration);
+
+    var locationMapping = new LocationMapping()
+      .configurationId(REMOTE_STORAGE_ID)
+      .folioLocationId(REMOTE_LOCATION_ID);
+    locationMappingsService.postMapping(locationMapping);
+
+    var accessionRequest = new AccessionRequest()
+      .remoteStorageId(REMOTE_STORAGE_ID)
+      .itemBarcode("0001");
+
+    post(formattedAccessionUrl, accessionRequest, AccessionQueue.class);
+    assertThatHoldingsRecordWasCreated();
+    assertThatItemWasMovedToHoldingWithRemoteLocation("7f806ac6-a0ef-4962-95f8-0b3154b70a08",
+      "fd14f552-2f2f-48a4-a777-570d087ba224");
+  }
+
+  @Test
+  void shouldRespondWithBadRequestIfConfigurationHasNoAccessionDetails() {
+    var storageConfiguration = new StorageConfiguration()
+      .id(REMOTE_STORAGE_ID)
+      .name("Test")
+      .providerName("CAIA_SOFT")
+      .accessionDelay(1)
+      .accessionTimeUnit(TimeUnits.MINUTES);
+    configurationsService.postConfiguration(storageConfiguration);
+
+    var accessionRequest = new AccessionRequest()
+      .remoteStorageId(REMOTE_STORAGE_ID)
+      .itemBarcode("38268032");
+
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
+      post(formattedAccessionUrl, accessionRequest, AccessionQueue.class), StringUtils.EMPTY);
+
+    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.BAD_REQUEST));
+  }
+
+  @Test
+  void shouldRespondWithBadRequestIfThereAreMultipleHoldingsWithSameRemoteLocationExist() {
+    var storageConfiguration = new StorageConfiguration()
+      .id(REMOTE_STORAGE_ID)
+      .name("Test")
+      .providerName("CAIA_SOFT")
+      .accessionDelay(1)
+      .accessionTimeUnit(TimeUnits.MINUTES)
+      .accessionWorkflowDetails(AccessionWorkflowDetails.DUPLICATE_HOLDINGS);
+    configurationsService.postConfiguration(storageConfiguration);
+
+    var locationMapping = new LocationMapping()
+      .configurationId(REMOTE_STORAGE_ID)
+      .folioLocationId(REMOTE_LOCATION_ID);
+    locationMappingsService.postMapping(locationMapping);
+
+    var accessionRequest = new AccessionRequest()
+      .remoteStorageId(REMOTE_STORAGE_ID)
+      .itemBarcode("0003");
+
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
+      post(formattedAccessionUrl, accessionRequest, AccessionQueue.class), StringUtils.EMPTY);
+
+    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.BAD_REQUEST));
   }
 
   @Test
@@ -427,7 +551,7 @@ public class AccessionQueueServiceTest extends TestBase {
   }
 
   @SneakyThrows
-  private void assertThatItemWasMovedToHoldingWithRemoteLocation() {
+  private void assertThatItemWasMovedToHoldingWithRemoteLocation(String holdingsRecordId, String itemId) {
     var requestBody = wireMockServer.getAllServeEvents().stream()
       .filter(e -> RequestMethod.POST.equals(e.getRequest().getMethod()) &&
         "/inventory/items/move".equals(e.getRequest().getUrl()))
@@ -437,9 +561,23 @@ public class AccessionQueueServiceTest extends TestBase {
       .getBody();
     ObjectMapper mapper = new ObjectMapper();
     var itemsMoveRequest = mapper.readValue(requestBody, ItemsMove.class);
-    assertThat(itemsMoveRequest.getToHoldingsRecordId(), equalTo("336034b4-0524-45d7-b778-c769274baccf"));
+    assertThat(itemsMoveRequest.getToHoldingsRecordId(), equalTo(holdingsRecordId));
     assertThat(itemsMoveRequest.getItemIds().size(), equalTo(1));
-    assertThat(itemsMoveRequest.getItemIds().get(0), equalTo("a31301dc-0a28-49e6-9fa2-499e07c0bb42"));
+    assertThat(itemsMoveRequest.getItemIds().get(0), equalTo(itemId));
+  }
+
+  @SneakyThrows
+  private void assertThatHoldingsRecordWasCreated() {
+    var requestBody = wireMockServer.getAllServeEvents().stream()
+      .filter(e -> RequestMethod.POST.equals(e.getRequest().getMethod()) &&
+        "/holdings-storage/holdings".equals(e.getRequest().getUrl()))
+      .findFirst()
+      .get()
+      .getRequest()
+      .getBody();
+    ObjectMapper mapper = new ObjectMapper();
+    var postHoldingRequest = mapper.readValue(requestBody, HoldingsRecord.class);
+    assertThat(postHoldingRequest.getPermanentLocationId(), equalTo(REMOTE_LOCATION_ID));
   }
 
   private AccessionQueueRecord createBaseAccessionQueueRecord() {

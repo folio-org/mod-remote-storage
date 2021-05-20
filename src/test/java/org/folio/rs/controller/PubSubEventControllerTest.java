@@ -21,6 +21,7 @@ import org.folio.rs.domain.entity.RetrievalQueueRecord;
 import org.folio.rs.repository.RetrievalQueueRepository;
 import org.folio.rs.util.LogEventType;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;

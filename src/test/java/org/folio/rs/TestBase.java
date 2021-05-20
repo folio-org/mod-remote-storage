@@ -1,7 +1,8 @@
 package org.folio.rs;
 
-import static org.folio.rs.controller.TenantController.PARAMETER_LOAD_SAMPLE;
-
+import com.github.tomakehurst.wiremock.WireMockServer;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import lombok.extern.log4j.Log4j2;
 import org.folio.rs.controller.TenantController;
 import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.spring.FolioModuleMetadata;
@@ -27,10 +28,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.util.SocketUtils;
 import org.springframework.web.client.RestTemplate;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-import lombok.extern.log4j.Log4j2;
+import static org.folio.rs.controller.TenantController.PARAMETER_LOAD_SAMPLE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource("classpath:application-test.yml")

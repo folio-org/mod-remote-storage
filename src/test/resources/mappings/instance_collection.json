@@ -30,6 +30,32 @@
           "Content-Type": "application/json"
         }
       }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/inventory/instances?query=id==142f490a-db5d-4673-9052-fcd7762e817a"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"instances\" : [ {\n    \"@context\" : \"http://localhost:9130/inventory/instances/context\",\n    \"id\" : \"142f490a-db5d-4673-9052-fcd7762e817a\",\n    \"hrid\" : \"in00000000005\",\n    \"source\" : \"FOLIO\",\n    \"title\" : \"Test\",\n    \"alternativeTitles\" : [ ],\n    \"editions\" : [ ],\n    \"series\" : [ ],\n    \"identifiers\" : [ ],\n    \"contributors\" : [ ],\n    \"subjects\" : [ ],\n    \"classifications\" : [ ],\n    \"publication\" : [ ],\n    \"publicationFrequency\" : [ ],\n    \"publicationRange\" : [ ],\n    \"electronicAccess\" : [ ],\n    \"instanceTypeId\" : \"6312d172-f0cf-40f6-b27d-9fa8feaf332f\",\n    \"instanceFormatIds\" : [ ],\n    \"physicalDescriptions\" : [ ],\n    \"languages\" : [ ],\n    \"notes\" : [ ],\n    \"catalogedDate\" : \"2021-05-18\",\n    \"previouslyHeld\" : false,\n    \"staffSuppress\" : false,\n    \"discoverySuppress\" : false,\n    \"statisticalCodeIds\" : [ ],\n    \"statusUpdatedDate\" : \"2021-05-18T10:57:13.566+0000\",\n    \"metadata\" : {\n      \"createdDate\" : \"2021-05-18T10:57:13.565+00:00\",\n      \"createdByUserId\" : \"1e13a9a1-d044-578c-8bc9-2aa1f80beac0\",\n      \"updatedDate\" : \"2021-05-18T10:57:13.565+00:00\",\n      \"updatedByUserId\" : \"1e13a9a1-d044-578c-8bc9-2aa1f80beac0\"\n    },\n    \"tags\" : {\n      \"tagList\" : [ ]\n    },\n    \"natureOfContentTermIds\" : [ ],\n    \"links\" : {\n      \"self\" : \"http://localhost:9130/inventory/instances/142f490a-db5d-4673-9052-fcd7762e817a\"\n    }\n  } ],\n  \"totalRecords\" : 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/inventory/instances?query=id==ef30fd46-4fb4-42f0-9899-2fcdbd29782d"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"instances\" : [ {\n    \"@context\" : \"http://localhost:9130/inventory/instances/context\",\n    \"id\" : \"ef30fd46-4fb4-42f0-9899-2fcdbd29782d\",\n    \"hrid\" : \"in00000000005\",\n    \"source\" : \"FOLIO\",\n    \"title\" : \"Test\",\n    \"alternativeTitles\" : [ ],\n    \"editions\" : [ ],\n    \"series\" : [ ],\n    \"identifiers\" : [ ],\n    \"contributors\" : [ ],\n    \"subjects\" : [ ],\n    \"classifications\" : [ ],\n    \"publication\" : [ ],\n    \"publicationFrequency\" : [ ],\n    \"publicationRange\" : [ ],\n    \"electronicAccess\" : [ ],\n    \"instanceTypeId\" : \"6312d172-f0cf-40f6-b27d-9fa8feaf332f\",\n    \"instanceFormatIds\" : [ ],\n    \"physicalDescriptions\" : [ ],\n    \"languages\" : [ ],\n    \"notes\" : [ ],\n    \"catalogedDate\" : \"2021-05-18\",\n    \"previouslyHeld\" : false,\n    \"staffSuppress\" : false,\n    \"discoverySuppress\" : false,\n    \"statisticalCodeIds\" : [ ],\n    \"statusUpdatedDate\" : \"2021-05-18T10:57:13.566+0000\",\n    \"metadata\" : {\n      \"createdDate\" : \"2021-05-18T10:57:13.565+00:00\",\n      \"createdByUserId\" : \"1e13a9a1-d044-578c-8bc9-2aa1f80beac0\",\n      \"updatedDate\" : \"2021-05-18T10:57:13.565+00:00\",\n      \"updatedByUserId\" : \"1e13a9a1-d044-578c-8bc9-2aa1f80beac0\"\n    },\n    \"tags\" : {\n      \"tagList\" : [ ]\n    },\n    \"natureOfContentTermIds\" : [ ],\n    \"links\" : {\n      \"self\" : \"http://localhost:9130/inventory/instances/142f490a-db5d-4673-9052-fcd7762e817a\"\n    }\n  } ],\n  \"totalRecords\" : 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
     }
   ]
 }

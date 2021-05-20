@@ -33,8 +33,8 @@ public class CheckInItemService {
     if (locationMapping.isEmpty()) {
       throw new CheckInException("Folio location does not exist for remoteStorageConfigurationId " + remoteStorageConfigurationId);
     } else {
-      var folioLocationId = locationMapping.get().getFinalLocationId().toString();
-      var folioLocation = locationClient.getLocation(folioLocationId);
+      var finalLocationId = locationMapping.get().getFinalLocationId().toString();
+      var folioLocation = locationClient.getLocation(finalLocationId);
       if (StringUtils.isBlank(folioLocation.getPrimaryServicePoint())) {
         throw new CheckInException("Primary service point is empty for remoteStorageConfigurationId " + remoteStorageConfigurationId);
       } else {

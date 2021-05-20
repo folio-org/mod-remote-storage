@@ -64,7 +64,7 @@ public class LocationMappingsTest extends TestBase {
     assertTrue(EqualsBuilder.reflectionEquals(responseEntity.getBody(), mapping, true, StorageConfiguration.class, METADATA));
     // assertTrue(EqualsBuilder.reflectionEquals(
     // requireNonNull(
-    // requireNonNull(cacheManager.getCache(MAPPINGS)).get(responseEntity.getBody().getFolioLocationId())).get(), mapping, true,
+    // requireNonNull(cacheManager.getCache(MAPPINGS)).get(responseEntity.getBody().getFinalLocationId())).get(), mapping, true,
     // StorageConfiguration.class, METADATA));
   }
 
@@ -98,7 +98,7 @@ public class LocationMappingsTest extends TestBase {
 
     // Verify cache disable via MODRS-42
     // Object cachedMapping =
-    // requireNonNull(requireNonNull(cacheManager.getCache(MAPPINGS)).get(mapping.getFolioLocationId())).get();
+    // requireNonNull(requireNonNull(cacheManager.getCache(MAPPINGS)).get(mapping.getFinalLocationId())).get();
 
     ResponseEntity<LocationMapping> secondResponse = get(mappingsUrl + mapping.getFinalLocationId(), LocationMapping.class);
     assertThat(secondResponse.getStatusCode(), is(HttpStatus.OK));
@@ -112,11 +112,11 @@ public class LocationMappingsTest extends TestBase {
       .remoteConfigurationId(randomIdAsString())
       .originalLocationId(randomIdAsString()), LocationMapping.class);
     // Verify cache disable via MODRS-42
-    // assertThat(requireNonNull(cacheManager.getCache(MAPPINGS)).get(requireNonNull(responseEntity.getBody()).getFolioLocationId()),
+    // assertThat(requireNonNull(cacheManager.getCache(MAPPINGS)).get(requireNonNull(responseEntity.getBody()).getFinalLocationId()),
     // notNullValue());
     assertThat(delete(mappingsUrl + responseEntity.getBody()
       .getFinalLocationId()).getStatusCode(), is(HttpStatus.NO_CONTENT));
-    // assertThat(requireNonNull(cacheManager.getCache(MAPPINGS)).get(requireNonNull(responseEntity.getBody()).getFolioLocationId()),
+    // assertThat(requireNonNull(cacheManager.getCache(MAPPINGS)).get(requireNonNull(responseEntity.getBody()).getFinalLocationId()),
     // nullValue());
   }
 

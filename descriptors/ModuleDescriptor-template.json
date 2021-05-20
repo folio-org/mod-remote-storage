@@ -113,7 +113,7 @@
         },
         {
           "methods": ["GET"],
-          "pathPattern": "/remote-storage/mappings/{folioLocationId}",
+          "pathPattern": "/remote-storage/mappings/{finalLocationId}",
           "permissionsRequired" : [ "remote-storage.mappings.item.get" ]
         },
         {
@@ -123,7 +123,7 @@
         },
         {
           "methods": ["DELETE"],
-          "pathPattern": "/remote-storage/mappings/{folioLocationId}",
+          "pathPattern": "/remote-storage/mappings/{finalLocationId}",
           "permissionsRequired": [
             "remote-storage.mappings.item.delete"
           ]

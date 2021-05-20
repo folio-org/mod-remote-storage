@@ -206,16 +206,6 @@ public class AccessionQueueService {
       .allMatch(i -> nonNull(i.getPermanentLocation()) && location.equals(i.getPermanentLocation().getId()));
   }
 
-  private LocationMapping getLocationMapping(AccessionRequest accessionRequest) {
-    return locationMappingsService.getMappings(0, Integer.MAX_VALUE)
-      .getMappings()
-      .stream()
-      .filter(lm -> accessionRequest.getRemoteStorageId().equals(lm.getRemoteConfigurationId()))
-      .findFirst()
-      .orElseThrow(() -> new AccessionException(
-        String.format("No location was found for remote storage id=%s", accessionRequest.getRemoteStorageId())));
-  }
-
   private Item getItem(AccessionRequest accessionRequest) {
     var items = inventoryClient.getItemsByQuery("barcode==" + accessionRequest.getItemBarcode());
     if (items.isEmpty()) {

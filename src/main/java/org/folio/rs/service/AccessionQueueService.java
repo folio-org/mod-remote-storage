@@ -119,22 +119,18 @@ public class AccessionQueueService {
 
     var remoteLocationId = locationMapping.getFolioLocationId();
 
-    if (isPermanentLocationsMatch(holdingsRecord, remoteLocationId)) {
-      changeItemPermanentLocation(item, remoteLocationId);
-    } else {
+    if (!holdingsRecordMatchLocation(holdingsRecord, remoteLocationId)) {
       if (shouldChangeHoldingsPermanentLocation(storageConfiguration, item, remoteLocationId)) {
-        changeItemPermanentLocation(item, remoteLocationId);
-        var holdingsOriginalLocation = holdingsRecord.getPermanentLocationId();
-        changeHoldingsRecordPermanentLocation(holdingsRecord, remoteLocationId);
         if (isChangePermanentLocationSetting(storageConfiguration)) {
-          setLocationsForItemsWithoutLocation(holdingsRecord, holdingsOriginalLocation);
+          setLocationForItemsWithoutLocation(holdingsRecord);
         }
+        changeHoldingsRecordPermanentLocation(holdingsRecord, remoteLocationId);
       } else {
-        var holdingId = findOrCreateHoldingWithSamePermanentLocation(holdingsRecord, remoteLocationId);
-        changeItemPermanentLocation(item, remoteLocationId);
-        moveItemToHolding(item, holdingId);
+        moveItemToHolding(item, findOrCreateHoldingWithSamePermanentLocation(holdingsRecord, remoteLocationId));
       }
     }
+
+    changeItemPermanentLocation(item, remoteLocationId);
     var accessionQueueRecord = buildAccessionQueueRecord(item, instance, locationMapping);
     accessionQueueRepository.save(accessionQueueRecord);
     return accessionQueueMapper.mapEntityToDto(accessionQueueRecord);
@@ -148,17 +144,17 @@ public class AccessionQueueService {
     return CHANGE_PERMANENT_LOCATION == storageConfiguration.getAccessionWorkflowDetails();
   }
 
-  private void setLocationsForItemsWithoutLocation(HoldingsRecord holdingsRecord, String holdingsOriginalLocation) {
+  private void setLocationForItemsWithoutLocation(HoldingsRecord holdingsRecord) {
     inventoryClient.getItemsByQuery("holdingsRecordId==" + holdingsRecord.getId())
       .getResult().forEach(i -> {
       if (isNull(i.getPermanentLocation()) && isNull(i.getTemporaryLocation())) {
-        changeItemPermanentLocation(i, holdingsOriginalLocation);
+        changeItemPermanentLocation(i, holdingsRecord.getPermanentLocationId());
       }
     });
   }
 
-  private boolean isPermanentLocationsMatch(HoldingsRecord holdingsRecord, String desiredLocationId) {
-    return desiredLocationId.equals(holdingsRecord.getPermanentLocationId());
+  private boolean holdingsRecordMatchLocation(HoldingsRecord holdingsRecord, String locationId) {
+    return locationId.equals(holdingsRecord.getPermanentLocationId());
   }
 
   private void changeHoldingsRecordPermanentLocation(HoldingsRecord holdingsRecord, String locationId) {
@@ -176,11 +172,13 @@ public class AccessionQueueService {
       .getResult().stream()
       .filter(h -> remoteLocationId.equals(h.getPermanentLocationId()))
       .collect(Collectors.toList());
+
     if (holdings.isEmpty()) {
       return holdingsStorageClient.postHoldingsRecord(holdingsRecord
         .id(UUID.randomUUID().toString())
         .hrid(null)
-        .permanentLocationId(remoteLocationId)).getId();
+        .permanentLocationId(remoteLocationId))
+        .getId();
     } else if (holdings.size() == 1) {
       return holdings.get(0).getId();
     } else {
@@ -192,6 +190,7 @@ public class AccessionQueueService {
     inventoryClient.moveItemsToHolding(new ItemsMove()
       .itemIds(Collections.singletonList(item.getId()))
       .toHoldingsRecordId(holdingRecordId));
+    item.setHoldingsRecordId(holdingRecordId);
   }
 
   private boolean isAllItemsInHoldingHaveSamePermanentLocation(Item item, String location) {

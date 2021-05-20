@@ -67,76 +67,11 @@
     },
     {
       "request": {
-        "method": "GET",
-        "url": "/holdings-storage/holdings?query=id==032703c1-90f0-4708-aa5e-ac5fb7d19c59"
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"holdingsRecords\": [\n    {\n      \"id\": \"032703c1-90f0-4708-aa5e-ac5fb7d19c59\",\n      \"_version\": 1,\n      \"hrid\": \"ho00000000014\",\n      \"holdingsTypeId\": \"0c422f92-0f4d-4d32-8cbe-390ebc33a3e5\",\n      \"formerIds\": [],\n      \"instanceId\": \"142f490a-db5d-4673-9052-fcd7762e817a\",\n      \"permanentLocationId\": \"fcd64ce1-6995-48f0-840e-89ffa2288371\",\n      \"effectiveLocationId\": \"fcd64ce1-6995-48f0-840e-89ffa2288371\",\n      \"electronicAccess\": [],\n      \"notes\": [],\n      \"holdingsStatements\": [],\n      \"holdingsStatementsForIndexes\": [],\n      \"holdingsStatementsForSupplements\": [],\n      \"statisticalCodeIds\": [],\n      \"holdingsItems\": [],\n      \"bareHoldingsItems\": [],\n      \"metadata\": {\n          \"createdDate\": \"2021-05-18T11:07:17.865+00:00\",\n          \"createdByUserId\": \"1e13a9a1-d044-578c-8bc9-2aa1f80beac0\",\n          \"updatedDate\": \"2021-05-18T11:07:17.865+00:00\",\n          \"updatedByUserId\": \"1e13a9a1-d044-578c-8bc9-2aa1f80beac0\"\n      },\n      \"sourceId\": \"f32d531e-df79-46b3-8932-cdd35f7a2264\"\n    }\n  ],\n  \"totalRecords\": 1\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      }
-    },
-    {
-      "request": {
-        "method": "GET",
-        "url": "/holdings-storage/holdings?query=instanceId==142f490a-db5d-4673-9052-fcd7762e817a"
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"holdingsRecords\": [\n    {\n      \"id\": \"032703c1-90f0-4708-aa5e-ac5fb7d19c59\",\n      \"_version\": 1,\n      \"hrid\": \"ho00000000014\",\n      \"holdingsTypeId\": \"0c422f92-0f4d-4d32-8cbe-390ebc33a3e5\",\n      \"formerIds\": [],\n      \"instanceId\": \"142f490a-db5d-4673-9052-fcd7762e817a\",\n      \"permanentLocationId\": \"fcd64ce1-6995-48f0-840e-89ffa2288371\",\n      \"effectiveLocationId\": \"fcd64ce1-6995-48f0-840e-89ffa2288371\",\n      \"electronicAccess\": [],\n      \"notes\": [],\n      \"holdingsStatements\": [],\n      \"holdingsStatementsForIndexes\": [],\n      \"holdingsStatementsForSupplements\": [],\n      \"statisticalCodeIds\": [],\n      \"holdingsItems\": [],\n      \"bareHoldingsItems\": [],\n      \"metadata\": {\n          \"createdDate\": \"2021-05-18T11:07:17.865+00:00\",\n          \"createdByUserId\": \"1e13a9a1-d044-578c-8bc9-2aa1f80beac0\",\n          \"updatedDate\": \"2021-05-18T11:07:17.865+00:00\",\n          \"updatedByUserId\": \"1e13a9a1-d044-578c-8bc9-2aa1f80beac0\"\n      },\n      \"sourceId\": \"f32d531e-df79-46b3-8932-cdd35f7a2264\"\n    }\n  ],\n  \"totalRecords\": 1\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      }
-    },
-    {
-      "request": {
-        "method": "GET",
-        "url": "/holdings-storage/holdings?query=id==16ea6238-e0c9-41a4-9614-9442a3cc6dcc"
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"holdingsRecords\": [\n    {\n      \"id\": \"16ea6238-e0c9-41a4-9614-9442a3cc6dcc\",\n      \"_version\": 1,\n      \"hrid\": \"ho00000000014\",\n      \"holdingsTypeId\": \"0c422f92-0f4d-4d32-8cbe-390ebc33a3e5\",\n      \"formerIds\": [],\n      \"instanceId\": \"ef30fd46-4fb4-42f0-9899-2fcdbd29782d\",\n      \"permanentLocationId\": \"fcd64ce1-6995-48f0-840e-89ffa2288371\",\n      \"effectiveLocationId\": \"fcd64ce1-6995-48f0-840e-89ffa2288371\",\n      \"electronicAccess\": [],\n      \"notes\": [],\n      \"holdingsStatements\": [],\n      \"holdingsStatementsForIndexes\": [],\n      \"holdingsStatementsForSupplements\": [],\n      \"statisticalCodeIds\": [],\n      \"holdingsItems\": [],\n      \"bareHoldingsItems\": [],\n      \"metadata\": {\n          \"createdDate\": \"2021-05-18T11:07:17.865+00:00\",\n          \"createdByUserId\": \"1e13a9a1-d044-578c-8bc9-2aa1f80beac0\",\n          \"updatedDate\": \"2021-05-18T11:07:17.865+00:00\",\n          \"updatedByUserId\": \"1e13a9a1-d044-578c-8bc9-2aa1f80beac0\"\n      },\n      \"sourceId\": \"f32d531e-df79-46b3-8932-cdd35f7a2264\"\n    }\n  ],\n  \"totalRecords\": 1\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      }
-    },
-    {
-      "request": {
-        "method": "GET",
-        "url": "/holdings-storage/holdings?query=instanceId==ef30fd46-4fb4-42f0-9899-2fcdbd29782d"
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"holdingsRecords\": [\n    {\n      \"id\": \"16ea6238-e0c9-41a4-9614-9442a3cc6dcc\",\n      \"_version\": 1,\n      \"hrid\": \"ho00000000014\",\n      \"holdingsTypeId\": \"0c422f92-0f4d-4d32-8cbe-390ebc33a3e5\",\n      \"formerIds\": [],\n      \"instanceId\": \"ef30fd46-4fb4-42f0-9899-2fcdbd29782d\",\n      \"permanentLocationId\": \"fcd64ce1-6995-48f0-840e-89ffa2288371\",\n      \"effectiveLocationId\": \"fcd64ce1-6995-48f0-840e-89ffa2288371\",\n      \"electronicAccess\": [],\n      \"notes\": [],\n      \"holdingsStatements\": [],\n      \"holdingsStatementsForIndexes\": [],\n      \"holdingsStatementsForSupplements\": [],\n      \"statisticalCodeIds\": [],\n      \"holdingsItems\": [],\n      \"bareHoldingsItems\": [],\n      \"metadata\": {\n          \"createdDate\": \"2021-05-18T11:07:17.865+00:00\",\n          \"createdByUserId\": \"1e13a9a1-d044-578c-8bc9-2aa1f80beac0\",\n          \"updatedDate\": \"2021-05-18T11:07:17.865+00:00\",\n          \"updatedByUserId\": \"1e13a9a1-d044-578c-8bc9-2aa1f80beac0\"\n      },\n      \"sourceId\": \"f32d531e-df79-46b3-8932-cdd35f7a2264\"\n    },\n    {\n      \"id\": \"7032dc0f-5bfd-4301-8205-2532499b2c70\",\n      \"_version\": 1,\n      \"hrid\": \"ho00000000015\",\n      \"holdingsTypeId\": \"0c422f92-0f4d-4d32-8cbe-390ebc33a3e5\",\n      \"formerIds\": [],\n      \"instanceId\": \"ef30fd46-4fb4-42f0-9899-2fcdbd29782d\",\n      \"permanentLocationId\": \"53cf956f-c1df-410b-8bea-27f712cca7c0\",\n      \"effectiveLocationId\": \"53cf956f-c1df-410b-8bea-27f712cca7c0\",\n      \"electronicAccess\": [],\n      \"notes\": [],\n      \"holdingsStatements\": [],\n      \"holdingsStatementsForIndexes\": [],\n      \"holdingsStatementsForSupplements\": [],\n      \"statisticalCodeIds\": [],\n      \"holdingsItems\": [],\n      \"bareHoldingsItems\": [],\n      \"metadata\": {\n          \"createdDate\": \"2021-05-18T11:07:17.865+00:00\",\n          \"createdByUserId\": \"1e13a9a1-d044-578c-8bc9-2aa1f80beac0\",\n          \"updatedDate\": \"2021-05-18T11:07:17.865+00:00\",\n          \"updatedByUserId\": \"1e13a9a1-d044-578c-8bc9-2aa1f80beac0\"\n      },\n      \"sourceId\": \"f32d531e-df79-46b3-8932-cdd35f7a2264\"\n    },\n    {\n      \"id\": \"07468f36-acb8-491c-9d2c-0dcce85ea8e2\",\n      \"_version\": 1,\n      \"hrid\": \"ho00000000015\",\n      \"holdingsTypeId\": \"0c422f92-0f4d-4d32-8cbe-390ebc33a3e5\",\n      \"formerIds\": [],\n      \"instanceId\": \"ef30fd46-4fb4-42f0-9899-2fcdbd29782d\",\n      \"permanentLocationId\": \"53cf956f-c1df-410b-8bea-27f712cca7c0\",\n      \"effectiveLocationId\": \"53cf956f-c1df-410b-8bea-27f712cca7c0\",\n      \"electronicAccess\": [],\n      \"notes\": [],\n      \"holdingsStatements\": [],\n      \"holdingsStatementsForIndexes\": [],\n      \"holdingsStatementsForSupplements\": [],\n      \"statisticalCodeIds\": [],\n      \"holdingsItems\": [],\n      \"bareHoldingsItems\": [],\n      \"metadata\": {\n          \"createdDate\": \"2021-05-18T11:07:17.865+00:00\",\n          \"createdByUserId\": \"1e13a9a1-d044-578c-8bc9-2aa1f80beac0\",\n          \"updatedDate\": \"2021-05-18T11:07:17.865+00:00\",\n          \"updatedByUserId\": \"1e13a9a1-d044-578c-8bc9-2aa1f80beac0\"\n      },\n      \"sourceId\": \"f32d531e-df79-46b3-8932-cdd35f7a2264\"\n    }\n  ],\n  \"totalRecords\": 3\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      }
-    },
-    {
-      "request": {
         "method": "PUT",
         "urlPathPattern": "/holdings-storage/holdings/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[1-5][a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}"
       },
       "response": {
         "status": 200,
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      }
-    },
-    {
-      "request": {
-        "method": "POST",
-        "url": "/holdings-storage/holdings"
-      },
-      "response": {
-        "status": 201,
-        "body": "{\n      \"id\": \"7f806ac6-a0ef-4962-95f8-0b3154b70a08\",\n      \"_version\": 1,\n      \"hrid\": \"ho00000000015\",\n      \"holdingsTypeId\": \"0c422f92-0f4d-4d32-8cbe-390ebc33a3e5\",\n      \"formerIds\": [],\n      \"instanceId\": \"142f490a-db5d-4673-9052-fcd7762e817a\",\n      \"permanentLocationId\": \"53cf956f-c1df-410b-8bea-27f712cca7c0\",\n      \"effectiveLocationId\": \"53cf956f-c1df-410b-8bea-27f712cca7c0\",\n      \"electronicAccess\": [],\n      \"notes\": [],\n      \"holdingsStatements\": [],\n      \"holdingsStatementsForIndexes\": [],\n      \"holdingsStatementsForSupplements\": [],\n      \"statisticalCodeIds\": [],\n      \"holdingsItems\": [],\n      \"bareHoldingsItems\": [],\n      \"metadata\": {\n          \"createdDate\": \"2021-05-18T11:07:17.865+00:00\",\n          \"createdByUserId\": \"1e13a9a1-d044-578c-8bc9-2aa1f80beac0\",\n          \"updatedDate\": \"2021-05-18T11:07:17.865+00:00\",\n          \"updatedByUserId\": \"1e13a9a1-d044-578c-8bc9-2aa1f80beac0\"\n      },\n      \"sourceId\": \"f32d531e-df79-46b3-8932-cdd35f7a2264\"\n    }",
         "headers": {
           "Content-Type": "application/json"
         }

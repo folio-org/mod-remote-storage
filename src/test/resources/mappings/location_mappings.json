@@ -7,20 +7,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n\"mappings\": [\n{\n  \"finalLocationId\": \"53cf956f-c1df-410b-8bea-27f712cca7c0\",\n  \"remoteConfigurationId\": \"de17bad7-2a30-4f1c-bee5-f653ded15629\",\n  \"originalLocationId\": \"53cf956f-c1df-410b-8bea-27f712cca7c0\"}\n],\n\"totalRecords\": 1\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      }
-    },
-    {
-      "request": {
-        "method": "GET",
-        "url": "/remote-storage/mappings/locations"
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n\"mappings\": [\n{\n  \"finalLocationId\": \"53cf956f-c1df-410b-8bea-27f712cca7c0\",\n  \"originalLocationId\": \"53cf956f-c1df-410b-8bea-27f712cca7c0\"}\n],\n\"totalRecords\": 1\n}",
+        "body": "{\n\"mappings\": [\n{\n  \"folioLocationId\": \"53cf956f-c1df-410b-8bea-27f712cca7c0\",\n  \"configurationId\": \"de17bad7-2a30-4f1c-bee5-f653ded15629\"\n}\n],\n\"totalRecords\": 1\n}",
         "headers": {
           "Content-Type": "application/json"
         }

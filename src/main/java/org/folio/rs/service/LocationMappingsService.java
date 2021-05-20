@@ -1,9 +1,7 @@
 package org.folio.rs.service;
 
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import org.folio.rs.client.LocationClient;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.LocationMappings;
 import org.folio.rs.mapper.LocationMappingsMapper;
@@ -12,12 +10,10 @@ import org.folio.spring.data.OffsetRequest;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -26,29 +22,17 @@ public class LocationMappingsService {
   public static final String MAPPINGS = "mappings";
   private final LocationMappingsRepository locationMappingsRepository;
   private final LocationMappingsMapper locationMappingsMapper;
-  private final LocationClient locationClient;
 
-  @CachePut(value = MAPPINGS, key = "#locationMapping.finalLocationId")
+  @CachePut(value = MAPPINGS, key = "#locationMapping.folioLocationId")
   public LocationMapping postMapping(LocationMapping locationMapping) {
     return locationMappingsMapper
       .mapEntityToDto(locationMappingsRepository.save(locationMappingsMapper.mapDtoToEntity(locationMapping)));
   }
 
-  @Cacheable(value = MAPPINGS, key = "#finalLocationId")
-  public LocationMapping getLocationMapping(String finalLocationId) {
-    var id = UUID.fromString(finalLocationId);
-    return locationMappingsRepository.findById(id)
-      .map(locationMappingsMapper::mapEntityToDto)
-      .orElse(null);
-  }
-
-  @Cacheable(value = MAPPINGS, key = "{#originalLocationId, #remoteConfigurationId}")
-  public LocationMapping getLocationMapping(String originalLocationId, String remoteConfigurationId) {
-    var originalLocationUUID = originalLocationId == null ? null : UUID.fromString(originalLocationId);
-    var remoteConfigurationUUID = UUID.fromString(remoteConfigurationId);
-    return locationMappingsRepository.findByOriginalLocationIdAndRemoteConfigurationId(originalLocationUUID, remoteConfigurationUUID)
-      .map(locationMappingsMapper::mapEntityToDto)
-      .orElse(null);
+  @Cacheable(value = MAPPINGS, key = "#folioLocationId")
+  public LocationMapping getMappingByFolioLocationId(String folioLocationId) {
+    var id = UUID.fromString(folioLocationId);
+    return locationMappingsRepository.findById(id).map(locationMappingsMapper::mapEntityToDto).orElse(null);
   }
 
   public LocationMappings getMappings(Integer offset, Integer limit) {
@@ -56,25 +40,9 @@ public class LocationMappingsService {
     return locationMappingsMapper.mapEntitiesToMappingCollection(mappings);
   }
 
-  public LocationMappings getMappingsLocations(Integer offset, Integer limit) {
-    var mappings = locationClient.getLocations().getResult().stream()
-      .map(folioLocation -> {
-        var locationMappings = locationMappingsRepository
-          .findById(UUID.fromString(folioLocation.getId()));
-        var locationMapping = new LocationMapping();
-        locationMapping.setOriginalLocationId(folioLocation.getId());
-        if (locationMappings.isPresent()) { // Case when mapping exists.
-          locationMapping.setFinalLocationId(locationMappings.get().getFinalLocationId().toString());
-        }
-        return locationMappingsMapper.mapDtoToEntity(locationMapping);
-      }).collect(Collectors.toList());
-    return locationMappingsMapper.mapEntitiesToMappingCollection(
-      new PageImpl<>(mappings, new OffsetRequest(offset, limit, Sort.unsorted()), mappings.size()));
-  }
-
-  @CacheEvict(value = MAPPINGS, key = "#finalLocationId")
-  public void deleteMappingById(String finalLocationId) {
-    var id = UUID.fromString(finalLocationId);
+  @CacheEvict(value = MAPPINGS, key = "#folioLocationId")
+  public void deleteMappingById(String folioLocationId) {
+    var id = UUID.fromString(folioLocationId);
     locationMappingsRepository.deleteById(id);
   }
 }

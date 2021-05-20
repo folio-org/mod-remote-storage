@@ -48,6 +48,7 @@ public class RetrievalQueueService {
   private static final String RETRIEVED_DATE_TIME = "retrievedDateTime";
   private static final String REMOTE_STORAGE_ID = "remoteStorageId";
   private static final String REQUEST_DATE_TIME = "createdDateTime";
+  private static final String HOLD_ID = "holdId";
   private static final String NOT_FOUND = " not found";
   private static final String REQUEST_TYPE_DEFAULT = "PYR";
   private final RetrievalQueueRepository retrievalQueueRepository;
@@ -57,10 +58,22 @@ public class RetrievalQueueService {
   private final UsersClient usersClient;
   private final ServicePointsClient servicePointsClient;
 
+
   public RetrievalQueues getRetrievals(FilterData filterData) {
     var queueRecords = retrievalQueueRepository.findAll(getCriteriaSpecification(filterData),
         new OffsetRequest(filterData.getOffset(), filterData.getLimit(), Sort.unsorted()));
     return retrievalQueueMapper.mapEntitiesToRetrievalQueueCollection(queueRecords);
+  }
+
+  /**
+   * This method returns last by creation time retrieval queue record searched by holdId and remoteStorageConfigurationId
+   * @param holdId - request(hold) id
+   * @param remoteStorageId - remote storage configuration id
+   * @return retrieval queue record
+   */
+  public Optional<RetrievalQueueRecord> getLastRetrievalByHoldId(String holdId, String remoteStorageId) {
+    return retrievalQueueRepository.findAll(Specification.where(hasHoldId(holdId)
+      .and(hasRemoteStorageId(remoteStorageId))), Sort.by(Sort.Direction.DESC, REQUEST_DATE_TIME)).stream().findFirst();
   }
 
   public void setRetrievedById(String retrievalQueueId) {
@@ -116,6 +129,9 @@ public class RetrievalQueueService {
       if (Objects.nonNull(filterData.getCreateDate())) {
         predicates.add(builder.equal(record.get(REQUEST_DATE_TIME), LocalDateTime.parse(filterData.getCreateDate())));
       }
+      if (Objects.nonNull(filterData.getCreateDate())) {
+        predicates.add(builder.equal(record.get(REQUEST_DATE_TIME), LocalDateTime.parse(filterData.getCreateDate())));
+      }
       return builder.and(predicates.toArray(new Predicate[0]));
     };
   }
@@ -138,9 +154,17 @@ public class RetrievalQueueService {
     return (record, criteria, builder) -> builder.equal(record.get(ID), stringToUUIDSafe(id));
   }
 
+  private Specification<RetrievalQueueRecord> hasHoldId(String id) {
+    return (rec, criteria, builder) -> builder.equal(rec.get(HOLD_ID), id);
+  }
+
+  private Specification<RetrievalQueueRecord> hasRemoteStorageId(String id) {
+    return (rec, criteria, builder) -> builder.equal(rec.get(REMOTE_STORAGE_ID), stringToUUIDSafe(id));
+  }
+
   private LocationMapping getLocationMapping(Item item) {
     return Objects.nonNull(item.getEffectiveLocation())
-        ? locationMappingsService.getLocationMapping(item.getEffectiveLocation().getId())
+        ? locationMappingsService.getMappingByFolioLocationId(item.getEffectiveLocation().getId())
         : null;
   }
 
@@ -173,7 +197,7 @@ public class RetrievalQueueService {
         .pickupLocation(pickupServicePoint.getCode())
         .requestStatus(eventRequest.getRequestStatus())
         .requestNote(eventRequest.getRequestNote())
-        .remoteStorageId(stringToUUIDSafe(mapping.getRemoteConfigurationId()))
+        .remoteStorageId(stringToUUIDSafe(mapping.getConfigurationId()))
         .instanceTitle(item.getTitle())
         .instanceAuthor(getContributorNames(item))
         .requestType(REQUEST_TYPE_DEFAULT)

@@ -10,7 +10,7 @@ import lombok.Data;
 public class ResultList<E> {
   @JsonAlias("total_records")
   private Integer totalRecords;
-  @JsonAlias({ "instances", "users", "items", "requests", "holdingsRecords", "identifierTypes", "contributorTypes", "locations"})
+  @JsonAlias({ "instances", "users", "items", "requests", "holdingsRecords", "identifierTypes", "contributorTypes"})
   private List<E> result;
 
   public boolean isEmpty() {

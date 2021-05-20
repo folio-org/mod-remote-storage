@@ -3,18 +3,23 @@
   "description": "Mapping between remote and Folio locations",
   "type": "object",
   "properties": {
-    "folioLocationId": {
-      "description": "Folio location id",
+    "finalLocationId": {
+      "description": "Final location id",
       "$ref": "uuid.json"
     },
-    "configurationId": {
+    "remoteConfigurationId": {
       "description": "Remote storage configuration id",
+      "$ref": "uuid.json"
+    },
+    "originalLocationId": {
+      "description": "Original location id",
       "$ref": "uuid.json"
     }
   },
   "additionalProperties": false,
   "required": [
-    "folioLocationId",
-    "configurationId"
+    "finalLocationId",
+    "remoteConfigurationId",
+    "originalLocationId"
   ]
 }

@@ -97,7 +97,7 @@
     },
     {
       "id": "remote-storage-mappings",
-      "version": "1.0",
+      "version": "2.0",
       "handlers": [
         {
           "methods": ["POST"],
@@ -113,12 +113,17 @@
         },
         {
           "methods": ["GET"],
-          "pathPattern": "/remote-storage/mappings/{folioLocationId}",
+          "pathPattern": "/remote-storage/mappings/{finalLocationId}",
+          "permissionsRequired" : [ "remote-storage.mappings.item.get" ]
+        },
+        {
+          "methods": ["GET"],
+          "pathPattern": "/remote-storage/mappings/locations",
           "permissionsRequired" : [ "remote-storage.mappings.item.get" ]
         },
         {
           "methods": ["DELETE"],
-          "pathPattern": "/remote-storage/mappings/{folioLocationId}",
+          "pathPattern": "/remote-storage/mappings/{finalLocationId}",
           "permissionsRequired": [
             "remote-storage.mappings.item.delete"
           ]
@@ -195,20 +200,11 @@
     },
     {
       "id": "remote-storage-check-in",
-      "version": "1.2",
+      "version": "1.1",
       "handlers": [
         {
           "methods": ["POST"],
           "pathPattern": "/remote-storage/retrieve/{remoteStorageConfigurationId}/checkInItem",
-          "permissionsRequired" : ["remote-storage.check-in.item.post"],
-          "modulePermissions" : [
-            "inventory-storage.locations.item.get",
-            "circulation.check-in-by-barcode.post"
-          ]
-        },
-        {
-          "methods": ["POST"],
-          "pathPattern": "/remote-storage/retrieve/{remoteStorageConfigurationId}/checkInItemByHoldId",
           "permissionsRequired" : ["remote-storage.check-in.item.post"],
           "modulePermissions" : [
             "inventory-storage.locations.item.get",

@@ -31,10 +31,9 @@ API provides the following URLs for working with mappings between Folio location
 |  Method | URL| Permissions  | Description  | 
 |---|---|---|---|
 | POST | /remote-storage/mappings | remote-storage.mappings.item.post | Creates new or updates an existing location mapping |
-| DELETE | /remote-storage/mappings/{finalLocationId} | remote-storage.mappings.item.delete | Deletes location mapping by Folio (final) location id |
+| DELETE | /remote-storage/mappings/{folioLocationId} | remote-storage.mappings.item.delete | Deletes location mapping by Folio location id |
 | GET | /remote-storage/mappings | remote-storage.configurations.mappings.get   | Retrieves all location mappings |
-| GET | /remote-storage/mappings/{finalLocationId} | remote-storage.mappings.item.get | Retrieves a location mapping by Folio (final) location id |
-| GET | /remote-storage/mappings/locations | remote-storage.configurations.mappings.get   | Retrieves all locations (original) with corresponding mappings (final, if exists)  |
+| GET | /remote-storage/mappings/{folioLocationId} | remote-storage.mappings.item.get | Retrieves a location mapping by Folio location id |
 
 API provides the following URL to retrieve by check-in and return item using barcode:
 

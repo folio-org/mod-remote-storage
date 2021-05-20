@@ -205,7 +205,7 @@ paths:
         - $ref: "#/components/parameters/trait_pageable_offset"
         - $ref: "#/components/parameters/trait_pageable_limit"
         - $ref: "#/components/parameters/trait_queryable_query"
-  /mappings/{finalLocationId}:
+  /mappings/{folioLocationId}:
     get:
       responses:
         '200':
@@ -254,33 +254,11 @@ paths:
                 example: Internal server error
       operationId: deleteMappingById
     parameters:
-      - name: finalLocationId
+      - name: folioLocationId
         in: path
         required: true
         schema:
           $ref: "#/components/schemas/uuid"
-  /mappings/locations:
-    get:
-      responses:
-        '200':
-          description: ""
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/locationMappings"
-        '500':
-          description: Internal server error
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: Internal server error
-      description: Get a list of location mappings
-      operationId: getMappingsLocations
-      parameters:
-        - $ref: "#/components/parameters/trait_pageable_offset"
-        - $ref: "#/components/parameters/trait_pageable_limit"
-        - $ref: "#/components/parameters/trait_queryable_query"
   /providers:
     get:
       responses:
@@ -477,6 +455,15 @@ paths:
             text/plain:
               schema:
                 type: string
+        '400':
+          description: Bad request
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Bad request
+        '422':
+          $ref: "#/components/responses/trait_validate_422"
         '500':
           description: Internal server error
           content:
@@ -491,12 +478,51 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: "#/components/schemas/uuid"
       requestBody:
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/checkInItem"
+        required: true
+  /retrieve/{remoteStorageConfigurationId}/checkInItemByHoldId:
+    post:
+      responses:
+        '200':
+          description: Checked-in the item by holdId
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: Bad request
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Bad request
+        '422':
+          $ref: "#/components/responses/trait_validate_422"
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Internal server error
+      description: Check-in the item in the primary service by barcode value
+      operationId: checkInItemByHoldIdWithRemoteStorageConfigurationId
+      parameters:
+        - name: remoteStorageConfigurationId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/checkInItemByHoldId"
         required: true
   /return/{remoteStorageConfigurationId}:
     post:
@@ -596,6 +622,8 @@ components:
       $ref: schemas/uuid.json
     checkInItem:
       $ref: schemas/checkInItem.json
+    checkInItemByHoldId:
+      $ref: schemas/checkInItemByHoldId.json
     returnItemResponse:
       $ref: schemas/returnItemResponse.json
     pubSubEvent:

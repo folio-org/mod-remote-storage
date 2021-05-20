@@ -195,11 +195,20 @@
     },
     {
       "id": "remote-storage-check-in",
-      "version": "1.1",
+      "version": "1.2",
       "handlers": [
         {
           "methods": ["POST"],
           "pathPattern": "/remote-storage/retrieve/{remoteStorageConfigurationId}/checkInItem",
+          "permissionsRequired" : ["remote-storage.check-in.item.post"],
+          "modulePermissions" : [
+            "inventory-storage.locations.item.get",
+            "circulation.check-in-by-barcode.post"
+          ]
+        },
+        {
+          "methods": ["POST"],
+          "pathPattern": "/remote-storage/retrieve/{remoteStorageConfigurationId}/checkInItemByHoldId",
           "permissionsRequired" : ["remote-storage.check-in.item.post"],
           "modulePermissions" : [
             "inventory-storage.locations.item.get",

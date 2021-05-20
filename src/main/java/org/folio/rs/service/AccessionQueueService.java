@@ -96,7 +96,7 @@ public class AccessionQueueService {
           new AsyncFolioExecutionContext(systemUserParameters, moduleMetadata));
         var effectiveLocationId = item.getEffectiveLocationId();
         var locationMapping = locationMappingsService
-          .getMappingByFolioLocationId(effectiveLocationId);
+          .getLocationMapping(effectiveLocationId);
         if (nonNull(locationMapping)) {
           var instances = inventoryClient.getInstancesByQuery("id==" + item.getInstanceId());
           var instance = instances.getResult().get(0);
@@ -111,13 +111,18 @@ public class AccessionQueueService {
   }
 
   public AccessionQueue processPostAccession(AccessionRequest accessionRequest) {
-    var storageConfiguration = getStorageConfiguration(accessionRequest);
-    var locationMapping = getLocationMapping(accessionRequest);
     var item = getItem(accessionRequest);
+    var locationMapping = locationMappingsService.getLocationMapping(
+      item.getEffectiveLocationId(),
+      accessionRequest.getRemoteStorageId());
+    if (locationMapping == null) {
+      throw new AccessionException(String.format("No location was found for remote storage id=%s", accessionRequest.getRemoteStorageId()));
+    }
+    var storageConfiguration = getStorageConfiguration(accessionRequest);
     var holdingsRecord = holdingsStorageClient.getHoldingsRecordsByQuery("id==" + item.getHoldingsRecordId()).getResult().get(0);
     var instance = inventoryClient.getInstancesByQuery("id==" + holdingsRecord.getInstanceId()).getResult().get(0);
 
-    var remoteLocationId = locationMapping.getFolioLocationId();
+    var remoteLocationId = locationMapping.getFinalLocationId();
 
     if (!holdingsRecordMatchLocation(holdingsRecord, remoteLocationId)) {
       if (shouldChangeHoldingsPermanentLocation(storageConfiguration, item, remoteLocationId)) {
@@ -205,7 +210,7 @@ public class AccessionQueueService {
     return locationMappingsService.getMappings(0, Integer.MAX_VALUE)
       .getMappings()
       .stream()
-      .filter(lm -> accessionRequest.getRemoteStorageId().equals(lm.getConfigurationId()))
+      .filter(lm -> accessionRequest.getRemoteStorageId().equals(lm.getRemoteConfigurationId()))
       .findFirst()
       .orElseThrow(() -> new AccessionException(
         String.format("No location was found for remote storage id=%s", accessionRequest.getRemoteStorageId())));
@@ -284,7 +289,7 @@ public class AccessionQueueService {
       .itemBarcode(item.getBarcode())
       .createdDateTime(LocalDateTime.now())
       .accessionedDateTime(LocalDateTime.now())
-      .remoteStorageId(UUID.fromString(locationMapping.getConfigurationId()))
+      .remoteStorageId(UUID.fromString(locationMapping.getRemoteConfigurationId()))
       .callNumber(ofNullable(item.getEffectiveCallNumberComponents())
         .map(ItemEffectiveCallNumberComponents::getCallNumber)
         .orElse(null))
@@ -309,7 +314,7 @@ public class AccessionQueueService {
       .physicalDescription(String.join("; ", instance.getPhysicalDescriptions()))
       .materialType(ofNullable(item.getMaterialType()).map(ItemMaterialType::getName).orElse(null))
       .copyNumber(item.getCopyNumber())
-      .permanentLocationId(UUID.fromString(locationMapping.getFolioLocationId()))
+      .permanentLocationId(UUID.fromString(locationMapping.getFinalLocationId()))
       .build();
   }
 

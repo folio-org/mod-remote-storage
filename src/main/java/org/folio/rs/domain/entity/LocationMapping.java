@@ -1,20 +1,24 @@
 package org.folio.rs.domain.entity;
 
-import lombok.Data;
+import java.util.UUID;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import java.util.UUID;
+
+import lombok.Data;
 
 @Data
 @Entity
 @Table(name = "location_mappings")
 public class LocationMapping {
   @Id
-  private UUID folioLocationId;
+  private UUID finalLocationId;
 
   @NotNull
-  private UUID configurationId;
+  private UUID remoteConfigurationId;
+
+  @NotNull
+  private UUID originalLocationId;
 }

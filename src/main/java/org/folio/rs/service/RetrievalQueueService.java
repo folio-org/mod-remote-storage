@@ -164,7 +164,7 @@ public class RetrievalQueueService {
 
   private LocationMapping getLocationMapping(Item item) {
     return Objects.nonNull(item.getEffectiveLocation())
-        ? locationMappingsService.getMappingByFolioLocationId(item.getEffectiveLocation().getId())
+        ? locationMappingsService.getLocationMapping(item.getEffectiveLocation().getId())
         : null;
   }
 
@@ -197,7 +197,7 @@ public class RetrievalQueueService {
         .pickupLocation(pickupServicePoint.getCode())
         .requestStatus(eventRequest.getRequestStatus())
         .requestNote(eventRequest.getRequestNote())
-        .remoteStorageId(stringToUUIDSafe(mapping.getConfigurationId()))
+        .remoteStorageId(stringToUUIDSafe(mapping.getRemoteConfigurationId()))
         .instanceTitle(item.getTitle())
         .instanceAuthor(getContributorNames(item))
         .requestType(REQUEST_TYPE_DEFAULT)

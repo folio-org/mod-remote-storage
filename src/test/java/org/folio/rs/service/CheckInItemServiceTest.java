@@ -57,8 +57,9 @@ public class CheckInItemServiceTest {
   @BeforeEach
   public void prepare() {
     locationMapping = new LocationMapping();
-    locationMapping.setFolioLocationId(UUID.fromString(FOLIO_LOCATION_ID));
-    locationMapping.setConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID));
+    locationMapping.setFinalLocationId(UUID.fromString(FOLIO_LOCATION_ID));
+    locationMapping.setRemoteConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID));
+    locationMapping.setOriginalLocationId(UUID.fromString(FOLIO_LOCATION_ID));
     folioLocation = FolioLocation.of(FOLIO_LOCATION_ID, Strings.EMPTY, PRIMARY_SERVICE_POINT);
     retrievalQueueRecord = RetrievalQueueRecord.builder().id(UUID.randomUUID()).holdId(HOLD_ID).itemBarcode(ITEM_BARCODE).build();
     checkInItem = new CheckInItem();
@@ -69,7 +70,7 @@ public class CheckInItemServiceTest {
 
   @Test
   void testCheckInItemByBarcode() {
-    when(locationMappingsRepository.getFirstByConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
+    when(locationMappingsRepository.getFirstByRemoteConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
       .thenReturn(Optional.of(locationMapping));
     when(locationClient.getLocation(FOLIO_LOCATION_ID))
       .thenReturn(folioLocation);
@@ -81,7 +82,7 @@ public class CheckInItemServiceTest {
 
   @Test
   void testCheckInItemByHoldId() {
-    when(locationMappingsRepository.getFirstByConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
+    when(locationMappingsRepository.getFirstByRemoteConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
       .thenReturn(Optional.of(locationMapping));
     when(locationClient.getLocation(FOLIO_LOCATION_ID))
       .thenReturn(folioLocation);
@@ -96,7 +97,7 @@ public class CheckInItemServiceTest {
 
   @Test
   void testCheckInItemByBarcodeIfLocationNotExistInDataBase() {
-    when(locationMappingsRepository.getFirstByConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
+    when(locationMappingsRepository.getFirstByRemoteConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
       .thenReturn(Optional.empty());
 
     Assertions.assertThrows(CheckInException.class,
@@ -107,7 +108,7 @@ public class CheckInItemServiceTest {
   void testCheckInItemByBarcodeIfLocationClientReturnEmptyPrimaryServicePoint() {
     var folioLocation = FolioLocation.of(FOLIO_LOCATION_ID, Strings.EMPTY, Strings.EMPTY);
 
-    when(locationMappingsRepository.getFirstByConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
+    when(locationMappingsRepository.getFirstByRemoteConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
       .thenReturn(Optional.of(locationMapping));
     when(locationClient.getLocation(FOLIO_LOCATION_ID))
       .thenReturn(folioLocation);

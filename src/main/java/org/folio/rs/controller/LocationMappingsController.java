@@ -33,13 +33,20 @@ public class LocationMappingsController implements MappingsApi {
 
   @Override
   public ResponseEntity<LocationMapping> getMappingById(String id) {
-    return ResponseEntity.ok().body(locationMappingsService.getMappingByFolioLocationId(id));
+    return ResponseEntity.ok().body(locationMappingsService.getLocationMapping(id));
   }
 
   @Override
   public ResponseEntity<LocationMappings> getMappings(@Min(0) @Max(2147483647) @Valid Integer offset,
     @Min(0) @Max(2147483647) @Valid Integer limit, @Valid String query) {
     var mappings = locationMappingsService.getMappings(offset, limit);
+    return new ResponseEntity<>(mappings, HttpStatus.OK);
+  }
+
+  @Override
+  public ResponseEntity<LocationMappings> getMappingsLocations(@Min(0) @Max(2147483647) @Valid Integer offset,
+      @Min(0) @Max(2147483647) @Valid Integer limit, @Valid String query) {
+    var mappings = locationMappingsService.getMappingsLocations(offset, limit);
     return new ResponseEntity<>(mappings, HttpStatus.OK);
   }
 

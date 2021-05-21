@@ -91,8 +91,9 @@ public class AccessionQueueServiceTest extends TestBase {
   void testItemUpdatingEventHandling() {
 
     var locationMapping = new LocationMapping();
-    locationMapping.setFolioLocationId(NEW_EFFECTIVE_LOCATION_ID);
-    locationMapping.setConfigurationId(REMOTE_STORAGE_ID);
+    locationMapping.setFinalLocationId(NEW_EFFECTIVE_LOCATION_ID);
+    locationMapping.setRemoteConfigurationId(REMOTE_STORAGE_ID);
+    locationMapping.setOriginalLocationId(NEW_EFFECTIVE_LOCATION_ID);
     locationMappingsService.postMapping(locationMapping);
 
     var originalItem = new Item().effectiveLocationId(OLD_EFFECTIVE_LOCATION_ID)
@@ -289,8 +290,9 @@ public class AccessionQueueServiceTest extends TestBase {
     configurationsService.postConfiguration(storageConfiguration);
 
     var locationMapping = new LocationMapping()
-      .configurationId(REMOTE_STORAGE_ID)
-      .folioLocationId(REMOTE_LOCATION_ID);
+      .remoteConfigurationId(REMOTE_STORAGE_ID)
+      .finalLocationId(REMOTE_LOCATION_ID)
+      .originalLocationId(REMOTE_LOCATION_ID);
     locationMappingsService.postMapping(locationMapping);
 
     var accessionRequest = new AccessionRequest()
@@ -318,8 +320,9 @@ public class AccessionQueueServiceTest extends TestBase {
     configurationsService.postConfiguration(storageConfiguration);
 
     var locationMapping = new LocationMapping()
-      .configurationId(REMOTE_STORAGE_ID)
-      .folioLocationId(REMOTE_LOCATION_ID);
+      .remoteConfigurationId(REMOTE_STORAGE_ID)
+      .finalLocationId(REMOTE_LOCATION_ID)
+      .originalLocationId(REMOTE_LOCATION_ID);
     locationMappingsService.postMapping(locationMapping);
 
     var accessionRequest = new AccessionRequest()
@@ -342,8 +345,9 @@ public class AccessionQueueServiceTest extends TestBase {
     configurationsService.postConfiguration(storageConfiguration);
 
     var locationMapping = new LocationMapping()
-      .configurationId(REMOTE_STORAGE_ID)
-      .folioLocationId(REMOTE_LOCATION_ID);
+      .remoteConfigurationId(REMOTE_STORAGE_ID)
+      .finalLocationId(REMOTE_LOCATION_ID)
+      .originalLocationId(REMOTE_LOCATION_ID);
     locationMappingsService.postMapping(locationMapping);
 
     var accessionRequest = new AccessionRequest()
@@ -370,8 +374,9 @@ public class AccessionQueueServiceTest extends TestBase {
     configurationsService.postConfiguration(storageConfiguration);
 
     var locationMapping = new LocationMapping()
-      .configurationId(remoteStorageId)
-      .folioLocationId(remoteLocationId);
+      .remoteConfigurationId(remoteStorageId)
+      .finalLocationId(remoteLocationId)
+      .originalLocationId(remoteLocationId);
     locationMappingsService.postMapping(locationMapping);
 
     var accessionRequest = new AccessionRequest()
@@ -408,8 +413,9 @@ public class AccessionQueueServiceTest extends TestBase {
     configurationsService.postConfiguration(storageConfiguration);
 
     var locationMapping = new LocationMapping()
-      .configurationId(REMOTE_STORAGE_ID)
-      .folioLocationId(REMOTE_LOCATION_ID);
+      .remoteConfigurationId(REMOTE_STORAGE_ID)
+      .finalLocationId(REMOTE_LOCATION_ID)
+      .originalLocationId(REMOTE_LOCATION_ID);
     locationMappingsService.postMapping(locationMapping);
 
     var accessionRequest = new AccessionRequest()
@@ -454,8 +460,9 @@ public class AccessionQueueServiceTest extends TestBase {
     configurationsService.postConfiguration(storageConfiguration);
 
     var locationMapping = new LocationMapping()
-      .configurationId(REMOTE_STORAGE_ID)
-      .folioLocationId(REMOTE_LOCATION_ID);
+      .remoteConfigurationId(REMOTE_STORAGE_ID)
+      .finalLocationId(REMOTE_LOCATION_ID)
+      .originalLocationId(REMOTE_LOCATION_ID);
     locationMappingsService.postMapping(locationMapping);
 
     var accessionRequest = new AccessionRequest()

@@ -205,7 +205,7 @@ paths:
         - $ref: "#/components/parameters/trait_pageable_offset"
         - $ref: "#/components/parameters/trait_pageable_limit"
         - $ref: "#/components/parameters/trait_queryable_query"
-  /mappings/{folioLocationId}:
+  /mappings/{finalLocationId}:
     get:
       responses:
         '200':
@@ -254,11 +254,33 @@ paths:
                 example: Internal server error
       operationId: deleteMappingById
     parameters:
-      - name: folioLocationId
+      - name: finalLocationId
         in: path
         required: true
         schema:
           $ref: "#/components/schemas/uuid"
+  /mappings/locations:
+    get:
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/locationMappings"
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Internal server error
+      description: Get a list of location mappings
+      operationId: getMappingsLocations
+      parameters:
+        - $ref: "#/components/parameters/trait_pageable_offset"
+        - $ref: "#/components/parameters/trait_pageable_limit"
+        - $ref: "#/components/parameters/trait_queryable_query"
   /providers:
     get:
       responses:

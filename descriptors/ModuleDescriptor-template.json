@@ -97,7 +97,7 @@
     },
     {
       "id": "remote-storage-mappings",
-      "version": "1.0",
+      "version": "2.0",
       "handlers": [
         {
           "methods": ["POST"],
@@ -113,12 +113,17 @@
         },
         {
           "methods": ["GET"],
-          "pathPattern": "/remote-storage/mappings/{folioLocationId}",
+          "pathPattern": "/remote-storage/mappings/{finalLocationId}",
+          "permissionsRequired" : [ "remote-storage.mappings.item.get" ]
+        },
+        {
+          "methods": ["GET"],
+          "pathPattern": "/remote-storage/mappings/locations",
           "permissionsRequired" : [ "remote-storage.mappings.item.get" ]
         },
         {
           "methods": ["DELETE"],
-          "pathPattern": "/remote-storage/mappings/{folioLocationId}",
+          "pathPattern": "/remote-storage/mappings/{finalLocationId}",
           "permissionsRequired": [
             "remote-storage.mappings.item.delete"
           ]

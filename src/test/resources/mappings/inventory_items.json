@@ -107,6 +107,19 @@
     {
       "request": {
         "method": "GET",
+        "url": "/inventory/items?query=barcode==12345"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"items\": [ ],\n  \"totalRecords\": 0\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
         "url": "/inventory/items?query=holdingsRecordId==65cb2bf0-d4c2-4886-8ad0-b76f1ba75d61"
       },
       "response": {

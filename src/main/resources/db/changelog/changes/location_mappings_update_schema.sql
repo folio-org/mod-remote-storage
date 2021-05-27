@@ -1,10 +1,9 @@
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-ALTER TABLE location_mappings
- RENAME COLUMN folio_location_id TO final_location_id;
-ALTER TABLE location_mappings
- RENAME COLUMN configuration_id  TO remote_configuration_id;
-ALTER TABLE location_mappings
- ADD COLUMN IF NOT EXISTS original_location_id UUID default uuid_generate_v1();
-ALTER TABLE location_mappings
- ALTER COLUMN             original_location_id SET NOT NULL;
-UPDATE location_mappings SET original_location_id = COALESCE(final_location_id);
+DROP TABLE IF EXISTS original_locations;
+
+CREATE TABLE original_locations (
+  folio_location_id UUID NOT NULL,
+  original_location_id UUID NOT NULL,
+  FOREIGN KEY(folio_location_id) REFERENCES location_mappings(folio_location_id)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  PRIMARY KEY (folio_location_id, original_location_id)
+);

@@ -159,7 +159,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/locationMapping"
+                $ref: "#/components/schemas/plainMapping"
         '400':
           description: Bad request
           content:
@@ -182,7 +182,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/locationMapping"
+              $ref: "#/components/schemas/plainMapping"
         required: true
     get:
       responses:
@@ -191,7 +191,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/locationMappings"
+                $ref: "#/components/schemas/plainMappings"
         '500':
           description: Internal server error
           content:
@@ -205,7 +205,7 @@ paths:
         - $ref: "#/components/parameters/trait_pageable_offset"
         - $ref: "#/components/parameters/trait_pageable_limit"
         - $ref: "#/components/parameters/trait_queryable_query"
-  /mappings/{finalLocationId}:
+  /mappings/{folioLocationId}:
     get:
       responses:
         '200':
@@ -213,7 +213,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/locationMapping"
+                $ref: "#/components/schemas/plainMapping"
         '404':
           description: Mapping not found
           content:
@@ -254,12 +254,44 @@ paths:
                 example: Internal server error
       operationId: deleteMappingById
     parameters:
-      - name: finalLocationId
+      - name: folioLocationId
         in: path
         required: true
         schema:
           $ref: "#/components/schemas/uuid"
-  /mappings/locations:
+  /full-mappings:
+    post:
+      responses:
+        '201':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/fullMapping"
+        '400':
+          description: Bad request
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Bad request
+        '422':
+          $ref: "#/components/responses/trait_validate_422"
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Internal server error
+      description: Add/update a mapping between remote and Folio locations
+      operationId: postFullMapping
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/fullMapping"
+        required: true
     get:
       responses:
         '200':
@@ -267,7 +299,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/locationMappings"
+                $ref: "#/components/schemas/fullMappings"
         '500':
           description: Internal server error
           content:
@@ -276,7 +308,83 @@ paths:
                 type: string
                 example: Internal server error
       description: Get a list of location mappings
-      operationId: getMappingsLocations
+      operationId: getFullMappings
+      parameters:
+        - $ref: "#/components/parameters/trait_pageable_offset"
+        - $ref: "#/components/parameters/trait_pageable_limit"
+        - $ref: "#/components/parameters/trait_queryable_query"
+  /full-mappings/{finalLocationId}:
+    get:
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/fullMappings"
+        '404':
+          description: Mapping not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Mapping not found
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Internal server error
+      operationId: getFullMappingsById
+    delete:
+      responses:
+        '204':
+          description: No content
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: No content
+        '404':
+          description: Mapping not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Mapping not found
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Internal server error
+      operationId: deleteFullMappingById
+    parameters:
+      - name: finalLocationId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/uuid"
+  /full-mappings/locations:
+    get:
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/fullMappings"
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Internal server error
+      description: Get a list of location mappings
+      operationId: getFullMappingsLocations
       parameters:
         - $ref: "#/components/parameters/trait_pageable_offset"
         - $ref: "#/components/parameters/trait_pageable_limit"
@@ -621,9 +729,9 @@ components:
                 $ref: "#/components/schemas/storageConfiguration"
           required:
             - configurations
-    locationMapping:
-      $ref: schemas/locationMapping.json
-    locationMappings:
+    fullMapping:
+      $ref: schemas/fullMapping.json
+    fullMappings:
       allOf:
         - $ref: schemas/baseCollection.json
         - type: object
@@ -631,7 +739,20 @@ components:
             mappings:
               type: array
               items:
-                $ref: "#/components/schemas/locationMapping"
+                $ref: "#/components/schemas/fullMapping"
+          required:
+            - mappings
+    plainMapping:
+      $ref: schemas/plainMapping.json
+    plainMappings:
+      allOf:
+        - $ref: schemas/baseCollection.json
+        - type: object
+          properties:
+            mappings:
+              type: array
+              items:
+                $ref: "#/components/schemas/plainMapping"
           required:
             - mappings
     errors:

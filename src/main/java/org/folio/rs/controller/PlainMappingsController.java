@@ -6,8 +6,8 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.rs.domain.dto.LocationMapping;
-import org.folio.rs.domain.dto.LocationMappings;
+import org.folio.rs.domain.dto.PlainMapping;
+import org.folio.rs.domain.dto.PlainMappings;
 import org.folio.rs.rest.resource.MappingsApi;
 import org.folio.rs.service.LocationMappingsService;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -21,32 +21,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping(value = "/remote-storage/")
-public class LocationMappingsController implements MappingsApi {
+public class PlainMappingsController implements MappingsApi {
   private static final String MAPPING_NOT_FOUND = "Mapping not found";
 
   private final LocationMappingsService locationMappingsService;
 
   @Override
-  public ResponseEntity<LocationMapping> postMapping(@Valid LocationMapping locationMapping) {
-    return new ResponseEntity<>(locationMappingsService.postMapping(locationMapping), HttpStatus.CREATED);
+  public ResponseEntity<PlainMapping> postMapping(@Valid PlainMapping mapping) {
+    return new ResponseEntity<>(locationMappingsService.postPlainMapping(mapping), HttpStatus.CREATED);
   }
 
   @Override
-  public ResponseEntity<LocationMapping> getMappingById(String id) {
-    return ResponseEntity.ok().body(locationMappingsService.getLocationMapping(id));
+  public ResponseEntity<PlainMapping> getMappingById(String id) {
+    return ResponseEntity.ok().body(locationMappingsService.getPlainMapping(id));
   }
 
   @Override
-  public ResponseEntity<LocationMappings> getMappings(@Min(0) @Max(2147483647) @Valid Integer offset,
+  public ResponseEntity<PlainMappings> getMappings(@Min(0) @Max(2147483647) @Valid Integer offset,
     @Min(0) @Max(2147483647) @Valid Integer limit, @Valid String query) {
-    var mappings = locationMappingsService.getMappings(offset, limit);
-    return new ResponseEntity<>(mappings, HttpStatus.OK);
-  }
-
-  @Override
-  public ResponseEntity<LocationMappings> getMappingsLocations(@Min(0) @Max(2147483647) @Valid Integer offset,
-      @Min(0) @Max(2147483647) @Valid Integer limit, @Valid String query) {
-    var mappings = locationMappingsService.getMappingsLocations(offset, limit);
+    var mappings = locationMappingsService.getPlainMappings(offset, limit);
     return new ResponseEntity<>(mappings, HttpStatus.OK);
   }
 

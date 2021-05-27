@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Mapping between remote and Folio locations",
+  "description": "Mapping between remote and Folio locations with original location",
   "type": "object",
   "properties": {
     "finalLocationId": {

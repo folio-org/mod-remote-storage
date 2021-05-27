@@ -22,8 +22,8 @@ import org.folio.rs.domain.dto.FilterData;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.ItemContributorNames;
 import org.folio.rs.domain.dto.ItemEffectiveCallNumberComponents;
-import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.PickupServicePoint;
+import org.folio.rs.domain.dto.PlainMapping;
 import org.folio.rs.domain.dto.ResultList;
 import org.folio.rs.domain.dto.RetrievalQueues;
 import org.folio.rs.domain.dto.User;
@@ -95,7 +95,7 @@ public class RetrievalQueueService {
   public void processEventRequest(EventRequest eventRequest) {
       log.info("Process moved request with id " + eventRequest.getHoldId());
       Item item = getOriginalItemByBarcode(eventRequest);
-      LocationMapping locationMapping = getLocationMapping(item);
+      var locationMapping = getLocationMapping(item);
       if (Objects.nonNull(locationMapping)) {
         log.info("Item location is remote, saving retrieval queue record");
         processEventRequest(eventRequest, item, locationMapping);
@@ -103,7 +103,7 @@ public class RetrievalQueueService {
 
   }
 
-  private void processEventRequest(EventRequest eventRequest, Item item, LocationMapping locationMapping) {
+  private void processEventRequest(EventRequest eventRequest, Item item, PlainMapping locationMapping) {
     RetrievalQueueRecord record = buildRetrievalQueueRecord(eventRequest, item,
         getUserByRequesterId(eventRequest), locationMapping, getPickupServicePoint(eventRequest.getPickupServicePointId()));
     log.info("Saving retrieval queue record with id {}", record.getId());
@@ -162,9 +162,9 @@ public class RetrievalQueueService {
     return (rec, criteria, builder) -> builder.equal(rec.get(REMOTE_STORAGE_ID), stringToUUIDSafe(id));
   }
 
-  private LocationMapping getLocationMapping(Item item) {
+  private PlainMapping getLocationMapping(Item item) {
     return Objects.nonNull(item.getEffectiveLocation())
-        ? locationMappingsService.getLocationMapping(item.getEffectiveLocation().getId())
+        ? locationMappingsService.getPlainMapping(item.getEffectiveLocation().getId())
         : null;
   }
 
@@ -185,7 +185,7 @@ public class RetrievalQueueService {
   }
 
   private RetrievalQueueRecord buildRetrievalQueueRecord(EventRequest eventRequest,
-                                                         Item item, User patron, LocationMapping mapping, PickupServicePoint pickupServicePoint) {
+    Item item, User patron, PlainMapping mapping, PickupServicePoint pickupServicePoint) {
     return RetrievalQueueRecord.builder()
         .id(UUID.randomUUID())
         .holdId(eventRequest.getHoldId())
@@ -197,7 +197,7 @@ public class RetrievalQueueService {
         .pickupLocation(pickupServicePoint.getCode())
         .requestStatus(eventRequest.getRequestStatus())
         .requestNote(eventRequest.getRequestNote())
-        .remoteStorageId(stringToUUIDSafe(mapping.getRemoteConfigurationId()))
+        .remoteStorageId(stringToUUIDSafe(mapping.getConfigurationId()))
         .instanceTitle(item.getTitle())
         .instanceAuthor(getContributorNames(item))
         .requestType(REQUEST_TYPE_DEFAULT)

@@ -1,12 +1,12 @@
 package org.folio.rs.mapper;
 
-import com.google.common.collect.ImmutableSet;
 import org.folio.rs.domain.dto.FullMapping;
 import org.folio.rs.domain.dto.FullMappings;
 import org.folio.rs.domain.entity.OriginalLocation;
 import org.folio.rs.domain.entity.FullMappingEntity;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -18,7 +18,7 @@ public final class FullMappingsMapper {
     return FullMappingEntity.of(
       UUID.fromString(fullMapping.getFinalLocationId()),
       UUID.fromString(fullMapping.getRemoteConfigurationId()),
-      ImmutableSet.of(OriginalLocation.of(UUID.fromString(fullMapping.getFinalLocationId()),
+      Set.of(OriginalLocation.of(UUID.fromString(fullMapping.getFinalLocationId()),
         UUID.fromString(fullMapping.getOriginalLocationId())))
     );
   }

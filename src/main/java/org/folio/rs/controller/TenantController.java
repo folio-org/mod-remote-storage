@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.rs.domain.dto.FullMapping;
-import org.folio.rs.domain.dto.PlainMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
 import org.folio.rs.domain.entity.RetrievalQueueRecord;

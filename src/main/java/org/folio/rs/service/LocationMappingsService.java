@@ -55,7 +55,7 @@ public class LocationMappingsService {
   }
 
   public FullMapping postFullMapping(FullMapping fullMapping) {
-    fullMappingsRepository.findById(UUID.fromString(fullMapping.getFinalLocationId()))
+    var entity = fullMappingsRepository.findById(UUID.fromString(fullMapping.getFinalLocationId()))
       .map(m -> {
         var locations = m.getOriginalLocations();
         var originalLocation = new OriginalLocation();
@@ -66,7 +66,10 @@ public class LocationMappingsService {
         return fullMappingsRepository.save(m);
       })
       .orElseGet(() -> fullMappingsRepository.save(FullMappingsMapper.mapDtoToEntity(fullMapping)));
-    return fullMapping;
+    return new FullMapping()
+      .finalLocationId(entity.getFinalLocationId().toString())
+      .remoteConfigurationId(entity.getRemoteConfigurationId().toString())
+      .originalLocationId(fullMapping.getOriginalLocationId());
   }
 
   public FullMappings getFullMappings(Integer offset, Integer limit) {

@@ -48,7 +48,7 @@ import org.folio.rs.domain.dto.ItemEffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.ItemMaterialType;
 import org.folio.rs.domain.dto.ItemPermanentLocation;
 import org.folio.rs.domain.dto.ItemsMove;
-import org.folio.rs.domain.dto.PlainMapping;
+import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
 import org.folio.rs.error.AccessionException;
@@ -96,7 +96,7 @@ public class AccessionQueueService {
           new AsyncFolioExecutionContext(systemUserParameters, moduleMetadata));
         var effectiveLocationId = item.getEffectiveLocationId();
         var locationMapping = locationMappingsService
-          .getPlainMapping(effectiveLocationId);
+          .getRemoteLocationConfigurationMapping(effectiveLocationId);
         if (nonNull(locationMapping)) {
           var instances = inventoryClient.getInstancesByQuery("id==" + item.getInstanceId());
           var instance = instances.getResult().get(0);
@@ -136,8 +136,8 @@ public class AccessionQueueService {
     return accessionQueueMapper.mapEntityToDto(accessionQueueRecord);
   }
 
-  private PlainMapping getLocationMapping(AccessionRequest accessionRequest) {
-    return locationMappingsService.getPlainMappings(0, Integer.MAX_VALUE)
+  private RemoteLocationConfigurationMapping getLocationMapping(AccessionRequest accessionRequest) {
+    return locationMappingsService.getRemoteLocationConfigurationMappings(0, Integer.MAX_VALUE)
       .getMappings().stream()
       .filter(mapping -> accessionRequest.getRemoteStorageId().equals(mapping.getConfigurationId()))
       .findFirst()
@@ -275,7 +275,7 @@ public class AccessionQueueService {
    * @return accession queue record with populated data
    */
   private AccessionQueueRecord buildAccessionQueueRecord(Item item, Instance instance,
-    PlainMapping locationMapping) {
+    RemoteLocationConfigurationMapping locationMapping) {
     var publication = instance.getPublication().stream().findFirst();
     return AccessionQueueRecord.builder()
       .id(UUID.randomUUID())

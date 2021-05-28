@@ -14,10 +14,10 @@ import org.folio.rs.domain.dto.CheckInCirculationRequest;
 import org.folio.rs.domain.dto.CheckInItem;
 import org.folio.rs.domain.dto.CheckInItemByHoldId;
 import org.folio.rs.domain.dto.FolioLocation;
-import org.folio.rs.domain.entity.PlainMappingEntity;
+import org.folio.rs.domain.entity.RemoteLocationConfigurationMappingEntity;
 import org.folio.rs.domain.entity.RetrievalQueueRecord;
 import org.folio.rs.error.CheckInException;
-import org.folio.rs.repository.PlainMappingsRepository;
+import org.folio.rs.repository.RemoteLocationConfigurationMappingsRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +39,7 @@ public class CheckInItemServiceTest {
   @Mock
   private CirculationClient circulationClient;
   @Mock
-  private PlainMappingsRepository plainMappingsRepository;
+  private RemoteLocationConfigurationMappingsRepository mappingsRepository;
   @Mock
   private LocationClient locationClient;
   @Mock
@@ -48,7 +48,7 @@ public class CheckInItemServiceTest {
   @InjectMocks
   private CheckInItemService checkInItemService;
 
-  private PlainMappingEntity entity;
+  private RemoteLocationConfigurationMappingEntity entity;
   private FolioLocation folioLocation;
   private CheckInItem checkInItem;
   private CheckInItemByHoldId checkInItemByHoldId;
@@ -56,7 +56,7 @@ public class CheckInItemServiceTest {
 
   @BeforeEach
   public void prepare() {
-    entity = PlainMappingEntity.of(UUID.fromString(FOLIO_LOCATION_ID), UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID));
+    entity = RemoteLocationConfigurationMappingEntity.of(UUID.fromString(FOLIO_LOCATION_ID), UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID));
     folioLocation = FolioLocation.of(FOLIO_LOCATION_ID, Strings.EMPTY, PRIMARY_SERVICE_POINT);
     retrievalQueueRecord = RetrievalQueueRecord.builder().id(UUID.randomUUID()).holdId(HOLD_ID).itemBarcode(ITEM_BARCODE).build();
     checkInItem = new CheckInItem();
@@ -67,7 +67,7 @@ public class CheckInItemServiceTest {
 
   @Test
   void testCheckInItemByBarcode() {
-    when(plainMappingsRepository.findByConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
+    when(mappingsRepository.findByRemoteConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
       .thenReturn(Optional.of(entity));
     when(locationClient.getLocation(FOLIO_LOCATION_ID))
       .thenReturn(folioLocation);
@@ -79,7 +79,7 @@ public class CheckInItemServiceTest {
 
   @Test
   void testCheckInItemByHoldId() {
-    when(plainMappingsRepository.findByConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
+    when(mappingsRepository.findByRemoteConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
       .thenReturn(Optional.of(entity));
     when(locationClient.getLocation(FOLIO_LOCATION_ID))
       .thenReturn(folioLocation);
@@ -94,7 +94,7 @@ public class CheckInItemServiceTest {
 
   @Test
   void testCheckInItemByBarcodeIfLocationNotExistInDataBase() {
-    when(plainMappingsRepository.findByConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
+    when(mappingsRepository.findByRemoteConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
       .thenReturn(Optional.empty());
 
     Assertions.assertThrows(CheckInException.class,
@@ -105,7 +105,7 @@ public class CheckInItemServiceTest {
   void testCheckInItemByBarcodeIfLocationClientReturnEmptyPrimaryServicePoint() {
     var folioLocation = FolioLocation.of(FOLIO_LOCATION_ID, Strings.EMPTY, Strings.EMPTY);
 
-    when(plainMappingsRepository.findByConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
+    when(mappingsRepository.findByRemoteConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
       .thenReturn(Optional.of(entity));
     when(locationClient.getLocation(FOLIO_LOCATION_ID))
       .thenReturn(folioLocation);

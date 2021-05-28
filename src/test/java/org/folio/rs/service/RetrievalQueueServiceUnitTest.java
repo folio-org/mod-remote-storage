@@ -21,7 +21,7 @@ import org.folio.rs.domain.dto.ItemContributorNames;
 import org.folio.rs.domain.dto.ItemEffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.ItemEffectiveLocation;
 import org.folio.rs.domain.dto.PickupServicePoint;
-import org.folio.rs.domain.dto.PlainMapping;
+import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.ResultList;
 import org.folio.rs.domain.dto.User;
 import org.folio.rs.domain.entity.RetrievalQueueRecord;
@@ -78,7 +78,7 @@ public class RetrievalQueueServiceUnitTest {
   @Mock
   private ItemContributorNames contributor;
   @Mock
-  private PlainMapping locationMapping;
+  private RemoteLocationConfigurationMapping locationMapping;
   @Mock
   private ItemEffectiveLocation effectiveLocation;
   @Mock
@@ -110,7 +110,7 @@ public class RetrievalQueueServiceUnitTest {
     when(effectiveLocation.getId()).thenReturn(EFFECTIVE_LOCATION_ID);
     when(item.getEffectiveCallNumberComponents()).thenReturn(callNumberComponents);
     when(callNumberComponents.getCallNumber()).thenReturn(CALL_NUMBER);
-    when(locationMappingsService.getPlainMapping(EFFECTIVE_LOCATION_ID)).thenReturn(locationMapping);
+    when(locationMappingsService.getRemoteLocationConfigurationMapping(EFFECTIVE_LOCATION_ID)).thenReturn(locationMapping);
     when(locationMapping.getConfigurationId()).thenReturn(REMOTE_STORAGE_ID);
     when(servicePointsClient.getServicePoint(PICKUP_SERVICE_POINT_ID)).thenReturn(pickupServicePoint);
     when(pickupServicePoint.getCode()).thenReturn(PICKUP_SERVICE_POINT_CODE);
@@ -151,7 +151,7 @@ public class RetrievalQueueServiceUnitTest {
 
   @Test
   void shouldNotProcessRecordsWhenLocationIsNotRemote() {
-    when(locationMappingsService.getPlainMapping(EFFECTIVE_LOCATION_ID)).thenReturn(null);
+    when(locationMappingsService.getRemoteLocationConfigurationMapping(EFFECTIVE_LOCATION_ID)).thenReturn(null);
 
     service.processEventRequest(eventRequest);
 

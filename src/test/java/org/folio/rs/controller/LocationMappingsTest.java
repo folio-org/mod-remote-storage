@@ -14,10 +14,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.folio.rs.TestBase;
-import org.folio.rs.domain.dto.FullMapping;
-import org.folio.rs.domain.dto.FullMappings;
-import org.folio.rs.domain.dto.PlainMapping;
-import org.folio.rs.domain.dto.PlainMappings;
+import org.folio.rs.domain.dto.ExtendedRemoteLocationConfigurationMapping;
+import org.folio.rs.domain.dto.ExtendedRemoteLocationConfigurationMappings;
+import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
+import org.folio.rs.domain.dto.RemoteLocationConfigurationMappings;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,12 +34,12 @@ import java.util.Arrays;
 public class LocationMappingsTest extends TestBase {
 
   private static final String MAPPINGS_URL = "http://localhost:%s/remote-storage/mappings/";
-  private static final String FULL_MAPPINGS_URL = "http://localhost:%s/remote-storage/full-mappings/";
-  private static final String MAPPINGS_LOCATIONS_URL = "http://localhost:%s/remote-storage/full-mappings/locations";
+  private static final String EXTENDED_MAPPINGS_URL = "http://localhost:%s/remote-storage/extended-mappings/";
+  private static final String MAPPINGS_LOCATIONS_URL = "http://localhost:%s/remote-storage/extended-mappings/locations";
   private static final String LOCATIONS_URL = "http://localhost:%s/locations";
 
   private String mappingsUrl;
-  private String fullMappingsUrl;
+  private String extendedMappingsUrl;
   private String mappingsLocationsUrl;
   private String locationsUrl;
 
@@ -49,32 +49,32 @@ public class LocationMappingsTest extends TestBase {
   @BeforeEach
   void prepareUrl() {
     mappingsUrl = String.format(MAPPINGS_URL, okapiPort);
-    fullMappingsUrl = String.format(FULL_MAPPINGS_URL, okapiPort);
+    extendedMappingsUrl = String.format(EXTENDED_MAPPINGS_URL, okapiPort);
     mappingsLocationsUrl = String.format(MAPPINGS_LOCATIONS_URL, okapiPort);
     locationsUrl = String.format(LOCATIONS_URL, okapiPort);
     ofNullable(cacheManager.getCache(MAPPINGS)).ifPresent(Cache::clear);
   }
 
   @Test
-  void canPostPlainMapping() {
-    var responseEntity = post(mappingsUrl, new PlainMapping().folioLocationId(randomIdAsString())
-      .configurationId(randomIdAsString()), PlainMapping.class);
+  void canPostRemoteLocationConfigurationMapping() {
+    var responseEntity = post(mappingsUrl, new RemoteLocationConfigurationMapping().folioLocationId(randomIdAsString())
+      .configurationId(randomIdAsString()), RemoteLocationConfigurationMapping.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.CREATED));
     assertThat(responseEntity.getBody().getFolioLocationId(), notNullValue());
     assertThat(responseEntity.getBody().getConfigurationId(), notNullValue());
 
     var mapping = get(mappingsUrl + "/" + responseEntity.getBody()
-      .getFolioLocationId(), PlainMapping.class).getBody();
+      .getFolioLocationId(), RemoteLocationConfigurationMapping.class).getBody();
     assertTrue(EqualsBuilder.reflectionEquals(responseEntity.getBody(), mapping, true, StorageConfiguration.class, METADATA));
   }
 
   @Test
-  void canGetAllPlainMappings() {
-    var mapping = post(mappingsUrl, new PlainMapping()
+  void canGetAllRemoteLocationConfigurationMappings() {
+    var mapping = post(mappingsUrl, new RemoteLocationConfigurationMapping()
       .folioLocationId(randomIdAsString())
       .configurationId(randomIdAsString()),
-      PlainMapping.class);
-    var responseEntity = get(mappingsUrl, PlainMappings.class);
+      RemoteLocationConfigurationMapping.class);
+    var responseEntity = get(mappingsUrl, RemoteLocationConfigurationMappings.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
     assertFalse(responseEntity.getBody().getMappings().isEmpty());
 
@@ -82,8 +82,8 @@ public class LocationMappingsTest extends TestBase {
   }
 
   @Test
-  void canGetPlainMappingById() {
-    var mapping = get(mappingsUrl, PlainMappings.class).getBody()
+  void canGetRemoteLocationConfigurationMappingById() {
+    var mapping = get(mappingsUrl, RemoteLocationConfigurationMappings.class).getBody()
       .getMappings()
       .get(0);
 
@@ -91,15 +91,15 @@ public class LocationMappingsTest extends TestBase {
     // Object cachedMapping =
     // requireNonNull(requireNonNull(cacheManager.getCache(MAPPINGS)).get(mapping.getFinalLocationId())).get();
 
-    var response = get(mappingsUrl + mapping.getFolioLocationId(), PlainMapping.class);
+    var response = get(mappingsUrl + mapping.getFolioLocationId(), RemoteLocationConfigurationMapping.class);
     assertThat(response.getStatusCode(), is(HttpStatus.OK));
-    assertTrue(EqualsBuilder.reflectionEquals(mapping, response.getBody(), true, PlainMapping.class, "metadata"));
+    assertTrue(EqualsBuilder.reflectionEquals(mapping, response.getBody(), true, RemoteLocationConfigurationMapping.class, "metadata"));
   }
 
   @Test
-  void canDeletePlainMapping() {
-    var responseEntity = post(mappingsUrl, new PlainMapping().folioLocationId(randomIdAsString())
-      .configurationId(randomIdAsString()), PlainMapping.class);
+  void canDeleteRemoteLocationConfigurationMapping() {
+    var responseEntity = post(mappingsUrl, new RemoteLocationConfigurationMapping().folioLocationId(randomIdAsString())
+      .configurationId(randomIdAsString()), RemoteLocationConfigurationMapping.class);
     // Verify cache disable via MODRS-42
     // assertThat(requireNonNull(cacheManager.getCache(MAPPINGS)).get(requireNonNull(responseEntity.getBody()).getFinalLocationId()),
     // notNullValue());
@@ -108,9 +108,11 @@ public class LocationMappingsTest extends TestBase {
   }
 
   @Test
-  void canPostFullMapping() {
-    var responseEntity = post(fullMappingsUrl, new FullMapping().finalLocationId(randomIdAsString())
-      .remoteConfigurationId(randomIdAsString()).originalLocationId(randomIdAsString()), FullMapping.class);
+  void canPostExtendedRemoteLocationConfigurationMapping() {
+    var responseEntity = post(extendedMappingsUrl,
+      new ExtendedRemoteLocationConfigurationMapping().finalLocationId(randomIdAsString())
+      .remoteConfigurationId(randomIdAsString())
+        .originalLocationId(randomIdAsString()), ExtendedRemoteLocationConfigurationMapping.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.CREATED));
     assertThat(responseEntity.getBody()
       .getFinalLocationId(), notNullValue());
@@ -118,9 +120,9 @@ public class LocationMappingsTest extends TestBase {
       .getRemoteConfigurationId(), notNullValue());
 
 
-    var mapping = get(fullMappingsUrl + "/" + responseEntity.getBody().getFinalLocationId(),
-      FullMappings.class).getBody();
-    assertTrue(EqualsBuilder.reflectionEquals(responseEntity.getBody(), mapping.getMappings().get(0), true, FullMapping.class, METADATA));
+    var mapping = get(extendedMappingsUrl + "/" + responseEntity.getBody().getFinalLocationId(),
+      ExtendedRemoteLocationConfigurationMappings.class).getBody();
+    assertTrue(EqualsBuilder.reflectionEquals(responseEntity.getBody(), mapping.getMappings().get(0), true, ExtendedRemoteLocationConfigurationMapping.class, METADATA));
     // Verify caching disable via MODRS-42
     // assertTrue(EqualsBuilder.reflectionEquals(
     // requireNonNull(
@@ -129,22 +131,22 @@ public class LocationMappingsTest extends TestBase {
   }
 
   @Test
-  void canGetAllFullMappings() {
-    var mapping = post(fullMappingsUrl, new FullMapping()
+  void canGetAllExtendedRemoteLocationConfigurationMappings() {
+    var mapping = post(extendedMappingsUrl, new ExtendedRemoteLocationConfigurationMapping()
       .finalLocationId(randomIdAsString())
       .remoteConfigurationId(randomIdAsString())
       .originalLocationId(randomIdAsString()),
-      FullMapping.class);
-    ResponseEntity<FullMappings> responseEntity = get(fullMappingsUrl, FullMappings.class);
+      ExtendedRemoteLocationConfigurationMapping.class);
+    ResponseEntity<ExtendedRemoteLocationConfigurationMappings> responseEntity = get(extendedMappingsUrl, ExtendedRemoteLocationConfigurationMappings.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
     assertFalse(responseEntity.getBody().getMappings().isEmpty());
 
-    delete(fullMappingsUrl + mapping.getBody().getFinalLocationId());
+    delete(extendedMappingsUrl + mapping.getBody().getFinalLocationId());
   }
 
   @Test
   void canGetMappingsLocations() {
-    ResponseEntity<FullMappings> responseEntity = get(mappingsLocationsUrl, FullMappings.class);
+    ResponseEntity<ExtendedRemoteLocationConfigurationMappings> responseEntity = get(mappingsLocationsUrl, ExtendedRemoteLocationConfigurationMappings.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
     assertThat(responseEntity.getBody().getTotalRecords(), is(2));
     assertThat(responseEntity.getBody().getMappings().get(0).getOriginalLocationId(), notNullValue());
@@ -152,21 +154,21 @@ public class LocationMappingsTest extends TestBase {
   }
 
   @Test
-  void canGetFullMappingsById() {
+  void canGetExtendedRemoteLocationConfigurationMappingsById() {
     var finalLocationId = randomIdAsString();
     var remoteConfigurationId = randomIdAsString();
-    var mapping1 = post(fullMappingsUrl, new FullMapping()
+    var mapping1 = post(extendedMappingsUrl, new ExtendedRemoteLocationConfigurationMapping()
         .finalLocationId(finalLocationId)
         .remoteConfigurationId(remoteConfigurationId)
         .originalLocationId(randomIdAsString()),
-      FullMapping.class).getBody();
-    var mapping2 = post(fullMappingsUrl, new FullMapping()
+      ExtendedRemoteLocationConfigurationMapping.class).getBody();
+    var mapping2 = post(extendedMappingsUrl, new ExtendedRemoteLocationConfigurationMapping()
         .finalLocationId(finalLocationId)
         .remoteConfigurationId(remoteConfigurationId)
         .originalLocationId(randomIdAsString()),
-      FullMapping.class).getBody();
+      ExtendedRemoteLocationConfigurationMapping.class).getBody();
 
-    var response = get(fullMappingsUrl + finalLocationId, FullMappings.class);
+    var response = get(extendedMappingsUrl + finalLocationId, ExtendedRemoteLocationConfigurationMappings.class);
     assertThat(response.getStatusCode(), is(HttpStatus.OK));
     assertThat(response.getBody().getMappings().size(), is(2));
     assertTrue(Arrays.asList(mapping1, mapping2).containsAll(response.getBody().getMappings()));
@@ -175,15 +177,15 @@ public class LocationMappingsTest extends TestBase {
     // requireNonNull(requireNonNull(cacheManager.getCache(MAPPINGS)).get(mapping.getFinalLocationId())).get();
     // assertTrue(EqualsBuilder.reflectionEquals(cachedMapping, secondResponse.getBody(), true, LocationMapping.class, "metadata"));
 
-    delete(fullMappingsUrl + finalLocationId);
+    delete(extendedMappingsUrl + finalLocationId);
   }
 
   @Test
-  void canDeleteFullMapping() {
-    var response = post(fullMappingsUrl, new FullMapping().finalLocationId(randomIdAsString())
+  void canDeleteExtendedRemoteLocationConfigurationMapping() {
+    var response = post(extendedMappingsUrl, new ExtendedRemoteLocationConfigurationMapping().finalLocationId(randomIdAsString())
       .remoteConfigurationId(randomIdAsString())
-      .originalLocationId(randomIdAsString()), FullMapping.class);
-    assertThat(delete(fullMappingsUrl + response.getBody()
+      .originalLocationId(randomIdAsString()), ExtendedRemoteLocationConfigurationMapping.class);
+    assertThat(delete(extendedMappingsUrl + response.getBody()
       .getFinalLocationId()).getStatusCode(), is(HttpStatus.NO_CONTENT));
     // Verify cache disable via MODRS-42
     // assertThat(requireNonNull(cacheManager.getCache(MAPPINGS)).get(requireNonNull(responseEntity.getBody()).getFinalLocationId()),
@@ -194,13 +196,13 @@ public class LocationMappingsTest extends TestBase {
 
   @Test
   void shouldReturnUnprocessableEntityForInvalidBody() {
-    var invalidBody1 = new HttpEntity(new PlainMapping().folioLocationId("abcde")
+    var invalidBody1 = new HttpEntity(new RemoteLocationConfigurationMapping().folioLocationId("abcde")
       .configurationId("abcde"));
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class,
         () -> post(mappingsUrl, invalidBody1, StorageConfiguration.class));
     assertThat(exception.getStatusCode(), is(HttpStatus.UNPROCESSABLE_ENTITY));
 
-    var invalidBody2 = new HttpEntity(new PlainMapping().folioLocationId("abcde")
+    var invalidBody2 = new HttpEntity(new RemoteLocationConfigurationMapping().folioLocationId("abcde")
       .configurationId("abcde"));
     exception = assertThrows(HttpClientErrorException.class,
       () -> post(mappingsUrl, invalidBody2, StorageConfiguration.class));
@@ -213,7 +215,7 @@ public class LocationMappingsTest extends TestBase {
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> delete(urlWithRandomUuid1));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
 
-    String urlWithRandomUuid2 = fullMappingsUrl + randomIdAsString();
+    String urlWithRandomUuid2 = extendedMappingsUrl + randomIdAsString();
     exception = assertThrows(HttpClientErrorException.class, () -> delete(urlWithRandomUuid2));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
   }

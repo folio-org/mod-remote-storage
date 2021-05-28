@@ -2,9 +2,9 @@ package org.folio.rs.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.rs.domain.dto.FullMapping;
-import org.folio.rs.domain.dto.FullMappings;
-import org.folio.rs.rest.resource.FullMappingsApi;
+import org.folio.rs.domain.dto.ExtendedRemoteLocationConfigurationMapping;
+import org.folio.rs.domain.dto.ExtendedRemoteLocationConfigurationMappings;
+import org.folio.rs.rest.resource.ExtendedMappingsApi;
 import org.folio.rs.service.LocationMappingsService;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -22,38 +22,38 @@ import javax.validation.constraints.Min;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping(value = "/remote-storage/")
-public class FullMappingsController implements FullMappingsApi {
+public class ExtendedMappingsController implements ExtendedMappingsApi {
   private static final String MAPPING_NOT_FOUND = "Mapping not found";
 
   private final LocationMappingsService locationMappingsService;
 
   @Override
-  public ResponseEntity<FullMapping> postFullMapping(@Valid FullMapping mapping) {
-    return new ResponseEntity<>(locationMappingsService.postFullMapping(mapping), HttpStatus.CREATED);
+  public ResponseEntity<ExtendedRemoteLocationConfigurationMapping> postExtendedRemoteLocationConfigurationMapping(@Valid ExtendedRemoteLocationConfigurationMapping mapping) {
+    return new ResponseEntity<>(locationMappingsService.postExtendedRemoteLocationConfigurationMapping(mapping), HttpStatus.CREATED);
   }
 
   @Override
-  public ResponseEntity<FullMappings> getFullMappingsById(String id) {
-    return ResponseEntity.ok().body(locationMappingsService.getFullMappings(id));
+  public ResponseEntity<ExtendedRemoteLocationConfigurationMappings> getExtendedRemoteLocationConfigurationMappingsById(String id) {
+    return ResponseEntity.ok().body(locationMappingsService.getExtendedRemoteLocationConfigurationMappings(id));
   }
 
   @Override
-  public ResponseEntity<FullMappings> getFullMappings(@Min(0) @Max(2147483647) @Valid Integer offset,
+  public ResponseEntity<ExtendedRemoteLocationConfigurationMappings> getExtendedRemoteLocationConfigurationMappings(@Min(0) @Max(2147483647) @Valid Integer offset,
     @Min(0) @Max(2147483647) @Valid Integer limit, @Valid String query) {
-    var mappings = locationMappingsService.getFullMappings(offset, limit);
+    var mappings = locationMappingsService.getExtendedRemoteLocationConfigurationMappings(offset, limit);
     return new ResponseEntity<>(mappings, HttpStatus.OK);
   }
 
   @Override
-  public ResponseEntity<String> deleteFullMappingById(String mappingId) {
+  public ResponseEntity<String> deleteExtendedRemoteLocationConfigurationMappingById(String mappingId) {
     locationMappingsService.deleteMappingById(mappingId);
     return ResponseEntity.noContent().build();
   }
 
   @Override
-  public ResponseEntity<FullMappings> getFullMappingsLocations(@Min(0) @Max(2147483647) @Valid Integer offset,
+  public ResponseEntity<ExtendedRemoteLocationConfigurationMappings> getExtendedRemoteLocationConfigurationMappingsLocations(@Min(0) @Max(2147483647) @Valid Integer offset,
       @Min(0) @Max(2147483647) @Valid Integer limit, @Valid String query) {
-    var mappings = locationMappingsService.getFullMappingsLocations();
+    var mappings = locationMappingsService.getExtendedRemoteLocationConfigurationMappingsLocations();
     return new ResponseEntity<>(mappings, HttpStatus.OK);
   }
 

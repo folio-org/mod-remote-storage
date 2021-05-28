@@ -4,16 +4,16 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.folio.rs.client.LocationClient;
-import org.folio.rs.domain.dto.FullMapping;
-import org.folio.rs.domain.dto.FullMappings;
-import org.folio.rs.domain.dto.PlainMapping;
-import org.folio.rs.domain.dto.PlainMappings;
+import org.folio.rs.domain.dto.ExtendedRemoteLocationConfigurationMapping;
+import org.folio.rs.domain.dto.ExtendedRemoteLocationConfigurationMappings;
+import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
+import org.folio.rs.domain.dto.RemoteLocationConfigurationMappings;
 import org.folio.rs.domain.entity.OriginalLocation;
-import org.folio.rs.mapper.PlainMappingsMapper;
-import org.folio.rs.mapper.FullMappingsMapper;
-import org.folio.rs.repository.FullMappingsRepository;
+import org.folio.rs.mapper.RemoteLocationConfigurationMappingsMapper;
+import org.folio.rs.mapper.ExtendedRemoteLocationConfigurationMappingsMapper;
+import org.folio.rs.repository.ExtendedRemoteLocationConfigurationMappingsRepository;
 import org.folio.rs.repository.OriginalLocationsRepository;
-import org.folio.rs.repository.PlainMappingsRepository;
+import org.folio.rs.repository.RemoteLocationConfigurationMappingsRepository;
 import org.folio.spring.data.OffsetRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -26,74 +26,74 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class LocationMappingsService {
   public static final String MAPPINGS = "mappings";
-  private final PlainMappingsRepository plainMappingsRepository;
-  private final PlainMappingsMapper plainMappingsMapper;
+  private final RemoteLocationConfigurationMappingsRepository mappingsRepository;
+  private final RemoteLocationConfigurationMappingsMapper mappingsMapper;
   private final LocationClient locationClient;
   private final OriginalLocationsRepository originalLocationsRepository;
-  private final FullMappingsRepository fullMappingsRepository;
+  private final ExtendedRemoteLocationConfigurationMappingsRepository extendedMappingsRepository;
 
-  public PlainMapping postPlainMapping(PlainMapping plainMapping) {
-    return plainMappingsMapper
-      .mapEntityToDto(plainMappingsRepository.save(plainMappingsMapper.mapDtoToEntity(plainMapping)));
+  public RemoteLocationConfigurationMapping postRemoteLocationConfigurationMapping(RemoteLocationConfigurationMapping mapping) {
+    return mappingsMapper
+      .mapEntityToDto(mappingsRepository.save(mappingsMapper.mapDtoToEntity(mapping)));
   }
 
-  public PlainMapping getPlainMapping(String folioLocationId) {
+  public RemoteLocationConfigurationMapping getRemoteLocationConfigurationMapping(String folioLocationId) {
     var id = UUID.fromString(folioLocationId);
-    return plainMappingsRepository.findById(id)
-      .map(plainMappingsMapper::mapEntityToDto)
+    return mappingsRepository.findById(id)
+      .map(mappingsMapper::mapEntityToDto)
       .orElse(null);
   }
 
-  public PlainMappings getPlainMappings(Integer offset, Integer limit) {
-    var mappings = plainMappingsRepository.findAll(new OffsetRequest(offset, limit, Sort.unsorted()));
-    return plainMappingsMapper.mapEntitiesToPlainMappingCollection(mappings);
+  public RemoteLocationConfigurationMappings getRemoteLocationConfigurationMappings(Integer offset, Integer limit) {
+    var mappings = mappingsRepository.findAll(new OffsetRequest(offset, limit, Sort.unsorted()));
+    return mappingsMapper.mapEntitiesToRemoteLocationConfigurationMappingCollection(mappings);
   }
 
   public void deleteMappingById(String folioLocationId) {
     var id = UUID.fromString(folioLocationId);
-    plainMappingsRepository.deleteById(id);
+    mappingsRepository.deleteById(id);
   }
 
-  public FullMapping postFullMapping(FullMapping fullMapping) {
-    var entity = fullMappingsRepository.findById(UUID.fromString(fullMapping.getFinalLocationId()))
+  public ExtendedRemoteLocationConfigurationMapping postExtendedRemoteLocationConfigurationMapping(ExtendedRemoteLocationConfigurationMapping mapping) {
+    var entity = extendedMappingsRepository.findById(UUID.fromString(mapping.getFinalLocationId()))
       .map(m -> {
         var locations = m.getOriginalLocations();
         var originalLocation = new OriginalLocation();
-        originalLocation.setFolioLocationId(UUID.fromString(fullMapping.getFinalLocationId()));
-        originalLocation.setOriginalLocationId(UUID.fromString(fullMapping.getOriginalLocationId()));
+        originalLocation.setFinalLocationId(UUID.fromString(mapping.getFinalLocationId()));
+        originalLocation.setOriginalLocationId(UUID.fromString(mapping.getOriginalLocationId()));
         locations.add(originalLocation);
         m.setOriginalLocations(locations);
-        return fullMappingsRepository.save(m);
+        return extendedMappingsRepository.save(m);
       })
-      .orElseGet(() -> fullMappingsRepository.save(FullMappingsMapper.mapDtoToEntity(fullMapping)));
-    return new FullMapping()
+      .orElseGet(() -> extendedMappingsRepository.save(ExtendedRemoteLocationConfigurationMappingsMapper.mapDtoToEntity(mapping)));
+    return new ExtendedRemoteLocationConfigurationMapping()
       .finalLocationId(entity.getFinalLocationId().toString())
       .remoteConfigurationId(entity.getRemoteConfigurationId().toString())
-      .originalLocationId(fullMapping.getOriginalLocationId());
+      .originalLocationId(mapping.getOriginalLocationId());
   }
 
-  public FullMappings getFullMappings(Integer offset, Integer limit) {
-    var mappings = fullMappingsRepository.findAll(new OffsetRequest(offset, limit, Sort.unsorted()));
-    return FullMappingsMapper.mapEntitiesToDtos(mappings);
+  public ExtendedRemoteLocationConfigurationMappings getExtendedRemoteLocationConfigurationMappings(Integer offset, Integer limit) {
+    var mappings = extendedMappingsRepository.findAll(new OffsetRequest(offset, limit, Sort.unsorted()));
+    return ExtendedRemoteLocationConfigurationMappingsMapper.mapEntitiesToDtoCollection(mappings);
   }
 
-  public FullMappings getFullMappings(String finalLocationId) {
-    return fullMappingsRepository.findById(UUID.fromString(finalLocationId))
-      .map(FullMappingsMapper::mapEntityToDto)
+  public ExtendedRemoteLocationConfigurationMappings getExtendedRemoteLocationConfigurationMappings(String finalLocationId) {
+    return extendedMappingsRepository.findById(UUID.fromString(finalLocationId))
+      .map(ExtendedRemoteLocationConfigurationMappingsMapper::mapEntityToDtoCollection)
       .orElse(null);
   }
 
-  public FullMappings getFullMappingsLocations() {
+  public ExtendedRemoteLocationConfigurationMappings getExtendedRemoteLocationConfigurationMappingsLocations() {
     var mappings = locationClient.getLocations().getResult().stream()
       .map(folioLocation -> {
         var mapping = originalLocationsRepository
           .findByOriginalLocationId(UUID.fromString(folioLocation.getId()));
-        var locationMapping = new FullMapping();
+        var locationMapping = new ExtendedRemoteLocationConfigurationMapping();
         locationMapping.setOriginalLocationId(folioLocation.getId());
-        mapping.ifPresent(m -> locationMapping.setFinalLocationId(m.getFolioLocationId().toString()));
+        mapping.ifPresent(m -> locationMapping.setFinalLocationId(m.getFinalLocationId().toString()));
         return locationMapping;
       }).collect(Collectors.toList());
-    return new FullMappings()
+    return new ExtendedRemoteLocationConfigurationMappings()
       .mappings(mappings)
       .totalRecords(mappings.size());
   }

@@ -13,6 +13,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class OriginalLocationId implements Serializable {
-  private UUID folioLocationId;
+  private UUID finalLocationId;
   private UUID originalLocationId;
 }

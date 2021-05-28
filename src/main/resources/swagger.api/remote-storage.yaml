@@ -159,7 +159,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/plainMapping"
+                $ref: "#/components/schemas/remoteLocationConfigurationMapping"
         '400':
           description: Bad request
           content:
@@ -182,7 +182,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/plainMapping"
+              $ref: "#/components/schemas/remoteLocationConfigurationMapping"
         required: true
     get:
       responses:
@@ -191,7 +191,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/plainMappings"
+                $ref: "#/components/schemas/remoteLocationConfigurationMappings"
         '500':
           description: Internal server error
           content:
@@ -213,7 +213,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/plainMapping"
+                $ref: "#/components/schemas/remoteLocationConfigurationMapping"
         '404':
           description: Mapping not found
           content:
@@ -259,7 +259,7 @@ paths:
         required: true
         schema:
           $ref: "#/components/schemas/uuid"
-  /full-mappings:
+  /extended-mappings:
     post:
       responses:
         '201':
@@ -267,7 +267,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/fullMapping"
+                $ref: "#/components/schemas/extendedRemoteLocationConfigurationMapping"
         '400':
           description: Bad request
           content:
@@ -285,12 +285,12 @@ paths:
                 type: string
                 example: Internal server error
       description: Add/update a mapping between remote and Folio locations
-      operationId: postFullMapping
+      operationId: postExtendedRemoteLocationConfigurationMapping
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/fullMapping"
+              $ref: "#/components/schemas/extendedRemoteLocationConfigurationMapping"
         required: true
     get:
       responses:
@@ -299,7 +299,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/fullMappings"
+                $ref: "#/components/schemas/extendedRemoteLocationConfigurationMappings"
         '500':
           description: Internal server error
           content:
@@ -308,12 +308,12 @@ paths:
                 type: string
                 example: Internal server error
       description: Get a list of location mappings
-      operationId: getFullMappings
+      operationId: getExtendedRemoteLocationConfigurationMappings
       parameters:
         - $ref: "#/components/parameters/trait_pageable_offset"
         - $ref: "#/components/parameters/trait_pageable_limit"
         - $ref: "#/components/parameters/trait_queryable_query"
-  /full-mappings/{finalLocationId}:
+  /extended-mappings/{finalLocationId}:
     get:
       responses:
         '200':
@@ -321,7 +321,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/fullMappings"
+                $ref: "#/components/schemas/extendedRemoteLocationConfigurationMappings"
         '404':
           description: Mapping not found
           content:
@@ -336,7 +336,7 @@ paths:
               schema:
                 type: string
                 example: Internal server error
-      operationId: getFullMappingsById
+      operationId: getExtendedRemoteLocationConfigurationMappingsById
     delete:
       responses:
         '204':
@@ -360,14 +360,14 @@ paths:
               schema:
                 type: string
                 example: Internal server error
-      operationId: deleteFullMappingById
+      operationId: deleteExtendedRemoteLocationConfigurationMappingById
     parameters:
       - name: finalLocationId
         in: path
         required: true
         schema:
           $ref: "#/components/schemas/uuid"
-  /full-mappings/locations:
+  /extended-mappings/locations:
     get:
       responses:
         '200':
@@ -375,7 +375,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/fullMappings"
+                $ref: "#/components/schemas/extendedRemoteLocationConfigurationMappings"
         '500':
           description: Internal server error
           content:
@@ -384,7 +384,7 @@ paths:
                 type: string
                 example: Internal server error
       description: Get a list of location mappings
-      operationId: getFullMappingsLocations
+      operationId: getExtendedRemoteLocationConfigurationMappingsLocations
       parameters:
         - $ref: "#/components/parameters/trait_pageable_offset"
         - $ref: "#/components/parameters/trait_pageable_limit"
@@ -729,9 +729,9 @@ components:
                 $ref: "#/components/schemas/storageConfiguration"
           required:
             - configurations
-    fullMapping:
-      $ref: schemas/fullMapping.json
-    fullMappings:
+    extendedRemoteLocationConfigurationMapping:
+      $ref: schemas/extendedRemoteLocationConfigurationMapping.json
+    extendedRemoteLocationConfigurationMappings:
       allOf:
         - $ref: schemas/baseCollection.json
         - type: object
@@ -739,12 +739,12 @@ components:
             mappings:
               type: array
               items:
-                $ref: "#/components/schemas/fullMapping"
+                $ref: "#/components/schemas/extendedRemoteLocationConfigurationMapping"
           required:
             - mappings
-    plainMapping:
-      $ref: schemas/plainMapping.json
-    plainMappings:
+    remoteLocationConfigurationMapping:
+      $ref: schemas/remoteLocationConfigurationMapping.json
+    remoteLocationConfigurationMappings:
       allOf:
         - $ref: schemas/baseCollection.json
         - type: object
@@ -752,7 +752,7 @@ components:
             mappings:
               type: array
               items:
-                $ref: "#/components/schemas/plainMapping"
+                $ref: "#/components/schemas/remoteLocationConfigurationMapping"
           required:
             - mappings
     errors:

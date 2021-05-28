@@ -126,39 +126,39 @@
       ]
     },
     {
-      "id": "remote-storage-full-mappings",
+      "id": "remote-storage-extended-mappings",
       "version": "1.0",
       "handlers": [
         {
           "methods": ["POST"],
-          "pathPattern": "/remote-storage/full-mappings",
+          "pathPattern": "/remote-storage/extended-mappings",
           "permissionsRequired": [
-            "remote-storage.full-mappings.item.post"
+            "remote-storage.extended-mappings.item.post"
           ]
         },
         {
           "methods": ["GET"],
-          "pathPattern": "/remote-storage/full-mappings",
-          "permissionsRequired" : [ "remote-storage.full-mappings.collection.get" ]
+          "pathPattern": "/remote-storage/extended-mappings",
+          "permissionsRequired" : [ "remote-storage.extended-mappings.collection.get" ]
         },
         {
           "methods": ["GET"],
-          "pathPattern": "/remote-storage/full-mappings/{finalLocationId}",
-          "permissionsRequired" : [ "remote-storage.full-mappings.item.get" ]
+          "pathPattern": "/remote-storage/extended-mappings/{finalLocationId}",
+          "permissionsRequired" : [ "remote-storage.extended-mappings.item.get" ]
         },
         {
           "methods": ["GET"],
-          "pathPattern": "/remote-storage/full-mappings/locations",
-          "permissionsRequired" : [ "remote-storage.full-mappings-locations.collection.get" ],
+          "pathPattern": "/remote-storage/extended-mappings/locations",
+          "permissionsRequired" : [ "remote-storage.extended-mappings-locations.collection.get" ],
           "modulePermissions" : [
             "inventory-storage.locations.collection.get"
           ]
         },
         {
           "methods": ["DELETE"],
-          "pathPattern": "/remote-storage/full-mappings/{finalLocationId}",
+          "pathPattern": "/remote-storage/extended-mappings/{finalLocationId}",
           "permissionsRequired": [
-            "remote-storage.full-mappings.item.delete"
+            "remote-storage.extended-mappings.item.delete"
           ]
         }
       ]
@@ -356,29 +356,29 @@
       "description": "Delete a location mapping by id"
     },
     {
-      "permissionName": "remote-storage.full-mappings.item.post",
-      "displayName": "create/update full location mapping",
-      "description": "Create new or update existing full location mapping"
+      "permissionName": "remote-storage.extended-mappings.item.post",
+      "displayName": "create/update extended location mapping",
+      "description": "Create new or update existing extended location mapping"
     },
     {
-      "permissionName" : "remote-storage.full-mappings.collection.get",
-      "displayName" : "get full location mappings collection",
-      "description" : "Get list of full location mappings"
+      "permissionName" : "remote-storage.extended-mappings.collection.get",
+      "displayName" : "get extended location mappings collection",
+      "description" : "Get list of extended location mappings"
     },
     {
-      "permissionName" : "remote-storage.full-mappings.item.get",
-      "displayName" : "get full location mapping by Folio location id",
-      "description" : "Get full location mapping by Folio location id"
+      "permissionName" : "remote-storage.extended-mappings.item.get",
+      "displayName" : "get extended location mapping by Folio location id",
+      "description" : "Get extended location mapping by Folio location id"
     },
     {
-      "permissionName" : "remote-storage.full-mappings-locations.collection.get",
-      "displayName" : "get full location mapping by Folio location id",
-      "description" : "Get full location mapping by Folio location id"
+      "permissionName" : "remote-storage.extended-mappings-locations.collection.get",
+      "displayName" : "get extended location mapping by Folio location id",
+      "description" : "Get extended location mapping by Folio location id"
     },
     {
-      "permissionName": "remote-storage.full-mappings.item.delete",
-      "displayName": "Delete full location mapping",
-      "description": "Delete full a location mapping by id"
+      "permissionName": "remote-storage.extended-mappings.item.delete",
+      "displayName": "Delete extended location mapping",
+      "description": "Delete extended location mapping by id"
     },
     {
       "permissionName": "remote-storage.providers.collection.get",
@@ -434,11 +434,11 @@
         "remote-storage.mappings.collection.get",
         "remote-storage.mappings.item.get",
         "remote-storage.mappings.item.delete",
-        "remote-storage.full-mappings.item.post",
-        "remote-storage.full-mappings.collection.get",
-        "remote-storage.full-mappings.item.get",
-        "remote-storage.full-mappings-locations.collection.get",
-        "remote-storage.full-mappings.item.delete",
+        "remote-storage.extended-mappings.item.post",
+        "remote-storage.extended-mappings.collection.get",
+        "remote-storage.extended-mappings.item.get",
+        "remote-storage.extended-mappings-locations.collection.get",
+        "remote-storage.extended-mappings.item.delete",
         "remote-storage.providers.collection.get",
         "remote-storage.accessions.item.post",
         "remote-storage.accessions.collection.get",

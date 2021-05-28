@@ -19,8 +19,8 @@ import java.util.UUID;
 @Table(name = "original_locations")
 public class OriginalLocation {
   @Id
-  @Column(name = "folio_location_id")
-  private UUID folioLocationId;
+  @Column(name = "final_location_id")
+  private UUID finalLocationId;
 
   @Id
   @Column(name = "original_location_id")

@@ -48,7 +48,7 @@ import org.folio.rs.domain.dto.ItemEffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.ItemMaterialType;
 import org.folio.rs.domain.dto.ItemPermanentLocation;
 import org.folio.rs.domain.dto.ItemsMove;
-import org.folio.rs.domain.dto.LocationMapping;
+import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
 import org.folio.rs.error.AccessionException;
@@ -96,7 +96,7 @@ public class AccessionQueueService {
           new AsyncFolioExecutionContext(systemUserParameters, moduleMetadata));
         var effectiveLocationId = item.getEffectiveLocationId();
         var locationMapping = locationMappingsService
-          .getLocationMapping(effectiveLocationId);
+          .getRemoteLocationConfigurationMapping(effectiveLocationId);
         if (nonNull(locationMapping)) {
           var instances = inventoryClient.getInstancesByQuery("id==" + item.getInstanceId());
           var instance = instances.getResult().get(0);
@@ -111,18 +111,13 @@ public class AccessionQueueService {
   }
 
   public AccessionQueue processPostAccession(AccessionRequest accessionRequest) {
-    var item = getItem(accessionRequest);
-    var locationMapping = locationMappingsService.getLocationMapping(
-      item.getEffectiveLocationId(),
-      accessionRequest.getRemoteStorageId());
-    if (locationMapping == null) {
-      throw new AccessionException(String.format("No location was found for remote storage id=%s", accessionRequest.getRemoteStorageId()));
-    }
     var storageConfiguration = getStorageConfiguration(accessionRequest);
+    var locationMapping = getLocationMapping(accessionRequest);
+    var item = getItem(accessionRequest);
     var holdingsRecord = holdingsStorageClient.getHoldingsRecordsByQuery("id==" + item.getHoldingsRecordId()).getResult().get(0);
     var instance = inventoryClient.getInstancesByQuery("id==" + holdingsRecord.getInstanceId()).getResult().get(0);
 
-    var remoteLocationId = locationMapping.getFinalLocationId();
+    var remoteLocationId = locationMapping.getFolioLocationId();
 
     if (!holdingsRecordMatchLocation(holdingsRecord, remoteLocationId)) {
       if (shouldChangeHoldingsPermanentLocation(storageConfiguration, item, remoteLocationId)) {
@@ -139,6 +134,14 @@ public class AccessionQueueService {
     var accessionQueueRecord = buildAccessionQueueRecord(item, instance, locationMapping);
     accessionQueueRepository.save(accessionQueueRecord);
     return accessionQueueMapper.mapEntityToDto(accessionQueueRecord);
+  }
+
+  private RemoteLocationConfigurationMapping getLocationMapping(AccessionRequest accessionRequest) {
+    return locationMappingsService.getRemoteLocationConfigurationMappings(0, Integer.MAX_VALUE)
+      .getMappings().stream()
+      .filter(mapping -> accessionRequest.getRemoteStorageId().equals(mapping.getConfigurationId()))
+      .findFirst()
+      .orElseThrow(() -> new AccessionException(String.format("No location was found for remote storage id=%s", accessionRequest.getRemoteStorageId())));
   }
 
   private boolean shouldChangeHoldingsPermanentLocation(StorageConfiguration storageConfiguration, Item item, String location) {
@@ -272,14 +275,14 @@ public class AccessionQueueService {
    * @return accession queue record with populated data
    */
   private AccessionQueueRecord buildAccessionQueueRecord(Item item, Instance instance,
-    LocationMapping locationMapping) {
+    RemoteLocationConfigurationMapping locationMapping) {
     var publication = instance.getPublication().stream().findFirst();
     return AccessionQueueRecord.builder()
       .id(UUID.randomUUID())
       .itemBarcode(item.getBarcode())
       .createdDateTime(LocalDateTime.now())
       .accessionedDateTime(LocalDateTime.now())
-      .remoteStorageId(UUID.fromString(locationMapping.getRemoteConfigurationId()))
+      .remoteStorageId(UUID.fromString(locationMapping.getConfigurationId()))
       .callNumber(ofNullable(item.getEffectiveCallNumberComponents())
         .map(ItemEffectiveCallNumberComponents::getCallNumber)
         .orElse(null))
@@ -304,7 +307,7 @@ public class AccessionQueueService {
       .physicalDescription(String.join("; ", instance.getPhysicalDescriptions()))
       .materialType(ofNullable(item.getMaterialType()).map(ItemMaterialType::getName).orElse(null))
       .copyNumber(item.getCopyNumber())
-      .permanentLocationId(UUID.fromString(locationMapping.getFinalLocationId()))
+      .permanentLocationId(UUID.fromString(locationMapping.getFolioLocationId()))
       .build();
   }
 

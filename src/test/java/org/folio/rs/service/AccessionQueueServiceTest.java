@@ -31,7 +31,7 @@ import org.folio.rs.domain.dto.HoldingsRecord;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.ItemEffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.ItemsMove;
-import org.folio.rs.domain.dto.LocationMapping;
+import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.dto.TimeUnits;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
@@ -90,11 +90,10 @@ public class AccessionQueueServiceTest extends TestBase {
   @Test
   void testItemUpdatingEventHandling() {
 
-    var locationMapping = new LocationMapping();
-    locationMapping.setFinalLocationId(NEW_EFFECTIVE_LOCATION_ID);
-    locationMapping.setRemoteConfigurationId(REMOTE_STORAGE_ID);
-    locationMapping.setOriginalLocationId(NEW_EFFECTIVE_LOCATION_ID);
-    locationMappingsService.postMapping(locationMapping);
+    var mapping = new RemoteLocationConfigurationMapping()
+      .folioLocationId(NEW_EFFECTIVE_LOCATION_ID)
+      .configurationId(REMOTE_STORAGE_ID);
+    locationMappingsService.postRemoteLocationConfigurationMapping(mapping);
 
     var originalItem = new Item().effectiveLocationId(OLD_EFFECTIVE_LOCATION_ID)
       .instanceId(INSTANCE_ID)
@@ -289,11 +288,10 @@ public class AccessionQueueServiceTest extends TestBase {
       .accessionWorkflowDetails(AccessionWorkflowDetails.CHANGE_PERMANENT_LOCATION);
     configurationsService.postConfiguration(storageConfiguration);
 
-    var locationMapping = new LocationMapping()
-      .remoteConfigurationId(REMOTE_STORAGE_ID)
-      .finalLocationId(REMOTE_LOCATION_ID)
-      .originalLocationId(REMOTE_LOCATION_ID);
-    locationMappingsService.postMapping(locationMapping);
+    var locationMapping = new RemoteLocationConfigurationMapping()
+      .configurationId(REMOTE_STORAGE_ID)
+      .folioLocationId(REMOTE_LOCATION_ID);
+    locationMappingsService.postRemoteLocationConfigurationMapping(locationMapping);
 
     var accessionRequest = new AccessionRequest()
       .remoteStorageId(REMOTE_STORAGE_ID)
@@ -319,11 +317,10 @@ public class AccessionQueueServiceTest extends TestBase {
       .accessionWorkflowDetails(AccessionWorkflowDetails.CHANGE_PERMANENT_LOCATION);
     configurationsService.postConfiguration(storageConfiguration);
 
-    var locationMapping = new LocationMapping()
-      .remoteConfigurationId(REMOTE_STORAGE_ID)
-      .finalLocationId(REMOTE_LOCATION_ID)
-      .originalLocationId(REMOTE_LOCATION_ID);
-    locationMappingsService.postMapping(locationMapping);
+    var locationMapping = new RemoteLocationConfigurationMapping()
+      .configurationId(REMOTE_STORAGE_ID)
+      .folioLocationId(REMOTE_LOCATION_ID);
+    locationMappingsService.postRemoteLocationConfigurationMapping(locationMapping);
 
     var accessionRequest = new AccessionRequest()
       .remoteStorageId(REMOTE_STORAGE_ID)
@@ -344,11 +341,10 @@ public class AccessionQueueServiceTest extends TestBase {
       .accessionWorkflowDetails(AccessionWorkflowDetails.DUPLICATE_HOLDINGS);
     configurationsService.postConfiguration(storageConfiguration);
 
-    var locationMapping = new LocationMapping()
-      .remoteConfigurationId(REMOTE_STORAGE_ID)
-      .finalLocationId(REMOTE_LOCATION_ID)
-      .originalLocationId(REMOTE_LOCATION_ID);
-    locationMappingsService.postMapping(locationMapping);
+    var locationMapping = new RemoteLocationConfigurationMapping()
+      .configurationId(REMOTE_STORAGE_ID)
+      .folioLocationId(REMOTE_LOCATION_ID);
+    locationMappingsService.postRemoteLocationConfigurationMapping(locationMapping);
 
     var accessionRequest = new AccessionRequest()
       .remoteStorageId(REMOTE_STORAGE_ID)
@@ -373,11 +369,10 @@ public class AccessionQueueServiceTest extends TestBase {
       .accessionWorkflowDetails(AccessionWorkflowDetails.CHANGE_PERMANENT_LOCATION);
     configurationsService.postConfiguration(storageConfiguration);
 
-    var locationMapping = new LocationMapping()
-      .remoteConfigurationId(remoteStorageId)
-      .finalLocationId(remoteLocationId)
-      .originalLocationId(remoteLocationId);
-    locationMappingsService.postMapping(locationMapping);
+    var locationMapping = new RemoteLocationConfigurationMapping()
+      .configurationId(remoteStorageId)
+      .folioLocationId(remoteLocationId);
+    locationMappingsService.postRemoteLocationConfigurationMapping(locationMapping);
 
     var accessionRequest = new AccessionRequest()
       .remoteStorageId(remoteStorageId)
@@ -412,11 +407,10 @@ public class AccessionQueueServiceTest extends TestBase {
       .accessionWorkflowDetails(AccessionWorkflowDetails.DUPLICATE_HOLDINGS);
     configurationsService.postConfiguration(storageConfiguration);
 
-    var locationMapping = new LocationMapping()
-      .remoteConfigurationId(REMOTE_STORAGE_ID)
-      .finalLocationId(REMOTE_LOCATION_ID)
-      .originalLocationId(REMOTE_LOCATION_ID);
-    locationMappingsService.postMapping(locationMapping);
+    var locationMapping = new RemoteLocationConfigurationMapping()
+      .configurationId(REMOTE_STORAGE_ID)
+      .folioLocationId(REMOTE_LOCATION_ID);
+    locationMappingsService.postRemoteLocationConfigurationMapping(locationMapping);
 
     var accessionRequest = new AccessionRequest()
       .remoteStorageId(REMOTE_STORAGE_ID)
@@ -459,11 +453,10 @@ public class AccessionQueueServiceTest extends TestBase {
       .accessionWorkflowDetails(AccessionWorkflowDetails.DUPLICATE_HOLDINGS);
     configurationsService.postConfiguration(storageConfiguration);
 
-    var locationMapping = new LocationMapping()
-      .remoteConfigurationId(REMOTE_STORAGE_ID)
-      .finalLocationId(REMOTE_LOCATION_ID)
-      .originalLocationId(REMOTE_LOCATION_ID);
-    locationMappingsService.postMapping(locationMapping);
+    var locationMapping = new RemoteLocationConfigurationMapping()
+      .configurationId(REMOTE_STORAGE_ID)
+      .folioLocationId(REMOTE_LOCATION_ID);
+    locationMappingsService.postRemoteLocationConfigurationMapping(locationMapping);
 
     var accessionRequest = new AccessionRequest()
       .remoteStorageId(REMOTE_STORAGE_ID)

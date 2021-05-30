@@ -40,8 +40,9 @@ public class ReturnItemTest extends TestBase {
   @BeforeEach
   void prepare() {
     LocationMapping locationMapping = new LocationMapping();
-    locationMapping.setFolioLocationId(UUID.fromString(FOLIO_LOCATION_ID));
-    locationMapping.setConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID));
+    locationMapping.setFinalLocationId(UUID.fromString(FOLIO_LOCATION_ID));
+    locationMapping.setRemoteConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID));
+    locationMapping.setOriginalLocationId(UUID.fromString(FOLIO_LOCATION_ID));
     locationMappingsRepository.save(locationMapping);
     checkInUrl = String.format(RETURN_URL, okapiPort, REMOTE_STORAGE_CONFIGURATION_ID);
     errorCheckInUrl = String.format(RETURN_URL, okapiPort, REMOTE_STORAGE_ERROR_CONFIGURATION_ID);

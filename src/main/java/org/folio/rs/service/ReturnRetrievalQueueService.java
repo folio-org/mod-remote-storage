@@ -160,7 +160,7 @@ public class ReturnRetrievalQueueService {
 
   private LocationMapping getLocationMapping(Item item) {
     return Objects.nonNull(item.getEffectiveLocation())
-        ? locationMappingsService.getMappingByFolioLocationId(item.getEffectiveLocation().getId())
+        ? locationMappingsService.getLocationMapping(item.getEffectiveLocation().getId())
         : null;
   }
 

@@ -28,7 +28,7 @@ public class CheckInRetrieveTest extends TestBase {
   private static final String CHECK_IN_URL = "http://localhost:%s/remote-storage/retrieve/%s/checkInItem";
   private static final String CHECK_IN_BY_HOLD_ID_URL = "http://localhost:%s/remote-storage/retrieve/%s/checkInItemByHoldId";
   private static final String REMOTE_STORAGE_CONFIGURATION_ID = "de17bad7-2a30-4f1c-bee5-f653ded15629";
-  private static final String FOLIO_LOCATION_ID = "53cf956f-c1df-410b-8bea-27f712cca7c0";
+  private static final String FINAL_LOCATION_ID = "53cf956f-c1df-410b-8bea-27f712cca7c0";
   private static final String HOLD_ID = "5c3c7621-8ad0-43ca-a675-4f2f32d25b27";
   private static final String HOLD_ID_NOT_FOUND = "d83bc442-6705-41dd-b199-07c3c2083db6";
   private static final String ITEM_BARCODE = "2887532577331";
@@ -48,8 +48,9 @@ public class CheckInRetrieveTest extends TestBase {
   @BeforeEach
   void prepare() {
     LocationMapping locationMapping = new LocationMapping();
-    locationMapping.setFolioLocationId(UUID.fromString(FOLIO_LOCATION_ID));
-    locationMapping.setConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID));
+    locationMapping.setFinalLocationId(UUID.fromString(FINAL_LOCATION_ID));
+    locationMapping.setRemoteConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID));
+    locationMapping.setOriginalLocationId(UUID.fromString(FINAL_LOCATION_ID));
     locationMappingsRepository.save(locationMapping);
     returnRetrievalQueueRepository.save(ReturnRetrievalQueueRecord.builder()
       .id(UUID.randomUUID())
@@ -66,7 +67,7 @@ public class CheckInRetrieveTest extends TestBase {
 
   @AfterEach
   void clear() {
-    locationMappingsRepository.deleteById(UUID.fromString(FOLIO_LOCATION_ID));
+    locationMappingsRepository.deleteById(UUID.fromString(FINAL_LOCATION_ID));
   }
 
   @Test

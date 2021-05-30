@@ -33,12 +33,12 @@ public class CheckInItemService {
   public void checkInItemByBarcode(String remoteStorageConfigurationId, CheckInItem checkInItem) {
     log.info("Start check-in process for item with barcode " + checkInItem.getItemBarcode());
     var locationMapping = locationMappingsRepository
-      .getFirstByConfigurationId(UUID.fromString(remoteStorageConfigurationId));
+      .getFirstByRemoteConfigurationId(UUID.fromString(remoteStorageConfigurationId));
     if (locationMapping.isEmpty()) {
       throw new CheckInException("Folio location does not exist for remoteStorageConfigurationId " + remoteStorageConfigurationId);
     } else {
-      var folioLocationId = locationMapping.get().getFolioLocationId().toString();
-      var folioLocation = locationClient.getLocation(folioLocationId);
+      var finalLocationId = locationMapping.get().getFinalLocationId().toString();
+      var folioLocation = locationClient.getLocation(finalLocationId);
       if (StringUtils.isBlank(folioLocation.getPrimaryServicePoint())) {
         throw new CheckInException("Primary service point is empty for remoteStorageConfigurationId " + remoteStorageConfigurationId);
       } else {

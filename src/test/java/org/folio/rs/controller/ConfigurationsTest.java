@@ -2,6 +2,7 @@ package org.folio.rs.controller;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
+import static org.folio.rs.domain.dto.ReturningWorkflowDetails.CAIASOFT;
 import static org.folio.rs.util.Utils.randomIdAsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;

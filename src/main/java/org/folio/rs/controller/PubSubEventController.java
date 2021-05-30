@@ -8,11 +8,14 @@ import java.util.Objects;
 import javax.validation.Valid;
 
 import org.folio.rs.domain.dto.ChangeRequestEvent;
+import org.folio.rs.domain.dto.CheckInItemPubSubEvent;
 import org.folio.rs.domain.dto.CreateRequestEvent;
-import org.folio.rs.domain.dto.EventRequest;
+import org.folio.rs.domain.dto.ItemCheckInPubSubEvent;
+import org.folio.rs.domain.dto.RequestEvent;
 import org.folio.rs.domain.dto.PubSubEvent;
 import org.folio.rs.rest.resource.PubSubHandlersApi;
-import org.folio.rs.service.RetrievalQueueService;
+import org.folio.rs.service.ReturnRetrievalQueueService;
+import org.folio.rs.service.ReturnItemService;
 import org.folio.rs.util.LogEventType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -31,31 +34,34 @@ import lombok.extern.log4j.Log4j2;
 @RequestMapping(value = "/remote-storage/")
 public class PubSubEventController implements PubSubHandlersApi {
 
-  private final RetrievalQueueService retrievalQueueService;
+  private final ReturnRetrievalQueueService returnRetrievalQueueService;
+  private final ReturnItemService returnItemService;
 
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
   @Override
   public ResponseEntity<String> pubSubHandlersLogRecordEventPost(@Valid PubSubEvent pubSubEvent) {
     if (Objects.nonNull(pubSubEvent)) {
-      EventRequest eventRequest = null;
+      RequestEvent requestEvent = null;
       try {
-
         var logEventType = pubSubEvent.getLogEventType();
         var payload = MAPPER.writeValueAsString(pubSubEvent.getPayload());
+        if (isItemCheckedId(logEventType)) {
+          ItemCheckInPubSubEvent itemCheckInPubSubEvent = MAPPER.readValue(payload, CheckInItemPubSubEvent.class);
+          ofNullable(itemCheckInPubSubEvent).ifPresent(returnItemService::returnItem);
+        } else {
+          if (isPagedRequestCreated(logEventType, payload)) {
+            requestEvent = MAPPER.readValue(payload, CreateRequestEvent.class);
+          }
+          if (isRequestChangedToPaged(logEventType, payload)) {
+            requestEvent = MAPPER.readValue(payload, ChangeRequestEvent.class);
+          }
+          ofNullable(requestEvent).ifPresent(returnRetrievalQueueService::processEventRequest);
+        }
 
-        if (isPagedRequestCreated(logEventType, payload)) {
-          eventRequest = MAPPER.readValue(payload, CreateRequestEvent.class);
-        }
-        if (isRequestChangedToPaged(logEventType, payload)) {
-          eventRequest = MAPPER.readValue(payload, ChangeRequestEvent.class);
-        }
       } catch (JsonProcessingException e) {
         log.error("Error processing event: {}", pubSubEvent, e);
       }
-
-      ofNullable(eventRequest).ifPresent(retrievalQueueService::processEventRequest);
-
     }
     return ResponseEntity.noContent()
       .build();
@@ -77,6 +83,10 @@ public class PubSubEventController implements PubSubHandlersApi {
     var dc = JsonPath.parse(payload);
     return isRequestCreated(logEventType)
       && Objects.equals(PAGE.value(), dc.read("$.requests.created.requestType"));
+  }
+
+  private boolean isItemCheckedId(String logEventType) {
+    return LogEventType.CHECK_IN.value().equals(logEventType);
   }
 
   private boolean isRequestCreated(String logEventType) {

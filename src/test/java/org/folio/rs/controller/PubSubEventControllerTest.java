@@ -4,21 +4,30 @@ import static java.util.function.UnaryOperator.identity;
 import static org.folio.rs.TestUtils.ITEM_BARCODE;
 import static org.folio.rs.TestUtils.MAPPER;
 import static org.folio.rs.TestUtils.buildBaseEventPayload;
+import static org.folio.rs.TestUtils.buildCheckInEventPayload;
 import static org.folio.rs.TestUtils.buildRequestChangedEventPayload;
 import static org.folio.rs.TestUtils.buildRequestCreatedEventPayload;
 import static org.folio.rs.domain.dto.Request.RequestType.HOLD;
 import static org.folio.rs.domain.dto.Request.RequestType.PAGE;
+import static org.folio.rs.domain.dto.ReturningWorkflowDetails.FOLIO;
+import static org.folio.rs.domain.entity.ProviderRecord.CAIA_SOFT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.folio.rs.TestBase;
 import org.folio.rs.domain.dto.PubSubEvent;
-import org.folio.rs.domain.entity.RetrievalQueueRecord;
-import org.folio.rs.repository.RetrievalQueueRepository;
+import org.folio.rs.domain.dto.StorageConfiguration;
+import org.folio.rs.domain.dto.TimeUnits;
+import org.folio.rs.domain.entity.LocationMapping;
+import org.folio.rs.domain.entity.ReturnRetrievalQueueRecord;
+import org.folio.rs.repository.LocationMappingsRepository;
+import org.folio.rs.repository.ReturnRetrievalQueueRepository;
+import org.folio.rs.service.ConfigurationsService;
 import org.folio.rs.util.LogEventType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,11 +48,17 @@ public class PubSubEventControllerTest extends TestBase {
   private static final String PUB_SUB_HANDLER_URL = "http://localhost:%s/remote-storage/pub-sub-handlers/log-record-event";
 
   @Autowired
-  private RetrievalQueueRepository retrievalQueueRepository;
+  private ReturnRetrievalQueueRepository returnRetrievalQueueRepository;
+
+  @Autowired
+  private LocationMappingsRepository locationMappingsRepository;
+
+  @Autowired
+  private ConfigurationsService configurationsService;
 
   @BeforeEach
   void prepare() {
-    retrievalQueueRepository.deleteAll();
+    returnRetrievalQueueRepository.deleteAll();
   }
 
   @ParameterizedTest
@@ -55,7 +70,7 @@ public class PubSubEventControllerTest extends TestBase {
     pubSubEvent.setPayload(buildRequestChangedEventPayload(HOLD.value(), PAGE.value()));
 
     post(String.format(PUB_SUB_HANDLER_URL, okapiPort), MAPPER.writeValueAsString(pubSubEvent), String.class);
-    Map<String, RetrievalQueueRecord> records = retrievalQueueRepository.findAll().stream().collect(Collectors.toMap(RetrievalQueueRecord::getItemBarcode, identity()));
+    Map<String, ReturnRetrievalQueueRecord> records = returnRetrievalQueueRepository.findAll().stream().collect(Collectors.toMap(ReturnRetrievalQueueRecord::getItemBarcode, identity()));
     assertThat(records.get(ITEM_BARCODE), notNullValue());
   }
 
@@ -68,7 +83,7 @@ public class PubSubEventControllerTest extends TestBase {
     pubSubEvent.setPayload(buildRequestChangedEventPayload(PAGE.value(), PAGE.value()));
 
     post(String.format(PUB_SUB_HANDLER_URL, okapiPort), MAPPER.writeValueAsString(pubSubEvent), String.class);
-    Map<String, RetrievalQueueRecord> records = retrievalQueueRepository.findAll().stream().collect(Collectors.toMap(RetrievalQueueRecord::getItemBarcode, identity()));
+    Map<String, ReturnRetrievalQueueRecord> records = returnRetrievalQueueRepository.findAll().stream().collect(Collectors.toMap(ReturnRetrievalQueueRecord::getItemBarcode, identity()));
     assertThat(records.get(ITEM_BARCODE), nullValue());
   }
 
@@ -82,7 +97,7 @@ public class PubSubEventControllerTest extends TestBase {
     pubSubEvent.setPayload(buildRequestCreatedEventPayload(PAGE.value()));
 
     post(String.format(PUB_SUB_HANDLER_URL, okapiPort), MAPPER.writeValueAsString(pubSubEvent), String.class);
-    Map<String, RetrievalQueueRecord> records = retrievalQueueRepository.findAll().stream().collect(Collectors.toMap(RetrievalQueueRecord::getItemBarcode, identity()));
+    Map<String, ReturnRetrievalQueueRecord> records = returnRetrievalQueueRepository.findAll().stream().collect(Collectors.toMap(ReturnRetrievalQueueRecord::getItemBarcode, identity()));
     assertThat(records.get(ITEM_BARCODE), notNullValue());
   }
 
@@ -96,7 +111,7 @@ public class PubSubEventControllerTest extends TestBase {
     pubSubEvent.setPayload(buildRequestCreatedEventPayload(HOLD.value()));
 
     post(String.format(PUB_SUB_HANDLER_URL, okapiPort), MAPPER.writeValueAsString(pubSubEvent), String.class);
-    Map<String, RetrievalQueueRecord> records = retrievalQueueRepository.findAll().stream().collect(Collectors.toMap(RetrievalQueueRecord::getItemBarcode, identity()));
+    Map<String, ReturnRetrievalQueueRecord> records = returnRetrievalQueueRepository.findAll().stream().collect(Collectors.toMap(ReturnRetrievalQueueRecord::getItemBarcode, identity()));
     assertThat(records.get(ITEM_BARCODE), nullValue());
   }
 
@@ -110,7 +125,37 @@ public class PubSubEventControllerTest extends TestBase {
     pubSubEvent.setPayload(buildBaseEventPayload());
 
     post(String.format(PUB_SUB_HANDLER_URL, okapiPort), MAPPER.writeValueAsString(pubSubEvent), String.class);
-    Map<String, RetrievalQueueRecord> records = retrievalQueueRepository.findAll().stream().collect(Collectors.toMap(RetrievalQueueRecord::getItemBarcode, identity()));
+    Map<String, ReturnRetrievalQueueRecord> records = returnRetrievalQueueRepository.findAll().stream().collect(Collectors.toMap(ReturnRetrievalQueueRecord::getItemBarcode, identity()));
     assertThat(records.get(ITEM_BARCODE), nullValue());
+  }
+
+  @Test
+  void shouldProcessItemCheckInEvent() throws JsonProcessingException {
+    log.info("=== Should process item check in event ===");
+    var pubSubEvent = new PubSubEvent();
+    pubSubEvent.setLogEventType(LogEventType.CHECK_IN.value());
+    pubSubEvent.setPayload(buildCheckInEventPayload());
+
+
+    var configuration = new StorageConfiguration().id("b3354743-285d-468d-9fa1-4e3d6321c13d")
+      .name("Remote Storage")
+      .apiKey("i+X9dfNOztkBfoAmGTXf/w==")
+      .providerName(CAIA_SOFT.getId())
+      .returningWorkflowDetails(FOLIO)
+      .url("https://rs.dematic.com")
+      .accessionDelay(2)
+      .accessionTimeUnit(TimeUnits.MINUTES);
+
+    configurationsService.postConfiguration(configuration);
+
+    LocationMapping locationMapping = new LocationMapping();
+    locationMapping.setConfigurationId(UUID.fromString(configuration.getId()));
+    locationMapping.setFolioLocationId(UUID.fromString("53cf956f-c1df-410b-8bea-27f712cca7c0"));
+
+    locationMappingsRepository.save(locationMapping);
+
+    post(String.format(PUB_SUB_HANDLER_URL, okapiPort), MAPPER.writeValueAsString(pubSubEvent), String.class);
+    Map<String, ReturnRetrievalQueueRecord> records = returnRetrievalQueueRepository.findAll().stream().collect(Collectors.toMap(ReturnRetrievalQueueRecord::getItemBarcode, identity()));
+    assertThat(records.get(ITEM_BARCODE), notNullValue());
   }
 }

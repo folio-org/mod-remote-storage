@@ -28,7 +28,7 @@ public class CheckInItemService {
   private final CirculationClient circulationClient;
   private final LocationMappingsRepository locationMappingsRepository;
   private final LocationClient locationClient;
-  private final RetrievalQueueService retrievalQueueService;
+  private final ReturnRetrievalQueueService returnRetrievalQueueService;
 
   public void checkInItemByBarcode(String remoteStorageConfigurationId, CheckInItem checkInItem) {
     log.info("Start check-in process for item with barcode " + checkInItem.getItemBarcode());
@@ -52,7 +52,7 @@ public class CheckInItemService {
   public void checkInItemByHoldId(String remoteStorageConfigurationId, CheckInItemByHoldId checkInItemByHoldId) {
     var holdId = checkInItemByHoldId.getHoldId();
     log.info("Start check-in process for item with associated request with id=" + holdId);
-    var retrievalQueueRecord = retrievalQueueService.getLastRetrievalByHoldId(holdId, remoteStorageConfigurationId);
+    var retrievalQueueRecord = returnRetrievalQueueService.getLastRetrievalByHoldId(holdId, remoteStorageConfigurationId);
     var barcode = retrievalQueueRecord
       .orElseThrow(() -> new CheckInException(
         format("Retrieval Queue Record with holdId=%s not found for remoteStorageId=%s", holdId, remoteStorageConfigurationId)))

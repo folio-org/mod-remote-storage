@@ -21,10 +21,10 @@ import org.folio.rs.domain.dto.Request;
 import org.folio.rs.domain.dto.ResultList;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.dto.User;
-import org.folio.rs.domain.entity.RetrievalQueueRecord;
+import org.folio.rs.domain.entity.ReturnRetrievalQueueRecord;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.error.ItemReturnException;
-import org.folio.rs.repository.RetrievalQueueRepository;
+import org.folio.rs.repository.ReturnRetrievalQueueRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,7 +54,7 @@ public class ReturnItemServiceTest {
   @Mock
   private UsersClient usersClient;
   @Mock
-  private RetrievalQueueRepository retrievalQueueRepository;
+  private ReturnRetrievalQueueRepository returnRetrievalQueueRepository;
   @Mock
   private CheckInItemService checkInItemService;
   @Mock
@@ -101,14 +101,14 @@ public class ReturnItemServiceTest {
     when(inventoryClient.getItemsByQuery("barcode==" + item.getBarcode())).thenReturn(itemResult);
     when(circulationClient.getItemRequests(item.getId())).thenReturn(itemRequests);
     when(usersClient.getUsersByQuery("id==" + USER_ID)).thenReturn(userResult);
-    when(retrievalQueueRepository.save(isA(RetrievalQueueRecord.class))).thenReturn(null);
+    when(returnRetrievalQueueRepository.save(isA(ReturnRetrievalQueueRecord.class))).thenReturn(null);
     when(servicePointsClient.getServicePoint(request.getPickupServicePointId())).thenReturn(pickUpServicePoint);
     when(configurationsService.getConfigurationById(isA(String.class))).thenReturn(configuration);
     doNothing().when(checkInItemService).checkInItemByBarcode(isA(String.class), isA(CheckInItem.class));
 
     var returnItemResponse = returnItemService.returnItem(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
 
-    verify(retrievalQueueRepository, times(1)).save(isA(RetrievalQueueRecord.class));
+    verify(returnRetrievalQueueRepository, times(1)).save(isA(ReturnRetrievalQueueRecord.class));
     assertThat(returnItemResponse.getIsHoldRecallRequestExist(), is(true));
   }
 
@@ -139,7 +139,7 @@ public class ReturnItemServiceTest {
 
     var returnItemResponse = returnItemService.returnItem(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
 
-    verify(retrievalQueueRepository, times(0)).save(isA(RetrievalQueueRecord.class));
+    verify(returnRetrievalQueueRepository, times(0)).save(isA(ReturnRetrievalQueueRecord.class));
     assertThat(returnItemResponse.getIsHoldRecallRequestExist(), is(false));
   }
 
@@ -171,7 +171,7 @@ public class ReturnItemServiceTest {
 
     var returnItemResponse = returnItemService.returnItem(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
 
-    verify(retrievalQueueRepository, times(0)).save(isA(RetrievalQueueRecord.class));
+    verify(returnRetrievalQueueRepository, times(0)).save(isA(ReturnRetrievalQueueRecord.class));
     assertThat(returnItemResponse.getIsHoldRecallRequestExist(), is(false));
   }
 
@@ -198,7 +198,7 @@ public class ReturnItemServiceTest {
 
     var returnItemResponse = returnItemService.returnItem(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem);
 
-    verify(retrievalQueueRepository, times(0)).save(isA(RetrievalQueueRecord.class));
+    verify(returnRetrievalQueueRepository, times(0)).save(isA(ReturnRetrievalQueueRecord.class));
     assertThat(returnItemResponse.getIsHoldRecallRequestExist(), is(false));
   }
 

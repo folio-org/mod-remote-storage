@@ -2,7 +2,7 @@ package org.folio.rs.mapper.deserializer;
 
 import java.io.IOException;
 
-import org.folio.rs.domain.dto.EventRequest;
+import org.folio.rs.domain.dto.RequestEvent;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
@@ -11,13 +11,13 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 
-public abstract class RequestEventDeserializerBase extends StdDeserializer<EventRequest> {
+public abstract class EventDeserializerBase<T> extends StdDeserializer<T> {
 
-  RequestEventDeserializerBase() {
+  EventDeserializerBase() {
     this(null);
   }
 
-  RequestEventDeserializerBase(Class<?> vc) {
+  EventDeserializerBase(Class<?> vc) {
     super(vc);
   }
 

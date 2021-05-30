@@ -14,7 +14,7 @@ import org.folio.rs.TestBase;
 import org.folio.rs.domain.dto.ReturnItemResponse;
 import org.folio.rs.domain.entity.LocationMapping;
 import org.folio.rs.repository.LocationMappingsRepository;
-import org.folio.rs.repository.RetrievalQueueRepository;
+import org.folio.rs.repository.ReturnRetrievalQueueRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,7 +35,7 @@ public class ReturnItemTest extends TestBase {
   @Autowired
   private LocationMappingsRepository locationMappingsRepository;
   @Autowired
-  private RetrievalQueueRepository retrievalQueueRepository;
+  private ReturnRetrievalQueueRepository returnRetrievalQueueRepository;
 
   @BeforeEach
   void prepare() {
@@ -50,7 +50,7 @@ public class ReturnItemTest extends TestBase {
   @AfterEach
   void clear() {
     locationMappingsRepository.deleteById(UUID.fromString(FOLIO_LOCATION_ID));
-    retrievalQueueRepository.deleteAll();
+    returnRetrievalQueueRepository.deleteAll();
   }
 
   @Test
@@ -61,7 +61,7 @@ public class ReturnItemTest extends TestBase {
     assertThat(response.getStatusCode(), is(HttpStatus.OK));
     assertTrue(Objects.requireNonNull(response.getBody()).getIsHoldRecallRequestExist());
 
-    var records = retrievalQueueRepository.findAll();
+    var records = returnRetrievalQueueRepository.findAll();
     boolean exist = records.stream().anyMatch(record -> ITEM_BARCODE.equals(record.getItemBarcode()));
     assertTrue(exist);
   }

@@ -40,6 +40,12 @@ public class LocationMappingsService {
     return locationMappingsMapper.mapEntitiesToMappingCollection(mappings);
   }
 
+  public LocationMapping getLocationMapping(String originalLocationId, String remoteConfigurationId) {
+    var mapping = new LocationMapping();
+    mapping.setConfigurationId("b3354743-285d-468d-9fa1-4e3d6321c13d");
+    return mapping;
+  }
+
   @CacheEvict(value = MAPPINGS, key = "#folioLocationId")
   public void deleteMappingById(String folioLocationId) {
     var id = UUID.fromString(folioLocationId);

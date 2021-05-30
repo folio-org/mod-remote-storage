@@ -16,11 +16,11 @@ import javax.persistence.criteria.Predicate;
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.client.ServicePointsClient;
 import org.folio.rs.client.UsersClient;
-import org.folio.rs.domain.dto.RequestEvent;
 import org.folio.rs.domain.dto.FilterData;
 import org.folio.rs.domain.dto.Item;
-import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.PickupServicePoint;
+import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
+import org.folio.rs.domain.dto.RequestEvent;
 import org.folio.rs.domain.dto.ResultList;
 import org.folio.rs.domain.dto.RetrievalQueues;
 import org.folio.rs.domain.dto.User;
@@ -92,14 +92,14 @@ public class ReturnRetrievalQueueService {
   public void processEventRequest(RequestEvent requestEvent) {
       log.info("Process moved request with id " + requestEvent.getHoldId());
       Item item = getOriginalItemByBarcode(requestEvent);
-      LocationMapping locationMapping = getLocationMapping(item);
+      var locationMapping = getRemoteLocationConfigurationMapping(item);
       if (Objects.nonNull(locationMapping)) {
         log.info("Item location is remote, saving retrieval queue record");
         processEventRequest(requestEvent, item, locationMapping);
       }
   }
 
-  private void processEventRequest(RequestEvent requestEvent, Item item, LocationMapping locationMapping) {
+  private void processEventRequest(RequestEvent requestEvent, Item item, RemoteLocationConfigurationMapping locationMapping) {
     ReturnRetrievalQueueRecord record = buildRetrievalQueueRecord(requestEvent, item,
         getUserByRequesterId(requestEvent), locationMapping, getPickupServicePoint(requestEvent.getPickupServicePointId()));
     log.info("Saving retrieval queue record with id {}", record.getId());
@@ -158,9 +158,9 @@ public class ReturnRetrievalQueueService {
     return (rec, criteria, builder) -> builder.equal(rec.get(REMOTE_STORAGE_ID), stringToUUIDSafe(id));
   }
 
-  private LocationMapping getLocationMapping(Item item) {
+  private RemoteLocationConfigurationMapping getRemoteLocationConfigurationMapping(Item item) {
     return Objects.nonNull(item.getEffectiveLocation())
-        ? locationMappingsService.getLocationMapping(item.getEffectiveLocation().getId())
+        ? locationMappingsService.getRemoteLocationConfigurationMapping(item.getEffectiveLocation().getId())
         : null;
   }
 

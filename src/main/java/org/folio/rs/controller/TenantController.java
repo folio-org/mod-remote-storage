@@ -15,7 +15,7 @@ import liquibase.exception.LiquibaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.folio.rs.domain.dto.LocationMapping;
+import org.folio.rs.domain.dto.ExtendedRemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
 import org.folio.rs.domain.entity.ReturnRetrievalQueueRecord;
@@ -55,7 +55,7 @@ public class TenantController implements TenantApi {
   private final PubSubService pubSubService;
 
   private final List<String> configurationSamples = Collections.singletonList("dematic.json");
-  private final List<String> mappingSamples = Collections.singletonList("annex_to_dematic.json");
+  private final List<String> mappingSamples = Collections.singletonList("annex_to_dematic_full.json");
   private final List<String> retrievalQueueSamples = Collections.singletonList("retrieval_queue_record.json");
   private final List<String> accessionQueueSamples = Collections.singletonList("accession_queue_record.json");
 
@@ -121,8 +121,8 @@ public class TenantController implements TenantApi {
     log.info("Loading sample data");
     readEntitiesFromFiles(configurationSamples, StorageConfiguration.class)
       .forEach(configurationsService::postConfiguration);
-    readEntitiesFromFiles(mappingSamples, LocationMapping.class)
-      .forEach(locationMappingsService::postMapping);
+    readEntitiesFromFiles(mappingSamples, ExtendedRemoteLocationConfigurationMapping.class)
+      .forEach(locationMappingsService::postExtendedRemoteLocationConfigurationMapping);
     readEntitiesFromFiles(retrievalQueueSamples, ReturnRetrievalQueueRecord.class)
         .forEach(returnRetrievalQueueRepository::save);
     readEntitiesFromFiles(accessionQueueSamples, AccessionQueueRecord.class)

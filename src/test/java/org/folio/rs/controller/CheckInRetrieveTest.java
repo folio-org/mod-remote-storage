@@ -12,9 +12,9 @@ import java.util.UUID;
 import org.folio.rs.TestBase;
 import org.folio.rs.domain.dto.CheckInItem;
 import org.folio.rs.domain.dto.CheckInItemByHoldId;
-import org.folio.rs.domain.entity.LocationMapping;
+import org.folio.rs.domain.entity.RemoteLocationConfigurationMappingEntity;
 import org.folio.rs.domain.entity.ReturnRetrievalQueueRecord;
-import org.folio.rs.repository.LocationMappingsRepository;
+import org.folio.rs.repository.RemoteLocationConfigurationMappingsRepository;
 import org.folio.rs.repository.ReturnRetrievalQueueRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,19 +40,17 @@ public class CheckInRetrieveTest extends TestBase {
   private String errorCheckInByHoldIdUrl;
 
   @Autowired
-  private LocationMappingsRepository locationMappingsRepository;
+  private RemoteLocationConfigurationMappingsRepository mappingsRepository;
 
   @Autowired
-  private ReturnRetrievalQueueRepository returnRetrievalQueueRepository;
+  private ReturnRetrievalQueueRepository retrievalQueueRepository;
 
   @BeforeEach
   void prepare() {
-    LocationMapping locationMapping = new LocationMapping();
-    locationMapping.setFinalLocationId(UUID.fromString(FINAL_LOCATION_ID));
-    locationMapping.setRemoteConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID));
-    locationMapping.setOriginalLocationId(UUID.fromString(FINAL_LOCATION_ID));
-    locationMappingsRepository.save(locationMapping);
-    returnRetrievalQueueRepository.save(ReturnRetrievalQueueRecord.builder()
+    var entity = RemoteLocationConfigurationMappingEntity.of(UUID.fromString(FINAL_LOCATION_ID),
+      UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID));
+    mappingsRepository.save(entity);
+    retrievalQueueRepository.save(ReturnRetrievalQueueRecord.builder()
       .id(UUID.randomUUID())
       .holdId(HOLD_ID)
       .remoteStorageId(stringToUUIDSafe(REMOTE_STORAGE_CONFIGURATION_ID))
@@ -67,7 +65,7 @@ public class CheckInRetrieveTest extends TestBase {
 
   @AfterEach
   void clear() {
-    locationMappingsRepository.deleteById(UUID.fromString(FINAL_LOCATION_ID));
+    mappingsRepository.deleteById(UUID.fromString(FINAL_LOCATION_ID));
   }
 
   @Test

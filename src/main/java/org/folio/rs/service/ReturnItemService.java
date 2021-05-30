@@ -7,8 +7,8 @@ import static org.folio.rs.domain.dto.ReturningWorkflowDetails.CAIASOFT;
 import static org.folio.rs.domain.entity.ProviderRecord.CAIA_SOFT;
 import static org.folio.rs.util.RetrievalQueueRecordUtils.buildRetrievalRecord;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import java.util.Optional;
+
 import org.folio.rs.client.CirculationClient;
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.client.ServicePointsClient;
@@ -16,7 +16,7 @@ import org.folio.rs.client.UsersClient;
 import org.folio.rs.domain.dto.CheckInItem;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.ItemCheckInPubSubEvent;
-import org.folio.rs.domain.dto.LocationMapping;
+import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.Request;
 import org.folio.rs.domain.dto.ReturnItemResponse;
 import org.folio.rs.domain.dto.ReturningWorkflowDetails;
@@ -27,7 +27,8 @@ import org.folio.rs.repository.ReturnRetrievalQueueRepository;
 import org.folio.rs.util.RequestType;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Service
 @RequiredArgsConstructor
@@ -95,8 +96,8 @@ public class ReturnItemService {
     return configuration;
   }
 
-  private LocationMapping getLocationMapping(String originalLocationId) {
-    var locationMapping = locationMappingsService.getMappingByFolioLocationId(originalLocationId);
+  private RemoteLocationConfigurationMapping getLocationMapping(String originalLocationId) {
+    var locationMapping = locationMappingsService.getRemoteLocationConfigurationMapping(originalLocationId);
     if (isNull(locationMapping)) {
       throw new ItemReturnException("Mapping does not exist for folioLocationId " + originalLocationId);
     }

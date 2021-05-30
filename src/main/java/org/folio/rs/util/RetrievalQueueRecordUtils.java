@@ -3,15 +3,14 @@ package org.folio.rs.util;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.ItemContributorNames;
 import org.folio.rs.domain.dto.ItemEffectiveCallNumberComponents;
-import org.folio.rs.domain.dto.LocationMapping;
 import org.folio.rs.domain.dto.PickupServicePoint;
+import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.Request;
 import org.folio.rs.domain.dto.RequestEvent;
 import org.folio.rs.domain.dto.User;
 import org.folio.rs.domain.entity.ReturnRetrievalQueueRecord;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -49,7 +48,7 @@ public class RetrievalQueueRecordUtils {
   }
 
   public static ReturnRetrievalQueueRecord buildRetrievalQueueRecord(RequestEvent requestEvent,
-                                                               Item item, User patron, LocationMapping mapping, PickupServicePoint pickupServicePoint) {
+                                                                     Item item, User patron, RemoteLocationConfigurationMapping mapping, PickupServicePoint pickupServicePoint) {
     return ReturnRetrievalQueueRecord.builder()
       .id(UUID.randomUUID())
       .holdId(requestEvent.getHoldId())

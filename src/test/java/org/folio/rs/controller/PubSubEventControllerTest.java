@@ -23,13 +23,14 @@ import org.folio.rs.TestBase;
 import org.folio.rs.domain.dto.PubSubEvent;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.dto.TimeUnits;
-import org.folio.rs.domain.entity.LocationMapping;
+import org.folio.rs.domain.entity.RemoteLocationConfigurationMappingEntity;
 import org.folio.rs.domain.entity.ReturnRetrievalQueueRecord;
-import org.folio.rs.repository.LocationMappingsRepository;
+import org.folio.rs.repository.RemoteLocationConfigurationMappingsRepository;
 import org.folio.rs.repository.ReturnRetrievalQueueRepository;
 import org.folio.rs.service.ConfigurationsService;
 import org.folio.rs.util.LogEventType;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -50,7 +51,7 @@ public class PubSubEventControllerTest extends TestBase {
   private ReturnRetrievalQueueRepository returnRetrievalQueueRepository;
 
   @Autowired
-  private LocationMappingsRepository locationMappingsRepository;
+  private RemoteLocationConfigurationMappingsRepository remoteLocationConfigurationMappingsRepository;
 
   @Autowired
   private ConfigurationsService configurationsService;
@@ -115,7 +116,7 @@ public class PubSubEventControllerTest extends TestBase {
   }
 
   @ParameterizedTest
-  @EnumSource(value = LogEventType.class, names = { "LOAN", "NOTICE", "CHECK_IN", "CHECK_OUT",
+  @EnumSource(value = LogEventType.class, names = { "LOAN", "NOTICE", "CHECK_OUT",
       "REQUEST_REORDERED" }, mode = EnumSource.Mode.INCLUDE)
   void shouldNotProcessOtherEventTypes(LogEventType logEventType) throws JsonProcessingException {
     log.info("=== Should not process event ===");
@@ -147,11 +148,11 @@ public class PubSubEventControllerTest extends TestBase {
 
     configurationsService.postConfiguration(configuration);
 
-    LocationMapping locationMapping = new LocationMapping();
-    locationMapping.setConfigurationId(UUID.fromString(configuration.getId()));
-    locationMapping.setFolioLocationId(UUID.fromString("53cf956f-c1df-410b-8bea-27f712cca7c0"));
+    var locationMapping = new RemoteLocationConfigurationMappingEntity();
+    locationMapping.setRemoteConfigurationId(UUID.fromString(configuration.getId()));
+    locationMapping.setFinalLocationId(UUID.fromString("53cf956f-c1df-410b-8bea-27f712cca7c0"));
 
-    locationMappingsRepository.save(locationMapping);
+    remoteLocationConfigurationMappingsRepository.save(locationMapping);
 
     post(String.format(PUB_SUB_HANDLER_URL, okapiPort), MAPPER.writeValueAsString(pubSubEvent), String.class);
     Map<String, ReturnRetrievalQueueRecord> records = returnRetrievalQueueRepository.findAll().stream().collect(Collectors.toMap(ReturnRetrievalQueueRecord::getItemBarcode, identity()));

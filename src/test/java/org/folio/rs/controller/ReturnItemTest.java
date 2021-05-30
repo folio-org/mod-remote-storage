@@ -12,8 +12,8 @@ import java.util.UUID;
 
 import org.folio.rs.TestBase;
 import org.folio.rs.domain.dto.ReturnItemResponse;
-import org.folio.rs.domain.entity.LocationMapping;
-import org.folio.rs.repository.LocationMappingsRepository;
+import org.folio.rs.domain.entity.RemoteLocationConfigurationMappingEntity;
+import org.folio.rs.repository.RemoteLocationConfigurationMappingsRepository;
 import org.folio.rs.repository.ReturnRetrievalQueueRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,24 +33,22 @@ public class ReturnItemTest extends TestBase {
   private String errorCheckInUrl;
 
   @Autowired
-  private LocationMappingsRepository locationMappingsRepository;
+  private RemoteLocationConfigurationMappingsRepository mappingsRepository;
   @Autowired
   private ReturnRetrievalQueueRepository returnRetrievalQueueRepository;
 
   @BeforeEach
   void prepare() {
-    LocationMapping locationMapping = new LocationMapping();
-    locationMapping.setFinalLocationId(UUID.fromString(FOLIO_LOCATION_ID));
-    locationMapping.setRemoteConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID));
-    locationMapping.setOriginalLocationId(UUID.fromString(FOLIO_LOCATION_ID));
-    locationMappingsRepository.save(locationMapping);
+    var entity = RemoteLocationConfigurationMappingEntity.of(UUID.fromString(FOLIO_LOCATION_ID),
+      UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID));
+    mappingsRepository.save(entity);
     checkInUrl = String.format(RETURN_URL, okapiPort, REMOTE_STORAGE_CONFIGURATION_ID);
     errorCheckInUrl = String.format(RETURN_URL, okapiPort, REMOTE_STORAGE_ERROR_CONFIGURATION_ID);
   }
 
   @AfterEach
   void clear() {
-    locationMappingsRepository.deleteById(UUID.fromString(FOLIO_LOCATION_ID));
+    mappingsRepository.deleteById(UUID.fromString(FOLIO_LOCATION_ID));
     returnRetrievalQueueRepository.deleteAll();
   }
 

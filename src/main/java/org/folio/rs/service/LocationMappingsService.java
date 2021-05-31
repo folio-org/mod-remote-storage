@@ -57,6 +57,7 @@ public class LocationMappingsService {
   public ExtendedRemoteLocationConfigurationMapping postExtendedRemoteLocationConfigurationMapping(ExtendedRemoteLocationConfigurationMapping mapping) {
     var entity = extendedMappingsRepository.findById(UUID.fromString(mapping.getFinalLocationId()))
       .map(m -> {
+        m.setRemoteConfigurationId(UUID.fromString(mapping.getRemoteConfigurationId()));
         var locations = m.getOriginalLocations();
         var originalLocation = new OriginalLocation();
         originalLocation.setFinalLocationId(UUID.fromString(mapping.getFinalLocationId()));

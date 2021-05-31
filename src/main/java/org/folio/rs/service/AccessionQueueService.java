@@ -348,19 +348,19 @@ public class AccessionQueueService {
   }
 
   private Specification<AccessionQueueRecord> getCriteriaSpecification(FilterData filterData){
-    return (record, criteriaQuery, builder) -> {
+    return (rec, criteriaQuery, builder) -> {
       final Collection<Predicate> predicates = new ArrayList<>();
       if (Boolean.TRUE.equals(filterData.getIsPresented())) {
-        predicates.add(builder.isNotNull(record.get(ACCESSIONED_DATE_TIME)));
+        predicates.add(builder.isNotNull(rec.get(ACCESSIONED_DATE_TIME)));
       }
       if (Boolean.FALSE.equals(filterData.getIsPresented())) {
-        predicates.add(builder.isNull(record.get(ACCESSIONED_DATE_TIME)));
+        predicates.add(builder.isNull(rec.get(ACCESSIONED_DATE_TIME)));
       }
       if (nonNull(filterData.getStorageId())) {
-        predicates.add(builder.equal(record.get(REMOTE_STORAGE_ID), stringToUUIDSafe(filterData.getStorageId())));
+        predicates.add(builder.equal(rec.get(REMOTE_STORAGE_ID), stringToUUIDSafe(filterData.getStorageId())));
       }
       if (nonNull(filterData.getCreateDate())) {
-        predicates.add(builder.equal(record.get(CREATED_DATE_TIME), LocalDateTime.parse(filterData.getCreateDate())));
+        predicates.add(builder.equal(rec.get(CREATED_DATE_TIME), LocalDateTime.parse(filterData.getCreateDate())));
       }
       return builder.and(predicates.toArray(new Predicate[0]));
     };

@@ -12,6 +12,7 @@ import org.folio.rs.domain.entity.converters.AccessionWorkflowDetailsConverter;
 import org.folio.rs.domain.entity.converters.ReturningWorkflowDetailsConverter;
 
 import lombok.Data;
+import org.mapstruct.control.DeepClone;
 
 @Data
 @Table(name = "remote_storage_configurations")

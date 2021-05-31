@@ -111,22 +111,22 @@ public class ReturnRetrievalQueueService {
   }
 
   private Specification<ReturnRetrievalQueueRecord> getCriteriaSpecification(FilterData filterData) {
-    return (record, criteriaQuery, builder) -> {
+    return (rec, criteriaQuery, builder) -> {
       final Collection<Predicate> predicates = new ArrayList<>();
       if (Boolean.TRUE.equals(filterData.getIsPresented())) {
-        predicates.add(builder.isNotNull(record.get(RETRIEVED_DATE_TIME)));
+        predicates.add(builder.isNotNull(rec.get(RETRIEVED_DATE_TIME)));
       }
       if (Boolean.FALSE.equals(filterData.getIsPresented())) {
-        predicates.add(builder.isNull(record.get(RETRIEVED_DATE_TIME)));
+        predicates.add(builder.isNull(rec.get(RETRIEVED_DATE_TIME)));
       }
       if (Objects.nonNull(filterData.getStorageId())) {
-        predicates.add(builder.equal(record.get(REMOTE_STORAGE_ID), stringToUUIDSafe(filterData.getStorageId())));
+        predicates.add(builder.equal(rec.get(REMOTE_STORAGE_ID), stringToUUIDSafe(filterData.getStorageId())));
       }
       if (Objects.nonNull(filterData.getCreateDate())) {
-        predicates.add(builder.equal(record.get(REQUEST_DATE_TIME), LocalDateTime.parse(filterData.getCreateDate())));
+        predicates.add(builder.equal(rec.get(REQUEST_DATE_TIME), LocalDateTime.parse(filterData.getCreateDate())));
       }
       if (Objects.nonNull(filterData.getCreateDate())) {
-        predicates.add(builder.equal(record.get(REQUEST_DATE_TIME), LocalDateTime.parse(filterData.getCreateDate())));
+        predicates.add(builder.equal(rec.get(REQUEST_DATE_TIME), LocalDateTime.parse(filterData.getCreateDate())));
       }
       return builder.and(predicates.toArray(new Predicate[0]));
     };

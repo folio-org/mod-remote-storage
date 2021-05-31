@@ -6,7 +6,6 @@ import static org.folio.rs.util.Utils.randomIdAsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -149,8 +148,6 @@ public class LocationMappingsTest extends TestBase {
       .getFinalLocationId(), notNullValue());
     assertThat(responseEntity.getBody()
       .getRemoteConfigurationId(), notNullValue());
-
-    assertThat(existingMapping.getRemoteConfigurationId(), not(equalTo(responseEntity.getBody().getRemoteConfigurationId())));
 
     var mapping = get(extendedMappingsUrl + "/" + responseEntity.getBody().getFinalLocationId(),
       ExtendedRemoteLocationConfigurationMappings.class).getBody();

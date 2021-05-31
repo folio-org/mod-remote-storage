@@ -131,6 +131,30 @@ public class LocationMappingsTest extends TestBase {
   }
 
   @Test
+  void postOnExistingExtendedMappingShouldOverwriteExistingMapping() {
+    var finalLocationId = randomIdAsString();
+    var remoteConfigurationId = randomIdAsString();
+    var existingMapping = post(extendedMappingsUrl,
+      new ExtendedRemoteLocationConfigurationMapping().finalLocationId(finalLocationId)
+        .remoteConfigurationId(remoteConfigurationId)
+        .originalLocationId(randomIdAsString()), ExtendedRemoteLocationConfigurationMapping.class).getBody();
+
+    var responseEntity = post(extendedMappingsUrl,
+      new ExtendedRemoteLocationConfigurationMapping().finalLocationId(finalLocationId)
+        .remoteConfigurationId(randomIdAsString())
+        .originalLocationId(randomIdAsString()), ExtendedRemoteLocationConfigurationMapping.class);
+    assertThat(responseEntity.getStatusCode(), is(HttpStatus.CREATED));
+    assertThat(responseEntity.getBody()
+      .getFinalLocationId(), notNullValue());
+    assertThat(responseEntity.getBody()
+      .getRemoteConfigurationId(), notNullValue());
+
+    var mapping = get(extendedMappingsUrl + "/" + responseEntity.getBody().getFinalLocationId(),
+      ExtendedRemoteLocationConfigurationMappings.class).getBody();
+    assertTrue(EqualsBuilder.reflectionEquals(responseEntity.getBody(), mapping.getMappings().get(0), true, ExtendedRemoteLocationConfigurationMapping.class, METADATA));
+  }
+
+  @Test
   void canGetAllExtendedRemoteLocationConfigurationMappings() {
     var mapping = post(extendedMappingsUrl, new ExtendedRemoteLocationConfigurationMapping()
       .finalLocationId(randomIdAsString())

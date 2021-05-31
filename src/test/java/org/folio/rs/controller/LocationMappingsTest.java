@@ -6,6 +6,7 @@ import static org.folio.rs.util.Utils.randomIdAsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -128,6 +129,32 @@ public class LocationMappingsTest extends TestBase {
     // requireNonNull(
     // requireNonNull(cacheManager.getCache(MAPPINGS)).get(responseEntity.getBody().getFinalLocationId())).get(), mapping, true,
     // StorageConfiguration.class, METADATA));
+  }
+
+  @Test
+  void postOnExistingExtendedMappingShouldOverwriteExistingMapping() {
+    var finalLocationId = randomIdAsString();
+    var remoteConfigurationId = randomIdAsString();
+    var existingMapping = post(extendedMappingsUrl,
+      new ExtendedRemoteLocationConfigurationMapping().finalLocationId(finalLocationId)
+        .remoteConfigurationId(remoteConfigurationId)
+        .originalLocationId(randomIdAsString()), ExtendedRemoteLocationConfigurationMapping.class).getBody();
+
+    var responseEntity = post(extendedMappingsUrl,
+      new ExtendedRemoteLocationConfigurationMapping().finalLocationId(finalLocationId)
+        .remoteConfigurationId(randomIdAsString())
+        .originalLocationId(randomIdAsString()), ExtendedRemoteLocationConfigurationMapping.class);
+    assertThat(responseEntity.getStatusCode(), is(HttpStatus.CREATED));
+    assertThat(responseEntity.getBody()
+      .getFinalLocationId(), notNullValue());
+    assertThat(responseEntity.getBody()
+      .getRemoteConfigurationId(), notNullValue());
+
+    assertThat(existingMapping.getRemoteConfigurationId(), not(equalTo(responseEntity.getBody().getRemoteConfigurationId())));
+
+    var mapping = get(extendedMappingsUrl + "/" + responseEntity.getBody().getFinalLocationId(),
+      ExtendedRemoteLocationConfigurationMappings.class).getBody();
+    assertTrue(EqualsBuilder.reflectionEquals(responseEntity.getBody(), mapping.getMappings().get(0), true, ExtendedRemoteLocationConfigurationMapping.class, METADATA));
   }
 
   @Test

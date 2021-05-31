@@ -372,15 +372,15 @@ public class AccessionQueueService {
   }
 
   private Specification<AccessionQueueRecord> hasBarcode(String barcode) {
-    return (record, criteria, builder) -> builder.equal(record.get(ITEM_BARCODE), barcode);
+    return (rec, criteria, builder) -> builder.equal(rec.get(ITEM_BARCODE), barcode);
   }
 
   private Specification<AccessionQueueRecord> notAccessioned() {
-    return (record, criteria, builder) -> builder.isNull(record.get(ACCESSIONED_DATE_TIME));
+    return (rec, criteria, builder) -> builder.isNull(rec.get(ACCESSIONED_DATE_TIME));
   }
 
   private Specification<AccessionQueueRecord> hasId(String id) {
-    return (record, criteria, builder) -> builder.equal(record.get(ID), stringToUUIDSafe(id));
+    return (rec, criteria, builder) -> builder.equal(rec.get(ID), stringToUUIDSafe(id));
   }
 
   @SneakyThrows

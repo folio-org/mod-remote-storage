@@ -2,8 +2,6 @@ package org.folio.rs.mapper.deserializer;
 
 import java.io.IOException;
 
-import org.folio.rs.domain.dto.RequestEvent;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.jayway.jsonpath.Configuration;

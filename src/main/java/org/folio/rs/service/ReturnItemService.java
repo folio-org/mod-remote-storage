@@ -5,7 +5,7 @@ import static org.folio.rs.domain.dto.Request.RequestType.HOLD;
 import static org.folio.rs.domain.dto.Request.RequestType.RECALL;
 import static org.folio.rs.domain.dto.ReturningWorkflowDetails.CAIASOFT;
 import static org.folio.rs.domain.entity.ProviderRecord.CAIA_SOFT;
-import static org.folio.rs.util.RetrievalQueueRecordUtils.buildRetrievalRecord;
+import static org.folio.rs.util.RetrievalQueueRecordUtils.buildReturnRetrievalRecord;
 
 import java.util.Optional;
 
@@ -57,7 +57,7 @@ public class ReturnItemService {
         itemReturnResponse.isHoldRecallRequestExist(true);
         var user = getUserById(request.getRequesterId());
         var servicePointCode = servicePointsClient.getServicePoint(request.getPickupServicePointId()).getCode();
-        returnRetrievalQueueRepository.save(buildRetrievalRecord(request, RequestType.PYR, item, user, servicePointCode, remoteStorageConfigurationId));
+        returnRetrievalQueueRepository.save(buildReturnRetrievalRecord(request, RequestType.PYR, item, user, servicePointCode, remoteStorageConfigurationId));
       });
     }
     checkInItemService.checkInItemByBarcode(remoteStorageConfigurationId, checkInItem);
@@ -79,7 +79,7 @@ public class ReturnItemService {
         itemReturnResponse.isHoldRecallRequestExist(true);
         var user = getUserById(request.getRequesterId());
         var servicePointCode = servicePointsClient.getServicePoint(request.getPickupServicePointId()).getCode();
-        returnRetrievalQueueRepository.save(buildRetrievalRecord(request, RequestType.REF, item, user, servicePointCode, locationMapping.getConfigurationId()));
+        returnRetrievalQueueRepository.save(buildReturnRetrievalRecord(request, RequestType.REF, item, user, servicePointCode, locationMapping.getConfigurationId()));
       });
     }
     var checkInItem = new CheckInItem();

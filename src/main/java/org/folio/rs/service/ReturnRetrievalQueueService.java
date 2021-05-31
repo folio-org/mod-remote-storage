@@ -2,7 +2,7 @@ package org.folio.rs.service;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.folio.rs.util.MapperUtils.stringToUUIDSafe;
-import static org.folio.rs.util.RetrievalQueueRecordUtils.buildRetrievalQueueRecord;
+import static org.folio.rs.util.RetrievalQueueRecordUtils.buildReturnRetrievalQueueRecord;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -91,7 +91,7 @@ public class ReturnRetrievalQueueService {
 
   public void processEventRequest(RequestEvent requestEvent) {
       log.info("Process moved request with id " + requestEvent.getHoldId());
-      Item item = getOriginalItemByBarcode(requestEvent);
+      var item = getOriginalItemByBarcode(requestEvent);
       var locationMapping = getRemoteLocationConfigurationMapping(item);
       if (Objects.nonNull(locationMapping)) {
         log.info("Item location is remote, saving retrieval queue record");
@@ -100,10 +100,10 @@ public class ReturnRetrievalQueueService {
   }
 
   private void processEventRequest(RequestEvent requestEvent, Item item, RemoteLocationConfigurationMapping locationMapping) {
-    ReturnRetrievalQueueRecord record = buildRetrievalQueueRecord(requestEvent, item,
+    var returnRetrievalQueueRecord = buildReturnRetrievalQueueRecord(requestEvent, item,
         getUserByRequesterId(requestEvent), locationMapping, getPickupServicePoint(requestEvent.getPickupServicePointId()));
-    log.info("Saving retrieval queue record with id {}", record.getId());
-    returnRetrievalQueueRepository.save(record);
+    log.info("Saving retrieval queue record with id {}", returnRetrievalQueueRecord.getId());
+    returnRetrievalQueueRepository.save(returnRetrievalQueueRecord);
   }
 
   private PickupServicePoint getPickupServicePoint(String pickupServicePointId) {
@@ -139,15 +139,15 @@ public class ReturnRetrievalQueueService {
   }
 
   private Specification<ReturnRetrievalQueueRecord> hasBarcode(String barcode) {
-    return (record, criteria, builder) -> builder.equal(record.get(ITEM_BARCODE), barcode);
+    return (rec, criteria, builder) -> builder.equal(rec.get(ITEM_BARCODE), barcode);
   }
 
   private Specification<ReturnRetrievalQueueRecord> notRetrievedSpecification() {
-    return (record, criteria, builder) -> builder.isNull(record.get(RETRIEVED_DATE_TIME));
+    return (rec, criteria, builder) -> builder.isNull(rec.get(RETRIEVED_DATE_TIME));
   }
 
   private Specification<ReturnRetrievalQueueRecord> hasId(String id) {
-    return (record, criteria, builder) -> builder.equal(record.get(ID), stringToUUIDSafe(id));
+    return (rec, criteria, builder) -> builder.equal(rec.get(ID), stringToUUIDSafe(id));
   }
 
   private Specification<ReturnRetrievalQueueRecord> hasHoldId(String id) {

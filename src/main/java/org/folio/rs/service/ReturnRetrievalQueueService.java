@@ -132,10 +132,10 @@ public class ReturnRetrievalQueueService {
     };
   }
 
-  private void saveRetrievalQueueWithCurrentDate(ReturnRetrievalQueueRecord record) {
-    record.setRetrievedDateTime(LocalDateTime.now());
-    record.setRequestType(RequestType.PYR.getType());
-    returnRetrievalQueueRepository.save(record);
+  private void saveRetrievalQueueWithCurrentDate(ReturnRetrievalQueueRecord rec) {
+    rec.setRetrievedDateTime(LocalDateTime.now());
+    rec.setRequestType(RequestType.PYR.getType());
+    returnRetrievalQueueRepository.save(rec);
   }
 
   private Specification<ReturnRetrievalQueueRecord> hasBarcode(String barcode) {

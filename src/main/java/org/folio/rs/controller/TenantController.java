@@ -18,9 +18,9 @@ import lombok.extern.log4j.Log4j2;
 import org.folio.rs.domain.dto.ExtendedRemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
-import org.folio.rs.domain.entity.RetrievalQueueRecord;
+import org.folio.rs.domain.entity.ReturnRetrievalQueueRecord;
 import org.folio.rs.repository.AccessionQueueRepository;
-import org.folio.rs.repository.RetrievalQueueRepository;
+import org.folio.rs.repository.ReturnRetrievalQueueRepository;
 import org.folio.rs.service.ConfigurationsService;
 import org.folio.rs.service.LocationMappingsService;
 import org.folio.rs.service.SecurityManagerService;
@@ -50,7 +50,7 @@ public class TenantController implements TenantApi {
   private final ConfigurationsService configurationsService;
   private final LocationMappingsService locationMappingsService;
   private final SecurityManagerService securityManagerService;
-  private final RetrievalQueueRepository retrievalQueueRepository;
+  private final ReturnRetrievalQueueRepository returnRetrievalQueueRepository;
   private final AccessionQueueRepository accessionQueueRepository;
   private final PubSubService pubSubService;
 
@@ -123,8 +123,8 @@ public class TenantController implements TenantApi {
       .forEach(configurationsService::postConfiguration);
     readEntitiesFromFiles(mappingSamples, ExtendedRemoteLocationConfigurationMapping.class)
       .forEach(locationMappingsService::postExtendedRemoteLocationConfigurationMapping);
-    readEntitiesFromFiles(retrievalQueueSamples, RetrievalQueueRecord.class)
-        .forEach(retrievalQueueRepository::save);
+    readEntitiesFromFiles(retrievalQueueSamples, ReturnRetrievalQueueRecord.class)
+        .forEach(returnRetrievalQueueRepository::save);
     readEntitiesFromFiles(accessionQueueSamples, AccessionQueueRecord.class)
         .forEach(accessionQueueRepository::save);
   }

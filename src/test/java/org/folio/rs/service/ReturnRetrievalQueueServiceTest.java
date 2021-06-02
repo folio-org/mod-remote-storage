@@ -15,8 +15,9 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.folio.rs.TestBase;
 import org.folio.rs.domain.dto.RetrievalQueues;
-import org.folio.rs.domain.entity.RetrievalQueueRecord;
-import org.folio.rs.repository.RetrievalQueueRepository;
+import org.folio.rs.domain.entity.ReturnRetrievalQueueRecord;
+import org.folio.rs.repository.ReturnRetrievalQueueRepository;
+import org.folio.rs.util.RequestType;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,18 +36,18 @@ import lombok.extern.log4j.Log4j2;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Log4j2
 @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:ClearTestData.sql")
-public class RetrievalQueueServiceTest extends TestBase {
+public class ReturnRetrievalQueueServiceTest extends TestBase {
 
   private static final String BARCODE = "1234567890";
   private static final String REMOTE_STORAGE_ID = "0f976099-2c7a-48ca-9271-3523905eab6b";
   private static final String RETRIEVAL_RECORD_0_ID = "4a38cc7d-b8c8-4a43-ad07-14c784dfbcbb";
   private static final String RETRIEVAL_RECORD_1_ID = "5a38cc7d-b8c8-4a43-ad07-14c784dfbcbb";
   private static final String RETRIEVALS_API_URL = "http://localhost:%s/remote-storage/retrievals";
-  private static final String REQUEST_TYPE = "PYR";
+//  private static final String REQUEST_TYPE = "PYR";
   private String formattedRetrievalUrl;
 
   @Autowired
-  private RetrievalQueueRepository retrievalQueueRepository;
+  private ReturnRetrievalQueueRepository returnRetrievalQueueRepository;
 
   @BeforeEach
   void prepareUrl() {
@@ -55,8 +56,8 @@ public class RetrievalQueueServiceTest extends TestBase {
 
   @Test
   void shouldFindRetrievalQueuesByRemoteStorageId() {
-    retrievalQueueRepository.save(createBaseRetrievalQueueRecord());
-    retrievalQueueRepository.save(buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID)));
+    returnRetrievalQueueRepository.save(createBaseRetrievalQueueRecord());
+    returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID)));
 
     ResponseEntity<RetrievalQueues> responseEntity = get(formattedRetrievalUrl + "?storageId=" + REMOTE_STORAGE_ID,
         RetrievalQueues.class);
@@ -73,10 +74,10 @@ public class RetrievalQueueServiceTest extends TestBase {
 
   @Test
   void shouldFindRetrievalQueuesWithRetrievalDateTime() {
-    retrievalQueueRepository.save(createBaseRetrievalQueueRecord());
+    returnRetrievalQueueRepository.save(createBaseRetrievalQueueRecord());
     var retrievalQueueRecord = buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID));
     retrievalQueueRecord.setRetrievedDateTime(LocalDateTime.now());
-    retrievalQueueRepository.save(retrievalQueueRecord);
+    returnRetrievalQueueRepository.save(retrievalQueueRecord);
 
     ResponseEntity<RetrievalQueues> allRecords = get(formattedRetrievalUrl, RetrievalQueues.class);
 
@@ -101,8 +102,8 @@ public class RetrievalQueueServiceTest extends TestBase {
 
   @Test
   void shouldFindRetrievalQueuesWithOffset() {
-    retrievalQueueRepository.save(createBaseRetrievalQueueRecord());
-    retrievalQueueRepository.save(buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID)));
+    returnRetrievalQueueRepository.save(createBaseRetrievalQueueRecord());
+    returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID)));
 
     ResponseEntity<RetrievalQueues> responseEntity = get(formattedRetrievalUrl + "?offset=1", RetrievalQueues.class);
     assertThat(Objects.requireNonNull(responseEntity.getBody())
@@ -114,8 +115,8 @@ public class RetrievalQueueServiceTest extends TestBase {
 
   @Test
   void shouldFindRetrievalQueuesWithLimit() {
-    retrievalQueueRepository.save(createBaseRetrievalQueueRecord());
-    retrievalQueueRepository.save(buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID)));
+    returnRetrievalQueueRepository.save(createBaseRetrievalQueueRecord());
+    returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID)));
 
     ResponseEntity<RetrievalQueues> responseEntity = get(formattedRetrievalUrl + "?limit=1", RetrievalQueues.class);
     assertThat(Objects.requireNonNull(responseEntity.getBody())
@@ -128,11 +129,11 @@ public class RetrievalQueueServiceTest extends TestBase {
   @Test
   void shouldSetRetrievedById() {
     UUID id = UUID.randomUUID();
-    retrievalQueueRepository.save(buildRetrievalQueueRecord(id));
+    returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(id));
 
     put(formattedRetrievalUrl + "/id/" + id, null);
 
-    var actualRetrievalQueueRecord = retrievalQueueRepository.findAll()
+    var actualRetrievalQueueRecord = returnRetrievalQueueRepository.findAll()
       .get(0);
     assertThat(actualRetrievalQueueRecord.getRetrievedDateTime(), notNullValue());
   }
@@ -140,18 +141,18 @@ public class RetrievalQueueServiceTest extends TestBase {
   @Test
   void shouldSetRetrievedByBarcode() {
     UUID uuid = UUID.randomUUID();
-    retrievalQueueRepository.save(buildRetrievalQueueRecord(uuid));
+    returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(uuid));
 
     put(formattedRetrievalUrl + "/barcode/" + BARCODE, null);
 
-    var actualRetrievalQueueRecord = retrievalQueueRepository.findById(uuid).get();
+    var actualRetrievalQueueRecord = returnRetrievalQueueRepository.findById(uuid).get();
     assertThat(actualRetrievalQueueRecord.getItemBarcode(), equalTo(BARCODE));
     assertThat(actualRetrievalQueueRecord.getRetrievedDateTime(), notNullValue());
   }
 
   @Test
   void shouldThrowNotFoundExceptionWhenIdDoesNotExist() {
-    retrievalQueueRepository.save(buildRetrievalQueueRecord(UUID.randomUUID()));
+    returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(UUID.randomUUID()));
     String url = formattedRetrievalUrl + "/id/" + UUID.randomUUID();
 
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> put(url, null));
@@ -164,7 +165,7 @@ public class RetrievalQueueServiceTest extends TestBase {
     UUID id = UUID.randomUUID();
     var retrievalQueueRecord = buildRetrievalQueueRecord(id);
     retrievalQueueRecord.setRetrievedDateTime(LocalDateTime.now());
-    retrievalQueueRepository.save(retrievalQueueRecord);
+    returnRetrievalQueueRepository.save(retrievalQueueRecord);
     String url = formattedRetrievalUrl + "/id/" + id;
 
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> put(url, null));
@@ -174,7 +175,7 @@ public class RetrievalQueueServiceTest extends TestBase {
 
   @Test
   void shouldThrowNotFoundExceptionWhenBarcodeDoesNotExist() {
-    retrievalQueueRepository.save(buildRetrievalQueueRecord(UUID.randomUUID()));
+    returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(UUID.randomUUID()));
     var url = formattedRetrievalUrl + "/barcode/" + UUID.randomUUID();
 
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> put(url, null));
@@ -185,14 +186,14 @@ public class RetrievalQueueServiceTest extends TestBase {
   @Test
   void shouldBeRequestTypeAfterSaving() {
     UUID id = UUID.randomUUID();
-    retrievalQueueRepository.save(buildRetrievalQueueRecord(id));
+    returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(id));
 
     put(formattedRetrievalUrl + "/id/" + id, null);
 
-    var actualRetrievalQueueRecord = retrievalQueueRepository.findAll()
+    var actualRetrievalQueueRecord = returnRetrievalQueueRepository.findAll()
       .get(0);
 
-    assertEquals(REQUEST_TYPE, actualRetrievalQueueRecord.getRequestType());
+    assertEquals(RequestType.PYR.getType(), actualRetrievalQueueRecord.getRequestType());
   }
 
   @Test
@@ -200,9 +201,9 @@ public class RetrievalQueueServiceTest extends TestBase {
     LocalDateTime createdDate = LocalDateTime.now();
     var retrievalQueueRecord = createBaseRetrievalQueueRecord();
     retrievalQueueRecord.setCreatedDateTime(createdDate);
-    retrievalQueueRepository.save(retrievalQueueRecord);
+    returnRetrievalQueueRepository.save(retrievalQueueRecord);
 
-    retrievalQueueRepository.save(buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID)));
+    returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID)));
 
     ResponseEntity<RetrievalQueues> responseEntity = get(formattedRetrievalUrl + "?createdDate=" + createdDate,
         RetrievalQueues.class);
@@ -218,8 +219,8 @@ public class RetrievalQueueServiceTest extends TestBase {
     LocalDateTime requestDate = LocalDateTime.now();
     var retrievalQueueRecord = createBaseRetrievalQueueRecord();
     retrievalQueueRecord.setCreatedDateTime(requestDate);
-    retrievalQueueRepository.save(retrievalQueueRecord);
-    retrievalQueueRepository.save(buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID)));
+    returnRetrievalQueueRepository.save(retrievalQueueRecord);
+    returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID)));
 
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class,
         () -> get(formattedRetrievalUrl + "?createdDate=123", RetrievalQueues.class), StringUtils.EMPTY);
@@ -227,14 +228,14 @@ public class RetrievalQueueServiceTest extends TestBase {
     assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.BAD_REQUEST));
   }
 
-  private RetrievalQueueRecord createBaseRetrievalQueueRecord() {
-    var retrievalQueueRecord = new RetrievalQueueRecord();
+  private ReturnRetrievalQueueRecord createBaseRetrievalQueueRecord() {
+    var retrievalQueueRecord = new ReturnRetrievalQueueRecord();
     retrievalQueueRecord.setId(stringToUUIDSafe(RETRIEVAL_RECORD_0_ID));
     return retrievalQueueRecord;
   }
 
-  private RetrievalQueueRecord buildRetrievalQueueRecord(UUID id) {
-    return RetrievalQueueRecord.builder()
+  private ReturnRetrievalQueueRecord buildRetrievalQueueRecord(UUID id) {
+    return ReturnRetrievalQueueRecord.builder()
       .id(id)
       .remoteStorageId(UUID.fromString(REMOTE_STORAGE_ID))
       .itemBarcode(BARCODE)
@@ -247,7 +248,7 @@ public class RetrievalQueueServiceTest extends TestBase {
       .pickupLocation("pickup_location")
       .requestStatus("Request-Status")
       .requestNote("Request_Note")
-      .requestType(REQUEST_TYPE)
+      .requestType(RequestType.PYR.getType())
       .build();
   }
 

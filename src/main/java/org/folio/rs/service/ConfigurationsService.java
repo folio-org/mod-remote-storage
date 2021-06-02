@@ -76,6 +76,7 @@ public class ConfigurationsService {
     dest.setName(source.getName());
     dest.setUrl(source.getUrl());
     dest.setStatusUrl(source.getStatusUrl());
+    dest.setApiKey(source.getApiKey());
     dest.setAccessionDelay(source.getAccessionDelay());
     dest.setAccessionTimeUnit(source.getAccessionTimeUnit());
     dest.setUpdatedByUserId(source.getUpdatedByUserId());

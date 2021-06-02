@@ -17,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RetrievalQueueRecord {
+public class ReturnRetrievalQueueRecord {
 
   @Id
   private UUID id;

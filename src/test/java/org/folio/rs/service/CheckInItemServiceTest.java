@@ -15,7 +15,7 @@ import org.folio.rs.domain.dto.CheckInItem;
 import org.folio.rs.domain.dto.CheckInItemByHoldId;
 import org.folio.rs.domain.dto.FolioLocation;
 import org.folio.rs.domain.entity.RemoteLocationConfigurationMappingEntity;
-import org.folio.rs.domain.entity.RetrievalQueueRecord;
+import org.folio.rs.domain.entity.ReturnRetrievalQueueRecord;
 import org.folio.rs.error.CheckInException;
 import org.folio.rs.repository.RemoteLocationConfigurationMappingsRepository;
 import org.junit.jupiter.api.Assertions;
@@ -43,7 +43,7 @@ public class CheckInItemServiceTest {
   @Mock
   private LocationClient locationClient;
   @Mock
-  private RetrievalQueueService retrievalQueueService;
+  private ReturnRetrievalQueueService returnRetrievalQueueService;
 
   @InjectMocks
   private CheckInItemService checkInItemService;
@@ -52,13 +52,13 @@ public class CheckInItemServiceTest {
   private FolioLocation folioLocation;
   private CheckInItem checkInItem;
   private CheckInItemByHoldId checkInItemByHoldId;
-  private RetrievalQueueRecord retrievalQueueRecord;
+  private ReturnRetrievalQueueRecord returnRetrievalQueueRecord;
 
   @BeforeEach
   public void prepare() {
     entity = RemoteLocationConfigurationMappingEntity.of(UUID.fromString(FOLIO_LOCATION_ID), UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID));
     folioLocation = FolioLocation.of(FOLIO_LOCATION_ID, Strings.EMPTY, PRIMARY_SERVICE_POINT);
-    retrievalQueueRecord = RetrievalQueueRecord.builder().id(UUID.randomUUID()).holdId(HOLD_ID).itemBarcode(ITEM_BARCODE).build();
+    returnRetrievalQueueRecord = ReturnRetrievalQueueRecord.builder().id(UUID.randomUUID()).holdId(HOLD_ID).itemBarcode(ITEM_BARCODE).build();
     checkInItem = new CheckInItem();
     checkInItem.setItemBarcode(ITEM_BARCODE);
     checkInItemByHoldId = new CheckInItemByHoldId();
@@ -83,8 +83,8 @@ public class CheckInItemServiceTest {
       .thenReturn(Optional.of(entity));
     when(locationClient.getLocation(FOLIO_LOCATION_ID))
       .thenReturn(folioLocation);
-    when(retrievalQueueService.getLastRetrievalByHoldId(HOLD_ID, REMOTE_STORAGE_CONFIGURATION_ID))
-      .thenReturn(Optional.of(retrievalQueueRecord));
+    when(returnRetrievalQueueService.getLastRetrievalByHoldId(HOLD_ID, REMOTE_STORAGE_CONFIGURATION_ID))
+      .thenReturn(Optional.of(returnRetrievalQueueRecord));
 
     checkInItemService.checkInItemByHoldId(REMOTE_STORAGE_CONFIGURATION_ID, checkInItemByHoldId);
 

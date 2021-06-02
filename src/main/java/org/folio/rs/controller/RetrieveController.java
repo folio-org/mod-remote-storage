@@ -8,7 +8,7 @@ import javax.validation.constraints.Pattern;
 import org.folio.rs.domain.dto.FilterData;
 import org.folio.rs.domain.dto.RetrievalQueues;
 import org.folio.rs.rest.resource.RetrievalsApi;
-import org.folio.rs.service.RetrievalQueueService;
+import org.folio.rs.service.ReturnRetrievalQueueService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,13 +23,13 @@ import lombok.extern.log4j.Log4j2;
 @RequestMapping(value = "/remote-storage")
 public class RetrieveController implements RetrievalsApi {
 
-  private final RetrievalQueueService retrievalQueueService;
+  private final ReturnRetrievalQueueService returnRetrievalQueueService;
 
   @Override
   public ResponseEntity<RetrievalQueues> getRetrievals(@Valid Boolean retrieved, @Valid String storageId,
       @Valid String createdDateTime, @Min(0) @Max(2147483647) @Valid Integer offset,
       @Min(0) @Max(2147483647) @Valid Integer limit) {
-    var retrievalQueueRecords = retrievalQueueService
+    var retrievalQueueRecords = returnRetrievalQueueService
       .getRetrievals(getFilterData(retrieved, storageId, createdDateTime, offset, limit));
     return new ResponseEntity<>(retrievalQueueRecords, HttpStatus.OK);
   }
@@ -37,14 +37,14 @@ public class RetrieveController implements RetrievalsApi {
   @Override
   public ResponseEntity<String> setRetrievedById(
       @Pattern(regexp = "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[1-5][a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}$") String retrievalId) {
-    retrievalQueueService.setRetrievedById(retrievalId);
+    returnRetrievalQueueService.setRetrievedById(retrievalId);
     return ResponseEntity.noContent()
       .build();
   }
 
   @Override
   public ResponseEntity<String> setRetrievedByBarcode(String barcode) {
-    retrievalQueueService.setRetrievedByBarcode(barcode);
+    returnRetrievalQueueService.setRetrievedByBarcode(barcode);
     return ResponseEntity.noContent()
       .build();
   }

@@ -9,7 +9,7 @@ import lombok.With;
 @With
 @AllArgsConstructor
 @NoArgsConstructor
-public class EventRequest {
+public class RequestEvent {
   private String itemBarCode;
   private String pickupServicePointId;
   private String holdId;

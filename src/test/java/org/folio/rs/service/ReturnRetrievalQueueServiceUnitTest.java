@@ -15,7 +15,7 @@ import javax.persistence.EntityNotFoundException;
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.client.ServicePointsClient;
 import org.folio.rs.client.UsersClient;
-import org.folio.rs.domain.dto.EventRequest;
+import org.folio.rs.domain.dto.RequestEvent;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.ItemContributorNames;
 import org.folio.rs.domain.dto.ItemEffectiveCallNumberComponents;
@@ -24,8 +24,8 @@ import org.folio.rs.domain.dto.PickupServicePoint;
 import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.ResultList;
 import org.folio.rs.domain.dto.User;
-import org.folio.rs.domain.entity.RetrievalQueueRecord;
-import org.folio.rs.repository.RetrievalQueueRepository;
+import org.folio.rs.domain.entity.ReturnRetrievalQueueRecord;
+import org.folio.rs.repository.ReturnRetrievalQueueRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,7 +39,7 @@ import org.mockito.quality.Strictness;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class RetrievalQueueServiceUnitTest {
+public class ReturnRetrievalQueueServiceUnitTest {
 
   private static final String ITEM_BARCODE = "653285216743";
   private static final String PATRON_BARCODE = "543285216734";
@@ -58,11 +58,11 @@ public class RetrievalQueueServiceUnitTest {
   private static final String PICKUP_SERVICE_POINT_CODE = "cd1";
 
   @InjectMocks
-  private RetrievalQueueService service;
+  private ReturnRetrievalQueueService service;
   @Captor
-  private ArgumentCaptor<RetrievalQueueRecord> captor;
+  private ArgumentCaptor<ReturnRetrievalQueueRecord> captor;
   @Mock
-  private RetrievalQueueRepository retrievalQueueRepository;
+  private ReturnRetrievalQueueRepository returnRetrievalQueueRepository;
   @Mock
   private LocationMappingsService locationMappingsService;
   @Mock
@@ -90,17 +90,17 @@ public class RetrievalQueueServiceUnitTest {
   @Mock
   private ItemEffectiveCallNumberComponents callNumberComponents;
   @Mock
-  private EventRequest eventRequest;
+  private RequestEvent requestEvent;
 
 
   @BeforeEach
   void prepareTestData() {
-    when(eventRequest.getItemBarCode()).thenReturn(ITEM_BARCODE);
-    when(eventRequest.getRequesterId()).thenReturn(REQUESTER_ID);
-    when(eventRequest.getPickupServicePointId()).thenReturn(PICKUP_SERVICE_POINT_ID);
-    when(eventRequest.getHoldId()).thenReturn(HOLD_ID);
-    when(eventRequest.getRequestNote()).thenReturn(REQUEST_NOTE);
-    when(eventRequest.getRequestStatus()).thenReturn(STATUS);
+    when(requestEvent.getItemBarCode()).thenReturn(ITEM_BARCODE);
+    when(requestEvent.getRequesterId()).thenReturn(REQUESTER_ID);
+    when(requestEvent.getPickupServicePointId()).thenReturn(PICKUP_SERVICE_POINT_ID);
+    when(requestEvent.getHoldId()).thenReturn(HOLD_ID);
+    when(requestEvent.getRequestNote()).thenReturn(REQUEST_NOTE);
+    when(requestEvent.getRequestStatus()).thenReturn(STATUS);
     when(inventoryClient.getItemsByQuery("barcode==" + ITEM_BARCODE)).thenReturn(items);
     when(items.getResult()).thenReturn(Collections.singletonList(item));
     when(item.getTitle()).thenReturn(INSTANCE_TITLE);
@@ -122,10 +122,10 @@ public class RetrievalQueueServiceUnitTest {
 
   @Test
   void shouldSaveEventRequest() {
-    service.processEventRequest(eventRequest);
+    service.processEventRequest(requestEvent);
 
-    verify(retrievalQueueRepository, times(1)).save(captor.capture());
-    RetrievalQueueRecord record = captor.getValue();
+    verify(returnRetrievalQueueRepository, times(1)).save(captor.capture());
+    ReturnRetrievalQueueRecord record = captor.getValue();
     assertEquals(HOLD_ID, record.getHoldId());
     assertEquals(ITEM_BARCODE, record.getItemBarcode());
     assertEquals(CALL_NUMBER, record.getCallNumber());
@@ -146,16 +146,16 @@ public class RetrievalQueueServiceUnitTest {
     when(inventoryClient.getItemsByQuery("barcode==" + ITEM_BARCODE)).thenReturn(items);
     when(items.getResult()).thenReturn(Collections.EMPTY_LIST);
 
-    assertThrows(EntityNotFoundException.class, () -> service.processEventRequest(eventRequest));
+    assertThrows(EntityNotFoundException.class, () -> service.processEventRequest(requestEvent));
   }
 
   @Test
   void shouldNotProcessRecordsWhenLocationIsNotRemote() {
     when(locationMappingsService.getRemoteLocationConfigurationMapping(EFFECTIVE_LOCATION_ID)).thenReturn(null);
 
-    service.processEventRequest(eventRequest);
+    service.processEventRequest(requestEvent);
 
-    verify(retrievalQueueRepository, never()).save(isA(RetrievalQueueRecord.class));
+    verify(returnRetrievalQueueRepository, never()).save(isA(ReturnRetrievalQueueRecord.class));
   }
 
   @Test
@@ -163,13 +163,13 @@ public class RetrievalQueueServiceUnitTest {
     when(usersClient.getUsersByQuery("id==" + REQUESTER_ID)).thenReturn(users);
     when(users.getResult()).thenReturn(Collections.EMPTY_LIST);
 
-    assertThrows(EntityNotFoundException.class, () -> service.processEventRequest(eventRequest));
+    assertThrows(EntityNotFoundException.class, () -> service.processEventRequest(requestEvent));
   }
 
   @Test
   void shouldNotSaveRequestWhenEffectiveLocationIsNotFound() {
     when(item.getEffectiveLocation()).thenReturn(null);
 
-    verify(retrievalQueueRepository, never()).save(isA(RetrievalQueueRecord.class));
+    verify(returnRetrievalQueueRepository, never()).save(isA(ReturnRetrievalQueueRecord.class));
   }
 }

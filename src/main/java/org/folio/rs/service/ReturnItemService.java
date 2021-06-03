@@ -15,7 +15,6 @@ import org.folio.rs.client.ServicePointsClient;
 import org.folio.rs.client.UsersClient;
 import org.folio.rs.domain.dto.CheckInItem;
 import org.folio.rs.domain.dto.Item;
-import org.folio.rs.domain.dto.ItemCheckInPubSubEvent;
 import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.Request;
 import org.folio.rs.domain.dto.ReturnItemResponse;

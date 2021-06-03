@@ -45,11 +45,10 @@ public class PubSubEventController implements PubSubHandlersApi {
       RequestEvent requestEvent = null;
       try {
         var logEventType = pubSubEvent.getLogEventType();
-        var payload = MAPPER.writeValueAsString(pubSubEvent.getPayload());
         if (isItemCheckedId(logEventType)) {
-          ItemCheckInPubSubEvent itemCheckInPubSubEvent = MAPPER.readValue(payload, CheckInItemPubSubEvent.class);
-          ofNullable(itemCheckInPubSubEvent).ifPresent(returnItemService::returnItem);
+          returnItemService.returnItem(pubSubEvent.getItemBarcode());
         } else {
+          var payload = MAPPER.writeValueAsString(pubSubEvent.getPayload());
           if (isPagedRequestCreated(logEventType, payload)) {
             requestEvent = MAPPER.readValue(payload, CreateRequestEvent.class);
           }

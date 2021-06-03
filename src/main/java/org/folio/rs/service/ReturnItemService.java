@@ -65,11 +65,11 @@ public class ReturnItemService {
     return itemReturnResponse;
   }
 
-  public ReturnItemResponse returnItem(ItemCheckInPubSubEvent checkInItemEvent) {
-    log.info("Start return for item with barcode " + checkInItemEvent.getItemBarcode());
+  public ReturnItemResponse returnItem(String itemBarcode) {
+    log.info("Start return for item with barcode " + itemBarcode);
 
     var itemReturnResponse = new ReturnItemResponse();
-    var item = getItemByBarcode(checkInItemEvent.getItemBarcode());
+    var item = getItemByBarcode(itemBarcode);
     var locationMapping = getLocationMapping(item.getEffectiveLocation().getId());
     var storageConfiguration = getStorageConfigurationById(locationMapping.getConfigurationId());
 
@@ -83,7 +83,7 @@ public class ReturnItemService {
       });
     }
     var checkInItem = new CheckInItem();
-    checkInItem.setItemBarcode(checkInItemEvent.getItemBarcode());
+    checkInItem.setItemBarcode(itemBarcode);
     checkInItemService.checkInItemByBarcode(locationMapping.getConfigurationId(), checkInItem);
     return itemReturnResponse;
   }

@@ -8,9 +8,7 @@ import java.util.Objects;
 import javax.validation.Valid;
 
 import org.folio.rs.domain.dto.ChangeRequestEvent;
-import org.folio.rs.domain.dto.CheckInItemPubSubEvent;
 import org.folio.rs.domain.dto.CreateRequestEvent;
-import org.folio.rs.domain.dto.ItemCheckInPubSubEvent;
 import org.folio.rs.domain.dto.RequestEvent;
 import org.folio.rs.domain.dto.PubSubEvent;
 import org.folio.rs.rest.resource.PubSubHandlersApi;

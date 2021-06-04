@@ -4,7 +4,7 @@ import static java.util.function.UnaryOperator.identity;
 import static org.folio.rs.TestUtils.ITEM_BARCODE;
 import static org.folio.rs.TestUtils.MAPPER;
 import static org.folio.rs.TestUtils.buildBaseEventPayload;
-import static org.folio.rs.TestUtils.buildCheckInEventPayload;
+import static org.folio.rs.TestUtils.buildCheckInLogRecordPubSubEvent;
 import static org.folio.rs.TestUtils.buildRequestChangedEventPayload;
 import static org.folio.rs.TestUtils.buildRequestCreatedEventPayload;
 import static org.folio.rs.domain.dto.Request.RequestType.HOLD;
@@ -132,10 +132,6 @@ public class PubSubEventControllerTest extends TestBase {
   @Test
   void shouldProcessItemCheckInEvent() throws JsonProcessingException {
     log.info("=== Should process item check in event ===");
-    var pubSubEvent = new PubSubEvent();
-    pubSubEvent.setLogEventType(LogEventType.CHECK_IN.value());
-    pubSubEvent.setPayload(buildCheckInEventPayload());
-
 
     var configuration = new StorageConfiguration().id("b3354743-285d-468d-9fa1-4e3d6321c13d")
       .name("Remote Storage")
@@ -154,7 +150,7 @@ public class PubSubEventControllerTest extends TestBase {
 
     remoteLocationConfigurationMappingsRepository.save(locationMapping);
 
-    post(String.format(PUB_SUB_HANDLER_URL, okapiPort), MAPPER.writeValueAsString(pubSubEvent), String.class);
+    post(String.format(PUB_SUB_HANDLER_URL, okapiPort), MAPPER.writeValueAsString(buildCheckInLogRecordPubSubEvent()), String.class);
     Map<String, ReturnRetrievalQueueRecord> records = returnRetrievalQueueRepository.findAll().stream().collect(Collectors.toMap(ReturnRetrievalQueueRecord::getItemBarcode, identity()));
     assertThat(records.get(ITEM_BARCODE), notNullValue());
   }

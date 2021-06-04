@@ -60,7 +60,7 @@ public class TestUtils {
     return payload;
   }
 
-  public static ObjectNode buildCheckInEventPayload() {
+  public static ObjectNode buildCheckInLogRecordPubSubEvent() {
 
     var mapper = new ObjectMapper();
 

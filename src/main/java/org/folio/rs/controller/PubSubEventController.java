@@ -8,9 +8,7 @@ import java.util.Objects;
 import javax.validation.Valid;
 
 import org.folio.rs.domain.dto.ChangeRequestEvent;
-import org.folio.rs.domain.dto.CheckInItemPubSubEvent;
 import org.folio.rs.domain.dto.CreateRequestEvent;
-import org.folio.rs.domain.dto.ItemCheckInPubSubEvent;
 import org.folio.rs.domain.dto.RequestEvent;
 import org.folio.rs.domain.dto.PubSubEvent;
 import org.folio.rs.rest.resource.PubSubHandlersApi;
@@ -45,11 +43,10 @@ public class PubSubEventController implements PubSubHandlersApi {
       RequestEvent requestEvent = null;
       try {
         var logEventType = pubSubEvent.getLogEventType();
-        var payload = MAPPER.writeValueAsString(pubSubEvent.getPayload());
         if (isItemCheckedId(logEventType)) {
-          ItemCheckInPubSubEvent itemCheckInPubSubEvent = MAPPER.readValue(payload, CheckInItemPubSubEvent.class);
-          ofNullable(itemCheckInPubSubEvent).ifPresent(returnItemService::returnItem);
+          returnItemService.returnItem(pubSubEvent.getItemBarcode());
         } else {
+          var payload = MAPPER.writeValueAsString(pubSubEvent.getPayload());
           if (isPagedRequestCreated(logEventType, payload)) {
             requestEvent = MAPPER.readValue(payload, CreateRequestEvent.class);
           }

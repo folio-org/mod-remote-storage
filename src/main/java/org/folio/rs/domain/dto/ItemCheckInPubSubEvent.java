@@ -13,5 +13,4 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ItemCheckInPubSubEvent {
   private String itemBarcode;
-  private String userId;
 }

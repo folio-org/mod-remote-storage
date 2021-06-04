@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.rs.domain.dto.ExtendedRemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.ExtendedRemoteLocationConfigurationMappings;
+import org.folio.rs.domain.dto.LocationMappingFilterData;
 import org.folio.rs.rest.resource.ExtendedMappingsApi;
 import org.folio.rs.service.LocationMappingsService;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -17,6 +18,9 @@ import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+
+import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
 
 @Log4j2
 @Controller
@@ -38,9 +42,10 @@ public class ExtendedMappingsController implements ExtendedMappingsApi {
   }
 
   @Override
-  public ResponseEntity<ExtendedRemoteLocationConfigurationMappings> getExtendedRemoteLocationConfigurationMappings(@Min(0) @Max(2147483647) @Valid Integer offset,
-    @Min(0) @Max(2147483647) @Valid Integer limit, @Valid String query) {
-    var mappings = locationMappingsService.getExtendedRemoteLocationConfigurationMappings(offset, limit);
+  public ResponseEntity<ExtendedRemoteLocationConfigurationMappings> getExtendedRemoteLocationConfigurationMappings(@Valid String finalLocationId,
+    @Valid String remoteStorageId, @Valid String originalLocationId, @Min(0) @Max(2147483647) @Valid Integer offset,
+    @Min(0) @Max(2147483647) @Valid Integer limit) {
+    var mappings = locationMappingsService.getExtendedRemoteLocationConfigurationMappings(buildFilterData(finalLocationId, remoteStorageId, originalLocationId, offset, limit));
     return new ResponseEntity<>(mappings, HttpStatus.OK);
   }
 
@@ -51,14 +56,27 @@ public class ExtendedMappingsController implements ExtendedMappingsApi {
   }
 
   @Override
-  public ResponseEntity<ExtendedRemoteLocationConfigurationMappings> getExtendedRemoteLocationConfigurationMappingsLocations(@Min(0) @Max(2147483647) @Valid Integer offset,
-      @Min(0) @Max(2147483647) @Valid Integer limit, @Valid String query) {
-    var mappings = locationMappingsService.getExtendedRemoteLocationConfigurationMappingsLocations();
+  public ResponseEntity<ExtendedRemoteLocationConfigurationMappings> getExtendedRemoteLocationConfigurationMappingsLocations(@Valid String finalLocationId,
+    @Valid String remoteStorageId, @Valid String originalLocationId, @Min(0) @Max(2147483647) @Valid Integer offset,
+    @Min(0) @Max(2147483647) @Valid Integer limit) {
+    var mappings = locationMappingsService.getExtendedRemoteLocationConfigurationMappingsLocations(buildFilterData(finalLocationId, remoteStorageId, originalLocationId, offset, limit));
     return new ResponseEntity<>(mappings, HttpStatus.OK);
   }
 
   @ExceptionHandler({EmptyResultDataAccessException.class, EntityNotFoundException.class})
   public ResponseEntity<String> handleNotFoundExceptions() {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(MAPPING_NOT_FOUND);
+  }
+
+  private LocationMappingFilterData buildFilterData(String finalLocationId, String remoteConfigurationId, String originalLocationId,
+    Integer offset, Integer limit) {
+    return LocationMappingFilterData
+      .builder()
+      .finalLocationId(finalLocationId)
+      .remoteStorageId(remoteConfigurationId)
+      .originalLocationId(originalLocationId)
+      .offset(offset)
+      .limit(limit)
+      .build();
   }
 }

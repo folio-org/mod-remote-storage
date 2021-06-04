@@ -8,7 +8,7 @@ import javax.validation.constraints.Pattern;
 import org.folio.rs.domain.dto.AccessionQueue;
 import org.folio.rs.domain.dto.AccessionQueues;
 import org.folio.rs.domain.dto.AccessionRequest;
-import org.folio.rs.domain.dto.FilterData;
+import org.folio.rs.domain.dto.AccessionFilterData;
 import org.folio.rs.rest.resource.AccessionsApi;
 import org.folio.rs.service.AccessionQueueService;
 import org.springframework.http.HttpStatus;
@@ -29,9 +29,9 @@ public class AccessionController implements AccessionsApi {
   private final AccessionQueueService accessionQueueService;
 
   @Override
-  public ResponseEntity<AccessionQueues> getAccessions(@Valid Boolean accessioned, @Valid String storageId,
+  public ResponseEntity<AccessionQueues> getAccessions(@Valid Boolean accessioned, @Valid String remoteStorageId,
       @Valid String createdDate, @Min(0) @Max(2147483647) @Valid Integer offset, @Min(0) @Max(2147483647) @Valid Integer limit) {
-    var accessionQueues = accessionQueueService.getAccessions(getFilterData(accessioned, storageId, createdDate, offset, limit));
+    var accessionQueues = accessionQueueService.getAccessions(getFilterData(accessioned, remoteStorageId, createdDate, offset, limit));
     return new ResponseEntity<>(accessionQueues, HttpStatus.OK);
   }
 
@@ -55,8 +55,8 @@ public class AccessionController implements AccessionsApi {
       .build();
   }
 
-  private FilterData getFilterData(Boolean accessioned, String storageId, String createdDate, Integer offset, Integer limit) {
-    return FilterData.builder()
+  private AccessionFilterData getFilterData(Boolean accessioned, String storageId, String createdDate, Integer offset, Integer limit) {
+    return AccessionFilterData.builder()
       .isPresented(accessioned)
       .storageId(storageId)
       .createDate(createdDate)

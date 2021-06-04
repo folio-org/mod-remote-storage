@@ -202,9 +202,10 @@ paths:
       description: Get a list of location mappings
       operationId: getMappings
       parameters:
+        - $ref: "#/components/parameters/trait_queryable_final_location_id"
+        - $ref: "#/components/parameters/trait_queryable_storage_id"
         - $ref: "#/components/parameters/trait_pageable_offset"
         - $ref: "#/components/parameters/trait_pageable_limit"
-        - $ref: "#/components/parameters/trait_queryable_query"
   /mappings/{folioLocationId}:
     get:
       responses:
@@ -310,9 +311,11 @@ paths:
       description: Get a list of location mappings
       operationId: getExtendedRemoteLocationConfigurationMappings
       parameters:
+        - $ref: "#/components/parameters/trait_queryable_final_location_id"
+        - $ref: "#/components/parameters/trait_queryable_storage_id"
+        - $ref: "#/components/parameters/trait_queryable_original_location_id"
         - $ref: "#/components/parameters/trait_pageable_offset"
         - $ref: "#/components/parameters/trait_pageable_limit"
-        - $ref: "#/components/parameters/trait_queryable_query"
   /extended-mappings/{finalLocationId}:
     get:
       responses:
@@ -386,9 +389,11 @@ paths:
       description: Get a list of location mappings
       operationId: getExtendedRemoteLocationConfigurationMappingsLocations
       parameters:
+        - $ref: "#/components/parameters/trait_queryable_final_location_id"
+        - $ref: "#/components/parameters/trait_queryable_storage_id"
+        - $ref: "#/components/parameters/trait_queryable_original_location_id"
         - $ref: "#/components/parameters/trait_pageable_offset"
         - $ref: "#/components/parameters/trait_pageable_limit"
-        - $ref: "#/components/parameters/trait_queryable_query"
   /providers:
     get:
       responses:
@@ -786,8 +791,20 @@ components:
     contributorType:
       $ref: schemas/contributorType.json
   parameters:
+    trait_queryable_final_location_id:
+      name: finalLocationId
+      in: query
+      description: Final location id
+      schema:
+        type: string
+    trait_queryable_original_location_id:
+      name: originalLocationId
+      in: query
+      description: Original location id
+      schema:
+        type: string
     trait_queryable_storage_id:
-      name: storageId
+      name: remoteStorageId
       in: query
       description: Remote storage id
       schema:

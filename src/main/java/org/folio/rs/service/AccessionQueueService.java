@@ -37,7 +37,7 @@ import org.folio.rs.domain.dto.AccessionRequest;
 import org.folio.rs.domain.dto.ContributorType;
 import org.folio.rs.domain.dto.DomainEvent;
 import org.folio.rs.domain.dto.DomainEventType;
-import org.folio.rs.domain.dto.FilterData;
+import org.folio.rs.domain.dto.AccessionFilterData;
 import org.folio.rs.domain.dto.HoldingsRecord;
 import org.folio.rs.domain.dto.Instance;
 import org.folio.rs.domain.dto.InstanceContributors;
@@ -51,6 +51,7 @@ import org.folio.rs.domain.dto.ItemsMove;
 import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
+import org.folio.rs.domain.entity.AccessionQueueRecord_;
 import org.folio.rs.error.AccessionException;
 import org.folio.rs.mapper.AccessionQueueMapper;
 import org.folio.rs.repository.AccessionQueueRepository;
@@ -67,11 +68,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AccessionQueueService {
 
-  private static final String ID = "id";
-  private static final String ITEM_BARCODE = "itemBarcode";
-  private static final String ACCESSIONED_DATE_TIME = "accessionedDateTime";
-  private static final String REMOTE_STORAGE_ID = "remoteStorageId";
-  private static final String CREATED_DATE_TIME = "createdDateTime";
   private final AccessionQueueRepository accessionQueueRepository;
   private final LocationMappingsService locationMappingsService;
   private final InventoryClient inventoryClient;
@@ -228,9 +224,9 @@ public class AccessionQueueService {
     return storageConfiguration;
   }
 
-  public AccessionQueues getAccessions(FilterData filterData) {
-    var queueRecords = accessionQueueRepository.findAll(getCriteriaSpecification(filterData),
-        new OffsetRequest(filterData.getOffset(), filterData.getLimit(), Sort.unsorted()));
+  public AccessionQueues getAccessions(AccessionFilterData accessionFilterData) {
+    var queueRecords = accessionQueueRepository.findAll(getCriteriaSpecification(accessionFilterData),
+        new OffsetRequest(accessionFilterData.getOffset(), accessionFilterData.getLimit(), Sort.unsorted()));
     return accessionQueueMapper.mapEntitiesToAccessionQueueCollection(queueRecords);
   }
 
@@ -347,20 +343,20 @@ public class AccessionQueueService {
       .orElse(null); //NOSONAR
   }
 
-  private Specification<AccessionQueueRecord> getCriteriaSpecification(FilterData filterData){
+  private Specification<AccessionQueueRecord> getCriteriaSpecification(AccessionFilterData accessionFilterData){
     return (rec, criteriaQuery, builder) -> {
       final Collection<Predicate> predicates = new ArrayList<>();
-      if (Boolean.TRUE.equals(filterData.getIsPresented())) {
-        predicates.add(builder.isNotNull(rec.get(ACCESSIONED_DATE_TIME)));
+      if (Boolean.TRUE.equals(accessionFilterData.getIsPresented())) {
+        predicates.add(builder.isNotNull(rec.get(AccessionQueueRecord_.accessionedDateTime)));
       }
-      if (Boolean.FALSE.equals(filterData.getIsPresented())) {
-        predicates.add(builder.isNull(rec.get(ACCESSIONED_DATE_TIME)));
+      if (Boolean.FALSE.equals(accessionFilterData.getIsPresented())) {
+        predicates.add(builder.isNull(rec.get(AccessionQueueRecord_.accessionedDateTime)));
       }
-      if (nonNull(filterData.getStorageId())) {
-        predicates.add(builder.equal(rec.get(REMOTE_STORAGE_ID), stringToUUIDSafe(filterData.getStorageId())));
+      if (nonNull(accessionFilterData.getStorageId())) {
+        predicates.add(builder.equal(rec.get(AccessionQueueRecord_.remoteStorageId), stringToUUIDSafe(accessionFilterData.getStorageId())));
       }
-      if (nonNull(filterData.getCreateDate())) {
-        predicates.add(builder.equal(rec.get(CREATED_DATE_TIME), LocalDateTime.parse(filterData.getCreateDate())));
+      if (nonNull(accessionFilterData.getCreateDate())) {
+        predicates.add(builder.equal(rec.get(AccessionQueueRecord_.createdDateTime), LocalDateTime.parse(accessionFilterData.getCreateDate())));
       }
       return builder.and(predicates.toArray(new Predicate[0]));
     };
@@ -372,15 +368,15 @@ public class AccessionQueueService {
   }
 
   private Specification<AccessionQueueRecord> hasBarcode(String barcode) {
-    return (rec, criteria, builder) -> builder.equal(rec.get(ITEM_BARCODE), barcode);
+    return (rec, criteria, builder) -> builder.equal(rec.get(AccessionQueueRecord_.itemBarcode), barcode);
   }
 
   private Specification<AccessionQueueRecord> notAccessioned() {
-    return (rec, criteria, builder) -> builder.isNull(rec.get(ACCESSIONED_DATE_TIME));
+    return (rec, criteria, builder) -> builder.isNull(rec.get(AccessionQueueRecord_.accessionedDateTime));
   }
 
   private Specification<AccessionQueueRecord> hasId(String id) {
-    return (rec, criteria, builder) -> builder.equal(rec.get(ID), stringToUUIDSafe(id));
+    return (rec, criteria, builder) -> builder.equal(rec.get(AccessionQueueRecord_.id), stringToUUIDSafe(id));
   }
 
   @SneakyThrows

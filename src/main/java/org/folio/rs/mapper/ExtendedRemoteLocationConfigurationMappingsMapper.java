@@ -11,6 +11,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static java.util.Objects.isNull;
+
 public final class ExtendedRemoteLocationConfigurationMappingsMapper {
   private ExtendedRemoteLocationConfigurationMappingsMapper(){}
 
@@ -30,10 +32,12 @@ public final class ExtendedRemoteLocationConfigurationMappingsMapper {
       .totalRecords(mappings.size());
   }
 
-  public static ExtendedRemoteLocationConfigurationMappings mapEntitiesToDtoCollection(Iterable<ExtendedRemoteLocationConfigurationMappingEntity> entities) {
+  public static ExtendedRemoteLocationConfigurationMappings mapEntitiesToDtoCollection(Iterable<ExtendedRemoteLocationConfigurationMappingEntity> entities,
+    String originalLocationId) {
     var mappings = StreamSupport.stream(entities.spliterator(), false)
       .map(ExtendedRemoteLocationConfigurationMappingsMapper::mapEntityToDtoList)
       .flatMap(List::stream)
+      .filter(mapping -> isNull(originalLocationId) || originalLocationId.equals(mapping.getOriginalLocationId()))
       .collect(Collectors.toList());
     return new ExtendedRemoteLocationConfigurationMappings()
       .mappings(mappings)

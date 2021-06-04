@@ -5,7 +5,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 
-import org.folio.rs.domain.dto.FilterData;
+import org.folio.rs.domain.dto.AccessionFilterData;
 import org.folio.rs.domain.dto.RetrievalQueues;
 import org.folio.rs.rest.resource.RetrievalsApi;
 import org.folio.rs.service.ReturnRetrievalQueueService;
@@ -49,8 +49,8 @@ public class RetrieveController implements RetrievalsApi {
       .build();
   }
 
-  private FilterData getFilterData(Boolean retrieved, String storageId, String createdDate, Integer offset, Integer limit) {
-    return FilterData.builder()
+  private AccessionFilterData getFilterData(Boolean retrieved, String storageId, String createdDate, Integer offset, Integer limit) {
+    return AccessionFilterData.builder()
       .isPresented(retrieved)
       .storageId(storageId)
       .createDate(createdDate)

@@ -5,11 +5,10 @@ import lombok.Getter;
 
 @Getter
 @Builder(toBuilder = true)
-public class FilterData {
-
-  private final Boolean isPresented;
-  private final String storageId;
-  private final String createDate;
+public class LocationMappingFilterData {
+  private final String finalLocationId;
+  private final String remoteStorageId;
+  private final String originalLocationId;
   private final int offset;
   private final int limit;
 }

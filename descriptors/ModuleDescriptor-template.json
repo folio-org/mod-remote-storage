@@ -281,8 +281,7 @@
             "inventory.items.collection.get",
             "users.collection.get",
             "inventory-storage.service-points.item.get",
-            "circulation.requests.queue.collection.get",
-            "inventory-storage.locations.item.get"
+            "circulation.requests.queue.collection.get"
           ]
         }
       ]

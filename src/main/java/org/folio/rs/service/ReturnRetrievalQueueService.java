@@ -16,7 +16,7 @@ import javax.persistence.criteria.Predicate;
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.client.ServicePointsClient;
 import org.folio.rs.client.UsersClient;
-import org.folio.rs.domain.dto.FilterData;
+import org.folio.rs.domain.dto.AccessionFilterData;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.PickupServicePoint;
 import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
@@ -56,9 +56,9 @@ public class ReturnRetrievalQueueService {
   private final ServicePointsClient servicePointsClient;
 
 
-  public RetrievalQueues getRetrievals(FilterData filterData) {
-    var queueRecords = returnRetrievalQueueRepository.findAll(getCriteriaSpecification(filterData),
-        new OffsetRequest(filterData.getOffset(), filterData.getLimit(), Sort.unsorted()));
+  public RetrievalQueues getRetrievals(AccessionFilterData accessionFilterData) {
+    var queueRecords = returnRetrievalQueueRepository.findAll(getCriteriaSpecification(accessionFilterData),
+        new OffsetRequest(accessionFilterData.getOffset(), accessionFilterData.getLimit(), Sort.unsorted()));
     return returnRetrievalQueueMapper.mapEntitiesToRetrievalQueueCollection(queueRecords);
   }
 
@@ -110,23 +110,23 @@ public class ReturnRetrievalQueueService {
     return servicePointsClient.getServicePoint(pickupServicePointId);
   }
 
-  private Specification<ReturnRetrievalQueueRecord> getCriteriaSpecification(FilterData filterData) {
+  private Specification<ReturnRetrievalQueueRecord> getCriteriaSpecification(AccessionFilterData accessionFilterData) {
     return (rec, criteriaQuery, builder) -> {
       final Collection<Predicate> predicates = new ArrayList<>();
-      if (Boolean.TRUE.equals(filterData.getIsPresented())) {
+      if (Boolean.TRUE.equals(accessionFilterData.getIsPresented())) {
         predicates.add(builder.isNotNull(rec.get(RETRIEVED_DATE_TIME)));
       }
-      if (Boolean.FALSE.equals(filterData.getIsPresented())) {
+      if (Boolean.FALSE.equals(accessionFilterData.getIsPresented())) {
         predicates.add(builder.isNull(rec.get(RETRIEVED_DATE_TIME)));
       }
-      if (Objects.nonNull(filterData.getStorageId())) {
-        predicates.add(builder.equal(rec.get(REMOTE_STORAGE_ID), stringToUUIDSafe(filterData.getStorageId())));
+      if (Objects.nonNull(accessionFilterData.getStorageId())) {
+        predicates.add(builder.equal(rec.get(REMOTE_STORAGE_ID), stringToUUIDSafe(accessionFilterData.getStorageId())));
       }
-      if (Objects.nonNull(filterData.getCreateDate())) {
-        predicates.add(builder.equal(rec.get(REQUEST_DATE_TIME), LocalDateTime.parse(filterData.getCreateDate())));
+      if (Objects.nonNull(accessionFilterData.getCreateDate())) {
+        predicates.add(builder.equal(rec.get(REQUEST_DATE_TIME), LocalDateTime.parse(accessionFilterData.getCreateDate())));
       }
-      if (Objects.nonNull(filterData.getCreateDate())) {
-        predicates.add(builder.equal(rec.get(REQUEST_DATE_TIME), LocalDateTime.parse(filterData.getCreateDate())));
+      if (Objects.nonNull(accessionFilterData.getCreateDate())) {
+        predicates.add(builder.equal(rec.get(REQUEST_DATE_TIME), LocalDateTime.parse(accessionFilterData.getCreateDate())));
       }
       return builder.and(predicates.toArray(new Predicate[0]));
     };

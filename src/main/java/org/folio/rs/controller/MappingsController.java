@@ -4,8 +4,10 @@ import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.rs.domain.dto.LocationMappingFilterData;
 import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.RemoteLocationConfigurationMappings;
 import org.folio.rs.rest.resource.MappingsApi;
@@ -37,9 +39,10 @@ public class MappingsController implements MappingsApi {
   }
 
   @Override
-  public ResponseEntity<RemoteLocationConfigurationMappings> getMappings(@Min(0) @Max(2147483647) @Valid Integer offset,
-    @Min(0) @Max(2147483647) @Valid Integer limit, @Valid String query) {
-    var mappings = locationMappingsService.getRemoteLocationConfigurationMappings(offset, limit);
+  public ResponseEntity<RemoteLocationConfigurationMappings> getMappings(@Valid String finalLocationId,
+    @Valid  String storageId, @Min(0) @Max(2147483647) @Valid Integer offset,
+    @Min(0) @Max(2147483647) @Valid Integer limit) {
+    var mappings = locationMappingsService.getRemoteLocationConfigurationMapping(buildFilterData(finalLocationId, storageId, offset, limit));
     return new ResponseEntity<>(mappings, HttpStatus.OK);
   }
 
@@ -52,5 +55,16 @@ public class MappingsController implements MappingsApi {
   @ExceptionHandler({EmptyResultDataAccessException.class, EntityNotFoundException.class})
   public ResponseEntity<String> handleNotFoundExceptions() {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(MAPPING_NOT_FOUND);
+  }
+
+  private LocationMappingFilterData buildFilterData(String finalLocationId, String remoteConfigurationId,
+    Integer offset, Integer limit) {
+    return LocationMappingFilterData
+      .builder()
+      .finalLocationId(finalLocationId)
+      .remoteStorageId(remoteConfigurationId)
+      .offset(offset)
+      .limit(limit)
+      .build();
   }
 }

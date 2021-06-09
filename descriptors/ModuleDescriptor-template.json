@@ -156,7 +156,7 @@
         },
         {
           "methods": ["DELETE"],
-          "pathPattern": "/remote-storage/extended-mappings/{finalLocationId}",
+          "pathPattern": "/remote-storage/extended-mappings",
           "permissionsRequired": [
             "remote-storage.extended-mappings.item.delete"
           ]

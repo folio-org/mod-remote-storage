@@ -8,13 +8,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Objects;
-import java.util.UUID;
 
 import org.folio.rs.TestBase;
+import org.folio.rs.domain.dto.LocationMappingFilterData;
+import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.ReturnItemResponse;
-import org.folio.rs.domain.entity.RemoteLocationConfigurationMappingEntity;
-import org.folio.rs.repository.RemoteLocationConfigurationMappingsRepository;
 import org.folio.rs.repository.ReturnRetrievalQueueRepository;
+import org.folio.rs.service.LocationMappingsService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,22 +33,21 @@ public class ReturnItemTest extends TestBase {
   private String errorCheckInUrl;
 
   @Autowired
-  private RemoteLocationConfigurationMappingsRepository mappingsRepository;
+  private LocationMappingsService locationMappingsService;
   @Autowired
   private ReturnRetrievalQueueRepository returnRetrievalQueueRepository;
 
   @BeforeEach
   void prepare() {
-    var entity = RemoteLocationConfigurationMappingEntity.of(UUID.fromString(FOLIO_LOCATION_ID),
-      UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID));
-    mappingsRepository.save(entity);
+    locationMappingsService.postRemoteLocationConfigurationMapping(new RemoteLocationConfigurationMapping()
+      .folioLocationId(FOLIO_LOCATION_ID).configurationId(REMOTE_STORAGE_CONFIGURATION_ID));
     checkInUrl = String.format(RETURN_URL, okapiPort, REMOTE_STORAGE_CONFIGURATION_ID);
     errorCheckInUrl = String.format(RETURN_URL, okapiPort, REMOTE_STORAGE_ERROR_CONFIGURATION_ID);
   }
 
   @AfterEach
   void clear() {
-    mappingsRepository.deleteById(UUID.fromString(FOLIO_LOCATION_ID));
+    locationMappingsService.deleteMappingById(LocationMappingFilterData.builder().finalLocationId(FOLIO_LOCATION_ID).build());
     returnRetrievalQueueRepository.deleteAll();
   }
 

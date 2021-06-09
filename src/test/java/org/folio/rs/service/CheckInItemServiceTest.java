@@ -5,6 +5,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,7 +18,7 @@ import org.folio.rs.domain.dto.FolioLocation;
 import org.folio.rs.domain.entity.RemoteLocationConfigurationMappingEntity;
 import org.folio.rs.domain.entity.ReturnRetrievalQueueRecord;
 import org.folio.rs.error.CheckInException;
-import org.folio.rs.repository.RemoteLocationConfigurationMappingsRepository;
+import org.folio.rs.repository.ExtendedRemoteLocationConfigurationMappingsRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,7 @@ public class CheckInItemServiceTest {
   @Mock
   private CirculationClient circulationClient;
   @Mock
-  private RemoteLocationConfigurationMappingsRepository mappingsRepository;
+  private ExtendedRemoteLocationConfigurationMappingsRepository mappingsRepository;
   @Mock
   private LocationClient locationClient;
   @Mock
@@ -56,7 +57,7 @@ public class CheckInItemServiceTest {
 
   @BeforeEach
   public void prepare() {
-    entity = RemoteLocationConfigurationMappingEntity.of(UUID.fromString(FOLIO_LOCATION_ID), UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID));
+    entity = RemoteLocationConfigurationMappingEntity.of(UUID.fromString(FOLIO_LOCATION_ID), UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID), Collections.emptySet());
     folioLocation = FolioLocation.of(FOLIO_LOCATION_ID, Strings.EMPTY, PRIMARY_SERVICE_POINT);
     returnRetrievalQueueRecord = ReturnRetrievalQueueRecord.builder().id(UUID.randomUUID()).holdId(HOLD_ID).itemBarcode(ITEM_BARCODE).build();
     checkInItem = new CheckInItem();

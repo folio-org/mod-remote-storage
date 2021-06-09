@@ -37,13 +37,13 @@ API provides the following URLs for working with mappings between Folio location
 
 API provides the following URLs for working with extended mappings (remote (final) locations, remote storage configurations and original locations):
 
-|  Method | URL| Permissions  | Description  | 
-|---|---|---|---|
-| POST | /remote-storage/extended-mappings | remote-storage.extended-mappings.item.post | Creates new or updates an existing extended location mapping |
-| DELETE | /remote-storage/extended-mappings/{finalLocationId} | remote-storage.extended-mappings.item.delete | Deletes extended location mapping by Folio (final) location id |
-| GET | /remote-storage/extended-mappings | remote-storage.configurations.extended-mappings.get   | Retrieves all extended location mappings |
-| GET | /remote-storage/extended-mappings/{finalLocationId} | remote-storage.extended-mappings.item.get | Retrieves an extended location mapping by Folio (final) location id |
-| GET | /remote-storage/extended-mappings/locations | remote-storage.extended-mappings-locations.collection.get   | Retrieves all original locations with corresponding final (remote) locations, if they exist |
+|  Method | URL| Query parameters| Permissions  | Description  | 
+|---|---|---|---|---|
+| POST | /remote-storage/extended-mappings | - | remote-storage.extended-mappings.item.post | Creates new or updates an existing extended location mapping |
+| DELETE | /remote-storage/extended-mappings | Required either `originalLocationId` or `finalLocationId` | remote-storage.extended-mappings.item.delete | Deletes extended location mapping (with all associated original locations) by `finalLocationId` or original location only by `originalLocationId`|
+| GET | /remote-storage/extended-mappings | Optional: `finalLocationId`, `remoteConfigurationId` or `originalLocationId` | remote-storage.configurations.extended-mappings.get   | Retrieves all extended location mappings (if no query parameters specified), or by query parameter |
+| GET | /remote-storage/extended-mappings/{finalLocationId} | - | remote-storage.extended-mappings.item.get | Retrieves an extended location mapping by Folio (final) location id |
+| GET | /remote-storage/extended-mappings/locations | - | remote-storage.extended-mappings-locations.collection.get   | Retrieves all original locations with corresponding final (remote) locations, if they exist |
 
 API provides the following URL to retrieve by check-in and return item using barcode:
 

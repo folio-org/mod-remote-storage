@@ -2,6 +2,8 @@ package org.folio.rs.service;
 
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
+import static org.folio.rs.mapper.RemoteLocationConfigurationMappingsMapper.mapEntityToMappingDto;
+import static org.folio.rs.mapper.RemoteLocationConfigurationMappingsMapper.mapMappingDtoToEntity;
 import static org.folio.rs.util.MapperUtils.stringToUUIDSafe;
 
 import java.util.ArrayList;
@@ -15,18 +17,15 @@ import org.folio.rs.domain.dto.ExtendedRemoteLocationConfigurationMappings;
 import org.folio.rs.domain.dto.LocationMappingFilterData;
 import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.RemoteLocationConfigurationMappings;
-import org.folio.rs.domain.entity.ExtendedRemoteLocationConfigurationMappingEntity;
-import org.folio.rs.domain.entity.ExtendedRemoteLocationConfigurationMappingEntity_;
+import org.folio.rs.domain.entity.RemoteLocationConfigurationMappingEntity;
 import org.folio.rs.domain.entity.OriginalLocation;
 import org.folio.rs.domain.entity.OriginalLocation_;
-import org.folio.rs.domain.entity.RemoteLocationConfigurationMappingEntity;
 import org.folio.rs.domain.entity.RemoteLocationConfigurationMappingEntity_;
 import org.folio.rs.mapper.RemoteLocationConfigurationMappingsMapper;
-import org.folio.rs.mapper.ExtendedRemoteLocationConfigurationMappingsMapper;
 import org.folio.rs.repository.ExtendedRemoteLocationConfigurationMappingsRepository;
 import org.folio.rs.repository.OriginalLocationsRepository;
-import org.folio.rs.repository.RemoteLocationConfigurationMappingsRepository;
 import org.folio.spring.data.OffsetRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -35,85 +34,89 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 import javax.persistence.criteria.Predicate;
+import javax.transaction.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Log4j2
 public class LocationMappingsService {
   public static final String MAPPINGS = "mappings";
-  private final RemoteLocationConfigurationMappingsRepository mappingsRepository;
-  private final RemoteLocationConfigurationMappingsMapper mappingsMapper;
   private final LocationClient locationClient;
   private final OriginalLocationsRepository originalLocationsRepository;
   private final ExtendedRemoteLocationConfigurationMappingsRepository extendedMappingsRepository;
 
   public RemoteLocationConfigurationMapping postRemoteLocationConfigurationMapping(RemoteLocationConfigurationMapping mapping) {
-    return mappingsMapper
-      .mapEntityToDto(mappingsRepository.save(mappingsMapper.mapDtoToEntity(mapping)));
+    return mapEntityToMappingDto(extendedMappingsRepository.save(mapMappingDtoToEntity(mapping)));
   }
 
-  public RemoteLocationConfigurationMappings getRemoteLocationConfigurationMapping(LocationMappingFilterData filterData) {
-    var entities = mappingsRepository.findAll(getMappingSpecification(filterData),
+  public RemoteLocationConfigurationMappings getRemoteLocationConfigurationMappings(LocationMappingFilterData filterData) {
+    var mappings = extendedMappingsRepository.findAll(getExtendedMappingSpecification(filterData),
       new OffsetRequest(filterData.getOffset(), filterData.getLimit(), Sort.unsorted()));
-    return mappingsMapper.mapEntitiesToRemoteLocationConfigurationMappingCollection(entities);
+    return RemoteLocationConfigurationMappingsMapper.mapEntitiesToMappingsDtoCollection(mappings);
   }
 
   public RemoteLocationConfigurationMapping getRemoteLocationConfigurationMapping(String folioLocationId) {
-    var id = UUID.fromString(folioLocationId);
-    return mappingsRepository.findById(id)
-      .map(mappingsMapper::mapEntityToDto)
+    return extendedMappingsRepository.findById(UUID.fromString(folioLocationId))
+      .map(RemoteLocationConfigurationMappingsMapper::mapEntityToMappingDto)
       .orElse(null);
   }
 
-  public RemoteLocationConfigurationMappings getRemoteLocationConfigurationMappings(Integer offset, Integer limit) {
-    var mappings = mappingsRepository.findAll(new OffsetRequest(offset, limit, Sort.unsorted()));
-    return mappingsMapper.mapEntitiesToRemoteLocationConfigurationMappingCollection(mappings);
-  }
-
-  public void deleteMappingById(String folioLocationId) {
-    var id = UUID.fromString(folioLocationId);
-    mappingsRepository.deleteById(id);
+  @Transactional(Transactional.TxType.REQUIRES_NEW)
+  public void deleteMappingById(LocationMappingFilterData filterData) {
+    ofNullable(filterData.getFinalLocationId()).ifPresent(id -> extendedMappingsRepository.deleteById(UUID.fromString(id)));
+    ofNullable(filterData.getOriginalLocationId()).ifPresent(id -> originalLocationsRepository.deleteByOriginalLocationId(UUID.fromString(id)));
   }
 
   public ExtendedRemoteLocationConfigurationMapping postExtendedRemoteLocationConfigurationMapping(ExtendedRemoteLocationConfigurationMapping mapping) {
     var entity = extendedMappingsRepository.findById(UUID.fromString(mapping.getFinalLocationId()))
-      .map(m -> {
-        m.setRemoteConfigurationId(UUID.fromString(mapping.getRemoteConfigurationId()));
-        var locations = m.getOriginalLocations();
-        var originalLocation = new OriginalLocation();
-        originalLocation.setFinalLocationId(UUID.fromString(mapping.getFinalLocationId()));
-        originalLocation.setOriginalLocationId(UUID.fromString(mapping.getOriginalLocationId()));
-        locations.add(originalLocation);
-        m.setOriginalLocations(locations);
-        return extendedMappingsRepository.save(m);
-      })
-      .orElseGet(() -> extendedMappingsRepository.save(ExtendedRemoteLocationConfigurationMappingsMapper.mapDtoToEntity(mapping)));
+      .map(m -> extendedMappingsRepository.save(updateEntityValuesFromDto(m, mapping)))
+      .orElseGet(() -> extendedMappingsRepository.save(RemoteLocationConfigurationMappingsMapper.mapExtendedMappingDtoToEntity(mapping)));
     return new ExtendedRemoteLocationConfigurationMapping()
       .finalLocationId(entity.getFinalLocationId().toString())
       .remoteConfigurationId(entity.getRemoteConfigurationId().toString())
       .originalLocationId(mapping.getOriginalLocationId());
   }
 
+  private RemoteLocationConfigurationMappingEntity updateEntityValuesFromDto(RemoteLocationConfigurationMappingEntity entity,
+    ExtendedRemoteLocationConfigurationMapping dto) {
+    entity.setRemoteConfigurationId(UUID.fromString(dto.getRemoteConfigurationId()));
+    var locations = entity.getOriginalLocations();
+    var originalLocation = new OriginalLocation();
+    originalLocation.setFinalLocationId(UUID.fromString(dto.getFinalLocationId()));
+    originalLocation.setOriginalLocationId(UUID.fromString(dto.getOriginalLocationId()));
+    locations.add(originalLocation);
+    entity.setOriginalLocations(locations);
+    return entity;
+  }
+
   public ExtendedRemoteLocationConfigurationMappings getExtendedRemoteLocationConfigurationMappings(LocationMappingFilterData filterData) {
-    var mappings = extendedMappingsRepository.findAll(getExtendedMappingSpecification(filterData),
+    var mappings = getExtendedRemoteLocationConfigurationMappingEntities(filterData);
+    return RemoteLocationConfigurationMappingsMapper.mapEntitiesToExtendedMappingsDtoCollection(mappings, filterData.getOriginalLocationId());
+  }
+
+  public Page<RemoteLocationConfigurationMappingEntity> getExtendedRemoteLocationConfigurationMappingEntities(LocationMappingFilterData filterData) {
+    return extendedMappingsRepository.findAll(getExtendedMappingSpecification(filterData),
       new OffsetRequest(filterData.getOffset(), filterData.getLimit(), Sort.unsorted()));
-    return ExtendedRemoteLocationConfigurationMappingsMapper.mapEntitiesToDtoCollection(mappings, filterData.getOriginalLocationId());
   }
 
   public ExtendedRemoteLocationConfigurationMappings getExtendedRemoteLocationConfigurationMappings(String finalLocationId) {
     return extendedMappingsRepository.findById(UUID.fromString(finalLocationId))
-      .map(ExtendedRemoteLocationConfigurationMappingsMapper::mapEntityToDtoCollection)
+      .map(RemoteLocationConfigurationMappingsMapper::mapEntityToExtendedMappingDtoCollection)
       .orElse(null);
   }
 
   public ExtendedRemoteLocationConfigurationMappings getExtendedRemoteLocationConfigurationMappingsLocations(LocationMappingFilterData filterData) {
+    var remoteIds = getRemoteLocationConfigurationMappings(LocationMappingFilterData.builder().build())
+      .getMappings().stream()
+      .map(RemoteLocationConfigurationMapping::getFolioLocationId)
+      .collect(Collectors.toSet());
     var mappings = locationClient.getLocations().getResult().stream()
+      .filter(folioLocation -> !remoteIds.contains(folioLocation.getId()))
       .filter(folioLocation -> isNull(filterData.getOriginalLocationId()) || filterData.getOriginalLocationId().equals(folioLocation.getId()))
       .map(folioLocation -> {
         var locationMappings = getExtendedRemoteLocationConfigurationMappings(LocationMappingFilterData
           .builder()
           .originalLocationId(folioLocation.getId())
-          .limit(Integer.MAX_VALUE)
           .build());
         return locationMappings.getMappings().isEmpty() ?
           new ExtendedRemoteLocationConfigurationMapping().originalLocationId(folioLocation.getId()) :
@@ -127,27 +130,16 @@ public class LocationMappingsService {
       .totalRecords(mappings.size());
   }
 
-  private Specification<RemoteLocationConfigurationMappingEntity> getMappingSpecification(LocationMappingFilterData filterData) {
-    return (rec, criteriaQuery, builder) -> {
-      final Collection<Predicate> predicates = new ArrayList<>();
-      ofNullable(filterData.getFinalLocationId())
-        .ifPresent(id -> predicates.add(builder.equal(rec.get(RemoteLocationConfigurationMappingEntity_.finalLocationId), stringToUUIDSafe(id))));
-      ofNullable(filterData.getRemoteStorageId())
-        .ifPresent(id -> predicates.add(builder.equal(rec.get(RemoteLocationConfigurationMappingEntity_.remoteConfigurationId), stringToUUIDSafe(id))));
-      return builder.and(predicates.toArray(new Predicate[0]));
-    };
-  }
-
-  private Specification<ExtendedRemoteLocationConfigurationMappingEntity> getExtendedMappingSpecification(LocationMappingFilterData filterData) {
+  private Specification<RemoteLocationConfigurationMappingEntity> getExtendedMappingSpecification(LocationMappingFilterData filterData) {
     return (root, criteriaQuery, builder) -> {
       final Collection<Predicate> predicates = new ArrayList<>();
       ofNullable(filterData.getFinalLocationId())
-        .ifPresent(id -> predicates.add(builder.equal(root.get(ExtendedRemoteLocationConfigurationMappingEntity_.finalLocationId), stringToUUIDSafe(id))));
+        .ifPresent(id -> predicates.add(builder.equal(root.get(RemoteLocationConfigurationMappingEntity_.finalLocationId), stringToUUIDSafe(id))));
       ofNullable(filterData.getRemoteStorageId())
-        .ifPresent(id -> predicates.add(builder.equal(root.get(ExtendedRemoteLocationConfigurationMappingEntity_.remoteConfigurationId), stringToUUIDSafe(id))));
+        .ifPresent(id -> predicates.add(builder.equal(root.get(RemoteLocationConfigurationMappingEntity_.remoteConfigurationId), stringToUUIDSafe(id))));
       ofNullable(filterData.getOriginalLocationId())
         .ifPresent(id -> {
-          var join = root.join(ExtendedRemoteLocationConfigurationMappingEntity_.originalLocations);
+          var join = root.join(RemoteLocationConfigurationMappingEntity_.originalLocations);
           var predicate = builder.equal(join.get(OriginalLocation_.originalLocationId), stringToUUIDSafe(id));
           criteriaQuery.distinct(true);
           predicates.add(predicate);

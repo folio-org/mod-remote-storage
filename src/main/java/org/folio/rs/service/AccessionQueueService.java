@@ -48,6 +48,7 @@ import org.folio.rs.domain.dto.ItemEffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.ItemMaterialType;
 import org.folio.rs.domain.dto.ItemPermanentLocation;
 import org.folio.rs.domain.dto.ItemsMove;
+import org.folio.rs.domain.dto.LocationMappingFilterData;
 import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
@@ -133,7 +134,7 @@ public class AccessionQueueService {
   }
 
   private RemoteLocationConfigurationMapping getLocationMapping(AccessionRequest accessionRequest) {
-    return locationMappingsService.getRemoteLocationConfigurationMappings(0, Integer.MAX_VALUE)
+    return locationMappingsService.getRemoteLocationConfigurationMappings(LocationMappingFilterData.builder().build())
       .getMappings().stream()
       .filter(mapping -> accessionRequest.getRemoteStorageId().equals(mapping.getConfigurationId()))
       .findFirst()

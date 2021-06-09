@@ -316,30 +316,6 @@ paths:
         - $ref: "#/components/parameters/trait_queryable_original_location_id"
         - $ref: "#/components/parameters/trait_pageable_offset"
         - $ref: "#/components/parameters/trait_pageable_limit"
-  /extended-mappings/{finalLocationId}:
-    get:
-      responses:
-        '200':
-          description: ""
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/extendedRemoteLocationConfigurationMappings"
-        '404':
-          description: Mapping not found
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: Mapping not found
-        '500':
-          description: Internal server error
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: Internal server error
-      operationId: getExtendedRemoteLocationConfigurationMappingsById
     delete:
       responses:
         '204':
@@ -364,6 +340,33 @@ paths:
                 type: string
                 example: Internal server error
       operationId: deleteExtendedRemoteLocationConfigurationMappingById
+      parameters:
+        - $ref: "#/components/parameters/trait_queryable_final_location_id"
+        - $ref: "#/components/parameters/trait_queryable_original_location_id"
+  /extended-mappings/{finalLocationId}:
+    get:
+      responses:
+        '200':
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/extendedRemoteLocationConfigurationMappings"
+        '404':
+          description: Mapping not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Mapping not found
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Internal server error
+      operationId: getExtendedRemoteLocationConfigurationMappingsById
     parameters:
       - name: finalLocationId
         in: path

@@ -13,7 +13,7 @@ import org.folio.rs.domain.dto.CheckInCirculationRequest;
 import org.folio.rs.domain.dto.CheckInItem;
 import org.folio.rs.domain.dto.CheckInItemByHoldId;
 import org.folio.rs.error.CheckInException;
-import org.folio.rs.repository.RemoteLocationConfigurationMappingsRepository;
+import org.folio.rs.repository.ExtendedRemoteLocationConfigurationMappingsRepository;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ import lombok.extern.log4j.Log4j2;
 public class CheckInItemService {
 
   private final CirculationClient circulationClient;
-  private final RemoteLocationConfigurationMappingsRepository mappingsRepository;
+  private final ExtendedRemoteLocationConfigurationMappingsRepository mappingsRepository;
   private final LocationClient locationClient;
   private final ReturnRetrievalQueueService returnRetrievalQueueService;
 

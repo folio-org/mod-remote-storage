@@ -53,16 +53,16 @@ public final class RemoteLocationConfigurationMappingsMapper {
       .collect(Collectors.toList());
     return new ExtendedRemoteLocationConfigurationMappings()
       .mappings(mappings)
-      .totalRecords((int)entities.getTotalElements());
+      .totalRecords((int) entities.getTotalElements());
   }
 
-  public static RemoteLocationConfigurationMappings mapEntitiesToMappingsDtoCollection(Iterable<RemoteLocationConfigurationMappingEntity> entities) {
+  public static RemoteLocationConfigurationMappings mapEntitiesToMappingsDtoCollection(Page<RemoteLocationConfigurationMappingEntity> entities) {
     var mappings = StreamSupport.stream(entities.spliterator(), false)
       .map(RemoteLocationConfigurationMappingsMapper::mapEntityToMappingDto)
       .collect(Collectors.toList());
     return new RemoteLocationConfigurationMappings()
       .mappings(mappings)
-      .totalRecords(mappings.size());
+      .totalRecords((int) entities.getTotalElements());
   }
 
   public static RemoteLocationConfigurationMapping mapEntityToMappingDto(RemoteLocationConfigurationMappingEntity entity) {

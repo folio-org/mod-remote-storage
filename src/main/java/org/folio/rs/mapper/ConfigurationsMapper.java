@@ -44,6 +44,6 @@ public interface ConfigurationsMapper {
   default StorageConfigurations mapEntitiesToRemoteConfigCollection(Page<Configuration> remoteStorageConfigurationList) {
     List<StorageConfiguration> remoteConfigList = mapEntitiesToDtos(remoteStorageConfigurationList);
     return new StorageConfigurations().configurations(remoteConfigList)
-      .totalRecords((int)remoteStorageConfigurationList.getTotalElements());
+      .totalRecords((int) remoteStorageConfigurationList.getTotalElements());
   }
 }

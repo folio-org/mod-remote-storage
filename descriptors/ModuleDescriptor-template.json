@@ -271,7 +271,7 @@
     },
     {
       "id": "remote-storage-event-handlers",
-      "version": "1.0",
+      "version": "1.1",
       "handlers": [
         {
           "methods": ["POST"],
@@ -280,7 +280,8 @@
           "modulePermissions": [
             "inventory.items.collection.get",
             "users.collection.get",
-            "inventory-storage.service-points.item.get"
+            "inventory-storage.service-points.item.get",
+            "circulation.requests.queue.collection.get"
           ]
         }
       ]

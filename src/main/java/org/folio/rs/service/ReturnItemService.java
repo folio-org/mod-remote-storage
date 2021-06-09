@@ -81,9 +81,6 @@ public class ReturnItemService {
         returnRetrievalQueueRepository.save(buildReturnRetrievalRecord(request, RequestType.REF, item, user, servicePointCode, locationMapping.getConfigurationId()));
       });
     }
-    var checkInItem = new CheckInItem();
-    checkInItem.setItemBarcode(itemBarcode);
-    checkInItemService.checkInItemByBarcode(locationMapping.getConfigurationId(), checkInItem);
     return itemReturnResponse;
   }
 

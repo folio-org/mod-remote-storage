@@ -8,6 +8,8 @@ import static org.folio.rs.util.MapperUtils.stringToUUIDSafe;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -79,13 +81,19 @@ public class LocationMappingsService {
 
   private RemoteLocationConfigurationMappingEntity updateEntityValuesFromDto(RemoteLocationConfigurationMappingEntity entity,
     ExtendedRemoteLocationConfigurationMapping dto) {
+    var existingOriginalLocationIds = entity.getOriginalLocations().stream()
+      .map(OriginalLocation::getOriginalLocationId)
+      .map(UUID::toString)
+      .collect(Collectors.toSet());
     entity.setRemoteConfigurationId(UUID.fromString(dto.getRemoteConfigurationId()));
     var locations = entity.getOriginalLocations();
-    var originalLocation = new OriginalLocation();
-    originalLocation.setFinalLocationId(UUID.fromString(dto.getFinalLocationId()));
-    originalLocation.setOriginalLocationId(UUID.fromString(dto.getOriginalLocationId()));
-    locations.add(originalLocation);
-    entity.setOriginalLocations(locations);
+    if (!existingOriginalLocationIds.contains(dto.getOriginalLocationId())) {
+      var originalLocation = new OriginalLocation();
+      originalLocation.setFinalLocationId(UUID.fromString(dto.getFinalLocationId()));
+      originalLocation.setOriginalLocationId(UUID.fromString(dto.getOriginalLocationId()));
+      locations.add(originalLocation);
+      entity.setOriginalLocations(locations);
+    }
     return entity;
   }
 
@@ -110,7 +118,7 @@ public class LocationMappingsService {
       .getMappings().stream()
       .map(RemoteLocationConfigurationMapping::getFolioLocationId)
       .collect(Collectors.toSet());
-    var mappings = locationClient.getLocations().getResult().stream()
+    var mappings = locationClient.getLocations(0, Integer.MAX_VALUE).getResult().stream()
       .filter(folioLocation -> !remoteIds.contains(folioLocation.getId()))
       .filter(folioLocation -> isNull(filterData.getOriginalLocationId()) || filterData.getOriginalLocationId().equals(folioLocation.getId()))
       .map(folioLocation -> {
@@ -119,15 +127,23 @@ public class LocationMappingsService {
           .originalLocationId(folioLocation.getId())
           .build());
         return locationMappings.getMappings().isEmpty() ?
-          new ExtendedRemoteLocationConfigurationMapping().originalLocationId(folioLocation.getId()) :
-          locationMappings.getMappings().get(0);
+          Collections.singletonList(new ExtendedRemoteLocationConfigurationMapping().originalLocationId(folioLocation.getId())) :
+          locationMappings.getMappings();
       })
+      .flatMap(List::stream)
       .filter(lm -> isNull(filterData.getRemoteStorageId()) || filterData.getRemoteStorageId().equals(lm.getRemoteConfigurationId()))
       .filter(lm -> isNull(filterData.getFinalLocationId()) || filterData.getFinalLocationId().equals(lm.getFinalLocationId()))
       .collect(Collectors.toList());
+
     return new ExtendedRemoteLocationConfigurationMappings()
-      .mappings(mappings)
+      .mappings(paginate(mappings, filterData.getOffset(), filterData.getLimit()))
       .totalRecords(mappings.size());
+  }
+
+  private List<ExtendedRemoteLocationConfigurationMapping> paginate(List<ExtendedRemoteLocationConfigurationMapping> mappings, int offset, int limit) {
+    var resOffset = Math.min(offset, mappings.size());
+    var resLimit = Math.min(resOffset + limit, mappings.size());
+    return mappings.subList(resOffset, resLimit);
   }
 
   private Specification<RemoteLocationConfigurationMappingEntity> getExtendedMappingSpecification(LocationMappingFilterData filterData) {

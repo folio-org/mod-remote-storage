@@ -38,7 +38,7 @@
     <postgresql.version>42.2.18</postgresql.version>
     <sonar.exclusions>src/main/java/org/folio/rs/domain/**, src/main/java/org/folio/rs/client/AuthnClient.java,
       src/main/java/org/folio/rs/config/properties/**, src/main/java/org/folio/rs/service/PubSubService.java, src/main/java/org/folio/rs/error/PubSubException.java </sonar.exclusions>
-    <remote-storage.yaml.file>${project.basedir}/src/main/resources/swagger.api/remote-storage.yaml</remote-storage.yaml.file>
+    <remote-storage.yaml.file>src/main/resources/swagger.api/remote-storage.yaml</remote-storage.yaml.file>
   </properties>
 
   <dependencies>

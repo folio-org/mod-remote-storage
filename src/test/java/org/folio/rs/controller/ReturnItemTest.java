@@ -47,7 +47,7 @@ public class ReturnItemTest extends TestBase {
 
   @AfterEach
   void clear() {
-    locationMappingsService.deleteMappingById(LocationMappingFilterData.builder().finalLocationId(FOLIO_LOCATION_ID).build());
+    locationMappingsService.deleteMappingById(FOLIO_LOCATION_ID);
     returnRetrievalQueueRepository.deleteAll();
   }
 

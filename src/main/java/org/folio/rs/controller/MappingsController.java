@@ -47,8 +47,8 @@ public class MappingsController implements MappingsApi {
   }
 
   @Override
-  public ResponseEntity<String> deleteMappingById(String mappingId) {
-    locationMappingsService.deleteMappingById(LocationMappingFilterData.builder().finalLocationId(mappingId).build());
+  public ResponseEntity<String> deleteMappingById(String finalLocationId) {
+    locationMappingsService.deleteMappingById(finalLocationId);
     return ResponseEntity.noContent().build();
   }
 

@@ -167,9 +167,9 @@ public class LocationMappingsService {
   }
 
   private List<ExtendedRemoteLocationConfigurationMapping> paginate(List<ExtendedRemoteLocationConfigurationMapping> mappings, int offset, int limit) {
-    var _offset = Math.min(offset, mappings.size());
-    var _limit = Math.min(_offset + limit, mappings.size());
-    return mappings.subList(_offset, _limit);
+    var o = Math.min(offset, mappings.size());
+    var l = Math.min(o + limit, mappings.size());
+    return mappings.subList(o, l);
   }
 
   private Specification<RemoteLocationConfigurationMappingEntity> getExtendedMappingSpecification(LocationMappingFilterData filterData) {

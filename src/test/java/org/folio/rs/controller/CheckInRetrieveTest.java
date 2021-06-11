@@ -66,8 +66,7 @@ public class CheckInRetrieveTest extends TestBase {
 
   @AfterEach
   void clear() {
-//    mappingsRepository.deleteById(UUID.fromString(FINAL_LOCATION_ID));
-    locationMappingsService.deleteMappingById(LocationMappingFilterData.builder().finalLocationId(FINAL_LOCATION_ID).build());
+    locationMappingsService.deleteMappingById(FINAL_LOCATION_ID);
   }
 
   @Test

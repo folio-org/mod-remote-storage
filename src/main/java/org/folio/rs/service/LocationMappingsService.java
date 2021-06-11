@@ -63,38 +63,64 @@ public class LocationMappingsService {
       .orElse(null);
   }
 
+  public void deleteMappingById(String finalLocationId) {
+    extendedMappingsRepository.deleteById(UUID.fromString(finalLocationId));
+  }
+
   @Transactional(Transactional.TxType.REQUIRES_NEW)
-  public void deleteMappingById(LocationMappingFilterData filterData) {
-    ofNullable(filterData.getFinalLocationId()).ifPresent(id -> extendedMappingsRepository.deleteById(UUID.fromString(id)));
-    ofNullable(filterData.getOriginalLocationId()).ifPresent(id -> originalLocationsRepository.deleteByOriginalLocationId(UUID.fromString(id)));
+  public void deleteOriginalLocationByIdAndFinalLocationId(String finalLocationId, String originalLocationId) {
+    originalLocationsRepository.deleteByFinalLocationIdAndAndOriginalLocationId(UUID.fromString(finalLocationId), UUID.fromString(originalLocationId));
   }
 
   public ExtendedRemoteLocationConfigurationMapping postExtendedRemoteLocationConfigurationMapping(ExtendedRemoteLocationConfigurationMapping mapping) {
-    var entity = extendedMappingsRepository.findById(UUID.fromString(mapping.getFinalLocationId()))
-      .map(m -> extendedMappingsRepository.save(updateEntityValuesFromDto(m, mapping)))
-      .orElseGet(() -> extendedMappingsRepository.save(RemoteLocationConfigurationMappingsMapper.mapExtendedMappingDtoToEntity(mapping)));
+    var existingEntity = extendedMappingsRepository.findById((UUID.fromString(mapping.getFinalLocationId())));
+    RemoteLocationConfigurationMappingEntity entity;
+    if (existingEntity.isPresent()) {
+      entity = extendedMappingsRepository.save(buildNewMappingEntity(existingEntity.get(), mapping));
+    } else {
+      var existingEntities = getExtendedRemoteLocationConfigurationMappingEntities(LocationMappingFilterData
+        .builder()
+        .originalLocationId(mapping.getOriginalLocationId())
+        .remoteStorageId(mapping.getRemoteConfigurationId())
+        .build())
+        .getContent();
+      if (existingEntities.isEmpty()) {
+        entity = extendedMappingsRepository.save(RemoteLocationConfigurationMappingsMapper.mapExtendedMappingDtoToEntity(mapping));
+      } else {
+        entity = extendedMappingsRepository.save(buildNewMappingEntity(existingEntities.get(0), mapping));
+        extendedMappingsRepository.delete(existingEntities.get(0));
+      }
+    }
     return new ExtendedRemoteLocationConfigurationMapping()
       .finalLocationId(entity.getFinalLocationId().toString())
       .remoteConfigurationId(entity.getRemoteConfigurationId().toString())
       .originalLocationId(mapping.getOriginalLocationId());
   }
 
-  private RemoteLocationConfigurationMappingEntity updateEntityValuesFromDto(RemoteLocationConfigurationMappingEntity entity,
+  private RemoteLocationConfigurationMappingEntity buildNewMappingEntity(RemoteLocationConfigurationMappingEntity entity,
     ExtendedRemoteLocationConfigurationMapping dto) {
-    var existingOriginalLocationIds = entity.getOriginalLocations().stream()
+
+    var newEntity = new RemoteLocationConfigurationMappingEntity();
+
+    newEntity.setFinalLocationId(UUID.fromString(dto.getFinalLocationId()));
+    newEntity.setRemoteConfigurationId(UUID.fromString(dto.getRemoteConfigurationId()));
+
+    var locations = entity.getOriginalLocations();
+    var existingOriginalLocationIds = locations.stream()
       .map(OriginalLocation::getOriginalLocationId)
       .map(UUID::toString)
       .collect(Collectors.toSet());
-    entity.setRemoteConfigurationId(UUID.fromString(dto.getRemoteConfigurationId()));
-    var locations = entity.getOriginalLocations();
     if (!existingOriginalLocationIds.contains(dto.getOriginalLocationId())) {
       var originalLocation = new OriginalLocation();
       originalLocation.setFinalLocationId(UUID.fromString(dto.getFinalLocationId()));
       originalLocation.setOriginalLocationId(UUID.fromString(dto.getOriginalLocationId()));
       locations.add(originalLocation);
-      entity.setOriginalLocations(locations);
+      newEntity.setOriginalLocations(locations);
+    } else {
+      newEntity.setOriginalLocations(entity.getOriginalLocations());
     }
-    return entity;
+
+    return newEntity;
   }
 
   public ExtendedRemoteLocationConfigurationMappings getExtendedRemoteLocationConfigurationMappings(LocationMappingFilterData filterData) {
@@ -141,9 +167,9 @@ public class LocationMappingsService {
   }
 
   private List<ExtendedRemoteLocationConfigurationMapping> paginate(List<ExtendedRemoteLocationConfigurationMapping> mappings, int offset, int limit) {
-    var resOffset = Math.min(offset, mappings.size());
-    var resLimit = Math.min(resOffset + limit, mappings.size());
-    return mappings.subList(resOffset, resLimit);
+    var o = Math.min(offset, mappings.size());
+    var l = Math.min(o + limit, mappings.size());
+    return mappings.subList(o, l);
   }
 
   private Specification<RemoteLocationConfigurationMappingEntity> getExtendedMappingSpecification(LocationMappingFilterData filterData) {

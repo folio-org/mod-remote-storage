@@ -8,5 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface OriginalLocationsRepository extends JpaRepository<OriginalLocation, UUID> {
-  void deleteByOriginalLocationId(UUID uuid);
+  void deleteByFinalLocationIdAndAndOriginalLocationId(UUID finalLocationId, UUID originalLocationId);
 }

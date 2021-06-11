@@ -47,8 +47,14 @@ public class ExtendedMappingsController implements ExtendedMappingsApi {
   }
 
   @Override
-  public ResponseEntity<String> deleteExtendedRemoteLocationConfigurationMappingById(@Valid String finalLocationId, @Valid String originalLocationId) {
-    locationMappingsService.deleteMappingById(LocationMappingFilterData.builder().finalLocationId(finalLocationId).originalLocationId(originalLocationId).build());
+  public ResponseEntity<String> deleteExtendedRemoteLocationConfigurationMappingById(String finalLocationId) {
+    locationMappingsService.deleteMappingById(finalLocationId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<String> deleteOriginalLocationByIdAndFinalLocationId(String finalLocationId, String originalLocationId) {
+    locationMappingsService.deleteOriginalLocationByIdAndFinalLocationId(finalLocationId, originalLocationId);
     return ResponseEntity.noContent().build();
   }
 

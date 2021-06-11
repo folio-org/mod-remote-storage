@@ -9,7 +9,6 @@ CREATE TABLE IF NOT EXISTS remote_storage_configurations
     status_url          VARCHAR(256),
     accession_delay     INT,
     accession_time_unit VARCHAR(50),
-    returning_workflow_details VARCHAR(256),
     created_date        TIMESTAMP default now(),
     created_by_user_id  UUID,
     created_by_username VARCHAR(100),

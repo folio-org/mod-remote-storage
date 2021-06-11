@@ -4,7 +4,6 @@ import org.folio.rs.domain.dto.ExtendedRemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.ExtendedRemoteLocationConfigurationMappings;
 import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.RemoteLocationConfigurationMappings;
-import org.folio.rs.domain.entity.OriginalLocation;
 import org.folio.rs.domain.entity.RemoteLocationConfigurationMappingEntity;
 import org.springframework.data.domain.Page;
 
@@ -32,8 +31,7 @@ public final class RemoteLocationConfigurationMappingsMapper {
     return   RemoteLocationConfigurationMappingEntity.of(
       UUID.fromString(mapping.getFinalLocationId()),
       UUID.fromString(mapping.getRemoteConfigurationId()),
-      Set.of(OriginalLocation.of(null, UUID.fromString(mapping.getFinalLocationId()),
-        UUID.fromString(mapping.getOriginalLocationId())))
+      Set.of(UUID.fromString(mapping.getOriginalLocationId()))
     );
   }
 
@@ -72,16 +70,16 @@ public final class RemoteLocationConfigurationMappingsMapper {
   }
 
   private static List<ExtendedRemoteLocationConfigurationMapping> mapEntityToExtendedMappingDtoList(RemoteLocationConfigurationMappingEntity entity) {
-    if (entity.getOriginalLocations().isEmpty()) {
+    if (entity.getOriginalLocationIds().isEmpty()) {
       return Collections.singletonList(new ExtendedRemoteLocationConfigurationMapping()
         .finalLocationId(entity.getFinalLocationId().toString())
         .remoteConfigurationId(entity.getRemoteConfigurationId().toString()));
     }
-    return entity.getOriginalLocations().stream()
+    return entity.getOriginalLocationIds().stream()
       .map(l -> new ExtendedRemoteLocationConfigurationMapping()
         .finalLocationId(entity.getFinalLocationId().toString())
         .remoteConfigurationId(entity.getRemoteConfigurationId().toString())
-        .originalLocationId(l.getOriginalLocationId().toString()))
+        .originalLocationId(l.toString()))
       .collect(Collectors.toList());
   }
 }

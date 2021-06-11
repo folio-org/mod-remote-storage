@@ -203,7 +203,7 @@ paths:
       operationId: getMappings
       parameters:
         - $ref: "#/components/parameters/trait_queryable_final_location_id"
-        - $ref: "#/components/parameters/trait_queryable_storage_id"
+        - $ref: "#/components/parameters/trait_queryable_configuration_id"
         - $ref: "#/components/parameters/trait_pageable_offset"
         - $ref: "#/components/parameters/trait_pageable_limit"
   /mappings/{folioLocationId}:
@@ -312,7 +312,7 @@ paths:
       operationId: getExtendedRemoteLocationConfigurationMappings
       parameters:
         - $ref: "#/components/parameters/trait_queryable_final_location_id"
-        - $ref: "#/components/parameters/trait_queryable_storage_id"
+        - $ref: "#/components/parameters/trait_queryable_configuration_id"
         - $ref: "#/components/parameters/trait_queryable_original_location_id"
         - $ref: "#/components/parameters/trait_pageable_offset"
         - $ref: "#/components/parameters/trait_pageable_limit"
@@ -340,30 +340,6 @@ paths:
                 type: string
                 example: Internal server error
       operationId: getExtendedRemoteLocationConfigurationMappingsById
-    delete:
-      responses:
-        '204':
-          description: No content
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: No content
-        '404':
-          description: Mapping not found
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: Mapping not found
-        '500':
-          description: Internal server error
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: Internal server error
-      operationId: deleteExtendedRemoteLocationConfigurationMappingById
     parameters:
       - name: finalLocationId
         in: path
@@ -427,7 +403,7 @@ paths:
       operationId: getExtendedRemoteLocationConfigurationMappingsLocations
       parameters:
         - $ref: "#/components/parameters/trait_queryable_final_location_id"
-        - $ref: "#/components/parameters/trait_queryable_storage_id"
+        - $ref: "#/components/parameters/trait_queryable_configuration_id"
         - $ref: "#/components/parameters/trait_queryable_original_location_id"
         - $ref: "#/components/parameters/trait_pageable_offset"
         - $ref: "#/components/parameters/trait_pageable_limit"
@@ -501,7 +477,7 @@ paths:
       operationId: getAccessions
       parameters:
         - $ref: "#/components/parameters/trait_queryable_accessioned"
-        - $ref: "#/components/parameters/trait_queryable_storage_id"
+        - $ref: "#/components/parameters/trait_queryable_configuration_id"
         - $ref: "#/components/parameters/trait_queryable_created_date"
         - $ref: "#/components/parameters/trait_pageable_offset"
         - $ref: "#/components/parameters/trait_pageable_limit"
@@ -578,7 +554,7 @@ paths:
       operationId: getRetrievals
       parameters:
         - $ref: "#/components/parameters/trait_queryable_retrieved"
-        - $ref: "#/components/parameters/trait_queryable_storage_id"
+        - $ref: "#/components/parameters/trait_queryable_configuration_id"
         - $ref: "#/components/parameters/trait_queryable_created_date"
         - $ref: "#/components/parameters/trait_pageable_offset"
         - $ref: "#/components/parameters/trait_pageable_limit"
@@ -840,10 +816,10 @@ components:
       description: Original location id
       schema:
         type: string
-    trait_queryable_storage_id:
-      name: remoteStorageId
+    trait_queryable_configuration_id:
+      name: remoteConfigurationId
       in: query
-      description: Remote storage id
+      description: Remote storage configuration id
       schema:
         type: string
     trait_queryable_accessioned:

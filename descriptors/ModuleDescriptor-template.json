@@ -156,13 +156,6 @@
         },
         {
           "methods": ["DELETE"],
-          "pathPattern": "/remote-storage/extended-mappings/{finalLocationId}",
-          "permissionsRequired": [
-            "remote-storage.extended-mappings.item.delete"
-          ]
-        },
-        {
-          "methods": ["DELETE"],
           "pathPattern": "/remote-storage/extended-mappings/{finalLocationId}/{originalLocationId}",
           "permissionsRequired": [
             "remote-storage.extended-mappings.item.delete"

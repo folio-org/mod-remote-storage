@@ -40,9 +40,9 @@ public class MappingsController implements MappingsApi {
 
   @Override
   public ResponseEntity<RemoteLocationConfigurationMappings> getMappings(@Valid String finalLocationId,
-    @Valid  String storageId, @Min(0) @Max(2147483647) @Valid Integer offset,
+    @Valid  String remoteConfigurationId, @Min(0) @Max(2147483647) @Valid Integer offset,
     @Min(0) @Max(2147483647) @Valid Integer limit) {
-    var mappings = locationMappingsService.getRemoteLocationConfigurationMappings(buildFilterData(finalLocationId, storageId, offset, limit));
+    var mappings = locationMappingsService.getRemoteLocationConfigurationMappings(buildFilterData(finalLocationId, remoteConfigurationId, offset, limit));
     return new ResponseEntity<>(mappings, HttpStatus.OK);
   }
 
@@ -62,7 +62,7 @@ public class MappingsController implements MappingsApi {
     return LocationMappingFilterData
       .builder()
       .finalLocationId(finalLocationId)
-      .remoteStorageId(remoteConfigurationId)
+      .remoteConfigurationId(remoteConfigurationId)
       .offset(offset)
       .limit(limit)
       .build();

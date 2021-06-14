@@ -19,9 +19,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
-import static java.util.Objects.isNull;
-import static java.util.Optional.ofNullable;
-
 @Log4j2
 @Controller
 @RequiredArgsConstructor
@@ -50,8 +47,14 @@ public class ExtendedMappingsController implements ExtendedMappingsApi {
   }
 
   @Override
-  public ResponseEntity<String> deleteExtendedRemoteLocationConfigurationMappingById(String mappingId) {
-    locationMappingsService.deleteMappingById(mappingId);
+  public ResponseEntity<String> deleteExtendedRemoteLocationConfigurationMappingById(String finalLocationId) {
+    locationMappingsService.deleteMappingById(finalLocationId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<String> deleteOriginalLocationByIdAndFinalLocationId(String finalLocationId, String originalLocationId) {
+    locationMappingsService.deleteOriginalLocationByIdAndFinalLocationId(finalLocationId, originalLocationId);
     return ResponseEntity.noContent().build();
   }
 

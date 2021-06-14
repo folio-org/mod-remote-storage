@@ -135,7 +135,7 @@ public class AccessionQueueServiceTest extends TestBase {
     accessionQueueRepository.save(createBaseAccessionQueueRecord());
     accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID)));
 
-    ResponseEntity<AccessionQueues> responseEntity = get(formattedAccessionUrl +"?remoteConfigurationId=" + REMOTE_STORAGE_ID, AccessionQueues.class);
+    ResponseEntity<AccessionQueues> responseEntity = get(formattedAccessionUrl +"?remoteStorageConfigurationId=" + REMOTE_STORAGE_ID, AccessionQueues.class);
     assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().get(0).getRemoteStorageId(), equalTo(REMOTE_STORAGE_ID));
     assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(1));
     assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(1));

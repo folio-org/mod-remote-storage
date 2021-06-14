@@ -68,7 +68,7 @@ public class CheckInItemServiceTest {
 
   @Test
   void testCheckInItemByBarcode() {
-    when(mappingsRepository.findByRemoteConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
+    when(mappingsRepository.findByRemoteStorageConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
       .thenReturn(Optional.of(entity));
     when(locationClient.getLocation(FOLIO_LOCATION_ID))
       .thenReturn(folioLocation);
@@ -80,7 +80,7 @@ public class CheckInItemServiceTest {
 
   @Test
   void testCheckInItemByHoldId() {
-    when(mappingsRepository.findByRemoteConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
+    when(mappingsRepository.findByRemoteStorageConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
       .thenReturn(Optional.of(entity));
     when(locationClient.getLocation(FOLIO_LOCATION_ID))
       .thenReturn(folioLocation);
@@ -95,7 +95,7 @@ public class CheckInItemServiceTest {
 
   @Test
   void testCheckInItemByBarcodeIfLocationNotExistInDataBase() {
-    when(mappingsRepository.findByRemoteConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
+    when(mappingsRepository.findByRemoteStorageConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
       .thenReturn(Optional.empty());
 
     Assertions.assertThrows(CheckInException.class,
@@ -106,7 +106,7 @@ public class CheckInItemServiceTest {
   void testCheckInItemByBarcodeIfLocationClientReturnEmptyPrimaryServicePoint() {
     var folioLocation = FolioLocation.of(FOLIO_LOCATION_ID, Strings.EMPTY, Strings.EMPTY);
 
-    when(mappingsRepository.findByRemoteConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
+    when(mappingsRepository.findByRemoteStorageConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
       .thenReturn(Optional.of(entity));
     when(locationClient.getLocation(FOLIO_LOCATION_ID))
       .thenReturn(folioLocation);

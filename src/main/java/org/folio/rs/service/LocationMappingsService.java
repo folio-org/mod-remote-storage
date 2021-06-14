@@ -80,7 +80,7 @@ public class LocationMappingsService {
 
     return new ExtendedRemoteLocationConfigurationMapping()
       .finalLocationId(entity.getFinalLocationId().toString())
-      .remoteConfigurationId(entity.getRemoteConfigurationId().toString())
+      .remoteConfigurationId(entity.getRemoteStorageConfigurationId().toString())
       .originalLocationId(mapping.getOriginalLocationId());
   }
 
@@ -88,7 +88,7 @@ public class LocationMappingsService {
     getExtendedRemoteLocationConfigurationMappingEntities(LocationMappingFilterData
       .builder()
       .originalLocationId(mapping.getOriginalLocationId())
-      .remoteConfigurationId(mapping.getRemoteConfigurationId())
+      .remoteStorageConfigurationId(mapping.getRemoteConfigurationId())
       .build())
       .getContent()
       .forEach(e -> {
@@ -101,7 +101,7 @@ public class LocationMappingsService {
 
   private RemoteLocationConfigurationMappingEntity updateEntityFromDto(RemoteLocationConfigurationMappingEntity entity,
     ExtendedRemoteLocationConfigurationMapping dto) {
-    entity.setRemoteConfigurationId(UUID.fromString(dto.getRemoteConfigurationId()));
+    entity.setRemoteStorageConfigurationId(UUID.fromString(dto.getRemoteConfigurationId()));
     var originalLocations = entity.getOriginalLocationIds();
     originalLocations.add(UUID.fromString(dto.getOriginalLocationId()));
     entity.setOriginalLocationIds(originalLocations);
@@ -142,7 +142,7 @@ public class LocationMappingsService {
           locationMappings.getMappings();
       })
       .flatMap(List::stream)
-      .filter(lm -> isNull(lm.getFinalLocationId()) || isNull(filterData.getRemoteConfigurationId()) || filterData.getRemoteConfigurationId().equals(lm.getRemoteConfigurationId()))
+      .filter(lm -> isNull(lm.getFinalLocationId()) || isNull(filterData.getRemoteStorageConfigurationId()) || filterData.getRemoteStorageConfigurationId().equals(lm.getRemoteConfigurationId()))
       .filter(lm -> isNull(lm.getFinalLocationId()) || isNull(filterData.getFinalLocationId()) || filterData.getFinalLocationId().equals(lm.getFinalLocationId()))
       .collect(Collectors.toList());
 
@@ -162,8 +162,8 @@ public class LocationMappingsService {
       final Collection<Predicate> predicates = new ArrayList<>();
       ofNullable(filterData.getFinalLocationId())
         .ifPresent(id -> predicates.add(builder.equal(root.get(RemoteLocationConfigurationMappingEntity_.finalLocationId), stringToUUIDSafe(id))));
-      ofNullable(filterData.getRemoteConfigurationId())
-        .ifPresent(id -> predicates.add(builder.equal(root.get(RemoteLocationConfigurationMappingEntity_.remoteConfigurationId), stringToUUIDSafe(id))));
+      ofNullable(filterData.getRemoteStorageConfigurationId())
+        .ifPresent(id -> predicates.add(builder.equal(root.get(RemoteLocationConfigurationMappingEntity_.remoteStorageConfigurationId), stringToUUIDSafe(id))));
       ofNullable(filterData.getOriginalLocationId())
         .ifPresent(id -> predicates.add(builder.isMember(UUID.fromString(id), root.get(RemoteLocationConfigurationMappingEntity_.originalLocationIds))));
       return builder.and(predicates.toArray(new Predicate[0]));

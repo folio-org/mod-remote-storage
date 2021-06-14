@@ -119,8 +119,8 @@ public class ReturnRetrievalQueueService {
       if (Boolean.FALSE.equals(accessionFilterData.getIsPresented())) {
         predicates.add(builder.isNull(rec.get(RETRIEVED_DATE_TIME)));
       }
-      if (Objects.nonNull(accessionFilterData.getStorageId())) {
-        predicates.add(builder.equal(rec.get(REMOTE_STORAGE_ID), stringToUUIDSafe(accessionFilterData.getStorageId())));
+      if (Objects.nonNull(accessionFilterData.getRemoteStorageConfigurationId())) {
+        predicates.add(builder.equal(rec.get(REMOTE_STORAGE_ID), stringToUUIDSafe(accessionFilterData.getRemoteStorageConfigurationId())));
       }
       if (Objects.nonNull(accessionFilterData.getCreateDate())) {
         predicates.add(builder.equal(rec.get(REQUEST_DATE_TIME), LocalDateTime.parse(accessionFilterData.getCreateDate())));

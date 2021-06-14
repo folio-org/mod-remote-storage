@@ -81,7 +81,7 @@ public class LocationMappingsTest extends TestBase {
     var response = get(mappingsUrl + "?finalLocationId=" + mapping.getFolioLocationId(), RemoteLocationConfigurationMappings.class).getBody();
     assertTrue(EqualsBuilder.reflectionEquals(mapping, response.getMappings().get(0), true, RemoteLocationConfigurationMapping.class));
 
-    response = get(mappingsUrl + "?remoteConfigurationId=" + mapping.getConfigurationId(), RemoteLocationConfigurationMappings.class).getBody();
+    response = get(mappingsUrl + "?remoteStorageConfigurationId=" + mapping.getConfigurationId(), RemoteLocationConfigurationMappings.class).getBody();
     assertTrue(EqualsBuilder.reflectionEquals(mapping, response.getMappings().get(0), true, RemoteLocationConfigurationMapping.class));
 
     delete(mappingsUrl + "/" + mapping.getFolioLocationId());
@@ -268,7 +268,7 @@ public class LocationMappingsTest extends TestBase {
     var response = get(extendedMappingsUrl + "?finalLocationId=" + mapping.getFinalLocationId(), ExtendedRemoteLocationConfigurationMappings.class).getBody();
     assertTrue(EqualsBuilder.reflectionEquals(mapping, response.getMappings().get(0), true, ExtendedRemoteLocationConfigurationMapping.class));
 
-    response = get(extendedMappingsUrl + "?remoteConfigurationId=" + mapping.getRemoteConfigurationId(), ExtendedRemoteLocationConfigurationMappings.class).getBody();
+    response = get(extendedMappingsUrl + "?remoteStorageConfigurationId=" + mapping.getRemoteConfigurationId(), ExtendedRemoteLocationConfigurationMappings.class).getBody();
     assertTrue(EqualsBuilder.reflectionEquals(mapping, response.getMappings().get(0), true, ExtendedRemoteLocationConfigurationMapping.class));
 
     post(extendedMappingsUrl, new ExtendedRemoteLocationConfigurationMapping()
@@ -310,7 +310,7 @@ public class LocationMappingsTest extends TestBase {
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
     assertThat(responseEntity.getBody().getTotalRecords(), is(1));
 
-    responseEntity = get(mappingsLocationsUrl + "?remoteConfigurationId=de17bad7-2a30-4f1c-bee5-f653ded15629", ExtendedRemoteLocationConfigurationMappings.class);
+    responseEntity = get(mappingsLocationsUrl + "?remoteStorageConfigurationId=de17bad7-2a30-4f1c-bee5-f653ded15629", ExtendedRemoteLocationConfigurationMappings.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
     assertThat(responseEntity.getBody().getTotalRecords(), is(2));
 

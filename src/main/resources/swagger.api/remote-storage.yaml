@@ -817,7 +817,7 @@ components:
       schema:
         type: string
     trait_queryable_configuration_id:
-      name: remoteConfigurationId
+      name: remoteStorageConfigurationId
       in: query
       description: Remote storage configuration id
       schema:

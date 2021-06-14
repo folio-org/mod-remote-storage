@@ -66,19 +66,19 @@ public final class RemoteLocationConfigurationMappingsMapper {
   public static RemoteLocationConfigurationMapping mapEntityToMappingDto(RemoteLocationConfigurationMappingEntity entity) {
     return new RemoteLocationConfigurationMapping()
       .folioLocationId(entity.getFinalLocationId().toString())
-      .configurationId(entity.getRemoteConfigurationId().toString());
+      .configurationId(entity.getRemoteStorageConfigurationId().toString());
   }
 
   private static List<ExtendedRemoteLocationConfigurationMapping> mapEntityToExtendedMappingDtoList(RemoteLocationConfigurationMappingEntity entity) {
     if (entity.getOriginalLocationIds().isEmpty()) {
       return Collections.singletonList(new ExtendedRemoteLocationConfigurationMapping()
         .finalLocationId(entity.getFinalLocationId().toString())
-        .remoteConfigurationId(entity.getRemoteConfigurationId().toString()));
+        .remoteConfigurationId(entity.getRemoteStorageConfigurationId().toString()));
     }
     return entity.getOriginalLocationIds().stream()
       .map(l -> new ExtendedRemoteLocationConfigurationMapping()
         .finalLocationId(entity.getFinalLocationId().toString())
-        .remoteConfigurationId(entity.getRemoteConfigurationId().toString())
+        .remoteConfigurationId(entity.getRemoteStorageConfigurationId().toString())
         .originalLocationId(l.toString()))
       .collect(Collectors.toList());
   }

@@ -40,9 +40,9 @@ public class ExtendedMappingsController implements ExtendedMappingsApi {
 
   @Override
   public ResponseEntity<ExtendedRemoteLocationConfigurationMappings> getExtendedRemoteLocationConfigurationMappings(@Valid String finalLocationId,
-    @Valid String remoteConfigurationId, @Valid String originalLocationId, @Min(0) @Max(2147483647) @Valid Integer offset,
+    @Valid String remoteStorageConfigurationId, @Valid String originalLocationId, @Min(0) @Max(2147483647) @Valid Integer offset,
     @Min(0) @Max(2147483647) @Valid Integer limit) {
-    var mappings = locationMappingsService.getExtendedRemoteLocationConfigurationMappings(buildFilterData(finalLocationId, remoteConfigurationId, originalLocationId, offset, limit));
+    var mappings = locationMappingsService.getExtendedRemoteLocationConfigurationMappings(buildFilterData(finalLocationId, remoteStorageConfigurationId, originalLocationId, offset, limit));
     return new ResponseEntity<>(mappings, HttpStatus.OK);
   }
 
@@ -54,9 +54,9 @@ public class ExtendedMappingsController implements ExtendedMappingsApi {
 
   @Override
   public ResponseEntity<ExtendedRemoteLocationConfigurationMappings> getExtendedRemoteLocationConfigurationMappingsLocations(@Valid String finalLocationId,
-    @Valid String remoteConfigurationId, @Valid String originalLocationId, @Min(0) @Max(2147483647) @Valid Integer offset,
+    @Valid String remoteStorageConfigurationId, @Valid String originalLocationId, @Min(0) @Max(2147483647) @Valid Integer offset,
     @Min(0) @Max(2147483647) @Valid Integer limit) {
-    var mappings = locationMappingsService.getExtendedRemoteLocationConfigurationMappingsLocations(buildFilterData(finalLocationId, remoteConfigurationId, originalLocationId, offset, limit));
+    var mappings = locationMappingsService.getExtendedRemoteLocationConfigurationMappingsLocations(buildFilterData(finalLocationId, remoteStorageConfigurationId, originalLocationId, offset, limit));
     return new ResponseEntity<>(mappings, HttpStatus.OK);
   }
 
@@ -65,12 +65,12 @@ public class ExtendedMappingsController implements ExtendedMappingsApi {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(MAPPING_NOT_FOUND);
   }
 
-  private LocationMappingFilterData buildFilterData(String finalLocationId, String remoteConfigurationId, String originalLocationId,
+  private LocationMappingFilterData buildFilterData(String finalLocationId, String remoteStorageConfigurationId, String originalLocationId,
     Integer offset, Integer limit) {
     return LocationMappingFilterData
       .builder()
       .finalLocationId(finalLocationId)
-      .remoteConfigurationId(remoteConfigurationId)
+      .remoteStorageConfigurationId(remoteStorageConfigurationId)
       .originalLocationId(originalLocationId)
       .offset(offset)
       .limit(limit)

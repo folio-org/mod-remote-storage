@@ -11,5 +11,5 @@ import java.util.UUID;
 @Repository
 public interface ExtendedRemoteLocationConfigurationMappingsRepository extends JpaRepository<RemoteLocationConfigurationMappingEntity, UUID>,
   JpaSpecificationExecutor<RemoteLocationConfigurationMappingEntity> {
-  Optional<RemoteLocationConfigurationMappingEntity> findByRemoteConfigurationId(UUID remoteConfigurationId);
+  Optional<RemoteLocationConfigurationMappingEntity> findByRemoteStorageConfigurationId(UUID remoteStorageConfigurationId);
 }

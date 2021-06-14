@@ -29,7 +29,7 @@ public class RemoteLocationConfigurationMappingEntity {
 
   @NotNull
   @Column(name = "remote_configuration_id")
-  private UUID remoteConfigurationId;
+  private UUID remoteStorageConfigurationId;
 
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "original_locations", joinColumns = @JoinColumn(name = "final_location_id"))

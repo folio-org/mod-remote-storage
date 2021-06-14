@@ -360,7 +360,7 @@ public class LocationMappingsTest extends TestBase {
   }
 
   @Test
-  void canDeleteOriginalLocationByOriginalAndFolioLocationIds() {
+  void canDeleteOriginalLocationByRemoteConfigurationAndOriginalLocationIds() {
     var mapping1 = post(extendedMappingsUrl, new ExtendedRemoteLocationConfigurationMapping().finalLocationId(randomIdAsString())
       .remoteConfigurationId(randomIdAsString())
       .originalLocationId(randomIdAsString()), ExtendedRemoteLocationConfigurationMapping.class).getBody();
@@ -370,7 +370,7 @@ public class LocationMappingsTest extends TestBase {
     var mappings = get(extendedMappingsUrl + "/" + mapping1.getFinalLocationId(), ExtendedRemoteLocationConfigurationMappings.class);
     assertThat(mappings.getBody().getMappings().size(), is(2));
 
-    assertThat(delete(extendedMappingsUrl + "/" + mapping1.getFinalLocationId() + "/" + mapping2.getOriginalLocationId()).getStatusCode(), is(HttpStatus.NO_CONTENT));
+    assertThat(delete(extendedMappingsUrl + "/" + mapping1.getRemoteConfigurationId() + "/" + mapping2.getOriginalLocationId()).getStatusCode(), is(HttpStatus.NO_CONTENT));
 
     mappings = get(extendedMappingsUrl + "/" + mapping1.getFinalLocationId(), ExtendedRemoteLocationConfigurationMappings.class);
     assertThat(mappings.getBody().getMappings().size(), is(1));

@@ -47,8 +47,8 @@ public class ExtendedMappingsController implements ExtendedMappingsApi {
   }
 
   @Override
-  public ResponseEntity<String> deleteOriginalLocationByIdAndFinalLocationId(String finalLocationId, String originalLocationId) {
-    locationMappingsService.deleteOriginalLocationByIdAndFinalLocationId(finalLocationId, originalLocationId);
+  public ResponseEntity<String> deleteOriginalLocationByRemoteStorageConfigurationIdAndOriginalLocationId(String remoteStorageConfigurationId, String originalLocationId) {
+    locationMappingsService.removeOriginalLocationIdFromExistingEntities(remoteStorageConfigurationId, originalLocationId);
     return ResponseEntity.noContent().build();
   }
 

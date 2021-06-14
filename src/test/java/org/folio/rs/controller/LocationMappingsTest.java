@@ -274,7 +274,6 @@ public class LocationMappingsTest extends TestBase {
     post(extendedMappingsUrl, new ExtendedRemoteLocationConfigurationMapping()
         .finalLocationId(mapping.getFinalLocationId()).remoteConfigurationId(mapping.getRemoteConfigurationId()).originalLocationId(randomIdAsString()),
       ExtendedRemoteLocationConfigurationMapping.class);
-    var v = get(extendedMappingsUrl, ExtendedRemoteLocationConfigurationMappings.class);
     response = get(extendedMappingsUrl + "?originalLocationId=" + mapping.getOriginalLocationId(), ExtendedRemoteLocationConfigurationMappings.class).getBody();
     assertThat(response.getMappings().size(), is(1));
     assertTrue(EqualsBuilder.reflectionEquals(mapping, response.getMappings().get(0), true, ExtendedRemoteLocationConfigurationMapping.class));

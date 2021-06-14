@@ -12,10 +12,11 @@ import java.util.UUID;
 import org.folio.rs.TestBase;
 import org.folio.rs.domain.dto.CheckInItem;
 import org.folio.rs.domain.dto.CheckInItemByHoldId;
-import org.folio.rs.domain.entity.RemoteLocationConfigurationMappingEntity;
+import org.folio.rs.domain.dto.LocationMappingFilterData;
+import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.entity.ReturnRetrievalQueueRecord;
-import org.folio.rs.repository.RemoteLocationConfigurationMappingsRepository;
 import org.folio.rs.repository.ReturnRetrievalQueueRepository;
+import org.folio.rs.service.LocationMappingsService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,16 +41,16 @@ public class CheckInRetrieveTest extends TestBase {
   private String errorCheckInByHoldIdUrl;
 
   @Autowired
-  private RemoteLocationConfigurationMappingsRepository mappingsRepository;
+  private LocationMappingsService locationMappingsService;
 
   @Autowired
   private ReturnRetrievalQueueRepository retrievalQueueRepository;
 
   @BeforeEach
   void prepare() {
-    var entity = RemoteLocationConfigurationMappingEntity.of(UUID.fromString(FINAL_LOCATION_ID),
-      UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID));
-    mappingsRepository.save(entity);
+    locationMappingsService.postRemoteLocationConfigurationMapping(new RemoteLocationConfigurationMapping()
+      .folioLocationId(FINAL_LOCATION_ID)
+      .configurationId(REMOTE_STORAGE_CONFIGURATION_ID));
     retrievalQueueRepository.save(ReturnRetrievalQueueRecord.builder()
       .id(UUID.randomUUID())
       .holdId(HOLD_ID)
@@ -65,7 +66,7 @@ public class CheckInRetrieveTest extends TestBase {
 
   @AfterEach
   void clear() {
-    mappingsRepository.deleteById(UUID.fromString(FINAL_LOCATION_ID));
+    locationMappingsService.deleteMappingById(FINAL_LOCATION_ID);
   }
 
   @Test

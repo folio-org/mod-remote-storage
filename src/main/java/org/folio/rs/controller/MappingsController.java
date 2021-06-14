@@ -42,13 +42,13 @@ public class MappingsController implements MappingsApi {
   public ResponseEntity<RemoteLocationConfigurationMappings> getMappings(@Valid String finalLocationId,
     @Valid  String storageId, @Min(0) @Max(2147483647) @Valid Integer offset,
     @Min(0) @Max(2147483647) @Valid Integer limit) {
-    var mappings = locationMappingsService.getRemoteLocationConfigurationMapping(buildFilterData(finalLocationId, storageId, offset, limit));
+    var mappings = locationMappingsService.getRemoteLocationConfigurationMappings(buildFilterData(finalLocationId, storageId, offset, limit));
     return new ResponseEntity<>(mappings, HttpStatus.OK);
   }
 
   @Override
-  public ResponseEntity<String> deleteMappingById(String mappingId) {
-    locationMappingsService.deleteMappingById(mappingId);
+  public ResponseEntity<String> deleteMappingById(String finalLocationId) {
+    locationMappingsService.deleteMappingById(finalLocationId);
     return ResponseEntity.noContent().build();
   }
 

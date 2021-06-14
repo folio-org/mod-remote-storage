@@ -10,5 +10,6 @@ public class LocationMappingFilterData {
   private final String remoteStorageId;
   private final String originalLocationId;
   private final int offset;
-  private final int limit;
+  @Builder.Default
+  private final int limit = Integer.MAX_VALUE;
 }

@@ -10,6 +10,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.NullValueCheckStrategy;
+import org.springframework.data.domain.Page;
 
 @Mapper(componentModel = "spring", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface ConfigurationsMapper {
@@ -40,9 +41,9 @@ public interface ConfigurationsMapper {
   @Mappings({})
   List<StorageConfiguration> mapEntitiesToDtos(Iterable<Configuration> remoteStorageConfigurationList);
 
-  default StorageConfigurations mapEntitiesToRemoteConfigCollection(Iterable<Configuration> remoteStorageConfigurationList) {
+  default StorageConfigurations mapEntitiesToRemoteConfigCollection(Page<Configuration> remoteStorageConfigurationList) {
     List<StorageConfiguration> remoteConfigList = mapEntitiesToDtos(remoteStorageConfigurationList);
     return new StorageConfigurations().configurations(remoteConfigList)
-      .totalRecords(remoteConfigList.size());
+      .totalRecords((int) remoteStorageConfigurationList.getTotalElements());
   }
 }

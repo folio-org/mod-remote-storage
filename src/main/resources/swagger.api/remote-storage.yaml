@@ -370,6 +370,43 @@ paths:
         required: true
         schema:
           $ref: "#/components/schemas/uuid"
+
+  /extended-mappings/{finalLocationId}/{originalLocationId}:
+    delete:
+      responses:
+        '204':
+          description: No content
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: No content
+        '404':
+          description: Mapping not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Mapping not found
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Internal server error
+      operationId: deleteOriginalLocationByIdAndFinalLocationId
+      parameters:
+        - name: finalLocationId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/uuid"
+        - name: originalLocationId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/uuid"
   /extended-mappings/locations:
     get:
       responses:

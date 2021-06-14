@@ -62,18 +62,8 @@ public class LocationMappingsService {
     extendedMappingsRepository.deleteById(UUID.fromString(finalLocationId));
   }
 
-  public void deleteOriginalLocationByIdAndFinalLocationId(String finalLocationId, String originalLocationId) {
-    extendedMappingsRepository.findById(UUID.fromString(finalLocationId))
-      .ifPresent(entity -> {
-        var originalLocationIds = entity.getOriginalLocationIds();
-        originalLocationIds.remove(UUID.fromString(originalLocationId));
-        entity.setOriginalLocationIds(originalLocationIds);
-        extendedMappingsRepository.save(entity);
-      });
-  }
-
   public ExtendedRemoteLocationConfigurationMapping postExtendedRemoteLocationConfigurationMapping(ExtendedRemoteLocationConfigurationMapping mapping) {
-    removeOriginalLocationIdFromExistingEntities(mapping);
+    removeOriginalLocationIdFromExistingEntities(mapping.getRemoteConfigurationId(), mapping.getOriginalLocationId());
     var entity = extendedMappingsRepository.findById(UUID.fromString(mapping.getFinalLocationId()))
       .map(e -> extendedMappingsRepository.save(updateEntityFromDto(e, mapping)))
       .orElseGet(() -> extendedMappingsRepository.save(RemoteLocationConfigurationMappingsMapper.mapExtendedMappingDtoToEntity(mapping)));
@@ -84,16 +74,16 @@ public class LocationMappingsService {
       .originalLocationId(mapping.getOriginalLocationId());
   }
 
-  private void removeOriginalLocationIdFromExistingEntities(ExtendedRemoteLocationConfigurationMapping mapping) {
+  public void removeOriginalLocationIdFromExistingEntities(String remoteStorageConfigurationId, String originalLocationId) {
     getExtendedRemoteLocationConfigurationMappingEntities(LocationMappingFilterData
       .builder()
-      .originalLocationId(mapping.getOriginalLocationId())
-      .remoteStorageConfigurationId(mapping.getRemoteConfigurationId())
+      .originalLocationId(originalLocationId)
+      .remoteStorageConfigurationId(remoteStorageConfigurationId)
       .build())
       .getContent()
       .forEach(e -> {
         var originalLocationIds = e.getOriginalLocationIds();
-        originalLocationIds.remove(UUID.fromString(mapping.getOriginalLocationId()));
+        originalLocationIds.remove(UUID.fromString(originalLocationId));
         e.setOriginalLocationIds(originalLocationIds);
         extendedMappingsRepository.save(e);
       });

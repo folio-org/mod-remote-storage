@@ -59,7 +59,7 @@ API provides the following URL to retrieve providers:
 |---|---|---|---|
 | GET |  /remote-storage/providers | remote-storage.providers.collection.get | Get list of providers |
 
-## Environment variables:
+### Environment variables:
 
 | Name                          | Default value             | Description                                                       |
 | :-----------------------------| :------------------------:|:------------------------------------------------------------------|
@@ -69,6 +69,9 @@ API provides the following URL to retrieve providers:
 | DB_USERNAME                   | folio_admin               | Postgres username                                                 |
 | DB_PASSWORD                   | -                         | Postgres username password                                        |
 | DB_DATABASE                   | okapi_modules             | Postgres database name                                            |
+| DB_QUERYTIMEOUT               | 60000                     | Database query timeout. |
+| DB_CHARSET                    | UTF-8                     | Database charset. |
+| DB_MAXPOOLSIZE                | 5                         | Database max pool size. |
 | KAFKA_HOST                    | kafka                     | Kafka broker hostname                                             |
 | KAFKA_PORT                    | 9092                      | Kafka broker port                                                 |
 | KAFKA_SECURITY_PROTOCOL       | PLAINTEXT                 | Kafka security protocol used to communicate with brokers (SSL or PLAINTEXT) |
@@ -76,9 +79,6 @@ API provides the following URL to retrieve providers:
 | KAFKA_SSL_KEYSTORE_PASSWORD   | -                         | The store password for the Kafka key store file. This is optional for client and only needed if 'ssl.keystore.location' is configured. |
 | KAFKA_SSL_TRUSTSTORE_LOCATION | -                         | The location of the Kafka trust store file. |
 | KAFKA_SSL_TRUSTSTORE_PASSWORD | -                         | The password for the Kafka trust store file. If a password is not set, trust store file configured will still be used, but integrity checking is disabled. |
-| DB_QUERYTIMEOUT               | 60000                     | Database query timeout. |
-| DB_CHARSET                    | UTF-8                     | Database charset. |
-| DB_MAXPOOLSIZE                | 5                         | Database max pool size. |
 
 ### Required Permissions
 Institutional users should be granted the following permissions in order to use this remote storage API:

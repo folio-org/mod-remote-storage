@@ -62,6 +62,7 @@ public class LocationMappingsService {
     extendedMappingsRepository.deleteById(UUID.fromString(finalLocationId));
   }
 
+
   public ExtendedRemoteLocationConfigurationMapping postExtendedRemoteLocationConfigurationMapping(ExtendedRemoteLocationConfigurationMapping mapping) {
     removeOriginalLocationIdFromExistingEntities(mapping.getRemoteConfigurationId(), mapping.getOriginalLocationId());
     var entity = extendedMappingsRepository.findById(UUID.fromString(mapping.getFinalLocationId()))
@@ -73,6 +74,7 @@ public class LocationMappingsService {
       .remoteConfigurationId(entity.getRemoteStorageConfigurationId().toString())
       .originalLocationId(mapping.getOriginalLocationId());
   }
+
 
   public void removeOriginalLocationIdFromExistingEntities(String remoteStorageConfigurationId, String originalLocationId) {
     getExtendedRemoteLocationConfigurationMappingEntities(LocationMappingFilterData

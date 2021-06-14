@@ -7,7 +7,7 @@ import lombok.Getter;
 @Builder(toBuilder = true)
 public class LocationMappingFilterData {
   private final String finalLocationId;
-  private final String remoteStorageId;
+  private final String remoteStorageConfigurationId;
   private final String originalLocationId;
   private final int offset;
   @Builder.Default

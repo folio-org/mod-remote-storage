@@ -52,7 +52,7 @@ public class RetrieveController implements RetrievalsApi {
   private AccessionFilterData getFilterData(Boolean retrieved, String storageId, String createdDate, Integer offset, Integer limit) {
     return AccessionFilterData.builder()
       .isPresented(retrieved)
-      .storageId(storageId)
+      .remoteStorageConfigurationId(storageId)
       .createDate(createdDate)
       .offset(offset)
       .limit(limit)

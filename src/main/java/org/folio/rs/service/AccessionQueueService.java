@@ -353,8 +353,8 @@ public class AccessionQueueService {
       if (Boolean.FALSE.equals(accessionFilterData.getIsPresented())) {
         predicates.add(builder.isNull(rec.get(AccessionQueueRecord_.accessionedDateTime)));
       }
-      if (nonNull(accessionFilterData.getStorageId())) {
-        predicates.add(builder.equal(rec.get(AccessionQueueRecord_.remoteStorageId), stringToUUIDSafe(accessionFilterData.getStorageId())));
+      if (nonNull(accessionFilterData.getRemoteStorageConfigurationId())) {
+        predicates.add(builder.equal(rec.get(AccessionQueueRecord_.remoteStorageId), stringToUUIDSafe(accessionFilterData.getRemoteStorageConfigurationId())));
       }
       if (nonNull(accessionFilterData.getCreateDate())) {
         predicates.add(builder.equal(rec.get(AccessionQueueRecord_.createdDateTime), LocalDateTime.parse(accessionFilterData.getCreateDate())));

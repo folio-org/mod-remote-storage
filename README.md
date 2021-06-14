@@ -22,9 +22,9 @@ API provides the following URLs for working with remote storage configurations:
 |---|---|---|---|
 | POST | /remote-storage/configurations  | remote-storage.configurations.item.post | Creates a remote storage configuration |
 | GET | /remote-storage/configurations | remote-storage.configurations.collection.get   | Retrieves all remote storage configurations |
-| GET | /remote-storage/configurations/{configurationId} | remote-storage.configurations.item.get | Retrieves a remote storage configuration by id |
-| PUT | /remote-storage/configurations/{configurationId} | remote-storage.configurations.item.put | Updates a remote storage configuration |
-| DELETE | /remote-storage/configurations/{configurationId} | remote-storage.configurations.item.delete | Deletes a remote storage configuration by id |
+| GET | /remote-storage/configurations/{remoteStorageConfigurationId} | remote-storage.configurations.item.get | Retrieves a remote storage configuration by id |
+| PUT | /remote-storage/configurations/{remoteStorageConfigurationId} | remote-storage.configurations.item.put | Updates a remote storage configuration |
+| DELETE | /remote-storage/configurations/{remoteStorageConfigurationId} | remote-storage.configurations.item.delete | Deletes a remote storage configuration by id |
 
 API provides the following URLs for working with mappings between Folio locations and remote storage configurations (one-to-one):
 
@@ -42,7 +42,7 @@ API provides the following URLs for working with extended mappings (remote (fina
 | POST | /remote-storage/extended-mappings | - | remote-storage.extended-mappings.item.post | Creates new or updates an existing extended location mapping |
 | DELETE | /remote-storage/extended-mappings/{finalLocationId} | - | remote-storage.extended-mappings.item.delete | Deletes extended location mapping (with all associated original locations) by finalLocationId|
 | DELETE | /remote-storage/extended-mappings/{finalLocationId}/{originalLocationId} | - | remote-storage.extended-mappings.item.delete |Deletes original location by originalLocationId|
-| GET | /remote-storage/extended-mappings | Optional: `finalLocationId`, `remoteConfigurationId` or `originalLocationId` | remote-storage.configurations.extended-mappings.get   | Retrieves all extended location mappings (if no query parameters specified), or by query parameter |
+| GET | /remote-storage/extended-mappings | Optional: `finalLocationId`, `remoteStorageConfigurationId` or `originalLocationId` | remote-storage.configurations.extended-mappings.get   | Retrieves all extended location mappings (if no query parameters specified), or by query parameter |
 | GET | /remote-storage/extended-mappings/{finalLocationId} | - | remote-storage.extended-mappings.item.get | Retrieves an extended location mapping by Folio (final) location id |
 | GET | /remote-storage/extended-mappings/locations | - | remote-storage.extended-mappings-locations.collection.get   | Retrieves all original locations with corresponding final (remote) locations, if they exist |
 

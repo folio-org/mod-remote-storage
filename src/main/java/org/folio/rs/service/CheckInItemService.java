@@ -32,7 +32,7 @@ public class CheckInItemService {
 
   public void checkInItemByBarcode(String remoteStorageConfigurationId, CheckInItem checkInItem) {
     log.info("Start check-in process for item with barcode " + checkInItem.getItemBarcode());
-    var locationMapping = mappingsRepository.findByRemoteConfigurationId(UUID.fromString(remoteStorageConfigurationId));
+    var locationMapping = mappingsRepository.findByRemoteStorageConfigurationId(UUID.fromString(remoteStorageConfigurationId));
     if (locationMapping.isEmpty()) {
       throw new CheckInException("Folio location does not exist for remoteStorageConfigurationId " + remoteStorageConfigurationId);
     } else {

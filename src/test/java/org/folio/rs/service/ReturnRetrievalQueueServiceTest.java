@@ -59,7 +59,7 @@ public class ReturnRetrievalQueueServiceTest extends TestBase {
     returnRetrievalQueueRepository.save(createBaseRetrievalQueueRecord());
     returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID)));
 
-    ResponseEntity<RetrievalQueues> responseEntity = get(formattedRetrievalUrl + "?remoteStorageId=" + REMOTE_STORAGE_ID,
+    ResponseEntity<RetrievalQueues> responseEntity = get(formattedRetrievalUrl + "?remoteStorageConfigurationId=" + REMOTE_STORAGE_ID,
         RetrievalQueues.class);
     assertThat(Objects.requireNonNull(responseEntity.getBody())
       .getRetrievals()

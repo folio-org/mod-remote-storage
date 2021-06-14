@@ -5,11 +5,13 @@ import static org.folio.rs.service.LocationMappingsService.MAPPINGS;
 import static org.folio.rs.util.Utils.randomIdAsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.in;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -31,6 +33,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Arrays;
+import java.util.Set;
 
 public class LocationMappingsTest extends TestBase {
 
@@ -78,7 +81,7 @@ public class LocationMappingsTest extends TestBase {
     var response = get(mappingsUrl + "?finalLocationId=" + mapping.getFolioLocationId(), RemoteLocationConfigurationMappings.class).getBody();
     assertTrue(EqualsBuilder.reflectionEquals(mapping, response.getMappings().get(0), true, RemoteLocationConfigurationMapping.class));
 
-    response = get(mappingsUrl + "?remoteStorageId=" + mapping.getConfigurationId(), RemoteLocationConfigurationMappings.class).getBody();
+    response = get(mappingsUrl + "?remoteStorageConfigurationId=" + mapping.getConfigurationId(), RemoteLocationConfigurationMappings.class).getBody();
     assertTrue(EqualsBuilder.reflectionEquals(mapping, response.getMappings().get(0), true, RemoteLocationConfigurationMapping.class));
 
     delete(mappingsUrl + "/" + mapping.getFolioLocationId());
@@ -147,87 +150,135 @@ public class LocationMappingsTest extends TestBase {
   }
 
   @Test
-  void postOnExistingExtendedMappingShouldOverwriteExistingMapping() {
-    var existingMapping = post(extendedMappingsUrl,
-      new ExtendedRemoteLocationConfigurationMapping().finalLocationId(randomIdAsString())
+  void shouldOverwriteRemoteConfigurationIdWhenPostOnExistingMapping() {
+    var finalLocationId = randomIdAsString();
+    var originalLocationId = randomIdAsString();
+    post(extendedMappingsUrl,
+      new ExtendedRemoteLocationConfigurationMapping()
+        .finalLocationId(finalLocationId)
         .remoteConfigurationId(randomIdAsString())
-        .originalLocationId(randomIdAsString()), ExtendedRemoteLocationConfigurationMapping.class).getBody();
+        .originalLocationId(originalLocationId),
+      ExtendedRemoteLocationConfigurationMapping.class);
+
+    var existingMapping = get(extendedMappingsUrl + "/" + finalLocationId, ExtendedRemoteLocationConfigurationMappings.class)
+      .getBody().getMappings().get(0);
+
+    var newRemoteConfigurationId = randomIdAsString();
+    post(extendedMappingsUrl,
+      new ExtendedRemoteLocationConfigurationMapping()
+        .finalLocationId(finalLocationId)
+        .remoteConfigurationId(newRemoteConfigurationId)
+        .originalLocationId(originalLocationId),
+      ExtendedRemoteLocationConfigurationMapping.class);
+
+    var overwrittenMapping = get(extendedMappingsUrl + "/" + finalLocationId, ExtendedRemoteLocationConfigurationMappings.class)
+      .getBody().getMappings().get(0);
+    assertEquals(newRemoteConfigurationId, overwrittenMapping.getRemoteConfigurationId());
+    assertEquals(existingMapping.getOriginalLocationId(), overwrittenMapping.getOriginalLocationId());
+
+    delete(mappingsUrl + "/" + finalLocationId);
+  }
+
+  @Test
+  void shouldAddOriginalLocationIdIfNotPresentWhenPostOnExistingMapping() {
+    var finalLocationId = randomIdAsString();
+    var remoteConfigurationId = randomIdAsString();
+    var originalLocationId = randomIdAsString();
+    post(extendedMappingsUrl,
+      new ExtendedRemoteLocationConfigurationMapping()
+        .finalLocationId(finalLocationId)
+        .remoteConfigurationId(remoteConfigurationId)
+        .originalLocationId(originalLocationId),
+      ExtendedRemoteLocationConfigurationMapping.class);
+
+    var existingMapping = get(extendedMappingsUrl + "/" + finalLocationId, ExtendedRemoteLocationConfigurationMappings.class)
+      .getBody().getMappings().get(0);
+
+    post(extendedMappingsUrl,
+      new ExtendedRemoteLocationConfigurationMapping()
+        .finalLocationId(finalLocationId)
+        .remoteConfigurationId(remoteConfigurationId)
+        .originalLocationId(originalLocationId),
+      ExtendedRemoteLocationConfigurationMapping.class);
+
+    var overwrittenMapping = get(extendedMappingsUrl + "/" + finalLocationId, ExtendedRemoteLocationConfigurationMappings.class)
+      .getBody().getMappings().get(0);
+    assertTrue(EqualsBuilder.reflectionEquals(existingMapping, overwrittenMapping, true, ExtendedRemoteLocationConfigurationMapping.class));
+
+    var newOriginalLocationId = randomIdAsString();
+    post(extendedMappingsUrl,
+      new ExtendedRemoteLocationConfigurationMapping()
+        .finalLocationId(finalLocationId)
+        .remoteConfigurationId(remoteConfigurationId)
+        .originalLocationId(newOriginalLocationId),
+      ExtendedRemoteLocationConfigurationMapping.class);
+
+    var mappings = get(extendedMappingsUrl + "/" + finalLocationId, ExtendedRemoteLocationConfigurationMappings.class).getBody().getMappings();
+    assertThat(mappings.size(), is(2));
+    assertNotEquals(mappings.get(0).getOriginalLocationId(), mappings.get(1).getOriginalLocationId());
+    mappings.forEach(mapping -> assertThat(mapping.getOriginalLocationId(), in(Set.of(originalLocationId, newOriginalLocationId))));
+
+    delete(mappingsUrl + "/" + finalLocationId);
+  }
+
+  @Test
+  void shouldRemoveOriginalLocationIdFromMappingWhenChangingFinalLocationId() {
+    var finalLocationId = randomIdAsString();
+    var remoteConfigurationId = randomIdAsString();
+    var originalLocationId = randomIdAsString();
+    post(extendedMappingsUrl,
+      new ExtendedRemoteLocationConfigurationMapping()
+        .finalLocationId(finalLocationId)
+        .remoteConfigurationId(remoteConfigurationId)
+        .originalLocationId(originalLocationId),
+      ExtendedRemoteLocationConfigurationMapping.class);
+
+    var existingMapping = get(extendedMappingsUrl + "/" + finalLocationId, ExtendedRemoteLocationConfigurationMappings.class)
+      .getBody().getMappings().get(0);
+    assertEquals(originalLocationId, existingMapping.getOriginalLocationId());
 
     var newFinalLocationId = randomIdAsString();
     post(extendedMappingsUrl,
       new ExtendedRemoteLocationConfigurationMapping()
         .finalLocationId(newFinalLocationId)
-        .remoteConfigurationId(existingMapping.getRemoteConfigurationId())
-        .originalLocationId(existingMapping.getOriginalLocationId()),
-      RemoteLocationConfigurationMapping.class);
+        .remoteConfigurationId(remoteConfigurationId)
+        .originalLocationId(originalLocationId),
+      ExtendedRemoteLocationConfigurationMapping.class);
 
-    var oldMappingResponse = get(extendedMappingsUrl + "/" + existingMapping.getFinalLocationId(), ExtendedRemoteLocationConfigurationMappings.class);
-    assertThat(oldMappingResponse.getBody(), nullValue());
+    existingMapping = get(extendedMappingsUrl + "/" + finalLocationId, ExtendedRemoteLocationConfigurationMappings.class)
+      .getBody().getMappings().get(0);
+    assertThat(existingMapping.getOriginalLocationId(), nullValue());
 
-    var changedFinalLocationIdMappingResponse = get(extendedMappingsUrl + "/" + newFinalLocationId, ExtendedRemoteLocationConfigurationMappings.class);
-    assertThat(changedFinalLocationIdMappingResponse.getStatusCode(), is(HttpStatus.OK));
-    assertThat(changedFinalLocationIdMappingResponse.getBody().getMappings().size(), is(1));
-    var newMapping = changedFinalLocationIdMappingResponse.getBody().getMappings().get(0);
-    assertEquals(newFinalLocationId, newMapping.getFinalLocationId());
-    assertEquals(existingMapping.getRemoteConfigurationId(), newMapping.getRemoteConfigurationId());
-    assertEquals(existingMapping.getOriginalLocationId(), newMapping.getOriginalLocationId());
+    var newMapping = get(extendedMappingsUrl + "/" + newFinalLocationId, ExtendedRemoteLocationConfigurationMappings.class)
+      .getBody().getMappings().get(0);
+    assertEquals(originalLocationId, newMapping.getOriginalLocationId());
 
-    existingMapping = newMapping;
-    var newRemoteConfigId = randomIdAsString();
-    post(extendedMappingsUrl,
-      new ExtendedRemoteLocationConfigurationMapping()
-        .finalLocationId(existingMapping.getFinalLocationId())
-        .remoteConfigurationId(newRemoteConfigId)
-        .originalLocationId(existingMapping.getOriginalLocationId()),
-      RemoteLocationConfigurationMapping.class);
-
-    var changedRemoteConfigIdMappingResponse = get(extendedMappingsUrl + "/" + existingMapping.getFinalLocationId(), ExtendedRemoteLocationConfigurationMappings.class);
-    assertThat(changedRemoteConfigIdMappingResponse.getStatusCode(), is(HttpStatus.OK));
-    assertThat(changedRemoteConfigIdMappingResponse.getBody().getMappings().size(), is(1));
-    assertEquals(newRemoteConfigId, changedRemoteConfigIdMappingResponse.getBody().getMappings().get(0).getRemoteConfigurationId());
-
-    existingMapping = changedRemoteConfigIdMappingResponse.getBody().getMappings().get(0);
-    post(extendedMappingsUrl,
-      new ExtendedRemoteLocationConfigurationMapping()
-        .finalLocationId(existingMapping.getFinalLocationId())
-        .remoteConfigurationId(existingMapping.getRemoteConfigurationId())
-        .originalLocationId(randomIdAsString()),
-      RemoteLocationConfigurationMapping.class);
-    var addedOriginalLocationMappings = get(extendedMappingsUrl + "/" + existingMapping.getFinalLocationId(), ExtendedRemoteLocationConfigurationMappings.class);
-    assertThat(addedOriginalLocationMappings.getStatusCode(), is(HttpStatus.OK));
-    assertThat(addedOriginalLocationMappings.getBody().getMappings().size(), is(2));
-    final var finalLocationId = existingMapping.getFinalLocationId();
-    final var remoteConfigId = existingMapping.getRemoteConfigurationId();
-    addedOriginalLocationMappings.getBody().getMappings().forEach(mapping -> {
-      assertEquals(finalLocationId, mapping.getFinalLocationId());
-      assertEquals(remoteConfigId, mapping.getRemoteConfigurationId());
-    });
-
-    delete(extendedMappingsUrl + "/" + existingMapping.getFinalLocationId());
+    delete(mappingsUrl + "/" + finalLocationId);
+    delete(mappingsUrl + "/" + newFinalLocationId);
   }
 
   @Test
   void canGetExtendedMappingsByCriteria() {
+    var orig = randomIdAsString();
     var mapping = post(extendedMappingsUrl, new ExtendedRemoteLocationConfigurationMapping()
-      .finalLocationId(randomIdAsString()).remoteConfigurationId(randomIdAsString()).originalLocationId(randomIdAsString()),
+      .finalLocationId(randomIdAsString()).remoteConfigurationId(randomIdAsString()).originalLocationId(orig),
       ExtendedRemoteLocationConfigurationMapping.class)
       .getBody();
 
     var response = get(extendedMappingsUrl + "?finalLocationId=" + mapping.getFinalLocationId(), ExtendedRemoteLocationConfigurationMappings.class).getBody();
     assertTrue(EqualsBuilder.reflectionEquals(mapping, response.getMappings().get(0), true, ExtendedRemoteLocationConfigurationMapping.class));
 
-    response = get(extendedMappingsUrl + "?remoteStorageId=" + mapping.getRemoteConfigurationId(), ExtendedRemoteLocationConfigurationMappings.class).getBody();
+    response = get(extendedMappingsUrl + "?remoteStorageConfigurationId=" + mapping.getRemoteConfigurationId(), ExtendedRemoteLocationConfigurationMappings.class).getBody();
     assertTrue(EqualsBuilder.reflectionEquals(mapping, response.getMappings().get(0), true, ExtendedRemoteLocationConfigurationMapping.class));
 
     post(extendedMappingsUrl, new ExtendedRemoteLocationConfigurationMapping()
         .finalLocationId(mapping.getFinalLocationId()).remoteConfigurationId(mapping.getRemoteConfigurationId()).originalLocationId(randomIdAsString()),
       ExtendedRemoteLocationConfigurationMapping.class);
-
     response = get(extendedMappingsUrl + "?originalLocationId=" + mapping.getOriginalLocationId(), ExtendedRemoteLocationConfigurationMappings.class).getBody();
     assertThat(response.getMappings().size(), is(1));
     assertTrue(EqualsBuilder.reflectionEquals(mapping, response.getMappings().get(0), true, ExtendedRemoteLocationConfigurationMapping.class));
 
-    delete(extendedMappingsUrl + "/" + mapping.getFinalLocationId());
+    delete(mappingsUrl + "/" + mapping.getFinalLocationId());
   }
 
   @Test
@@ -241,7 +292,7 @@ public class LocationMappingsTest extends TestBase {
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
     assertFalse(responseEntity.getBody().getMappings().isEmpty());
 
-    delete(extendedMappingsUrl + "/" + mapping.getBody().getFinalLocationId());
+    delete(mappingsUrl + "/" + mapping.getBody().getFinalLocationId());
   }
 
   @Test
@@ -259,13 +310,13 @@ public class LocationMappingsTest extends TestBase {
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
     assertThat(responseEntity.getBody().getTotalRecords(), is(1));
 
-    responseEntity = get(mappingsLocationsUrl + "?remoteStorageId=de17bad7-2a30-4f1c-bee5-f653ded15629", ExtendedRemoteLocationConfigurationMappings.class);
+    responseEntity = get(mappingsLocationsUrl + "?remoteStorageConfigurationId=de17bad7-2a30-4f1c-bee5-f653ded15629", ExtendedRemoteLocationConfigurationMappings.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-    assertThat(responseEntity.getBody().getTotalRecords(), is(1));
+    assertThat(responseEntity.getBody().getTotalRecords(), is(2));
 
     responseEntity = get(mappingsLocationsUrl + "?finalLocationId=53cf956f-c1df-410b-8bea-27f712cca7c0", ExtendedRemoteLocationConfigurationMappings.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-    assertThat(responseEntity.getBody().getTotalRecords(), is(1));
+    assertThat(responseEntity.getBody().getTotalRecords(), is(2));
   }
 
   @Test
@@ -292,7 +343,7 @@ public class LocationMappingsTest extends TestBase {
     // requireNonNull(requireNonNull(cacheManager.getCache(MAPPINGS)).get(mapping.getFinalLocationId())).get();
     // assertTrue(EqualsBuilder.reflectionEquals(cachedMapping, secondResponse.getBody(), true, LocationMapping.class, "metadata"));
 
-    delete(extendedMappingsUrl + "/" + finalLocationId);
+    delete(mappingsUrl + "/" + finalLocationId);
   }
 
   @Test
@@ -300,7 +351,7 @@ public class LocationMappingsTest extends TestBase {
     var response = post(extendedMappingsUrl, new ExtendedRemoteLocationConfigurationMapping().finalLocationId(randomIdAsString())
       .remoteConfigurationId(randomIdAsString())
       .originalLocationId(randomIdAsString()), ExtendedRemoteLocationConfigurationMapping.class);
-    assertThat(delete(extendedMappingsUrl + "/" + response.getBody().getFinalLocationId()).getStatusCode(), is(HttpStatus.NO_CONTENT));
+    assertThat(delete(mappingsUrl + "/" + response.getBody().getFinalLocationId()).getStatusCode(), is(HttpStatus.NO_CONTENT));
     // Verify cache disable via MODRS-42
     // assertThat(requireNonNull(cacheManager.getCache(MAPPINGS)).get(requireNonNull(responseEntity.getBody()).getFinalLocationId()),
     // notNullValue());
@@ -325,7 +376,7 @@ public class LocationMappingsTest extends TestBase {
     assertThat(mappings.getBody().getMappings().size(), is(1));
     assertEquals(mapping1.getOriginalLocationId(), mappings.getBody().getMappings().get(0).getOriginalLocationId());
 
-    delete(extendedMappingsUrl + "/" + mapping1.getFinalLocationId());
+    delete(mappingsUrl + "/" + mapping1.getFinalLocationId());
   }
 
   @Test
@@ -347,10 +398,6 @@ public class LocationMappingsTest extends TestBase {
   void shouldReturnNotFoundForRandomUuid() {
     String urlWithRandomUuid1 = mappingsUrl + randomIdAsString();
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> delete(urlWithRandomUuid1));
-    assertThat(exception.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
-
-    String urlWithRandomUuid2 = extendedMappingsUrl + "/" + randomIdAsString();
-    exception = assertThrows(HttpClientErrorException.class, () -> delete(urlWithRandomUuid2));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
   }
 

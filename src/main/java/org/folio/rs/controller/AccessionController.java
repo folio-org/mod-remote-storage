@@ -29,9 +29,9 @@ public class AccessionController implements AccessionsApi {
   private final AccessionQueueService accessionQueueService;
 
   @Override
-  public ResponseEntity<AccessionQueues> getAccessions(@Valid Boolean accessioned, @Valid String remoteStorageId,
+  public ResponseEntity<AccessionQueues> getAccessions(@Valid Boolean accessioned, @Valid String remoteStorageConfigurationId,
       @Valid String createdDate, @Min(0) @Max(2147483647) @Valid Integer offset, @Min(0) @Max(2147483647) @Valid Integer limit) {
-    var accessionQueues = accessionQueueService.getAccessions(getFilterData(accessioned, remoteStorageId, createdDate, offset, limit));
+    var accessionQueues = accessionQueueService.getAccessions(getFilterData(accessioned, remoteStorageConfigurationId, createdDate, offset, limit));
     return new ResponseEntity<>(accessionQueues, HttpStatus.OK);
   }
 
@@ -58,7 +58,7 @@ public class AccessionController implements AccessionsApi {
   private AccessionFilterData getFilterData(Boolean accessioned, String storageId, String createdDate, Integer offset, Integer limit) {
     return AccessionFilterData.builder()
       .isPresented(accessioned)
-      .storageId(storageId)
+      .remoteStorageConfigurationId(storageId)
       .createDate(createdDate)
       .offset(offset)
       .limit(limit)

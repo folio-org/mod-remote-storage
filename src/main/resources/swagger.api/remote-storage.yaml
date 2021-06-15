@@ -402,9 +402,7 @@ paths:
       description: Get a list of location mappings
       operationId: getExtendedRemoteLocationConfigurationMappingsLocations
       parameters:
-        - $ref: "#/components/parameters/trait_queryable_final_location_id"
         - $ref: "#/components/parameters/trait_queryable_configuration_id"
-        - $ref: "#/components/parameters/trait_queryable_original_location_id"
         - $ref: "#/components/parameters/trait_pageable_offset"
         - $ref: "#/components/parameters/trait_pageable_limit"
   /providers:

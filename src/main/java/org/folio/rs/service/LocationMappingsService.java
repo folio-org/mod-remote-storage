@@ -123,19 +123,23 @@ public class LocationMappingsService {
       .collect(Collectors.toSet());
     var mappings = locationClient.getLocations(0, Integer.MAX_VALUE).getResult().stream()
       .filter(folioLocation -> !remoteIds.contains(folioLocation.getId()))
-      .filter(folioLocation -> isNull(filterData.getOriginalLocationId()) || filterData.getOriginalLocationId().equals(folioLocation.getId()))
       .map(folioLocation -> {
         var locationMappings = getExtendedRemoteLocationConfigurationMappings(LocationMappingFilterData
           .builder()
           .originalLocationId(folioLocation.getId())
           .build());
-        return locationMappings.getMappings().isEmpty() ?
-          Collections.singletonList(new ExtendedRemoteLocationConfigurationMapping().originalLocationId(folioLocation.getId())) :
-          locationMappings.getMappings();
+        if (locationMappings.getMappings().isEmpty()) {
+          return Collections.singletonList(new ExtendedRemoteLocationConfigurationMapping().originalLocationId(folioLocation.getId()));
+        } else {
+          return  (isNull(filterData.getRemoteStorageConfigurationId())) ?
+            locationMappings.getMappings() :
+            Collections.singletonList(locationMappings.getMappings().stream()
+              .filter(mapping -> filterData.getRemoteStorageConfigurationId().equals(mapping.getRemoteConfigurationId()))
+              .findFirst()
+              .orElse(new ExtendedRemoteLocationConfigurationMapping().originalLocationId(folioLocation.getId())));
+        }
       })
       .flatMap(List::stream)
-      .filter(lm -> isNull(lm.getFinalLocationId()) || isNull(filterData.getRemoteStorageConfigurationId()) || filterData.getRemoteStorageConfigurationId().equals(lm.getRemoteConfigurationId()))
-      .filter(lm -> isNull(lm.getFinalLocationId()) || isNull(filterData.getFinalLocationId()) || filterData.getFinalLocationId().equals(lm.getFinalLocationId()))
       .collect(Collectors.toList());
 
     return new ExtendedRemoteLocationConfigurationMappings()

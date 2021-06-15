@@ -297,26 +297,74 @@ public class LocationMappingsTest extends TestBase {
 
   @Test
   void canGetMappingsLocations() {
-    ResponseEntity<ExtendedRemoteLocationConfigurationMappings> responseEntity = get(mappingsLocationsUrl, ExtendedRemoteLocationConfigurationMappings.class);
-    assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-    assertThat(responseEntity.getBody().getTotalRecords(), is(2));
-    assertThat(responseEntity.getBody().getMappings().get(0).getOriginalLocationId(), notNullValue());
-    assertThat(responseEntity.getBody().getMappings().get(1).getFinalLocationId(), nullValue());
+    var finalLocation1 = "3b1d0845-d7d5-4e4c-bc66-c3ddd8f9d995";
+    var originalLocation1 = "26742721-6b6b-4b83-8080-bdffc78fb75f";
+    var finalLocation2 = "36300bf5-c42a-4964-8a64-3e828af2ee9b";
+    var originalLocation2 = "e7cfa5af-f8d4-4eea-bb69-7cd26d986629";
+
+    var mapping1 = post(extendedMappingsUrl,
+      new ExtendedRemoteLocationConfigurationMapping()
+        .finalLocationId(finalLocation1)
+        .remoteConfigurationId(randomIdAsString())
+        .originalLocationId(originalLocation1),
+      ExtendedRemoteLocationConfigurationMapping.class)
+      .getBody();
+    var mapping2 = post(extendedMappingsUrl,
+      new ExtendedRemoteLocationConfigurationMapping()
+        .finalLocationId(finalLocation2)
+        .remoteConfigurationId(randomIdAsString())
+        .originalLocationId(originalLocation2),
+      ExtendedRemoteLocationConfigurationMapping.class)
+      .getBody();
+
+    var mappings = get(mappingsLocationsUrl, ExtendedRemoteLocationConfigurationMappings.class)
+      .getBody().getMappings();
+    assertThat(mappings.size(), is(3));
+    assertEquals(finalLocation1, mappings.get(0).getFinalLocationId());
+    assertEquals(originalLocation1, mappings.get(0).getOriginalLocationId());
+    assertThat(mappings.get(1).getFinalLocationId(), nullValue());
+    assertEquals(finalLocation2, mappings.get(2).getFinalLocationId());
+    assertEquals(originalLocation2, mappings.get(2).getOriginalLocationId());
+
+    delete(mappingsUrl + "/" + mapping1.getFinalLocationId());
+    delete(mappingsUrl + "/" + mapping2.getFinalLocationId());
   }
 
   @Test
-  void canGetMappingsLocationsByCriteria() {
-    var responseEntity = get(mappingsLocationsUrl + "?originalLocationId=fcd64ce1-6995-48f0-840e-89ffa2288371", ExtendedRemoteLocationConfigurationMappings.class);
-    assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-    assertThat(responseEntity.getBody().getTotalRecords(), is(1));
+  void canGetMappingsLocationsByRemoteStorageConfigurationId() {
+    var finalLocation1 = "3b1d0845-d7d5-4e4c-bc66-c3ddd8f9d995";
+    var remoteConfiguration1 = randomIdAsString();
+    var originalLocation1 = "26742721-6b6b-4b83-8080-bdffc78fb75f";
+    var finalLocation2 = "36300bf5-c42a-4964-8a64-3e828af2ee9b";
+    var remoteConfiguration2 = randomIdAsString();
+    var originalLocation2 = "e7cfa5af-f8d4-4eea-bb69-7cd26d986629";
 
-    responseEntity = get(mappingsLocationsUrl + "?remoteStorageConfigurationId=de17bad7-2a30-4f1c-bee5-f653ded15629", ExtendedRemoteLocationConfigurationMappings.class);
-    assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-    assertThat(responseEntity.getBody().getTotalRecords(), is(2));
+    var mapping1 = post(extendedMappingsUrl,
+      new ExtendedRemoteLocationConfigurationMapping()
+        .finalLocationId(finalLocation1)
+        .remoteConfigurationId(remoteConfiguration1)
+        .originalLocationId(originalLocation1),
+      ExtendedRemoteLocationConfigurationMapping.class)
+      .getBody();
+    var mapping2 = post(extendedMappingsUrl,
+      new ExtendedRemoteLocationConfigurationMapping()
+        .finalLocationId(finalLocation2)
+        .remoteConfigurationId(remoteConfiguration2)
+        .originalLocationId(originalLocation2),
+      ExtendedRemoteLocationConfigurationMapping.class)
+      .getBody();
 
-    responseEntity = get(mappingsLocationsUrl + "?finalLocationId=53cf956f-c1df-410b-8bea-27f712cca7c0", ExtendedRemoteLocationConfigurationMappings.class);
-    assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-    assertThat(responseEntity.getBody().getTotalRecords(), is(2));
+    var mappings = get(mappingsLocationsUrl + "?remoteStorageConfigurationId=" + remoteConfiguration2, ExtendedRemoteLocationConfigurationMappings.class)
+      .getBody().getMappings();
+    assertThat(mappings.size(), is(3));
+    assertThat(mappings.get(0).getFinalLocationId(), nullValue());
+    assertEquals(originalLocation1, mappings.get(0).getOriginalLocationId());
+    assertThat(mappings.get(1).getFinalLocationId(), nullValue());
+    assertEquals(finalLocation2, mappings.get(2).getFinalLocationId());
+    assertEquals(originalLocation2, mappings.get(2).getOriginalLocationId());
+
+    delete(mappingsUrl + "/" + mapping1.getFinalLocationId());
+    delete(mappingsUrl + "/" + mapping2.getFinalLocationId());
   }
 
   @Test

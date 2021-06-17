@@ -1,4 +1,36 @@
-## 1.1.0 Unreleased
+## 1.2.0 Unreleased
+
+## 1.1.0 Released
+The primary focus of this release was to implement business logic for CaiaSoft
+
+[Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.0.3...v1.1.0)
+
+### Technical tasks
+* [MODRS-41](https://issues.folio.org/browse/MODRS-41) - Update postgresql to 42.2.18 or spring-boot-starter-parent to 2.3.5.RELEASE
+
+### Stories
+* [MODRS-67](https://issues.folio.org/browse/MODRS-67) - Improvements for querying mechanism for MappingsController and ExtendedMappingsController
+* [MODRS-66](https://issues.folio.org/browse/MODRS-66) - Implement querying mechanism for MappingsController and ExtendedMappingsController
+* [MODRS-58](https://issues.folio.org/browse/MODRS-58) - Update circulation interface dependency to support v11
+* [MODRS-54](https://issues.folio.org/browse/MODRS-54) - Extend RS configuration to support accession workflow for CaiaSoft
+* [MODRS-52](https://issues.folio.org/browse/MODRS-52) - Accession Flow (Cornell)
+* [MODRS-51](https://issues.folio.org/browse/MODRS-51) - Accession Flow (Duke)
+* [MODRS-50](https://issues.folio.org/browse/MODRS-50) - CaiaSoft Accession Table
+* [MODRS-47](https://issues.folio.org/browse/MODRS-47) - Accession Queue Record updating for CaiaSoft Integration
+* [MODRS-45](https://issues.folio.org/browse/MODRS-45) - Remove accession workflow preference from Configuration
+* [MODRS-43](https://issues.folio.org/browse/MODRS-43) - Caiasoft: Returning an Item to remote storage (Cornell flow)
+* [MODRS-39](https://issues.folio.org/browse/MODRS-39) - Caiasoft: Returning an Item to remote storage (Duke flow)
+* [MODRS-38](https://issues.folio.org/browse/MODRS-38) - Caiasoft: Requesting a Remote Storage Item for Circulation
+* [MODRS-37](https://issues.folio.org/browse/MODRS-37) - CaiaSoft: Accession Flow
+* [MODRS-36](https://issues.folio.org/browse/MODRS-36) - Mark fields as required
+* [MODRS-31](https://issues.folio.org/browse/MODRS-31) - Standard health check endpoint
+* [MODRS-28](https://issues.folio.org/browse/MODRS-28) - Make sample data consistent
+* [MODRS-24](https://issues.folio.org/browse/MODRS-24) - Extend RS configuration to support accession/return workflows for CaiaSoft
+* [MODRS-23](https://issues.folio.org/browse/MODRS-23) - Add CaiaSoft Provider to providers list
+
+### Bug fixes
+* [MODRS-56](https://issues.folio.org/browse/MODRS-56) - Accession flow (Dematic) doesn't work
+* [MODRS-32](https://issues.folio.org/browse/MODRS-32) - Update circulation interface version to 10.0
 
 ## 1.0.3 Released
 The focus of this release was to fix issues related to the cache

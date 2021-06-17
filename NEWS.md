@@ -30,7 +30,6 @@ The primary focus of this release was to implement business logic for CaiaSoft
 
 ### Bug fixes
 * [MODRS-56](https://issues.folio.org/browse/MODRS-56) - Accession flow (Dematic) doesn't work
-* [MODRS-42](https://issues.folio.org/browse/MODRS-42) - Unable to view configuration edits in third pane
 * [MODRS-32](https://issues.folio.org/browse/MODRS-32) - Update circulation interface version to 10.0
 
 ## 1.0.3 Released

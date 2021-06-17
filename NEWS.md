@@ -3,6 +3,8 @@
 ## 1.1.0 Released
 The primary focus of this release was to implement business logic for CaiaSoft
 
+[Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.0.3...v1.1.0)
+
 ### Technical tasks
 * [MODRS-41](https://issues.folio.org/browse/MODRS-41) - Update postgresql to 42.2.18 or spring-boot-starter-parent to 2.3.5.RELEASE
 
@@ -30,8 +32,6 @@ The primary focus of this release was to implement business logic for CaiaSoft
 * [MODRS-56](https://issues.folio.org/browse/MODRS-56) - Accession flow (Dematic) doesn't work
 * [MODRS-42](https://issues.folio.org/browse/MODRS-42) - Unable to view configuration edits in third pane
 * [MODRS-32](https://issues.folio.org/browse/MODRS-32) - Update circulation interface version to 10.0
-
-[Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.0.3...v1.1.0)
 
 ## 1.0.3 Released
 The focus of this release was to fix issues related to the cache

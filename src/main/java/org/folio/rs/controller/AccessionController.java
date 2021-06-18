@@ -29,9 +29,9 @@ public class AccessionController implements AccessionsApi {
   private final AccessionQueueService accessionQueueService;
 
   @Override
-  public ResponseEntity<AccessionQueues> getAccessions(@Valid Boolean accessioned, @Valid String remoteStorageConfigurationId,
+  public ResponseEntity<AccessionQueues> getAccessions(@Valid Boolean accessioned, @Valid String storageId,
       @Valid String createdDate, @Min(0) @Max(2147483647) @Valid Integer offset, @Min(0) @Max(2147483647) @Valid Integer limit) {
-    var accessionQueues = accessionQueueService.getAccessions(getFilterData(accessioned, remoteStorageConfigurationId, createdDate, offset, limit));
+    var accessionQueues = accessionQueueService.getAccessions(getFilterData(accessioned, storageId, createdDate, offset, limit));
     return new ResponseEntity<>(accessionQueues, HttpStatus.OK);
   }
 

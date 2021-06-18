@@ -129,6 +129,7 @@ public class AccessionQueueService {
 
     changeItemPermanentLocation(item, remoteLocationId);
     var accessionQueueRecord = buildAccessionQueueRecord(item, instance, locationMapping);
+    accessionQueueRecord.setAccessionedDateTime(LocalDateTime.now());
     accessionQueueRepository.save(accessionQueueRecord);
     return accessionQueueMapper.mapEntityToDto(accessionQueueRecord);
   }
@@ -278,7 +279,6 @@ public class AccessionQueueService {
       .id(UUID.randomUUID())
       .itemBarcode(item.getBarcode())
       .createdDateTime(LocalDateTime.now())
-      .accessionedDateTime(LocalDateTime.now())
       .remoteStorageId(UUID.fromString(locationMapping.getConfigurationId()))
       .callNumber(ofNullable(item.getEffectiveCallNumberComponents())
         .map(ItemEffectiveCallNumberComponents::getCallNumber)

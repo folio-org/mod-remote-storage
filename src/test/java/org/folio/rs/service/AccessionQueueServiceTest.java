@@ -597,6 +597,7 @@ public class AccessionQueueServiceTest extends TestBase {
     assertThat(accessionQueueRecord.getRemoteStorageId(), equalTo(UUID.fromString(REMOTE_STORAGE_ID)));
     assertThat(accessionQueueRecord.getInstanceAuthor(), equalTo(INSTANCE_AUTHOR));
     assertThat(accessionQueueRecord.getInstanceTitle(), equalTo(INSTANCE_TITLE));
+    assertThat(accessionQueueRecord.getAccessionedDateTime(), nullValue());
   }
 
 }

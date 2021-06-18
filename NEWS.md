@@ -1,4 +1,12 @@
-## 1.2.0 Unreleased
+## 1.3.0 Unreleased
+
+## 1.2.0 Released
+The primary focus of this release was to fix bugs
+
+[Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.1.0...v1.2.0)
+
+### Bug fixes
+* [MODRS-68](https://issues.folio.org/browse/MODRS-68) - Accession queue records created as already accessioned
 
 ## 1.1.0 Released
 The primary focus of this release was to implement business logic for CaiaSoft

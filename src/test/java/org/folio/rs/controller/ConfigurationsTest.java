@@ -159,9 +159,10 @@ public class ConfigurationsTest extends TestBase {
   void canDeleteConfiguration() {
     StorageConfiguration configuration = fetchConfigurations().getConfigurations()
       .get(0);
+    int size = fetchConfigurations().getConfigurations().size();
     requireNonNull(cacheManager.getCache("configurations")).put(configuration.getId(), configuration);
     assertThat(delete(configurationsUrl + configuration.getId()).getStatusCode(), is(HttpStatus.NO_CONTENT));
-    assertThat(fetchConfigurations().getTotalRecords(), is(1));
+    assertThat(fetchConfigurations().getTotalRecords(), is(size - 1));
     assertThat(requireNonNull(cacheManager.getCache("configurations")).get(configuration.getId()), nullValue());
   }
 

@@ -2,7 +2,6 @@ package org.folio.rs.controller;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
-import static org.folio.rs.domain.dto.ReturningWorkflowDetails.CAIASOFT;
 import static org.folio.rs.util.Utils.randomIdAsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -218,6 +217,46 @@ public class ConfigurationsTest extends TestBase {
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class,
         () -> put(urlWithAnotherUuid, configurationDto));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
+  }
+
+  @Test
+  void shouldReturnUnprocessableEntityIfAccessionDelayHasWrongValue() {
+    var configuration = new StorageConfiguration()
+      .name("name")
+      .providerName("provider")
+      .accessionDelay(0)
+      .accessionTimeUnit(TimeUnits.MINUTES);
+
+    var exception = assertThrows(HttpClientErrorException.class,
+      () -> post(configurationsUrl, configuration, StorageConfiguration.class));
+    assertThat(exception.getStatusCode(), equalTo(HttpStatus.UNPROCESSABLE_ENTITY));
+
+    configuration.accessionDelay(-1);
+
+    exception = assertThrows(HttpClientErrorException.class,
+      () -> post(configurationsUrl, configuration, StorageConfiguration.class));
+    assertThat(exception.getStatusCode(), equalTo(HttpStatus.UNPROCESSABLE_ENTITY));
+  }
+
+  @Test
+  void shouldReturnUnprocessableEntityIfRequiredFieldsAreMissing() {
+    var configurationMissingName = new StorageConfiguration()
+      .providerName("provider")
+      .accessionDelay(1)
+      .accessionTimeUnit(TimeUnits.MINUTES);
+
+    var exception = assertThrows(HttpClientErrorException.class,
+      () -> post(configurationsUrl, configurationMissingName, StorageConfiguration.class));
+    assertThat(exception.getStatusCode(), equalTo(HttpStatus.UNPROCESSABLE_ENTITY));
+
+     var configurationMissingProviderName = new StorageConfiguration()
+      .name("name")
+      .accessionDelay(1)
+      .accessionTimeUnit(TimeUnits.MINUTES);
+
+    exception = assertThrows(HttpClientErrorException.class,
+      () -> post(configurationsUrl, configurationMissingProviderName, StorageConfiguration.class));
+    assertThat(exception.getStatusCode(), equalTo(HttpStatus.UNPROCESSABLE_ENTITY));
   }
 
   private StorageConfiguration buildConfiguration(String id) {

@@ -82,8 +82,8 @@ public class ReturnRetrievalQueueServiceTest extends TestBase {
     ResponseEntity<RetrievalQueues> allRecords = get(formattedRetrievalUrl, RetrievalQueues.class);
 
     assertThat(Objects.requireNonNull(allRecords.getBody()).getRetrievals(), notNullValue());
-    assertThat(Objects.requireNonNull(allRecords.getBody()).getRetrievals().size(), equalTo(3));
-    assertThat(Objects.requireNonNull(allRecords.getBody()).getTotalRecords(), equalTo(3));
+    assertThat(Objects.requireNonNull(allRecords.getBody()).getRetrievals().size(), equalTo(4));
+    assertThat(Objects.requireNonNull(allRecords.getBody()).getTotalRecords(), equalTo(4));
 
     ResponseEntity<RetrievalQueues> retrievedRecord = get(formattedRetrievalUrl + "?retrieved=true", RetrievalQueues.class);
 
@@ -95,8 +95,8 @@ public class ReturnRetrievalQueueServiceTest extends TestBase {
     ResponseEntity<RetrievalQueues> nonRetrievedRecord = get(formattedRetrievalUrl + "?retrieved=false", RetrievalQueues.class);
 
     assertThat(Objects.requireNonNull(nonRetrievedRecord.getBody()).getRetrievals().get(0), notNullValue());
-    assertThat(Objects.requireNonNull(nonRetrievedRecord.getBody()).getRetrievals().size(), equalTo(1));
-    assertThat(Objects.requireNonNull(nonRetrievedRecord.getBody()).getTotalRecords(), equalTo(1));
+    assertThat(Objects.requireNonNull(nonRetrievedRecord.getBody()).getRetrievals().size(), equalTo(2));
+    assertThat(Objects.requireNonNull(nonRetrievedRecord.getBody()).getTotalRecords(), equalTo(2));
     assertThat(Objects.requireNonNull(nonRetrievedRecord.getBody()).getRetrievals().get(0).getRetrievedDateTime(), nullValue());
   }
 
@@ -107,10 +107,10 @@ public class ReturnRetrievalQueueServiceTest extends TestBase {
 
     ResponseEntity<RetrievalQueues> responseEntity = get(formattedRetrievalUrl + "?offset=1", RetrievalQueues.class);
     assertThat(Objects.requireNonNull(responseEntity.getBody())
-      .getTotalRecords(), equalTo(3));
+      .getTotalRecords(), equalTo(4));
     assertThat(Objects.requireNonNull(responseEntity.getBody())
       .getRetrievals()
-      .size(), equalTo(2));
+      .size(), equalTo(3));
   }
 
   @Test
@@ -120,7 +120,7 @@ public class ReturnRetrievalQueueServiceTest extends TestBase {
 
     ResponseEntity<RetrievalQueues> responseEntity = get(formattedRetrievalUrl + "?limit=1", RetrievalQueues.class);
     assertThat(Objects.requireNonNull(responseEntity.getBody())
-      .getTotalRecords(), equalTo(3));
+      .getTotalRecords(), equalTo(4));
     assertThat(Objects.requireNonNull(responseEntity.getBody())
       .getRetrievals()
       .size(), equalTo(1));

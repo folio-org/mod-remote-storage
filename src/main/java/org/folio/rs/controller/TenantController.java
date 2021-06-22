@@ -54,7 +54,7 @@ public class TenantController implements TenantApi {
   private final AccessionQueueRepository accessionQueueRepository;
   private final PubSubService pubSubService;
 
-  private final List<String> configurationSamples = List.of("dematic.json", "caiaSoft.json");
+  private final List<String> configurationSamples = List.of("dematic.json", "caia_soft.json");
   private final List<String> mappingSamples = Collections.singletonList("annex_to_dematic_full.json");
   private final List<String> retrievalQueueSamples = List.of("retrieval_queue_record.json", "retrieval_queue_record_for_caia_soft.json");
   private final List<String> accessionQueueSamples = Collections.singletonList("accession_queue_record.json");

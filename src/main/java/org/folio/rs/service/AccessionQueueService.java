@@ -60,7 +60,7 @@ public class AccessionQueueService {
   public void processAccessionQueueRecord(List<DomainEvent> events) {
     log.info("Starting processing events...");
     events.forEach(event -> {
-      log.debug("Event received: {}", asJsonString(event));
+      log.info("Event received: {}", asJsonString(event));
       if (DomainEventType.UPDATE == event.getType() && isEffectiveLocationChanged(event)) {
         var item = event.getNewEntity();
         var systemUserParameters = securityManagerService.getSystemUserParameters(event.getTenant());
@@ -74,7 +74,7 @@ public class AccessionQueueService {
           var instance = instances.getResult().get(0);
           var record = buildAccessionQueueRecord(item, instance, locationMapping);
           accessionQueueRepository.save(record);
-          log.debug("Record prepared and saved: {}", record);
+          log.info("Record prepared and saved for item barcode: {}", record.getItemBarcode());
         } else {
           log.info("Location mapping with id={} not found. Accession queue record not created.", effectiveLocationId);
         }

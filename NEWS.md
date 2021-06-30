@@ -1,5 +1,13 @@
 ## 1.1.0 Unreleased
 
+## 1.0.5 Released
+The focus of this release was to improve logging for integration bug investigation
+
+[Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.0.4...v1.0.5)
+
+### Bug Fixes
+* [MODRS-72](https://issues.folio.org/browse/MODRS-72) - Accession flow for Dematic doesn't work
+
 ## 1.0.4 Released
 The focus of this release was to fix accession flow for Dematic
 

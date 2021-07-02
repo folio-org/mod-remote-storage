@@ -23,9 +23,6 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-
 @Service
 @RequiredArgsConstructor
 @Log4j2

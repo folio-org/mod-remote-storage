@@ -193,6 +193,31 @@
           "Content-Type": "application/json"
         }
       }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/inventory/items?query=barcode==missing-item-barcode"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"items\" : [ {\n    \"id\" : \"fd14f552-2f2f-48a4-a777-570d087ba224\",\n    \"status\" : {\n      \"name\" : \"Available\",\n      \"date\" : \"2021-05-18T11:07:59.441+00:00\"\n    },\n    \"title\" : \"Test\",\n    \"hrid\" : \"it00000000010\",\n    \"contributorNames\" : [ ],\n    \"formerIds\" : [ ],\n    \"discoverySuppress\" : null,\n    \"holdingsRecordId\" : \"16ea6238-e0c9-41a4-9614-9442a3cc6dcc\",\n    \"barcode\" : \"0003\",\n    \"notes\" : [ ],\n    \"circulationNotes\" : [ ],\n    \"tags\" : {\n      \"tagList\" : [ ]\n    },\n    \"yearCaption\" : [ ],\n    \"electronicAccess\" : [ ],\n    \"statisticalCodeIds\" : [ ],\n    \"purchaseOrderLineIdentifier\" : null,\n    \"materialType\" : {\n      \"id\" : \"d9acad2f-2aac-4b48-9097-e6ab85906b25\",\n      \"name\" : \"text\"\n    },\n    \"permanentLoanType\" : {\n      \"id\" : \"2b94c631-fca9-4892-a730-03ee529ffe27\",\n      \"name\" : \"Can circulate\"\n    },\n    \"permanentLocation\" : {\n      \"id\" : \"fcd64ce1-6995-48f0-840e-89ffa2288371\",\n      \"name\" : \"Main Library\"\n    },\n    \"metadata\" : {\n      \"createdDate\" : \"2021-05-18T11:07:59.441+00:00\",\n      \"createdByUserId\" : \"1e13a9a1-d044-578c-8bc9-2aa1f80beac0\",\n      \"updatedDate\" : \"2021-05-18T11:07:59.441+00:00\",\n      \"updatedByUserId\" : \"1e13a9a1-d044-578c-8bc9-2aa1f80beac0\"\n    },\n    \"links\" : {\n      \"self\" : \"http://localhost:9130/inventory/items/fd14f552-2f2f-48a4-a777-570d087ba224\"\n    },\n    \"effectiveCallNumberComponents\" : {\n      \"callNumber\" : null,\n      \"prefix\" : null,\n      \"suffix\" : null,\n      \"typeId\" : null\n    },\n    \"effectiveLocation\" : {\n      \"id\" : \"fcd64ce1-6995-48f0-840e-89ffa2288371\",\n      \"name\" : \"Main Library\"\n    }\n  } ],\n  \"totalRecords\" : 1\n}\n",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "url": "/inventory/items/fd14f552-2f2f-48a4-a777-570d087ba224/mark-missing"
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
     }
   ]
 }

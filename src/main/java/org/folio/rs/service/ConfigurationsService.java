@@ -1,6 +1,7 @@
 package org.folio.rs.service;
 
 import static java.util.Objects.isNull;
+import static org.folio.rs.domain.entity.ProviderRecord.DEMATIC_SD;
 import static org.folio.rs.util.Utils.randomIdAsString;
 
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.dto.StorageConfigurations;
 import org.folio.rs.domain.entity.Configuration;
 import org.folio.rs.error.IdMismatchException;
+import org.folio.rs.error.RequiredValueMissingException;
 import org.folio.rs.mapper.ConfigurationsMapper;
 import org.folio.rs.repository.ConfigurationsRepository;
 import org.folio.spring.data.OffsetRequest;
@@ -20,6 +22,9 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +55,9 @@ public class ConfigurationsService {
 
   @CachePut(value = CONFIGURATIONS, key = "#storageConfiguration.id")
   public StorageConfiguration postConfiguration(StorageConfiguration storageConfiguration) {
+    if (isNull(storageConfiguration.getAccessionDelay()) && DEMATIC_SD.getId().equals(storageConfiguration.getProviderName())) {
+      throw new RequiredValueMissingException("accessionDelay must not be null");
+    }
     if (isNull(storageConfiguration.getId())) {
       storageConfiguration.id(randomIdAsString());
     }

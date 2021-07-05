@@ -68,7 +68,7 @@ public class ConfigurationsTest extends TestBase {
     assertThat(responseEntity.getBody()
       .getMetadata()
       .getCreatedDate(), notNullValue());
-    assertThat(fetchConfigurations().getTotalRecords(), is(2));
+    assertThat(fetchConfigurations().getTotalRecords(), is(3));
 
     // Verify caching disable via MODRS-42
     StorageConfiguration configuration = get(configurationsUrl + "/" + responseEntity.getBody()
@@ -110,7 +110,7 @@ public class ConfigurationsTest extends TestBase {
     ResponseEntity<StorageConfigurations> responseEntity = get(configurationsUrl, StorageConfigurations.class);
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
     assertThat(responseEntity.getBody()
-      .getTotalRecords(), is(1));
+      .getTotalRecords(), is(2));
   }
 
   @Test
@@ -158,9 +158,10 @@ public class ConfigurationsTest extends TestBase {
   void canDeleteConfiguration() {
     StorageConfiguration configuration = fetchConfigurations().getConfigurations()
       .get(0);
+    int size = fetchConfigurations().getConfigurations().size();
     requireNonNull(cacheManager.getCache("configurations")).put(configuration.getId(), configuration);
     assertThat(delete(configurationsUrl + configuration.getId()).getStatusCode(), is(HttpStatus.NO_CONTENT));
-    assertThat(fetchConfigurations().getTotalRecords(), is(0));
+    assertThat(fetchConfigurations().getTotalRecords(), is(size - 1));
     assertThat(requireNonNull(cacheManager.getCache("configurations")).get(configuration.getId()), nullValue());
   }
 

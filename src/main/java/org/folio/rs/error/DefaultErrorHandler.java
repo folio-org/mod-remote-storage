@@ -158,6 +158,17 @@ public class DefaultErrorHandler {
       .body(errors);
   }
 
+  @ExceptionHandler(RequiredValueMissingException.class)
+  public ResponseEntity<Errors> handleRequiredValueMissingException(RequiredValueMissingException e) {
+    return ResponseEntity
+      .unprocessableEntity()
+      .body(new Errors()
+        .addErrorsItem(new Error()
+          .message(e.getMessage())
+          .code(CONSTRAINT_VIOLATION.getDescription())
+          .type(INTERNAL.getValue())));
+  }
+
   private ResponseEntity<Errors> buildUnknownErrorResponse(String message) {
     return ResponseEntity
       .status(HttpStatus.INTERNAL_SERVER_ERROR)

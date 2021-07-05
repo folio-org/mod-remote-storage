@@ -700,6 +700,37 @@ paths:
             schema:
               $ref: "#/components/schemas/checkInItem"
         required: true
+  /items/barcode/{barcode}/markAsMissing:
+    post:
+      responses:
+        '201':
+          description: Mark item as missing
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: Bad request
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Bad request
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Internal server error
+      description: Mark item as missing
+      operationId: markItemAsMissingByBarcode
+      parameters:
+        - name: barcode
+          in: path
+          required: true
+          schema:
+            type: string
 components:
   responses:
     trait_validate_422:

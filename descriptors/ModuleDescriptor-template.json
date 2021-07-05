@@ -287,6 +287,21 @@
       ]
     },
     {
+      "id": "remote-storage-items",
+      "version": "1.0",
+      "handlers": [
+        {
+          "methods": ["POST"],
+          "pathPattern": "/remote-storage/items/barcode/{barcode}/markAsMissing",
+          "permissionsRequired": ["remote-storage.items.item.mark-as-missing.post"],
+          "modulePermissions": [
+            "inventory.items.collection.get",
+            "inventory.items.item.mark-missing.post"
+          ]
+        }
+      ]
+    },
+    {
       "id": "_tenant",
       "version": "1.2",
       "interfaceType": "system",
@@ -423,6 +438,11 @@
       "description" : "Return item by barcode"
     },
     {
+      "permissionName" : "remote-storage.items.item.mark-as-missing.post",
+      "displayName" : "mark item as missing by barcode",
+      "description" : "Mark item as missing by barcode"
+    },
+    {
       "permissionName": "remote-storage.all",
       "displayName": "remote storage API module - all permissions",
       "description": "All permissions for remote storage",
@@ -448,7 +468,8 @@
         "remote-storage.retrievals.collection.get",
         "remote-storage.retrievals.item.put",
         "remote-storage.check-in.item.post",
-        "remote-storage.return.item.post"
+        "remote-storage.return.item.post",
+        "remote-storage.items.item.mark-as-missing.post"
       ]
     }
   ],

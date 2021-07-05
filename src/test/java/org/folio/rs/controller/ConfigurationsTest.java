@@ -2,6 +2,7 @@ package org.folio.rs.controller;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
+import static org.folio.rs.domain.entity.ProviderRecord.DEMATIC_SD;
 import static org.folio.rs.util.Utils.randomIdAsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -257,6 +258,17 @@ public class ConfigurationsTest extends TestBase {
 
     exception = assertThrows(HttpClientErrorException.class,
       () -> post(configurationsUrl, configurationMissingProviderName, StorageConfiguration.class));
+    assertThat(exception.getStatusCode(), equalTo(HttpStatus.UNPROCESSABLE_ENTITY));
+  }
+
+  @Test
+  void shouldReturnUnprocessableEntityIfAccessionDelayIsNullForDematicSD() {
+    var configuration = new StorageConfiguration()
+      .name("Test")
+      .providerName(DEMATIC_SD.getId());
+
+    var exception = assertThrows(HttpClientErrorException.class,
+      () -> post(configurationsUrl, configuration, StorageConfiguration.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.UNPROCESSABLE_ENTITY));
   }
 

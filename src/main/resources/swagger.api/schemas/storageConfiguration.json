@@ -29,7 +29,8 @@
     },
     "accessionDelay": {
       "description": "accession schedule delay",
-      "type": "integer"
+      "type": "integer",
+      "minimum": 1
     },
     "accessionTimeUnit": {
       "description": "accession schedule time unit",

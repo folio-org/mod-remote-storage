@@ -1,0 +1,16 @@
+{
+  "id": "be27bad8-1a11-1f1c-bee5-f653ded15627",
+  "holdId": "7babb1ab-f46f-4c74-8950-bda779440f6f",
+  "itemBarcode": "326585216743",
+  "instanceTitle": "Title sample",
+  "instanceAuthor": "Matt Gordon",
+  "callNumber": "1234567890",
+  "patronBarcode": "543285216734",
+  "patronName": "John Smith",
+  "pickupLocation": "KU/CC/DI",
+  "requestStatus": "Open - Not yet filled",
+  "requestNote": "request note sample",
+  "createdDateTime": "2021-03-19T17:27:38.524736500",
+  "remoteStorageId": "de28bad1-1a31-4f1c-bee5-f653ded15629",
+  "requestType": "PYR"
+}

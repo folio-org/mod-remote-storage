@@ -5,6 +5,7 @@ import java.util.List;
 import org.folio.rs.domain.dto.DomainEvent;
 import org.folio.rs.repository.SystemUserParametersRepository;
 import org.folio.rs.service.AccessionQueueService;
+import org.folio.rs.service.KafkaService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -19,9 +20,10 @@ public class KafkaMessageListener {
   private final AccessionQueueService accessionQueueService;
   private final SystemUserParametersRepository systemUserParametersRepository;
 
-  @KafkaListener(id = "mod-remote-storage-listener",
+  @KafkaListener(
+    id = KafkaService.EVENT_LISTENER_ID,
     containerFactory = "kafkaListenerContainerFactory",
-    topics = "${application.kafka.listener.events.topics}",
+    topicPattern = "${application.kafka.listener.events.topic-pattern}",
     groupId = "${application.kafka.listener.events.group-id}",
     concurrency = "${application.kafka.listener.events.concurrency}")
   public void handleEvents(List<DomainEvent> events) {

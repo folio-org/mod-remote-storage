@@ -7,8 +7,10 @@ import org.folio.rs.controller.LocationMappingsTest;
 import org.folio.rs.controller.ProviderControllerTest;
 import org.folio.rs.controller.PubSubEventControllerTest;
 import org.folio.rs.controller.ReturnItemTest;
+import org.folio.rs.error.KafkaErrorHandlerTest;
 import org.folio.rs.service.AccessionQueueServiceTest;
 import org.folio.rs.service.CheckInItemServiceTest;
+import org.folio.rs.service.KafkaServiceTest;
 import org.folio.rs.service.ReturnRetrievalQueueServiceTest;
 import org.folio.rs.service.ReturnRetrievalQueueServiceUnitTest;
 import org.folio.rs.service.ReturnItemServiceTest;
@@ -79,6 +81,15 @@ public class TestSuite {
 
   @Nested
   class ItemsTestNested extends ItemsTest {
+
+  }
+  @Nested
+  class KafkaServiceTestNested extends KafkaServiceTest {
+
+  }
+
+  @Nested
+  class KafkaErrorHandlerTestNested extends KafkaErrorHandlerTest {
 
   }
 }

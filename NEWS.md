@@ -1,5 +1,13 @@
 ## 1.1.0 Unreleased
 
+## 1.0.6 Released
+The focus of this release was to improve kafka integration on multi-server environment
+
+[Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.0.5...v1.0.6)
+
+### Stories
+* [MODRS-71](https://issues.folio.org/browse/MODRS-71) - Kafka Topics should use ENV variable and tenant id in their naming convention
+
 ## 1.0.5 Released
 The focus of this release was to improve logging for integration bug investigation
 

@@ -57,11 +57,13 @@ logging:
 
 application:
   kafka:
+    retry-interval-ms: 20000
+    retry-delivery-attempts: 10
     listener:
       events:
-        concurrency: 1
-        topics: inventory.item
-        group-id: mod-remote-storage-items-group
+        concurrency: 2
+        topic-pattern: (${ENV:folio}\.)?(.*\.)?inventory.item
+        group-id: ${ENV:folio}-mod-remote-storage-items-group
 
 server.port: 8081
 folio.tenant.validation.enabled: false

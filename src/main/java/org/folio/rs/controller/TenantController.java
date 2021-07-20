@@ -22,6 +22,7 @@ import org.folio.rs.domain.entity.RetrievalQueueRecord;
 import org.folio.rs.repository.AccessionQueueRepository;
 import org.folio.rs.repository.RetrievalQueueRepository;
 import org.folio.rs.service.ConfigurationsService;
+import org.folio.rs.service.KafkaService;
 import org.folio.rs.service.LocationMappingsService;
 import org.folio.rs.service.SecurityManagerService;
 import org.folio.rs.service.PubSubService;
@@ -54,6 +55,7 @@ public class TenantController implements TenantApi {
   private final RetrievalQueueRepository retrievalQueueRepository;
   private final AccessionQueueRepository accessionQueueRepository;
   private final PubSubService pubSubService;
+  private final KafkaService kafkaService;
 
   private final List<String> configurationSamples = Collections.singletonList("dematic.json");
   private final List<String> mappingSamples = Collections.singletonList("annex_to_dematic.json");
@@ -67,6 +69,8 @@ public class TenantController implements TenantApi {
   @Override
   public ResponseEntity<String> postTenant(@Valid TenantAttributes tenantAttributes) {
     var tenantId = context.getTenantId();
+
+    kafkaService.restartEventListeners();
 
     if (folioSpringLiquibase != null) {
 

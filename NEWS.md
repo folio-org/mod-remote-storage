@@ -8,6 +8,7 @@ The primary focus of this release was to improve integration with kafka and enha
 ### Stories
 * [MODRS-76](https://issues.folio.org/browse/MODRS-76) - R1 Hotfix -> R2 Bugfix - Kafka Topics should use ENV variable and tenant id in their naming convention
 * [MODRS-74](https://issues.folio.org/browse/MODRS-74) - Implement endpoint to mark item as missing by barcode
+* [MODRS-48](https://issues.folio.org/browse/MODRS-48) - Configuration fields enhancement
 
 ### Bug fixes
 * [MODRS-72](https://issues.folio.org/browse/MODRS-72) - Improve logging: Accession flow for Dematic doesn't work

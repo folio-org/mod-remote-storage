@@ -1,4 +1,17 @@
-## 1.3.0 Unreleased
+## 1.4.0 Unreleased
+
+## 1.3.0 Released
+The primary focus of this release was to improve integration with kafka and enhance existing logic
+
+[Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.2.0...v1.3.0)
+
+### Stories
+* [MODRS-76](https://issues.folio.org/browse/MODRS-76) - R1 Hotfix -> R2 Bugfix - Kafka Topics should use ENV variable and tenant id in their naming convention
+* [MODRS-74](https://issues.folio.org/browse/MODRS-74) - Implement endpoint to mark item as missing by barcode
+
+### Bug fixes
+* [MODRS-72](https://issues.folio.org/browse/MODRS-72) - Improve logging: Accession flow for Dematic doesn't work
+
 
 ## 1.2.0 Released
 The primary focus of this release was to fix bugs

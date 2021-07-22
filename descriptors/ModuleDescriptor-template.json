@@ -27,6 +27,10 @@
       "version": "15.3"
     },
     {
+      "id": "authtoken",
+      "version": "2.0"
+    },
+    {
       "id": "login",
       "version": "7.0"
     },

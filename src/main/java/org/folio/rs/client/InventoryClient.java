@@ -26,4 +26,7 @@ public interface InventoryClient {
 
   @PutMapping(value = "/items/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
   void putItem(@PathVariable("id") String id, @RequestBody Item item);
+
+  @PostMapping("/items/{id}/mark-missing")
+  void markItemAsMissing(@PathVariable("id") String id);
 }

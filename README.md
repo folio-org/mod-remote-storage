@@ -58,6 +58,12 @@ API provides the following URL to retrieve providers:
 |---|---|---|---|
 | GET |  /remote-storage/providers | remote-storage.providers.collection.get | Get list of providers |
 
+API provides the following URL to mark item as missing:
+
+|  Method | URL| Permissions  | Description  | 
+|---|---|---|---|
+| POST |  /remote-storage/items/barcode/{barcode}/markAsMissing | remote-storage.items.item.mark-as-missing.post | Mark item as missing by barcode |
+
 ### Environment variables:
 
 | Name                          | Default value             | Description                                                       |

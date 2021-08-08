@@ -114,7 +114,7 @@ public class TenantController implements TenantApi {
 
   private void initializeSystemUser(String tenantId) {
     try {
-      securityManagerService.prepareSystemUser(SYSTEM_USER, SYSTEM_USER, context.getOkapiUrl(), tenantId);
+      securityManagerService.prepareOrUpdateSystemUser(SYSTEM_USER, SYSTEM_USER, context.getOkapiUrl(), tenantId);
     } catch (Exception e) {
       log.error("Error initializing System User", e);
     }

@@ -1,5 +1,13 @@
 ## 1.4.0 Unreleased
 
+## 1.3.1 Released
+The release includes improvement of the system user creation internal logic
+
+[Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.3.0...v1.3.1)
+
+### Stories
+* [MODRS-82](https://issues.folio.org/browse/MODRS-82) - Make system user updatable
+
 ## 1.3.0 Released
 The primary focus of this release was to improve integration with kafka and enhance existing logic
 
@@ -12,7 +20,6 @@ The primary focus of this release was to improve integration with kafka and enha
 
 ### Bug fixes
 * [MODRS-72](https://issues.folio.org/browse/MODRS-72) - Improve logging: Accession flow for Dematic doesn't work
-
 
 ## 1.2.0 Released
 The primary focus of this release was to fix bugs

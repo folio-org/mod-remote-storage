@@ -1,7 +1,7 @@
 ## 1.4.0 Unreleased
 
 ## 1.3.1 Released
-The release includes improvement of the system user creation internal logic
+This release includes improvement of the system user creation internal logic
 
 [Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.3.0...v1.3.1)
 

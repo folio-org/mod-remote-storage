@@ -28,6 +28,7 @@ import org.folio.rs.service.SecurityManagerService;
 import org.folio.rs.service.PubSubService;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.liquibase.FolioSpringLiquibase;
+import org.folio.spring.service.TenantService;
 import org.folio.tenant.domain.dto.Parameter;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.folio.tenant.rest.resource.TenantApi;
@@ -55,6 +56,7 @@ public class TenantController implements TenantApi {
   private final AccessionQueueRepository accessionQueueRepository;
   private final PubSubService pubSubService;
   private final KafkaService kafkaService;
+  private final TenantService tenantService;
 
   private final List<String> configurationSamples = List.of("dematic.json", "caia_soft.json");
   private final List<String> mappingSamples = Collections.singletonList("annex_to_dematic_full.json");
@@ -109,6 +111,7 @@ public class TenantController implements TenantApi {
   @Override
   public ResponseEntity<Void> deleteTenant() {
     pubSubService.unregisterPubSubModule(context.getOkapiUrl(), context.getTenantId(), context.getToken());
+    tenantService.deleteTenant();
     return ResponseEntity.noContent().build();
   }
 

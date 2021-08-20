@@ -466,6 +466,10 @@
           "readonly": true
         }
       }
+    },
+    "_version": {
+      "type": "integer",
+      "description": "Record version for optimistic locking"
     }
   },
   "additionalProperties": false,

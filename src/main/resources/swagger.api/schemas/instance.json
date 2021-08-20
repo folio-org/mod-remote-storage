@@ -403,6 +403,10 @@
         "$ref": "uuid.json"
       }
     },
+    "_version": {
+      "type": "integer",
+      "description": "Record version for optimistic locking"
+    },
     "precedingTitles": {
       "description": "Array of preceding titles",
       "type": "array",

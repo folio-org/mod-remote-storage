@@ -242,12 +242,11 @@ public class AccessionQueueService {
   }
 
   public void setAccessionedByBarcode(String barcode) {
-    Optional<AccessionQueueRecord> accessionQueue = accessionQueueRepository.findOne(Specification.where(hasBarcode(barcode).and(notAccessioned())));
-    if (accessionQueue.isPresent()) {
-      saveAccessionQueueWithCurrentDate(accessionQueue.get());
-    } else {
+    List<AccessionQueueRecord> accessionQueues = accessionQueueRepository.findAll(Specification.where(hasBarcode(barcode).and(notAccessioned())));
+    if (accessionQueues.isEmpty()) {
       throw new EntityNotFoundException("Accession queue with item barcode " + barcode + " not found");
     }
+    accessionQueues.forEach(this::saveAccessionQueueWithCurrentDate);
   }
 
   /**

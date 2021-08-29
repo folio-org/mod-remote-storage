@@ -5,10 +5,7 @@ import static org.folio.rs.util.MapperUtils.stringToUUIDSafe;
 import static org.folio.rs.util.RetrievalQueueRecordUtils.buildReturnRetrievalQueueRecord;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.Predicate;
@@ -82,11 +79,11 @@ public class ReturnRetrievalQueueService {
   }
 
   public void setRetrievedByBarcode(String barcode) {
-    Optional<ReturnRetrievalQueueRecord> retrievalQueueRecord = returnRetrievalQueueRepository.findOne(Specification.where(hasBarcode(barcode).and(notRetrievedSpecification())));
-    if (retrievalQueueRecord.isEmpty()) {
+    List<ReturnRetrievalQueueRecord> retrievalQueueRecords = returnRetrievalQueueRepository.findAll(Specification.where(hasBarcode(barcode).and(notRetrievedSpecification())));
+    if (retrievalQueueRecords.isEmpty()) {
       throw new EntityNotFoundException("Retrieval queue record with item barcode " + barcode + NOT_FOUND);
     }
-    saveRetrievalQueueWithCurrentDate(retrievalQueueRecord.get());
+    retrievalQueueRecords.forEach(this::saveRetrievalQueueWithCurrentDate);
   }
 
   public void processEventRequest(RequestEvent requestEvent) {

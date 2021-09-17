@@ -98,7 +98,7 @@ public class ReturnItemServiceTest {
     pickUpServicePoint.setId("service-point-id");
     pickUpServicePoint.setCode("service-point-code");
 
-    when(inventoryClient.getItemsByQuery("barcode==" + item.getBarcode())).thenReturn(itemResult);
+    when(inventoryClient.getItemByBarcode(item.getBarcode())).thenReturn(item);
     when(circulationClient.getItemRequests(item.getId())).thenReturn(itemRequests);
     when(usersClient.getUsersByQuery("id==" + USER_ID)).thenReturn(userResult);
     when(returnRetrievalQueueRepository.save(isA(ReturnRetrievalQueueRecord.class))).thenReturn(null);
@@ -133,7 +133,7 @@ public class ReturnItemServiceTest {
       .providerName("CAIA_SOFT")
       .returningWorkflowDetails(FOLIO);
 
-    when(inventoryClient.getItemsByQuery("barcode==" + item.getBarcode())).thenReturn(itemResult);
+    when(inventoryClient.getItemByBarcode(item.getBarcode())).thenReturn(item);
     when(configurationsService.getConfigurationById(isA(String.class))).thenReturn(configuration);
     doNothing().when(checkInItemService).checkInItemByBarcode(isA(String.class), isA(CheckInItem.class));
 
@@ -165,7 +165,7 @@ public class ReturnItemServiceTest {
     itemRequests.setResult(Collections.singletonList(request));
     itemRequests.setTotalRecords(1);
 
-    when(inventoryClient.getItemsByQuery("barcode==" + item.getBarcode())).thenReturn(itemResult);
+    when(inventoryClient.getItemByBarcode(item.getBarcode())).thenReturn(item);
     lenient().when(circulationClient.getItemRequests(item.getId())).thenReturn(itemRequests);
     when(configurationsService.getConfigurationById(isA(String.class))).thenReturn(configuration);
 
@@ -192,7 +192,7 @@ public class ReturnItemServiceTest {
     itemRequests.setResult(Collections.emptyList());
     itemRequests.setTotalRecords(0);
 
-    when(inventoryClient.getItemsByQuery("barcode==" + item.getBarcode())).thenReturn(itemResult);
+    when(inventoryClient.getItemByBarcode(item.getBarcode())).thenReturn(item);
     lenient().when(circulationClient.getItemRequests(item.getId())).thenReturn(itemRequests);
     when(configurationsService.getConfigurationById(isA(String.class))).thenReturn(configuration);
 
@@ -214,7 +214,7 @@ public class ReturnItemServiceTest {
     itemResult.setTotalRecords(0);
     itemResult.setResult(Collections.emptyList());
 
-    when(inventoryClient.getItemsByQuery("barcode==" + item.getBarcode())).thenReturn(itemResult);
+    when(inventoryClient.getItemByBarcode(item.getBarcode())).thenReturn(item);
 
     Assertions.assertThrows(ItemReturnException.class,
       () -> returnItemService.returnItem(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem));
@@ -229,7 +229,7 @@ public class ReturnItemServiceTest {
     itemResult.setTotalRecords(0);
     itemResult.setResult(Collections.emptyList());
 
-    when(inventoryClient.getItemsByQuery("barcode==" + item.getBarcode())).thenReturn(itemResult);
+    when(inventoryClient.getItemByBarcode(item.getBarcode())).thenReturn(item);
 
     Assertions.assertThrows(ItemReturnException.class,
       () -> returnItemService.returnItem(WRONG_REMOTE_STORAGE_CONFIGURATION_ID, checkInItem));
@@ -264,7 +264,7 @@ public class ReturnItemServiceTest {
       .name("test")
       .providerName("DEMATIC_EMS");
 
-    when(inventoryClient.getItemsByQuery("barcode==" + item.getBarcode())).thenReturn(itemResult);
+    when(inventoryClient.getItemByBarcode(item.getBarcode())).thenReturn(item);
     when(circulationClient.getItemRequests(item.getId())).thenReturn(itemRequests);
     when(usersClient.getUsersByQuery("id==" + USER_ID)).thenReturn(userResult);
     when(configurationsService.getConfigurationById(isA(String.class))).thenReturn(configuration);

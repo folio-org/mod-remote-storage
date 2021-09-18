@@ -76,6 +76,7 @@ public class CheckInItemService {
     if (remoteLocations.contains(item.getEffectiveLocation().getId())) {
       return item.getEffectiveLocation().getId();
     }
+    log.info("Item with barcode=" + item.getBarcode() + " has no matching remote location, aborting check-in");
     throw new CheckInException("Item's location doesn't match any remote location");
   }
 

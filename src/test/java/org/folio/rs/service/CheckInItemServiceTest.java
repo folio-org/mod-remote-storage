@@ -68,8 +68,8 @@ public class CheckInItemServiceTest {
 
   @Test
   void testCheckInItemByBarcode() {
-    when(mappingsRepository.findByRemoteStorageConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
-      .thenReturn(Optional.of(entity));
+    when(mappingsRepository.findAllByRemoteStorageConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
+      .thenReturn(Collections.singletonList(entity));
     when(locationClient.getLocation(FOLIO_LOCATION_ID))
       .thenReturn(folioLocation);
 
@@ -80,8 +80,8 @@ public class CheckInItemServiceTest {
 
   @Test
   void testCheckInItemByHoldId() {
-    when(mappingsRepository.findByRemoteStorageConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
-      .thenReturn(Optional.of(entity));
+    when(mappingsRepository.findAllByRemoteStorageConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
+      .thenReturn(Collections.singletonList(entity));
     when(locationClient.getLocation(FOLIO_LOCATION_ID))
       .thenReturn(folioLocation);
     when(returnRetrievalQueueService.getLastRetrievalByHoldId(HOLD_ID, REMOTE_STORAGE_CONFIGURATION_ID))
@@ -95,8 +95,8 @@ public class CheckInItemServiceTest {
 
   @Test
   void testCheckInItemByBarcodeIfLocationNotExistInDataBase() {
-    when(mappingsRepository.findByRemoteStorageConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
-      .thenReturn(Optional.empty());
+    when(mappingsRepository.findAllByRemoteStorageConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
+      .thenReturn(Collections.emptyList());
 
     Assertions.assertThrows(CheckInException.class,
       () -> checkInItemService.checkInItemByBarcode(REMOTE_STORAGE_CONFIGURATION_ID, checkInItem));
@@ -106,8 +106,8 @@ public class CheckInItemServiceTest {
   void testCheckInItemByBarcodeIfLocationClientReturnEmptyPrimaryServicePoint() {
     var folioLocation = FolioLocation.of(FOLIO_LOCATION_ID, Strings.EMPTY, Strings.EMPTY);
 
-    when(mappingsRepository.findByRemoteStorageConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
-      .thenReturn(Optional.of(entity));
+    when(mappingsRepository.findAllByRemoteStorageConfigurationId(UUID.fromString(REMOTE_STORAGE_CONFIGURATION_ID)))
+      .thenReturn(Collections.singletonList(entity));
     when(locationClient.getLocation(FOLIO_LOCATION_ID))
       .thenReturn(folioLocation);
 

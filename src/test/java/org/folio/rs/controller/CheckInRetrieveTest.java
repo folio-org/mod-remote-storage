@@ -32,7 +32,7 @@ public class CheckInRetrieveTest extends TestBase {
   private static final String FINAL_LOCATION_ID = "53cf956f-c1df-410b-8bea-27f712cca7c0";
   private static final String HOLD_ID = "5c3c7621-8ad0-43ca-a675-4f2f32d25b27";
   private static final String HOLD_ID_NOT_FOUND = "d83bc442-6705-41dd-b199-07c3c2083db6";
-  private static final String ITEM_BARCODE = "2887532577331";
+  private static final String ITEM_BARCODE = "645398607547";
   private static final String REMOTE_STORAGE_ERROR_CONFIGURATION_ID = "de17bad7-2a30-4f1c-bee5-f653ded15628";
 
   private String checkInUrl;

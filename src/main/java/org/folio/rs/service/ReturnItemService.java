@@ -33,8 +33,6 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 @Log4j2
 public class ReturnItemService {
-
-  private static final String BARCODE_QUERY_PROPERTY = "barcode==";
   private static final String USER_ID_QUERY_PROPERTY = "id==";
 
   private final InventoryClient inventoryClient;
@@ -49,7 +47,7 @@ public class ReturnItemService {
   public ReturnItemResponse returnItem(String remoteStorageConfigurationId, CheckInItem checkInItem) {
     log.info("Start return for item with barcode " + checkInItem.getItemBarcode());
     var itemReturnResponse = new ReturnItemResponse();
-    var item = getItemByBarcode(checkInItem.getItemBarcode());
+    var item = inventoryClient.getItemByBarcode(checkInItem.getItemBarcode());
     var storageConfiguration = getStorageConfigurationById(remoteStorageConfigurationId);
     if (isRequestsCheckNeeded(storageConfiguration)) {
       findFirstHoldRecallRequest(item).ifPresent(request -> {
@@ -68,7 +66,7 @@ public class ReturnItemService {
     log.info("Start return for item with barcode " + itemBarcode);
 
     var itemReturnResponse = new ReturnItemResponse();
-    var item = getItemByBarcode(itemBarcode);
+    var item = inventoryClient.getItemByBarcode(itemBarcode);
     var locationMapping = getLocationMapping(item.getEffectiveLocation().getId());
     var storageConfiguration = getStorageConfigurationById(locationMapping.getConfigurationId());
 
@@ -114,14 +112,6 @@ public class ReturnItemService {
         .findFirst();
     }
     return Optional.empty();
-  }
-
-  private Item getItemByBarcode(String barcode) {
-    var items = inventoryClient.getItemsByQuery(BARCODE_QUERY_PROPERTY + barcode);
-    if (items.isEmpty()) {
-      throw new ItemReturnException("Item does not exist for barcode " + barcode);
-    }
-    return items.getResult().get(0);
   }
 
   private User getUserById(String requesterId) {

@@ -4,6 +4,7 @@ import org.folio.rs.domain.dto.Instance;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.ItemsMove;
 import org.folio.rs.domain.dto.ResultList;
+import org.folio.rs.error.ItemReturnException;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,4 +30,12 @@ public interface InventoryClient {
 
   @PostMapping("/items/{id}/mark-missing")
   void markItemAsMissing(@PathVariable("id") String id);
+
+  default Item getItemByBarcode(String itemBarcode) {
+    var items = getItemsByQuery("barcode==" + itemBarcode);
+    if (items.isEmpty()) {
+      throw new ItemReturnException("Item does not exist for barcode " + itemBarcode);
+    }
+    return items.getResult().get(0);
+  }
 }

@@ -1,5 +1,13 @@
 ## 1.4.0 Unreleased
 
+## 1.3.2 Released
+This release includes fix for check in item upon return flow
+
+[Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.3.1...v1.3.2)
+
+### Bug fixes
+* [MODRS-89](https://issues.folio.org/browse/MODRS-89) - Juniper Hotfix #3 - Item status becomes ‘In Transit’ when item returns to the remote storage
+
 ## 1.3.1 Released
 This release includes improvement of the system user creation internal logic
 

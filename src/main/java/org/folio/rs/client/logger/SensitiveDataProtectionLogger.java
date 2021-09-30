@@ -2,12 +2,13 @@ package org.folio.rs.client.logger;
 
 import feign.Logger;
 import feign.Request;
+import feign.RequestTemplate;
 import feign.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.folio.spring.integration.XOkapiHeaders;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -44,7 +45,8 @@ public class SensitiveDataProtectionLogger extends Logger {
   }
 
   private Request getSensitiveDataProtectedRequest(Request request) {
-    return Request.create(request.httpMethod(), request.url(), maskOkapiTokenInHeaders(request.headers()), request.body(), Charset.forName("UTF-8"));
+    return Request.create(request.httpMethod(), request.url(), maskOkapiTokenInHeaders(request.headers()),
+      request.body(), StandardCharsets.UTF_8, new RequestTemplate());
   }
 
   private Response getSensitiveDataProtectedResponse(Response response) {

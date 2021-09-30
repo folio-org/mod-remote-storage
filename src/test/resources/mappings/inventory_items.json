@@ -81,7 +81,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=holdingsRecordId==cfade499-67c3-4583-949f-948638ddef16"
+        "url": "/inventory/items?query=holdingsRecordId%3D%3Dcfade499-67c3-4583-949f-948638ddef16"
       },
       "response": {
         "status": 200,
@@ -107,7 +107,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=holdingsRecordId==ee4025c8-893e-4283-b0e6-36cf818c0605"
+        "url": "/inventory/items?query=holdingsRecordId%3D%3Dee4025c8-893e-4283-b0e6-36cf818c0605"
       },
       "response": {
         "status": 200,
@@ -146,7 +146,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=holdingsRecordId==65cb2bf0-d4c2-4886-8ad0-b76f1ba75d61"
+        "url": "/inventory/items?query=holdingsRecordId%3D%3D65cb2bf0-d4c2-4886-8ad0-b76f1ba75d61"
       },
       "response": {
         "status": 200,
@@ -172,7 +172,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=holdingsRecordId==032703c1-90f0-4708-aa5e-ac5fb7d19c59"
+        "url": "/inventory/items?query=holdingsRecordId%3D%3D032703c1-90f0-4708-aa5e-ac5fb7d19c59"
       },
       "response": {
         "status": 200,
@@ -198,7 +198,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=holdingsRecordId==16ea6238-e0c9-41a4-9614-9442a3cc6dcc"
+        "url": "/inventory/items?query=holdingsRecordId%3D%3D16ea6238-e0c9-41a4-9614-9442a3cc6dcc"
       },
       "response": {
         "status": 200,

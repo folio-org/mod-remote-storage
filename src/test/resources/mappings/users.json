@@ -3,7 +3,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/users?query=username==system-user"
+        "url": "/users?query=username%3D%3Dsystem-user"
       },
       "response": {
         "status": 200,
@@ -55,7 +55,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/users?query=id==21932a85-bd00-446b-9565-46e0c1a5490b"
+        "url": "/users?query=id%3D%3D21932a85-bd00-446b-9565-46e0c1a5490b"
       },
       "response": {
         "status": 200,

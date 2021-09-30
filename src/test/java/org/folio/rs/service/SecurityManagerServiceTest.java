@@ -30,7 +30,7 @@ public class SecurityManagerServiceTest extends TestBase {
   void testCreateDefaultSystemUser() {
     securityManagerService.prepareOrUpdateSystemUser(NON_PRESENTED_USER, PASSWORD, getOkapiUrl(), TEST_TENANT);
     List<String> paths = wireMockServer.getAllServeEvents().stream().map(e -> e.getRequest().getUrl()).collect(toList());
-    assertThat(paths, hasItems("/authn/login", "/perms/users", "/authn/credentials", "/users", "/users?query=username==non_presented_user"));
+    assertThat(paths, hasItems("/authn/login", "/perms/users", "/authn/credentials", "/users", "/users?query=username%3D%3Dnon_presented_user"));
   }
 
   @Test
@@ -49,7 +49,7 @@ public class SecurityManagerServiceTest extends TestBase {
   void testCreateNonExistedUser() {
     securityManagerService.prepareOrUpdateSystemUser(NON_EXISTED_USER, PASSWORD, getOkapiUrl(), TEST_TENANT);
     List<String> paths = wireMockServer.getAllServeEvents().stream().map(e -> e.getRequest().getUrl()).collect(toList());
-    assertThat(paths, hasItems(  "/authn/login", "/perms/users", "/authn/credentials", "/users", "/users?query=username==non_existed_user"));
+    assertThat(paths, hasItems(  "/authn/login", "/perms/users", "/authn/credentials", "/users", "/users?query=username%3D%3Dnon_existed_user"));
   }
 
   @Test
@@ -58,6 +58,6 @@ public class SecurityManagerServiceTest extends TestBase {
     List<String> paths = wireMockServer.getAllServeEvents().stream().map(e -> e.getRequest().getUrl()).collect(toList());
     assertThat(paths, hasItems("/authn/login", "/perms/users/c78aa9ec-b7d3-4d53-9e43-20296f39b496/permissions?indexField=userId",
       "/users/c78aa9ec-b7d3-4d53-9e43-20296f39b496",
-      "/users?query=username==existed_user"));
+      "/users?query=username%3D%3Dexisted_user"));
   }
 }

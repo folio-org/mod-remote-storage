@@ -3,7 +3,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/identifier-types?query=name==ISBN"
+        "url": "/identifier-types?query=name%3D%3DISBN"
       },
       "response": {
         "status": 200,
@@ -16,7 +16,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/identifier-types?query=name==ISSN"
+        "url": "/identifier-types?query=name%3D%3DISSN"
       },
       "response": {
         "status": 200,
@@ -29,7 +29,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/identifier-types?query=name==OCLC"
+        "url": "/identifier-types?query=name%3D%3DOCLC"
       },
       "response": {
         "status": 200,

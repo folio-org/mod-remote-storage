@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.folio.spring.integration.XOkapiHeaders;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -43,7 +44,7 @@ public class SensitiveDataProtectionLogger extends Logger {
   }
 
   private Request getSensitiveDataProtectedRequest(Request request) {
-    return Request.create(request.httpMethod(), request.url(), maskOkapiTokenInHeaders(request.headers()), request.requestBody());
+    return Request.create(request.httpMethod(), request.url(), maskOkapiTokenInHeaders(request.headers()), request.body(), Charset.forName("UTF-8"));
   }
 
   private Response getSensitiveDataProtectedResponse(Response response) {

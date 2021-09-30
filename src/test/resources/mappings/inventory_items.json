@@ -42,7 +42,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=barcode==not-exist-item-barcode"
+        "url": "/inventory/items?query=barcode%3D%3Dnot-exist-item-barcode"
       },
       "response": {
         "status": 200,
@@ -55,7 +55,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=barcode==38268030"
+        "url": "/inventory/items?query=barcode%3D%3D38268030"
       },
       "response": {
         "status": 200,
@@ -68,7 +68,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=barcode==38268031"
+        "url": "/inventory/items?query=barcode%3D%3D38268031"
       },
       "response": {
         "status": 200,
@@ -94,7 +94,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=barcode==38268032"
+        "url": "/inventory/items?query=barcode%3D%3D38268032"
       },
       "response": {
         "status": 200,
@@ -120,7 +120,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=barcode==111"
+        "url": "/inventory/items?query=barcode%3D%3D111"
       },
       "response": {
         "status": 200,
@@ -133,7 +133,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=barcode==12345"
+        "url": "/inventory/items?query=barcode%3D%3D12345"
       },
       "response": {
         "status": 200,
@@ -159,7 +159,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=barcode==0001"
+        "url": "/inventory/items?query=barcode%3D%3D0001"
       },
       "response": {
         "status": 200,
@@ -185,7 +185,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=barcode==0003"
+        "url": "/inventory/items?query=barcode%3D%3D0003"
       },
       "response": {
         "status": 200,

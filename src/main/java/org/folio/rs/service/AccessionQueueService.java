@@ -123,7 +123,7 @@ public class AccessionQueueService {
         }
         changeHoldingsRecordPermanentLocation(holdingsRecord, remoteLocationId);
       } else {
-        moveItemToHolding(item, findOrCreateHoldingWithSamePermanentLocation(holdingsRecord, remoteLocationId));
+        item = moveItemToHoldingAndReloadItem(item, findOrCreateHoldingWithSamePermanentLocation(holdingsRecord, remoteLocationId));
       }
     }
 
@@ -192,11 +192,21 @@ public class AccessionQueueService {
     }
   }
 
-  private void moveItemToHolding(Item item, String holdingRecordId) {
+  /**
+   * This method a) moves item to holding and b) retrieves updated item and populates item's
+   * holding id
+   * @param item - item instance
+   * @param holdingRecordId - id of the corresponding holding
+   * @return updated instance of item
+   */
+  private Item moveItemToHoldingAndReloadItem(Item item, String holdingRecordId) {
     inventoryClient.moveItemsToHolding(new ItemsMove()
       .itemIds(Collections.singletonList(item.getId()))
       .toHoldingsRecordId(holdingRecordId));
+    // reload item to prevent Optimistic Locking exception (MODRS-93)
+    item = inventoryClient.getItemByBarcode(item.getBarcode());
     item.setHoldingsRecordId(holdingRecordId);
+    return item;
   }
 
   private boolean isAllItemsInHoldingHaveSamePermanentLocation(Item item, String location) {

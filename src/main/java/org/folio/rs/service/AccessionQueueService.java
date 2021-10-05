@@ -195,9 +195,9 @@ public class AccessionQueueService {
   /**
    * This method a) moves item to holding and b) retrieves updated item and populates item's
    * holding id
-   * @param item - item instance
+   * @param item - item
    * @param holdingRecordId - id of the corresponding holding
-   * @return updated instance of item
+   * @return updated and refreshed item
    */
   private Item moveItemToHoldingAndReloadItem(Item item, String holdingRecordId) {
     inventoryClient.moveItemsToHolding(new ItemsMove()

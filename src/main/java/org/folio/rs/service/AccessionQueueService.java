@@ -193,12 +193,11 @@ public class AccessionQueueService {
     }
   }
 
-  private Item moveItemToHolding(Item item, String holdingRecordId) {
+  private void moveItemToHolding(Item item, String holdingRecordId) {
     inventoryClient.moveItemsToHolding(new ItemsMove()
       .itemIds(Collections.singletonList(item.getId()))
       .toHoldingsRecordId(holdingRecordId));
     item.setHoldingsRecordId(holdingRecordId);
-    return item;
   }
 
   private boolean isAllItemsInHoldingHaveSamePermanentLocation(Item item, String location) {

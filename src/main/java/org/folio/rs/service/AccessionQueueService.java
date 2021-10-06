@@ -123,10 +123,11 @@ public class AccessionQueueService {
         }
         changeHoldingsRecordPermanentLocation(holdingsRecord, remoteLocationId);
       } else {
-        item = moveItemToHoldingAndReloadItem(item, findOrCreateHoldingWithSamePermanentLocation(holdingsRecord, remoteLocationId));
+        moveItemToHolding(item, findOrCreateHoldingWithSamePermanentLocation(holdingsRecord, remoteLocationId));
       }
     }
 
+    item = inventoryClient.getItemByBarcode(item.getBarcode());
     changeItemPermanentLocation(item, remoteLocationId);
     var accessionQueueRecord = buildAccessionQueueRecord(item, instance, locationMapping);
     accessionQueueRecord.setAccessionedDateTime(LocalDateTime.now());
@@ -192,19 +193,10 @@ public class AccessionQueueService {
     }
   }
 
-  /**
-   * This method a) moves item to holding and b) retrieves updated item and populates item's
-   * holding id
-   * @param item - item
-   * @param holdingRecordId - id of the corresponding holding
-   * @return updated and refreshed item
-   */
-  private Item moveItemToHoldingAndReloadItem(Item item, String holdingRecordId) {
+  private Item moveItemToHolding(Item item, String holdingRecordId) {
     inventoryClient.moveItemsToHolding(new ItemsMove()
       .itemIds(Collections.singletonList(item.getId()))
       .toHoldingsRecordId(holdingRecordId));
-    // reload item to prevent Optimistic Locking exception (MODRS-93)
-    item = inventoryClient.getItemByBarcode(item.getBarcode());
     item.setHoldingsRecordId(holdingRecordId);
     return item;
   }

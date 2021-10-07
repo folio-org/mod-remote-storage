@@ -127,6 +127,7 @@ public class AccessionQueueService {
       }
     }
 
+    item = inventoryClient.getItemByBarcode(item.getBarcode());
     changeItemPermanentLocation(item, remoteLocationId);
     var accessionQueueRecord = buildAccessionQueueRecord(item, instance, locationMapping);
     accessionQueueRecord.setAccessionedDateTime(LocalDateTime.now());

@@ -12,7 +12,7 @@ The primary focus of this release was to fix bugs, provide sample data for caiai
 ### Stories
 * [MODRS-82](https://issues.folio.org/browse/MODRS-82) - Make system user updatable
 * [MODRS-74](https://issues.folio.org/browse/MODRS-74) - Implement endpoint to mark item as missing by barcode
-* [MODRS-71](https://issues.folio.org/browse/MODRS-82) - Kafka Topics should use ENV variable and tenant id in their naming convention
+* [MODRS-71](https://issues.folio.org/browse/MODRS-71) - Kafka Topics should use ENV variable and tenant id in their naming convention
 * [MODRS-64](https://issues.folio.org/browse/MODRS-64) - align dependency versions affected by Inventory's Optimistic Lockings
 * [MODRS-63](https://issues.folio.org/browse/MODRS-63) - Create sample data to test caiasoft retrieving jobs
 * [MODRS-48](https://issues.folio.org/browse/MODRS-48) - Configuration fields enhancement

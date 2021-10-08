@@ -1,4 +1,28 @@
-## 1.3.0 Unreleased
+## 1.5.0 Unreleased
+
+## 1.4.0 Released
+The primary focus of this release was to fix bugs, provide sample data for caiaisoft module
+
+[Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.2.0...v1.4.0)
+
+### Technical tasks
+* [MODRS-85](https://issues.folio.org/browse/MODRS-85) - mod-remote-storage: folio-spring-base v2 update
+* [MODRS-79](https://issues.folio.org/browse/MODRS-79) - mod-remote-storage unavailable in snapshot environments
+
+### Stories
+* [MODRS-82](https://issues.folio.org/browse/MODRS-82) - Make system user updatable
+* [MODRS-74](https://issues.folio.org/browse/MODRS-74) - Implement endpoint to mark item as missing by barcode
+* [MODRS-71](https://issues.folio.org/browse/MODRS-82) - Kafka Topics should use ENV variable and tenant id in their naming convention
+* [MODRS-64](https://issues.folio.org/browse/MODRS-64) - align dependency versions affected by Inventory's Optimistic Lockings
+* [MODRS-63](https://issues.folio.org/browse/MODRS-63) - Create sample data to test caiasoft retrieving jobs
+* [MODRS-48](https://issues.folio.org/browse/MODRS-48) - Configuration fields enhancement
+
+### Bug fixes
+* [MODRS-93](https://issues.folio.org/browse/MODRS-93) - Issues related to optimistic locking while PUT executed for inventory/items/ endpoint
+* [MODRS-91](https://issues.folio.org/browse/MODRS-91) - Kiwi - Item status becomes ‘In Transit’ when item returns to the remote storage
+* [MODRS-84](https://issues.folio.org/browse/MODRS-84) - Cannot mark item retrieved if there are more than 1 in retrieval queue
+* [MODRS-81](https://issues.folio.org/browse/MODRS-81) - Tenant deletion API does not purge database schema
+* [MODRS-72](https://issues.folio.org/browse/MODRS-72) - Improve logging: Accession flow for Dematic doesn't work
 
 ## 1.2.0 Released
 The primary focus of this release was to fix bugs

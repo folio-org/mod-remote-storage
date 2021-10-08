@@ -3,7 +3,7 @@
 ## 1.4.0 Released
 The primary focus of this release was to fix bugs, provide sample data for caiaisoft module
 
-[Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.2.0...v1.4.0)
+[Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.3.2...v1.4.0)
 
 ### Technical tasks
 * [MODRS-85](https://issues.folio.org/browse/MODRS-85) - mod-remote-storage: folio-spring-base v2 update

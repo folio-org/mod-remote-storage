@@ -1,5 +1,13 @@
 ## 1.4.0 Unreleased
 
+## 1.3.3 Released
+This release includes fix for item retrieval queue
+
+[Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.3.2...v1.3.3)
+
+### Bug fixes
+* [MODRS-84](https://issues.folio.org/browse/MODRS-84) - R2 2021 Hot Fix #3 - Cannot mark item retrieved if there are more than 1 in retrieval queue
+
 ## 1.3.2 Released
 This release includes fix for check in item upon return flow
 

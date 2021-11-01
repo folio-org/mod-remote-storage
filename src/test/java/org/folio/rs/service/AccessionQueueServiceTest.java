@@ -129,6 +129,43 @@ public class AccessionQueueServiceTest extends TestBase {
   }
 
   @Test
+  void testItemCreationEventHandling() {
+
+    var mapping = new RemoteLocationConfigurationMapping()
+      .folioLocationId(NEW_EFFECTIVE_LOCATION_ID)
+      .configurationId(REMOTE_STORAGE_ID);
+    locationMappingsService.postRemoteLocationConfigurationMapping(mapping);
+
+    var newItem = new Item().effectiveLocationId(NEW_EFFECTIVE_LOCATION_ID)
+      .instanceId(INSTANCE_ID)
+      .barcode(BARCODE)
+      .effectiveCallNumberComponents(
+        new ItemEffectiveCallNumberComponents().callNumber(CALL_NUMBER));
+
+    var newItemWithoutRemoteConfig = new Item().effectiveLocationId(randomIdAsString())
+      .instanceId(INSTANCE_ID)
+      .barcode(BARCODE)
+      .effectiveCallNumberComponents(
+        new ItemEffectiveCallNumberComponents().callNumber(CALL_NUMBER));
+
+    var resourceBodyWithRemoteConfig = DomainEvent
+      .of(null, newItem, DomainEventType.CREATE, TEST_TENANT);
+    var resourceBodyWithoutRemoteConfig = DomainEvent
+      .of(null, newItemWithoutRemoteConfig, DomainEventType.CREATE,
+        TEST_TENANT);
+
+    accessionQueueService.processAccessionQueueRecord(
+      Collections.singletonList(resourceBodyWithRemoteConfig));
+    accessionQueueService.processAccessionQueueRecord(
+      Collections.singletonList(resourceBodyWithoutRemoteConfig));
+
+    AccessionQueueRecord accessionQueueRecord = new AccessionQueueRecord();
+    accessionQueueRecord.setItemBarcode(BARCODE);
+    verifyCreatedAccessionQueueRecord(accessionQueueRepository.findAll(Example.of(accessionQueueRecord)).get(0));
+
+  }
+
+  @Test
   void shouldFindAccessionQueuesByRemoteStorageId() {
     accessionQueueRepository.save(createBaseAccessionQueueRecord());
     accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID)));

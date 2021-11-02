@@ -41,6 +41,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
@@ -85,8 +87,9 @@ public class AccessionQueueServiceTest extends TestBase {
   }
 
 
-  @Test
-  void testItemUpdatingEventHandling() {
+  @ParameterizedTest
+  @EnumSource(value = DomainEventType.class, names = {"CREATE", "UPDATE"})
+  void testItemUpdatingEventHandling(DomainEventType domainEventType) {
 
     var mapping = new RemoteLocationConfigurationMapping()
       .folioLocationId(NEW_EFFECTIVE_LOCATION_ID)
@@ -112,9 +115,9 @@ public class AccessionQueueServiceTest extends TestBase {
         new ItemEffectiveCallNumberComponents().callNumber(CALL_NUMBER));
 
     var resourceBodyWithRemoteConfig = DomainEvent
-      .of(originalItem, newItem, DomainEventType.UPDATE, TEST_TENANT);
+      .of(domainEventType.equals(DomainEventType.UPDATE) ? originalItem : null, newItem, domainEventType, TEST_TENANT);
     var resourceBodyWithoutRemoteConfig = DomainEvent
-      .of(originalItem, newItemWithoutRemoteConfig, DomainEventType.UPDATE,
+      .of(domainEventType.equals(DomainEventType.UPDATE) ? originalItem : null, newItemWithoutRemoteConfig, domainEventType,
         TEST_TENANT);
 
     accessionQueueService.processAccessionQueueRecord(

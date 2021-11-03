@@ -86,7 +86,8 @@ public class AccessionQueueService {
     log.info("Starting processing events...");
     events.forEach(event -> {
       log.info("Event received: {}", asJsonString(event));
-      if (DomainEventType.UPDATE == event.getType() && isEffectiveLocationChanged(event)) {
+      if (DomainEventType.CREATE == event.getType() ||
+          DomainEventType.UPDATE == event.getType() && isEffectiveLocationChanged(event)) {
         var item = event.getNewEntity();
         var systemUserParameters = securityManagerService.getSystemUserParameters(event.getTenant());
         FolioExecutionScopeExecutionContextManager.beginFolioExecutionContext(

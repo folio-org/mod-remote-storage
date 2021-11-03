@@ -1,5 +1,13 @@
 ## 1.5.0 Unreleased
 
+## 1.4.1 Released
+The primary focus of this release is improvement of remote storage accessioning process
+
+[Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.4.0...v1.4.1)
+
+### Bug fixes
+* [MODRS-94](https://issues.folio.org/browse/MODRS-94) - Improve remote storage accessioning process
+
 ## 1.4.0 Released
 The primary focus of this release was to fix bugs, provide sample data for caiaisoft module
 

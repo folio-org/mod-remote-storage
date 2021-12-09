@@ -134,10 +134,10 @@ public class PubSubEventControllerTest extends TestBase {
 
     var configuration = new StorageConfiguration().id("b3354743-285d-468d-9fa1-4e3d6321c13d")
       .name("Remote Storage")
-      .apiKey("i+X9dfNOztkBfoAmGTXf/w==")
+      .apiKey("fake_api_key==")
       .providerName(CAIA_SOFT.getId())
       .returningWorkflowDetails(FOLIO)
-      .url("https://rs.dematic.com")
+      .url("https://rs.rs.com")
       .accessionDelay(2)
       .accessionTimeUnit(TimeUnits.MINUTES);
 

@@ -58,7 +58,7 @@ public class TenantController implements TenantApi {
   private final KafkaService kafkaService;
   private final TenantService tenantService;
 
-  private final List<String> configurationSamples = List.of("dematic.json", "caia_soft.json");
+  private final List<String> configurationSamples = List.of("dematic_configuration_sample.json", "caia_soft_configuration_sample.json");
   private final List<String> mappingSamples = Collections.singletonList("annex_to_dematic_full.json");
   private final List<String> retrievalQueueSamples = List.of("retrieval_queue_record.json", "retrieval_queue_record_for_caia_soft.json");
   private final List<String> accessionQueueSamples = Collections.singletonList("accession_queue_record.json");

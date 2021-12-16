@@ -36,6 +36,7 @@
     <jackson.version>2.11.1</jackson.version>
     <json.path.version>2.5.0</json.path.version>
     <postgresql.version>42.2.18</postgresql.version>
+    <log4j2.version>2.16.0</log4j2.version> <!-- if less then vulnerable to CVE-2021-44228 and CVE-2021-45046-->
     <sonar.exclusions>src/main/java/org/folio/rs/domain/**, src/main/java/org/folio/rs/client/AuthnClient.java,
       src/main/java/org/folio/rs/config/properties/**, src/main/java/org/folio/rs/service/PubSubService.java, src/main/java/org/folio/rs/error/PubSubException.java </sonar.exclusions>
     <remote-storage.yaml.file>src/main/resources/swagger.api/remote-storage.yaml</remote-storage.yaml.file>

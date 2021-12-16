@@ -1,5 +1,13 @@
 ## 1.3.0 Unreleased
 
+## 1.2.1 Released
+The primary focus of this release is fixing log4j vulnerability
+
+[Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.2.0...v1.2.1)
+
+### Bug fixes
+* [MODRS-103](https://issues.folio.org/browse/MODRS-103) - Kiwi R3 2021 - Log4j vulnerability verification and correction
+
 ## 1.2.0 Released
 The primary focus of this release was to fix bugs
 

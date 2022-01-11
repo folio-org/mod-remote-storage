@@ -280,7 +280,9 @@ public class AccessionQueueService {
   private AccessionQueueRecord buildAccessionQueueRecord(Item item, Instance instance,
     RemoteLocationConfigurationMapping locationMapping) {
     var publication = instance.getPublication().stream().findFirst();
-    var itemNotes = item.getNotes().stream()
+    var itemNotes = ofNullable(item.getNotes())
+      .orElseGet(Collections::emptyList)
+      .stream()
       .map(this::buildItemNote)
       .collect(Collectors.toList());
     return AccessionQueueRecord.builder()

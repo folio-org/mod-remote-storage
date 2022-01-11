@@ -4,6 +4,7 @@ import static org.folio.rs.util.MapperUtils.stringToUUIDSafe;
 import static org.folio.rs.util.Utils.randomIdAsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -351,9 +352,12 @@ public class AccessionQueueServiceTest extends TestBase {
       .remoteStorageId(REMOTE_STORAGE_ID)
       .itemBarcode("38268032");
 
-    post(formattedAccessionUrl, accessionRequest, AccessionQueue.class);
+    var response = post(formattedAccessionUrl, accessionRequest, AccessionQueue.class);
     assertThatItemWasMovedToHoldingWithRemoteLocation("336034b4-0524-45d7-b778-c769274baccf",
       "a31301dc-0a28-49e6-9fa2-499e07c0bb42");
+    assertThat(response.getBody().getNotes().size(), is(1));
+    assertThat(response.getBody().getNotes().get(0).getNoteType(), equalTo("General note"));
+    assertThat(response.getBody().getNotes().get(0).getNote(), equalTo("test note"));
   }
 
   @Test

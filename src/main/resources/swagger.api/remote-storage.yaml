@@ -832,6 +832,8 @@ components:
       $ref: schemas/identifierType.json
     contributorType:
       $ref: schemas/contributorType.json
+    itemNoteType:
+      $ref: schemas/item-note-type.json
   parameters:
     trait_queryable_final_location_id:
       name: finalLocationId

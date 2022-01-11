@@ -93,6 +93,15 @@
       "description": "Permanent location id",
       "$ref": "uuid.json"
     },
+    "notes": {
+      "description": "Accession queue notes",
+      "type": "array",
+      "items": {
+        "description": "Accession queue note",
+        "type": "object",
+        "$ref": "accessionQueueNote.json"
+      }
+    },
     "metadata": {
       "description": "Entity metadata",
       "type": "object",

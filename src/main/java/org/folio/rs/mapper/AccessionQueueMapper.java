@@ -12,7 +12,10 @@ import org.mapstruct.Mappings;
 import org.mapstruct.NullValueCheckStrategy;
 import org.springframework.data.domain.Page;
 
-@Mapper(componentModel = "spring", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS, imports = MapperUtils.class)
+@Mapper(componentModel = "spring",
+  nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
+  imports = MapperUtils.class,
+  uses = ItemNotesMapper.class)
 public interface AccessionQueueMapper {
 
   @Mappings({

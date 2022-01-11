@@ -1,0 +1,17 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "url": "/item-note-types/6a2533a7-4de2-4e64-8466-074c2fa9308c"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body":  "{\n  \"id\": \"6a2533a7-4de2-4e64-8466-074c2fa9308c\",\n  \"name\": \"General note\",\n  \"source\": \"folio\"\n}"
+      }
+    }
+  ]
+}

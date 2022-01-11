@@ -30,6 +30,7 @@ import org.folio.rs.client.ContributorTypesClient;
 import org.folio.rs.client.HoldingsStorageClient;
 import org.folio.rs.client.IdentifierTypesClient;
 import org.folio.rs.client.InventoryClient;
+import org.folio.rs.client.ItemNoteTypesClient;
 import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.rs.domain.dto.AccessionQueue;
 import org.folio.rs.domain.dto.AccessionQueues;
@@ -46,6 +47,7 @@ import org.folio.rs.domain.dto.InstancePublication;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.ItemEffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.ItemMaterialType;
+import org.folio.rs.domain.dto.ItemNote;
 import org.folio.rs.domain.dto.ItemPermanentLocation;
 import org.folio.rs.domain.dto.ItemsMove;
 import org.folio.rs.domain.dto.LocationMappingFilterData;
@@ -53,6 +55,7 @@ import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
 import org.folio.rs.domain.entity.AccessionQueueRecord_;
+import org.folio.rs.domain.entity.ItemNoteEntity;
 import org.folio.rs.error.AccessionException;
 import org.folio.rs.mapper.AccessionQueueMapper;
 import org.folio.rs.repository.AccessionQueueRepository;
@@ -79,6 +82,7 @@ public class AccessionQueueService {
   private final IdentifierTypesClient identifierTypesClient;
   private final ContributorTypesClient contributorTypesClient;
   private final ConfigurationsService configurationsService;
+  private final ItemNoteTypesClient itemNoteTypesClient;
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -276,6 +280,11 @@ public class AccessionQueueService {
   private AccessionQueueRecord buildAccessionQueueRecord(Item item, Instance instance,
     RemoteLocationConfigurationMapping locationMapping) {
     var publication = instance.getPublication().stream().findFirst();
+    var itemNotes = ofNullable(item.getNotes())
+      .orElseGet(Collections::emptyList)
+      .stream()
+      .map(this::buildItemNote)
+      .collect(Collectors.toList());
     return AccessionQueueRecord.builder()
       .id(UUID.randomUUID())
       .itemBarcode(item.getBarcode())
@@ -306,6 +315,7 @@ public class AccessionQueueService {
       .materialType(ofNullable(item.getMaterialType()).map(ItemMaterialType::getName).orElse(null))
       .copyNumber(item.getCopyNumber())
       .permanentLocationId(UUID.fromString(locationMapping.getFolioLocationId()))
+      .notes(itemNotes)
       .build();
   }
 
@@ -384,5 +394,14 @@ public class AccessionQueueService {
   @SneakyThrows
   private String asJsonString(Object value) {
     return OBJECT_MAPPER.writeValueAsString(value);
+  }
+
+  private ItemNoteEntity buildItemNote(ItemNote itemNote) {
+    var noteType = itemNoteTypesClient.getItemNoteTypeById(itemNote.getItemNoteTypeId()).getName();
+    return ItemNoteEntity.builder()
+      .noteType(noteType)
+      .note(itemNote.getNote())
+      .staffOnly(itemNote.getStaffOnly())
+      .build();
   }
 }

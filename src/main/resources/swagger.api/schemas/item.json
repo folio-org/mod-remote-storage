@@ -175,7 +175,7 @@
       "description": "notes",
       "type": "array",
       "items": {
-        "$ref": "item-notes.json"
+        "$ref": "item-note.json"
       }
     },
     "circulationNotes": {

@@ -10,4 +10,5 @@
   <include file="changes/remote_storage_configurations_updateSchema.xml" relativeToChangelogFile="true"/>
   <include file="changes/location_mappings_update_schema.xml" relativeToChangelogFile="true"/>
   <include file="changes/location_mappings_update_schema_tech_debt.xml" relativeToChangelogFile="true"/>
+  <include file="changes/add_item_notes_table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

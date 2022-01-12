@@ -16,6 +16,6 @@ public interface CirculationClient {
   @PostMapping(value = "/check-in-by-barcode", consumes = MediaType.APPLICATION_JSON_VALUE)
   void checkIn(@RequestBody CheckInCirculationRequest checkInByBarcodeRequest);
 
-  @GetMapping(value = "/requests/queue/{itemId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(value = "/requests/queue/item/{itemId}", consumes = MediaType.APPLICATION_JSON_VALUE)
   ResultList<Request> getItemRequests(@PathVariable("itemId") String itemId);
 }

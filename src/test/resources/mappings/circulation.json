@@ -15,7 +15,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/circulation/requests/queue/0b96a642-5e7f-452d-9cae-9cee66c9a892"
+        "url": "/circulation/requests/queue/item/0b96a642-5e7f-452d-9cae-9cee66c9a892"
       },
       "response": {
         "status": 200,

@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Log4j2
 @RestController("folioTenantController")
-@RequestMapping(value = "/_/")
+@RequestMapping
 @RequiredArgsConstructor
 public class TenantController implements TenantApi {
 
@@ -86,7 +86,6 @@ public class TenantController implements TenantApi {
           loadSampleData();
         }
       } catch (LiquibaseException e) {
-        e.printStackTrace();
         log.error("Liquibase error", e);
         return ResponseEntity.internalServerError().build();
       }
@@ -104,7 +103,7 @@ public class TenantController implements TenantApi {
       log.error("Error during system-user initialization:", e);
     }
 
-    return ResponseEntity.ok().build();
+    return ResponseEntity.noContent().build();
   }
 
   @Override

@@ -28,9 +28,9 @@
     <mapstruct.version>1.4.1.Final</mapstruct.version>
     <json.version>20200518</json.version>
     <hazelcast.version>4.0.2</hazelcast.version>
-    <spring-kafka.version>2.6.3</spring-kafka.version>
+    <spring-kafka.version>2.8.2</spring-kafka.version>
     <wiremock.version>2.27.2</wiremock.version>
-    <spring-kafka-test.version>2.6.4</spring-kafka-test.version>
+    <spring-kafka-test.version>2.8.2</spring-kafka-test.version>
     <embedded.db.version>1.6.2</embedded.db.version>
     <pubsub.client.version>2.0.0</pubsub.client.version>
     <jackson.version>2.11.1</jackson.version>

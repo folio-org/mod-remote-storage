@@ -32,7 +32,6 @@ import org.folio.spring.service.TenantService;
 import org.folio.tenant.domain.dto.Parameter;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.folio.tenant.rest.resource.TenantApi;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,7 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Log4j2
 @RestController("folioTenantController")
-@RequestMapping(value = "/_/")
+@RequestMapping
 @RequiredArgsConstructor
 public class TenantController implements TenantApi {
 
@@ -66,9 +65,10 @@ public class TenantController implements TenantApi {
   public static final String SYSTEM_USER = "system-user";
 
 
+
   @SneakyThrows
   @Override
-  public ResponseEntity<String> postTenant(@Valid TenantAttributes tenantAttributes) {
+  public ResponseEntity<Void> postTenant(@Valid TenantAttributes tenantAttributes) {
     var tenantId = context.getTenantId();
 
     kafkaService.restartEventListeners();
@@ -86,10 +86,8 @@ public class TenantController implements TenantApi {
           loadSampleData();
         }
       } catch (LiquibaseException e) {
-        e.printStackTrace();
         log.error("Liquibase error", e);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body("Liquibase error: " + e.getMessage());
+        return ResponseEntity.internalServerError().build();
       }
     }
 
@@ -105,11 +103,11 @@ public class TenantController implements TenantApi {
       log.error("Error during system-user initialization:", e);
     }
 
-    return ResponseEntity.ok().body("true");
+    return ResponseEntity.noContent().build();
   }
 
   @Override
-  public ResponseEntity<Void> deleteTenant() {
+  public ResponseEntity<Void> deleteTenant(String operationId) {
     pubSubService.unregisterPubSubModule(context.getOkapiUrl(), context.getTenantId(), context.getToken());
     tenantService.deleteTenant();
     return ResponseEntity.noContent().build();

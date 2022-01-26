@@ -49,14 +49,14 @@ public class ConfigurationsTest extends TestBase {
   void canPostTenantWithParameters() {
     String tenants = "{\"module_to\":\"moduleId\", \"parameters\": [ { \"key\":\"loadSample\", \"value\": true } ] }";
     ResponseEntity<String> response = post(String.format(TENANT_URL, okapiPort), tenants, String.class);
-    assertThat(response.getStatusCode(), is(HttpStatus.OK));
+    assertThat(response.getStatusCode(), is(HttpStatus.NO_CONTENT));
   }
 
   @Test
   void canPostTenantWithoutParameters() {
     String tenants = "{\"module_to\":\"moduleId\"}";
     ResponseEntity<String> response = post(String.format(TENANT_URL, okapiPort), tenants, String.class);
-    assertThat(response.getStatusCode(), is(HttpStatus.OK));
+    assertThat(response.getStatusCode(), is(HttpStatus.NO_CONTENT));
   }
 
   @Test

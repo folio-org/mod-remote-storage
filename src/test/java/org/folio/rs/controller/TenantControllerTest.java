@@ -42,7 +42,7 @@ public class TenantControllerTest {
         .moduleMetadata(moduleMetadata)
         .okapiUrl(getOkapiUrl()).build());
     tenantController.postTenant(new TenantAttributes().moduleTo("mod_remote_storage"));
-    tenantController.deleteTenant();
+    tenantController.deleteTenant("test_tenant");
 
     verify(jdbcTemplate).execute(String.format(DROP_SCHEMA_QUERY, getSchemaName()));
   }

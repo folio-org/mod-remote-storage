@@ -83,7 +83,23 @@ public class KafkaListenerTest {
     // verify
     verify(accessionQueueService, times(1)).processAccessionQueueRecord(any());
     verify(securityManagerService, times(0)).prepareOrUpdateSystemUser(any(), any(), any(), any());
+  }
 
+  @Test
+  void testNonFeignError() {
+    log.info("======= Test Kafka events processing: Skipping Re-authorization in non-Feign Error Case =======");
+
+    // when
+    doThrow(NullPointerException.class).when(accessionQueueService)
+            .processAccessionQueueRecord(any());
+
+    // then
+    var events = getEventsList();
+    assertThrows(NullPointerException.class, () -> kafkaMessageListener.handleEvents(events));
+
+    // verify
+    verify(accessionQueueService, times(1)).processAccessionQueueRecord(any());
+    verify(securityManagerService, times(0)).prepareOrUpdateSystemUser(any(), any(), any(), any());
   }
 
   private List<DomainEvent> getEventsList() {

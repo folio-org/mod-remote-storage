@@ -11,6 +11,7 @@ import org.folio.rs.controller.TenantControllerTest;
 import org.folio.rs.error.KafkaErrorHandlerTest;
 import org.folio.rs.service.AccessionQueueServiceTest;
 import org.folio.rs.service.CheckInItemServiceTest;
+import org.folio.rs.service.KafkaListenerTest;
 import org.folio.rs.service.KafkaServiceTest;
 import org.folio.rs.service.ReturnRetrievalQueueServiceTest;
 import org.folio.rs.service.ReturnRetrievalQueueServiceUnitTest;
@@ -96,6 +97,11 @@ public class TestSuite {
 
   @Nested
   class TenantControllerTestNested extends TenantControllerTest {
+
+  }
+
+  @Nested
+  class KafkaListenerTestNested extends KafkaListenerTest {
 
   }
 }

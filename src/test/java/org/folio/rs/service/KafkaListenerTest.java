@@ -38,7 +38,7 @@ public class KafkaListenerTest {
   private AccessionQueueService accessionQueueService;
 
   @Test
-  public void testExpectedFlow() {
+  void testExpectedFlow() {
     log.info("======= Test Kafka events processing: Successful Case =======");
 
     // then
@@ -50,7 +50,7 @@ public class KafkaListenerTest {
   }
 
   @Test
-  public void testUnauthorizedError() {
+  void testUnauthorizedError() {
     log.info("======= Test Kafka events processing: Re-authorization in Authorization Error Case =======");
     // when
     doThrow(prepareFeignException(401)).when(accessionQueueService)
@@ -59,7 +59,8 @@ public class KafkaListenerTest {
       .prepareOrUpdateSystemUser(any(), any(), any(), any());
 
     // then
-    assertThrows(FeignException.class, () -> kafkaMessageListener.handleEvents(getEventsList()));
+    var events = getEventsList();
+    assertThrows(FeignException.class, () -> kafkaMessageListener.handleEvents(events));
 
     // verify
     verify(accessionQueueService, times(2)).processAccessionQueueRecord(any());
@@ -68,7 +69,7 @@ public class KafkaListenerTest {
   }
 
   @Test
-  public void testNonUnauthorizedError() {
+  void testNonUnauthorizedError() {
     log.info("======= Test Kafka events processing: Skipping Re-authorization in non-Authorization Error Case =======");
 
     // when
@@ -76,7 +77,8 @@ public class KafkaListenerTest {
       .processAccessionQueueRecord(any());
 
     // then
-    assertThrows(FeignException.class, () -> kafkaMessageListener.handleEvents(getEventsList()));
+    var events = getEventsList();
+    assertThrows(FeignException.class, () -> kafkaMessageListener.handleEvents(events));
 
     // verify
     verify(accessionQueueService, times(1)).processAccessionQueueRecord(any());

@@ -36,7 +36,7 @@
     },
     {
       "id": "permissions",
-      "version": "5.3"
+      "version": "5.5"
     },
     {
       "id": "locations",
@@ -320,6 +320,7 @@
             "users.item.put",
             "login.item.post",
             "perms.users.item.post",
+            "perms.users.assign.immutable",
             "pubsub.event-types.post",
             "pubsub.subscribers.post",
             "pubsub.publishers.post"

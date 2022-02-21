@@ -56,7 +56,7 @@ public class KafkaListenerTest {
     doThrow(prepareFeignException(401)).when(accessionQueueService)
       .processAccessionQueueRecord(any());
     doNothing().when(securityManagerService)
-      .prepareOrUpdateSystemUser(any(), any(), any(), any());
+      .refreshSystemUserApiKey(any(), any(), any(), any());
 
     // then
     var events = getEventsList();

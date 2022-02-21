@@ -21,7 +21,9 @@ public class FeignRequestInterceptor implements RequestInterceptor {
   @SneakyThrows
   @Override
   public void apply(RequestTemplate template) {
-    template.header(TOKEN, Collections.singletonList(folioExecutionContext.getToken()));
+    if (!"/login".equals(template.path())) {
+      template.header(TOKEN, Collections.singletonList(folioExecutionContext.getToken()));
+    }
     template.header(TENANT, Collections.singletonList(folioExecutionContext.getTenantId()));
   }
 }

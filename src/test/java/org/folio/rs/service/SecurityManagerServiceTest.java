@@ -60,4 +60,11 @@ public class SecurityManagerServiceTest extends TestBase {
       "/users/c78aa9ec-b7d3-4d53-9e43-20296f39b496",
       "/users?query=username%3D%3Dexisted_user"));
   }
+
+  @Test
+  void testRefreshSystemUserApiKey() {
+    securityManagerService.refreshSystemUserApiKey(EXISTED_USER, PASSWORD, getOkapiUrl(), TEST_TENANT);
+    List<String> paths = wireMockServer.getAllServeEvents().stream().map(e -> e.getRequest().getUrl()).collect(toList());
+    assertThat(paths, hasItems("/authn/login"));
+  }
 }

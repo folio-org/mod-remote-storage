@@ -62,7 +62,14 @@ public class SecurityManagerService {
       saveCredentials(systemUserParameters);
       assignPermissions(userId);
     }
+    updateApiKey(systemUserParameters);
+  }
 
+  public void refreshSystemUserApiKey(String username, String password, String okapiUrl, String tenantId) {
+    updateApiKey(buildDefaultSystemUserParameters(username, password, okapiUrl, tenantId));
+  }
+
+  private void updateApiKey(SystemUserParameters systemUserParameters) {
     var backgroundUserApiKey = loginSystemUser(systemUserParameters);
     systemUserParameters.setOkapiToken(backgroundUserApiKey);
     saveOrUpdateSystemUserParameters(systemUserParameters);

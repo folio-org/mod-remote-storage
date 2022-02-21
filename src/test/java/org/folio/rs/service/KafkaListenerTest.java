@@ -46,7 +46,7 @@ public class KafkaListenerTest {
 
     // verify
     verify(accessionQueueService, times(1)).processAccessionQueueRecord(any());
-    verify(securityManagerService, times(0)).prepareOrUpdateSystemUser(any(), any(), any(), any());
+    verify(securityManagerService, times(0)).refreshSystemUserApiKey(any(), any(), any(), any());
   }
 
   @Test
@@ -56,7 +56,7 @@ public class KafkaListenerTest {
     doThrow(prepareFeignException(401)).when(accessionQueueService)
       .processAccessionQueueRecord(any());
     doNothing().when(securityManagerService)
-      .prepareOrUpdateSystemUser(any(), any(), any(), any());
+      .refreshSystemUserApiKey(any(), any(), any(), any());
 
     // then
     var events = getEventsList();
@@ -64,8 +64,7 @@ public class KafkaListenerTest {
 
     // verify
     verify(accessionQueueService, times(2)).processAccessionQueueRecord(any());
-    verify(securityManagerService, times(1)).prepareOrUpdateSystemUser(any(), any(), any(), any());
-
+    verify(securityManagerService, times(1)).refreshSystemUserApiKey(any(), any(), any(), any());
   }
 
   @Test
@@ -82,7 +81,7 @@ public class KafkaListenerTest {
 
     // verify
     verify(accessionQueueService, times(1)).processAccessionQueueRecord(any());
-    verify(securityManagerService, times(0)).prepareOrUpdateSystemUser(any(), any(), any(), any());
+    verify(securityManagerService, times(0)).refreshSystemUserApiKey(any(), any(), any(), any());
   }
 
   @Test
@@ -99,7 +98,7 @@ public class KafkaListenerTest {
 
     // verify
     verify(accessionQueueService, times(1)).processAccessionQueueRecord(any());
-    verify(securityManagerService, times(0)).prepareOrUpdateSystemUser(any(), any(), any(), any());
+    verify(securityManagerService, times(0)).refreshSystemUserApiKey(any(), any(), any(), any());
   }
 
   private List<DomainEvent> getEventsList() {

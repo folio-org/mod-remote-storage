@@ -34,8 +34,7 @@ public class KafkaMessageListener {
     } catch (FeignException fe) {
       if (fe.status() == HttpStatus.HTTP_UNAUTHORIZED.toInt()) {
         log.warn("Re-authorization attempt due to: {}", fe.getMessage());
-        securityManagerService.prepareOrUpdateSystemUser(SYSTEM_USER, SYSTEM_USER, folioExecutionContext.getOkapiUrl(),
-            folioExecutionContext.getTenantId());
+        securityManagerService.refreshSystemUserApiKey(SYSTEM_USER, SYSTEM_USER, folioExecutionContext.getOkapiUrl(), folioExecutionContext.getTenantId());
         accessionQueueService.processAccessionQueueRecord(events);
       } else {
         log.error("Error processing Kafka event", fe);

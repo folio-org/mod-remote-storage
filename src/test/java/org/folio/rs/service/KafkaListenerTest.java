@@ -65,7 +65,6 @@ public class KafkaListenerTest {
     // verify
     verify(accessionQueueService, times(2)).processAccessionQueueRecord(any());
     verify(securityManagerService, times(1)).refreshSystemUserApiKey(any(), any(), any(), any());
-
   }
 
   @Test

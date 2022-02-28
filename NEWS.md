@@ -1,4 +1,22 @@
-## 1.5.0 Unreleased
+## 1.6.0 Unreleased
+
+## 1.5.0 Released
+This release was focused on minor improvements and bug fixes
+
+[Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.4.2...v1.5.0)
+
+### Technical tasks
+* [MODRS-116](https://issues.folio.org/browse/MODRS-116) - mod-remote-storage: folio-spring-base v3 update
+
+### Stories
+* [MODRS-102](https://issues.folio.org/browse/MODRS-102) - Add Notes field to remote storage API output
+* [MODRS-115](https://issues.folio.org/browse/MODRS-115) - Support circulation interface v13
+* [MODRS-101](https://issues.folio.org/browse/MODRS-101) - Update sample/testing data
+
+### Bug fixes
+* [MODRS-104](https://issues.folio.org/browse/MODRS-104) - Accessioning holdings & items to remote storage fails when no order record is present
+* [MODRS-103](https://issues.folio.org/browse/MODRS-103) - Kiwi R3 2021 - Log4j vulnerability verification and correction
+* [MODRS-94](https://issues.folio.org/browse/MODRS-94) - Improve remote storage accessioning process
 
 ## 1.4.0 Released
 The primary focus of this release was to fix bugs, provide sample data for caiaisoft module

@@ -109,7 +109,7 @@ public class TenantController implements TenantApi {
   @Override
   public ResponseEntity<Void> deleteTenant(String operationId) {
     pubSubService.unregisterPubSubModule(context.getOkapiUrl(), context.getTenantId(), context.getToken());
-    tenantService.deleteTenant();
+    tenantService.deleteTenant(null);
     return ResponseEntity.noContent().build();
   }
 

@@ -115,7 +115,6 @@
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>${postgresql.version}</version>
     </dependency>
 
     <dependency>
@@ -134,7 +133,6 @@
     <dependency>
       <groupId>com.hazelcast</groupId>
       <artifactId>hazelcast</artifactId>
-      <version>${hazelcast.version}</version>
     </dependency>
     <!-- Test dependencies -->
     <dependency>

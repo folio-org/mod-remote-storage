@@ -27,13 +27,9 @@
     <openapi-generator.version>5.3.1</openapi-generator.version>
     <mapstruct.version>1.4.1.Final</mapstruct.version>
     <json.version>20200518</json.version>
-    <spring-kafka.version>2.8.2</spring-kafka.version>
     <wiremock.version>2.27.2</wiremock.version>
-    <spring-kafka-test.version>2.8.2</spring-kafka-test.version>
     <embedded.db.version>2.1.1</embedded.db.version>
     <pubsub.client.version>2.0.0</pubsub.client.version>
-    <jackson.version>2.11.1</jackson.version>
-    <json.path.version>2.5.0</json.path.version>
     <sonar.exclusions>src/main/java/org/folio/rs/domain/**, src/main/java/org/folio/rs/client/AuthnClient.java,
       src/main/java/org/folio/rs/config/properties/**, src/main/java/org/folio/rs/service/PubSubService.java, src/main/java/org/folio/rs/error/PubSubException.java </sonar.exclusions>
     <remote-storage.yaml.file>src/main/resources/swagger.api/remote-storage.yaml</remote-storage.yaml.file>
@@ -49,7 +45,6 @@
     <dependency>
       <groupId>org.springframework.kafka</groupId>
       <artifactId>spring-kafka</artifactId>
-      <version>${spring-kafka.version}</version>
     </dependency>
 
     <dependency>
@@ -91,13 +86,11 @@
     <dependency>
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path</artifactId>
-      <version>${json.path.version}</version>
     </dependency>
 
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-xml</artifactId>
-      <version>${jackson.version}</version>
     </dependency>
 
     <dependency>

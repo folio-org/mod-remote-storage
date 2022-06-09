@@ -26,7 +26,6 @@
     <folio-spring-base-version>4.1.0</folio-spring-base-version>
     <openapi-generator.version>5.3.1</openapi-generator.version>
     <mapstruct.version>1.4.1.Final</mapstruct.version>
-    <json.version>20200518</json.version>
     <wiremock.version>2.27.2</wiremock.version>
     <embedded.db.version>2.1.1</embedded.db.version>
     <pubsub.client.version>2.0.0</pubsub.client.version>
@@ -66,7 +65,6 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-cache</artifactId>
@@ -91,12 +89,6 @@
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-xml</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.json</groupId>
-      <artifactId>json</artifactId>
-      <version>${json.version}</version>
     </dependency>
 
     <dependency>

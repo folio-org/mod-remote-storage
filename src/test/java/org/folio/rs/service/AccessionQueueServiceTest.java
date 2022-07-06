@@ -22,6 +22,7 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang.StringUtils;
 import org.folio.rs.TestBase;
+import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.rs.domain.dto.AccessionQueue;
 import org.folio.rs.domain.dto.AccessionQueues;
 import org.folio.rs.domain.dto.AccessionRequest;
@@ -37,6 +38,8 @@ import org.folio.rs.domain.dto.StorageConfiguration;
 import org.folio.rs.domain.dto.TimeUnits;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
 import org.folio.rs.repository.AccessionQueueRepository;
+import org.folio.spring.FolioModuleMetadata;
+import org.folio.spring.scope.FolioExecutionScopeExecutionContextManager;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -81,6 +84,8 @@ public class AccessionQueueServiceTest extends TestBase {
   private AccessionQueueService accessionQueueService;
   @Autowired
   private ConfigurationsService configurationsService;
+  @Autowired
+  private FolioModuleMetadata moduleMetadata;
 
   @BeforeEach
   void prepareUrl() {
@@ -128,8 +133,13 @@ public class AccessionQueueServiceTest extends TestBase {
 
     AccessionQueueRecord accessionQueueRecord = new AccessionQueueRecord();
     accessionQueueRecord.setItemBarcode(BARCODE);
-    verifyCreatedAccessionQueueRecord(accessionQueueRepository.findAll(Example.of(accessionQueueRecord)).get(0));
-
+    FolioExecutionScopeExecutionContextManager.beginFolioExecutionContext(
+      AsyncFolioExecutionContext.builder()
+        .tenantId(TEST_TENANT)
+        .moduleMetadata(moduleMetadata)
+        .okapiUrl(getOkapiUrl()).build());
+   verifyCreatedAccessionQueueRecord(accessionQueueRepository.findAll(Example.of(accessionQueueRecord)).get(0));
+   FolioExecutionScopeExecutionContextManager.endFolioExecutionContext();
   }
 
   @Test

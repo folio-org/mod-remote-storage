@@ -73,6 +73,11 @@ public class TestBase {
 
   @AfterEach
   void eachTearDown() {
+    FolioExecutionScopeExecutionContextManager.beginFolioExecutionContext(
+      AsyncFolioExecutionContext.builder()
+        .tenantId(TEST_TENANT)
+        .moduleMetadata(moduleMetadata)
+        .okapiUrl(getOkapiUrl()).build());
     tenantController.deleteTenant(TEST_TENANT);
     wireMockServer.resetAll();
     FolioExecutionScopeExecutionContextManager.endFolioExecutionContext();

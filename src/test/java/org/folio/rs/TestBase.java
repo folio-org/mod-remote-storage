@@ -75,6 +75,7 @@ public class TestBase {
   void eachTearDown() {
     tenantController.deleteTenant(TEST_TENANT);
     wireMockServer.resetAll();
+    FolioExecutionScopeExecutionContextManager.endFolioExecutionContext();
   }
 
 

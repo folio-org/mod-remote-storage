@@ -138,8 +138,8 @@ public class AccessionQueueServiceTest extends TestBase {
         .tenantId(TEST_TENANT)
         .moduleMetadata(moduleMetadata)
         .okapiUrl(getOkapiUrl()).build());
-   verifyCreatedAccessionQueueRecord(accessionQueueRepository.findAll(Example.of(accessionQueueRecord)).get(0));
-   FolioExecutionScopeExecutionContextManager.endFolioExecutionContext();
+    verifyCreatedAccessionQueueRecord(accessionQueueRepository.findAll(Example.of(accessionQueueRecord)).get(0));
+    FolioExecutionScopeExecutionContextManager.endFolioExecutionContext();
   }
 
   @Test

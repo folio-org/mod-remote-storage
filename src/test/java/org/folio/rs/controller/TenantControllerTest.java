@@ -45,6 +45,7 @@ public class TenantControllerTest {
     tenantController.deleteTenant("test_tenant");
 
     verify(jdbcTemplate).execute(String.format(DROP_SCHEMA_QUERY, getSchemaName()));
+    FolioExecutionScopeExecutionContextManager.endFolioExecutionContext();
   }
 
   private String getSchemaName() {

@@ -108,6 +108,7 @@ public class AccessionQueueService {
         } else {
           log.info("Location mapping with id={} not found. Accession queue record not created.", effectiveLocationId);
         }
+        FolioExecutionScopeExecutionContextManager.endFolioExecutionContext();
       }
     });
   }

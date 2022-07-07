@@ -1,4 +1,16 @@
-## 1.6.0 Unreleased
+## 1.7.0 Unreleased
+
+## 1.6.0 Released
+This release was primarily focused on minor improvements
+
+[Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.5.0...v1.6.0)
+
+### Technical tasks
+* [MODRS-124](https://issues.folio.org/browse/MODRS-124) - Remove org.json:json, license is not open source
+* [MODRS-118](https://issues.folio.org/browse/MODRS-118) - mod-remote-storage: folio-spring-base v4.1.0 update
+
+### Tech debts
+* [MODRS-130](https://issues.folio.org/browse/MODRS-130) - Close FolioExecutionContext if it is opened
 
 ## 1.5.0 Released
 This release was focused on minor improvements and bug fixes

@@ -1,6 +1,12 @@
-## 1.7.0 Unreleased
+## 1.8.0 Unreleased
 
-* [MODRS-133] (https://issues.folio.org/browse/MODRS-133) - Supports users interface versions 15.3 16.0
+## 1.7.0 Released
+This release contains module upgrades
+
+[Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.6.0...v1.7.0)
+
+* [MODRS-138](https://issues.folio.org/browse/MODRS-138) - mod-remote-storage: spring upgrade
+* [MODRS-133](https://issues.folio.org/browse/MODRS-133) - Supports users interface versions 15.3 16.0
 
 ## 1.6.0 Released
 This release was primarily focused on minor improvements

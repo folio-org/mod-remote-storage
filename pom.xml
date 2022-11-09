@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.7.3</version>
+    <version>2.7.5</version>
     <relativePath />
   </parent>
 
@@ -23,12 +23,14 @@
 
   <properties>
     <java.version>11</java.version>
-    <folio-spring-base-version>5.0.1</folio-spring-base-version>
+    <folio-spring-base-version>5.0.2</folio-spring-base-version>
     <openapi-generator.version>5.3.1</openapi-generator.version>
     <mapstruct.version>1.4.1.Final</mapstruct.version>
     <wiremock.version>2.27.2</wiremock.version>
-    <embedded.db.version>2.1.1</embedded.db.version>
-    <pubsub.client.version>2.0.0</pubsub.client.version>
+    <embedded.db.version>2.1.2</embedded.db.version>
+    <postgresql.version>42.5.0</postgresql.version>
+    <pubsub.client.version>2.7.0</pubsub.client.version>
+    <snakeyaml.version>1.33</snakeyaml.version>
     <sonar.exclusions>src/main/java/org/folio/rs/domain/**, src/main/java/org/folio/rs/client/AuthnClient.java,
       src/main/java/org/folio/rs/config/properties/**, src/main/java/org/folio/rs/service/PubSubService.java, src/main/java/org/folio/rs/error/PubSubException.java </sonar.exclusions>
     <remote-storage.yaml.file>src/main/resources/swagger.api/remote-storage.yaml</remote-storage.yaml.file>
@@ -119,6 +121,14 @@
       <groupId>com.hazelcast</groupId>
       <artifactId>hazelcast</artifactId>
     </dependency>
+
+    <!-- needed for org.folio.HttpStatus -->
+    <dependency>
+      <groupId>org.folio</groupId>
+      <artifactId>util</artifactId>
+      <version>35.0.3</version>
+    </dependency>
+
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -145,6 +155,12 @@
       <artifactId>embedded-database-spring-test</artifactId>
       <version>${embedded.db.version}</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>

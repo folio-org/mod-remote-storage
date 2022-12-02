@@ -1,5 +1,12 @@
 ## 1.8.0 Unreleased
 
+## 1.7.1 Released
+This release contains security updates
+
+[Full Changelog](https://github.com/folio-org/mod-remote-storage/compare/v1.7.0...v1.7.1)
+
+* [MODRS-143](https://issues.folio.org/browse/MODRS-143) - Upgrade dependencies fixing vulnerabilities
+
 ## 1.7.0 Released
 This release contains module upgrades
 

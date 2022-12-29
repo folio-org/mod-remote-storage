@@ -40,12 +40,11 @@ public class PubSubEventController implements PubSubHandlersApi {
   @Override
   public ResponseEntity<String> pubSubHandlersLogRecordEventPost(@Valid PubSubEvent pubSubEvent) {
     if (Objects.nonNull(pubSubEvent)) {
-      log.info("pubSubHandlersLogRecordEventPost pubSubEvent:{}",pubSubEvent);
+      log.debug("pubSubHandlersLogRecordEventPost pubSubEvent:{}",pubSubEvent);
       RequestEvent requestEvent = null;
       try {
         var logEventType = pubSubEvent.getLogEventType();
         if (isItemCheckedId(logEventType)) {
-          log.info("pubSubHandlersLogRecordEventPost isItemCheckedId");
           returnItemService.returnItem(pubSubEvent.getItemBarcode());
         } else {
           var payload = MAPPER.writeValueAsString(pubSubEvent.getPayload());
@@ -68,7 +67,6 @@ public class PubSubEventController implements PubSubHandlersApi {
   }
 
   private boolean isRequestChangedToPaged(String logEventType, String payload) {
-    log.info("isRequestChangedToPaged payload:{}",payload);
     var dc = JsonPath.parse(payload);
     return isRequestChanged(logEventType) &&
       !Objects.equals(dc.read("$.requests.original.requestType"), dc.read("$.requests.updated.requestType"))
@@ -81,7 +79,6 @@ public class PubSubEventController implements PubSubHandlersApi {
   }
 
   private boolean isPagedRequestCreated(String logEventType, String payload) {
-    log.info("isPagedRequestCreated payload:{}",payload);
     var dc = JsonPath.parse(payload);
     return isRequestCreated(logEventType)
       && Objects.equals(PAGE.value(), dc.read("$.requests.created.requestType"));

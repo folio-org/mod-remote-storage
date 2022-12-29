@@ -121,7 +121,8 @@ public class PubSubEventControllerTest extends TestBase {
     log.info("=== Should not process event ===");
     var pubSubEvent = new PubSubEvent();
     pubSubEvent.setLogEventType(logEventType.value());
-    pubSubEvent.setPayload(buildBaseEventPayload());
+    pubSubEvent.setPayload(null);
+    pubSubEvent.setItemBarcode(ITEM_BARCODE);
 
     post(String.format(PUB_SUB_HANDLER_URL, okapiPort), MAPPER.writeValueAsString(pubSubEvent), String.class);
     Map<String, ReturnRetrievalQueueRecord> records = returnRetrievalQueueRepository.findAll().stream().collect(Collectors.toMap(ReturnRetrievalQueueRecord::getItemBarcode, identity()));

@@ -40,6 +40,7 @@ public class PubSubEventController implements PubSubHandlersApi {
   @Override
   public ResponseEntity<String> pubSubHandlersLogRecordEventPost(@Valid PubSubEvent pubSubEvent) {
     if (Objects.nonNull(pubSubEvent)) {
+      log.debug("pubSubHandlersLogRecordEventPost pubSubEvent:{}",pubSubEvent);
       RequestEvent requestEvent = null;
       try {
         var logEventType = pubSubEvent.getLogEventType();
@@ -47,10 +48,11 @@ public class PubSubEventController implements PubSubHandlersApi {
           returnItemService.returnItem(pubSubEvent.getItemBarcode());
         } else {
           var payload = MAPPER.writeValueAsString(pubSubEvent.getPayload());
-          if (isPagedRequestCreated(logEventType, payload)) {
+          log.info("pubSubHandlersLogRecordEventPost payload:{}",payload);
+          if (Objects.nonNull(pubSubEvent.getPayload()) && isPagedRequestCreated(logEventType, payload)) {
             requestEvent = MAPPER.readValue(payload, CreateRequestEvent.class);
           }
-          if (isRequestChangedToPaged(logEventType, payload)) {
+          if (Objects.nonNull(pubSubEvent.getPayload()) && isRequestChangedToPaged(logEventType, payload)) {
             requestEvent = MAPPER.readValue(payload, ChangeRequestEvent.class);
           }
           ofNullable(requestEvent).ifPresent(returnRetrievalQueueService::processEventRequest);

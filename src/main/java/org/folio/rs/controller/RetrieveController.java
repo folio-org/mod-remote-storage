@@ -1,9 +1,9 @@
 package org.folio.rs.controller;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Pattern;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
 
 import org.folio.rs.domain.dto.AccessionFilterData;
 import org.folio.rs.domain.dto.RetrievalQueues;

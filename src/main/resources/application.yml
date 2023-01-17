@@ -16,7 +16,6 @@ spring:
       trust-store-password: ${KAFKA_SSL_TRUSTSTORE_PASSWORD:}
       trust-store-location: ${KAFKA_SSL_TRUSTSTORE_LOCATION:}
   datasource:
-    continue-on-error: true
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
     url: jdbc:postgresql://${DB_HOST:postgres}:${DB_PORT:5432}/${DB_DATABASE:okapi_modules}
@@ -35,6 +34,9 @@ spring:
       format_sql: true
   flyway:
     enabled: false
+  sql:
+    init:
+      continue-on-error: true
 
 management:
   metrics:

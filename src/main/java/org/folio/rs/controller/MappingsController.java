@@ -1,9 +1,9 @@
 package org.folio.rs.controller;
 
-import javax.persistence.EntityNotFoundException;
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

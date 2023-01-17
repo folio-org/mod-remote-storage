@@ -5,7 +5,7 @@ import static org.folio.rs.domain.dto.Request.RequestType.PAGE;
 
 import java.util.Objects;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.folio.rs.domain.dto.ChangeRequestEvent;
 import org.folio.rs.domain.dto.CreateRequestEvent;

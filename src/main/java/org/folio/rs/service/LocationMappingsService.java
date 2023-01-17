@@ -6,6 +6,7 @@ import static org.folio.rs.mapper.RemoteLocationConfigurationMappingsMapper.mapE
 import static org.folio.rs.mapper.RemoteLocationConfigurationMappingsMapper.mapMappingDtoToEntity;
 import static org.folio.rs.util.MapperUtils.stringToUUIDSafe;
 
+import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,8 +32,6 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-
-import javax.persistence.criteria.Predicate;
 
 @Service
 @RequiredArgsConstructor

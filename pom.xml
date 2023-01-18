@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.1</version>
     <relativePath />
   </parent>
 
@@ -344,7 +344,7 @@
           <includes>
             <include>*.json</include>
           </includes>
-          <outputDirectory>${jsonschema2pojo.outputDirectory}</outputDirectory>
+          <outputDirectory>${jsonschema2pojo_output_dir}</outputDirectory>
           <generateBuilders>true</generateBuilders>
         </configuration>
         <executions>

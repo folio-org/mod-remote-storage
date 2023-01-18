@@ -41,6 +41,8 @@ import org.folio.rs.domain.dto.DomainEventType;
 import org.folio.rs.domain.dto.AccessionFilterData;
 import org.folio.rs.domain.dto.HoldingsRecord;
 import org.folio.rs.domain.dto.Instance;
+import org.folio.rs.domain.dto.InstanceContributors;
+import org.folio.rs.domain.dto.InstancePublication;
 import org.folio.rs.domain.dto.InstanceIdentifiers;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.ItemEffectiveCallNumberComponents;

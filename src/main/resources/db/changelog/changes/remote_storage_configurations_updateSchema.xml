@@ -6,7 +6,7 @@
 
   <changeSet author="FOLIO Firebird Team" id="remote_storage_configurations_updateSchema">
     <sqlFile dbms="postgresql"
-             path="remote_storage_configurations_updateSchema.sql"
+             path="changes/remote_storage_configurations_updateSchema.sql"
              relativeToChangelogFile="true"
              splitStatements="false"/>
   </changeSet>

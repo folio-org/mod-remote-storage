@@ -120,6 +120,7 @@
     <dependency>
       <groupId>com.hazelcast</groupId>
       <artifactId>hazelcast</artifactId>
+      <version>5.2.1</version>
     </dependency>
 
     <!-- needed for org.folio.HttpStatus -->
@@ -175,6 +176,12 @@
       <artifactId>mod-pubsub-client</artifactId>
       <version>${pubsub.client.version}</version>
       <type>jar</type>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-properties-migrator</artifactId>
+      <scope>runtime</scope>
     </dependency>
 
   </dependencies>
@@ -373,6 +380,10 @@
             <include>org/folio/rs/TestSuite.class</include>
           </includes>
           <useSystemClassLoader>false</useSystemClassLoader>
+            <argLine>
+              --add-opens java.base/java.lang=ALL-UNNAMED
+              --add-opens java.base/java.util=ALL-UNNAMED
+            </argLine>
         </configuration>
       </plugin>
 

@@ -25,12 +25,11 @@ spring:
   jpa:
     show-sql: false
     hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
       ddl-auto: none
-  properties:
-    physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
-    implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
-    hibernate:
-      format_sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
   flyway:
     enabled: false
   sql:

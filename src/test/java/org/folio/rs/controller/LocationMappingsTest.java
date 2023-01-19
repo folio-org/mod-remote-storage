@@ -37,8 +37,8 @@ import java.util.Set;
 
 public class LocationMappingsTest extends TestBase {
 
-  private static final String MAPPINGS_URL = "http://localhost:%s/remote-storage/mappings/";
-  private static final String EXTENDED_MAPPINGS_URL = "http://localhost:%s/remote-storage/extended-mappings/";
+  private static final String MAPPINGS_URL = "http://localhost:%s/remote-storage/mappings";
+  private static final String EXTENDED_MAPPINGS_URL = "http://localhost:%s/remote-storage/extended-mappings";
   private static final String MAPPINGS_LOCATIONS_URL = "http://localhost:%s/remote-storage/extended-mappings/locations";
   private static final String LOCATIONS_URL = "http://localhost:%s/locations";
 
@@ -97,7 +97,7 @@ public class LocationMappingsTest extends TestBase {
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
     assertFalse(responseEntity.getBody().getMappings().isEmpty());
 
-    delete(mappingsUrl + mapping.getBody().getFolioLocationId());
+    delete(mappingsUrl.concat("/") + mapping.getBody().getFolioLocationId());
   }
 
   @Test
@@ -110,7 +110,7 @@ public class LocationMappingsTest extends TestBase {
     // Object cachedMapping =
     // requireNonNull(requireNonNull(cacheManager.getCache(MAPPINGS)).get(mapping.getFinalLocationId())).get();
 
-    var response = get(mappingsUrl + mapping.getFolioLocationId(), RemoteLocationConfigurationMapping.class);
+    var response = get(mappingsUrl.concat("/") + mapping.getFolioLocationId(), RemoteLocationConfigurationMapping.class);
     assertThat(response.getStatusCode(), is(HttpStatus.OK));
     assertTrue(EqualsBuilder.reflectionEquals(mapping, response.getBody(), true, RemoteLocationConfigurationMapping.class, "metadata"));
   }
@@ -122,7 +122,7 @@ public class LocationMappingsTest extends TestBase {
     // Verify cache disable via MODRS-42
     // assertThat(requireNonNull(cacheManager.getCache(MAPPINGS)).get(requireNonNull(responseEntity.getBody()).getFinalLocationId()),
     // notNullValue());
-    assertThat(delete(mappingsUrl + responseEntity.getBody()
+    assertThat(delete(mappingsUrl.concat("/") + responseEntity.getBody()
       .getFolioLocationId()).getStatusCode(), is(HttpStatus.NO_CONTENT));
   }
 
@@ -382,7 +382,7 @@ public class LocationMappingsTest extends TestBase {
         .originalLocationId(randomIdAsString()),
       ExtendedRemoteLocationConfigurationMapping.class).getBody();
 
-    var response = get(extendedMappingsUrl + finalLocationId, ExtendedRemoteLocationConfigurationMappings.class);
+    var response = get(extendedMappingsUrl.concat("/") + finalLocationId, ExtendedRemoteLocationConfigurationMappings.class);
     assertThat(response.getStatusCode(), is(HttpStatus.OK));
     assertThat(response.getBody().getMappings().size(), is(2));
     assertTrue(Arrays.asList(mapping1, mapping2).containsAll(response.getBody().getMappings()));
@@ -451,7 +451,7 @@ public class LocationMappingsTest extends TestBase {
 
   @Test
   void shouldReturnBadRequestForInvalidUuid() {
-    String urlWithRandomUuid = mappingsUrl + "abcde";
+    String urlWithRandomUuid = mappingsUrl.concat("/") + "abcde";
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> delete(urlWithRandomUuid));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
   }

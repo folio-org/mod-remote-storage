@@ -5,6 +5,7 @@ import static org.folio.rs.controller.TenantController.SYSTEM_USER;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -41,7 +42,11 @@ public class SecurityManagerServiceTest extends TestBase {
     securityManagerService.prepareOrUpdateSystemUser(SYSTEM_USER, SYSTEM_USER, newOkapiUrl, TEST_TENANT);
     var updatedSystemUserParameters = securityManagerService.getSystemUserParameters(TEST_TENANT);
 
-    assertTrue(EqualsBuilder.reflectionEquals(originalSystemUserParameters, updatedSystemUserParameters, true, SystemUserParameters.class, true, "okapiUrl"));
+    assertEquals(originalSystemUserParameters.getId(), updatedSystemUserParameters.getId());
+    assertEquals(originalSystemUserParameters.getUsername(), updatedSystemUserParameters.getUsername());
+    assertEquals(originalSystemUserParameters.getTenantId(), updatedSystemUserParameters.getTenantId());
+    assertEquals(originalSystemUserParameters.getPassword(), updatedSystemUserParameters.getPassword());
+    assertEquals(originalSystemUserParameters.getOkapiToken(), updatedSystemUserParameters.getOkapiToken());
     assertThat(updatedSystemUserParameters.getOkapiUrl(), equalTo(newOkapiUrl));
    }
 

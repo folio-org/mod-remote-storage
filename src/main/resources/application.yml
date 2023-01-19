@@ -44,8 +44,9 @@ management:
   endpoints:
     web:
       base-path: /admin
-      expose:
+      exposure:
         include: loggers
+  endpoint:
     loggers:
       enabled: true
     health:

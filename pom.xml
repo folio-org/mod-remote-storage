@@ -23,7 +23,7 @@
 
   <properties>
     <java.version>11</java.version>
-    <folio-spring-base-version>5.0.2</folio-spring-base-version>
+    <folio-spring-base-version>5.0.3</folio-spring-base-version>
     <openapi-generator.version>5.3.1</openapi-generator.version>
     <mapstruct.version>1.4.1.Final</mapstruct.version>
     <wiremock.version>2.27.2</wiremock.version>

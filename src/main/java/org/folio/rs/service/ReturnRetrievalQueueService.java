@@ -54,6 +54,7 @@ public class ReturnRetrievalQueueService {
 
 
   public RetrievalQueues getRetrievals(AccessionFilterData accessionFilterData) {
+    log.debug("getRetrievals :: isPresented:{}",accessionFilterData.getIsPresented());
     var queueRecords = returnRetrievalQueueRepository.findAll(getCriteriaSpecification(accessionFilterData),
         new OffsetRequest(accessionFilterData.getOffset(), accessionFilterData.getLimit(), Sort.unsorted()));
     return returnRetrievalQueueMapper.mapEntitiesToRetrievalQueueCollection(queueRecords);
@@ -66,11 +67,13 @@ public class ReturnRetrievalQueueService {
    * @return retrieval queue record
    */
   public Optional<ReturnRetrievalQueueRecord> getLastRetrievalByHoldId(String holdId, String remoteStorageId) {
+    log.debug("getLastRetrievalByHoldId :: holdId:{} and remoteStorageId:{}",holdId,remoteStorageId);
     return returnRetrievalQueueRepository.findAll(Specification.where(hasHoldId(holdId)
       .and(hasRemoteStorageId(remoteStorageId))), Sort.by(Sort.Direction.DESC, REQUEST_DATE_TIME)).stream().findFirst();
   }
 
   public void setRetrievedById(String retrievalQueueId) {
+    log.debug("setRetrievedById :: retrievalQueueId{}",retrievalQueueId);
     Optional<ReturnRetrievalQueueRecord> retrievalQueue = returnRetrievalQueueRepository.findOne(Specification.where(hasId(retrievalQueueId).and(notRetrievedSpecification())));
     if (retrievalQueue.isEmpty()) {
       throw new EntityNotFoundException("Retrieval queue record with id " + retrievalQueueId + NOT_FOUND);
@@ -79,6 +82,7 @@ public class ReturnRetrievalQueueService {
   }
 
   public void setRetrievedByBarcode(String barcode) {
+    log.debug("setRetrievedByBarcode :: barcode:{}",barcode);
     List<ReturnRetrievalQueueRecord> retrievalQueueRecords = returnRetrievalQueueRepository.findAll(Specification.where(hasBarcode(barcode).and(notRetrievedSpecification())));
     if (retrievalQueueRecords.isEmpty()) {
       throw new EntityNotFoundException("Retrieval queue record with item barcode " + barcode + NOT_FOUND);
@@ -87,7 +91,7 @@ public class ReturnRetrievalQueueService {
   }
 
   public void processEventRequest(RequestEvent requestEvent) {
-      log.info("Process moved request with id " + requestEvent.getHoldId());
+      log.info("processEventRequest :: Process moved request with id:{}",requestEvent.getHoldId());
       var item = getOriginalItemByBarcode(requestEvent);
       var locationMapping = getRemoteLocationConfigurationMapping(item);
       if (Objects.nonNull(locationMapping)) {

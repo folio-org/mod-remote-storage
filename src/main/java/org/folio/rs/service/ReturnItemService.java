@@ -45,10 +45,11 @@ public class ReturnItemService {
   private final LocationMappingsService locationMappingsService;
 
   public ReturnItemResponse returnItem(String remoteStorageConfigurationId, CheckInItem checkInItem) {
-    log.info("Start return for item with barcode " + checkInItem.getItemBarcode());
+    log.info("returnItem :: Start return for item with barcode " + checkInItem.getItemBarcode());
     var itemReturnResponse = new ReturnItemResponse();
     var item = inventoryClient.getItemByBarcode(checkInItem.getItemBarcode());
     var storageConfiguration = getStorageConfigurationById(remoteStorageConfigurationId);
+    log.info("returnItem :: providerName:{}",storageConfiguration.getProviderName());
     if (isRequestsCheckNeeded(storageConfiguration)) {
       findFirstHoldRecallRequest(item).ifPresent(request -> {
         itemReturnResponse.isHoldRecallRequestExist(true);
@@ -63,7 +64,7 @@ public class ReturnItemService {
   }
 
   public ReturnItemResponse returnItem(String itemBarcode) {
-    log.info("Start return for item with barcode " + itemBarcode);
+    log.info("returnItem :: Start return for item with barcode;{} ",itemBarcode);
 
     var itemReturnResponse = new ReturnItemResponse();
     var item = inventoryClient.getItemByBarcode(itemBarcode);
@@ -79,6 +80,7 @@ public class ReturnItemService {
         returnRetrievalQueueRepository.save(buildReturnRetrievalRecord(request, RequestType.REF, item, user, servicePointCode, locationMapping.getConfigurationId()));
       });
     }
+    log.info("returnItem :: isHoldRecallRequestExist:{}",itemReturnResponse.getIsHoldRecallRequestExist());
     return itemReturnResponse;
   }
 

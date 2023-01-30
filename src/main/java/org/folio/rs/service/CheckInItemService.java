@@ -36,17 +36,18 @@ public class CheckInItemService {
   private final InventoryClient inventoryClient;
 
   public void checkInItemByBarcode(String remoteStorageConfigurationId, CheckInItem checkInItem) {
-    log.info("Start check-in process for item with barcode " + checkInItem.getItemBarcode());
+    log.debug("checkInItemByBarcode :: Start check-in process for item with barcode:{} and remoteStorageConfigurationId:{}",
+      checkInItem.getItemBarcode(),remoteStorageConfigurationId);
     var remoteLocations = getRemoteLocationsByRemoteStorageConfigurationId(remoteStorageConfigurationId);
     var checkInLocation = getCheckInLocationId(remoteLocations, checkInItem);
     circulationClient.checkIn(CheckInCirculationRequest.of(checkInItem.getItemBarcode(),
       getPrimaryServicePoint(checkInLocation), Instant.now().truncatedTo(ChronoUnit.MILLIS)));
-    log.info("Check-in success for item with barcode " + checkInItem.getItemBarcode());
+    log.info("checkInItemByBarcode :: Check-in success for item with barcode:{} ",checkInItem.getItemBarcode());
   }
 
   public void checkInItemByHoldId(String remoteStorageConfigurationId, CheckInItemByHoldId checkInItemByHoldId) {
     var holdId = checkInItemByHoldId.getHoldId();
-    log.info("Start check-in process for item with associated request with id=" + holdId);
+    log.debug("checkInItemByHoldId :: Start check-in process for item with associated request with id:{}",holdId);
     var retrievalQueueRecord = returnRetrievalQueueService.getLastRetrievalByHoldId(holdId, remoteStorageConfigurationId);
     var barcode = retrievalQueueRecord
       .orElseThrow(() -> new CheckInException(
@@ -55,6 +56,7 @@ public class CheckInItemService {
     var checkInItemByBarcode = new CheckInItem();
     checkInItemByBarcode.setItemBarcode(barcode);
     checkInItemByBarcode(remoteStorageConfigurationId, checkInItemByBarcode);
+    log.info("checkInItemByHoldId :: checkInItemByBarcode:{}"+checkInItemByBarcode.getItemBarcode());
   }
 
   private List<String> getRemoteLocationsByRemoteStorageConfigurationId(String remoteStorageConfigurationId) {

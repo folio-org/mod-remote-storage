@@ -31,6 +31,8 @@
     <postgresql.version>42.5.0</postgresql.version>
     <pubsub.client.version>2.7.0</pubsub.client.version>
     <snakeyaml.version>1.33</snakeyaml.version>
+    <hazelcast.version>5.2.1</hazelcast.version>
+    <folio-util.version>35.0.3</folio-util.version>
 
     <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
     <maven-resources-plugin.version>3.3.0</maven-resources-plugin.version>
@@ -126,14 +128,14 @@
     <dependency>
       <groupId>com.hazelcast</groupId>
       <artifactId>hazelcast</artifactId>
-      <version>5.2.1</version>
+      <version>${hazelcast.version}</version>
     </dependency>
 
     <!-- needed for org.folio.HttpStatus -->
     <dependency>
       <groupId>org.folio</groupId>
       <artifactId>util</artifactId>
-      <version>35.0.3</version>
+      <version>${folio-util.version}</version>
     </dependency>
 
     <!-- Test dependencies -->

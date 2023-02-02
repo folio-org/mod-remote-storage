@@ -3,8 +3,8 @@ package org.folio.rs.domain.entity;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import org.folio.rs.domain.dto.AccessionWorkflowDetails;
 import org.folio.rs.domain.dto.ReturningWorkflowDetails;

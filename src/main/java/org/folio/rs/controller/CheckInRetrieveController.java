@@ -1,7 +1,7 @@
 package org.folio.rs.controller;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 
 import org.folio.rs.domain.dto.CheckInItem;
 import org.folio.rs.domain.dto.CheckInItemByHoldId;

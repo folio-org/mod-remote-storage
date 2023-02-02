@@ -1,7 +1,7 @@
 buildMvn {
   publishModDescriptor = true
   mvnDeploy = true
-  buildNode = 'jenkins-agent-java11'
+  buildNode = 'jenkins-agent-java17'
 
   doApiLint = true
   doApiDoc = true
@@ -12,7 +12,7 @@ buildMvn {
     buildDocker {
       publishMaster = true
       healthChk = false
-      healthChkCmd = 'curl -sS --fail -o /dev/null  http://localhost:8081/apidocs/ || exit 1'
+      healthChkCmd = 'wget --no-verbose --tries=1 --spider http://localhost:8081/admin/health || exit 1'
     }
   }
 }

@@ -16,7 +16,6 @@ spring:
       trust-store-password: ${KAFKA_SSL_TRUSTSTORE_PASSWORD:}
       trust-store-location: ${KAFKA_SSL_TRUSTSTORE_LOCATION:}
   datasource:
-    continue-on-error: true
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
     url: jdbc:postgresql://${DB_HOST:postgres}:${DB_PORT:5432}/${DB_DATABASE:okapi_modules}
@@ -26,21 +25,18 @@ spring:
   jpa:
     show-sql: false
     hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
       ddl-auto: none
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-  properties:
-    physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
-    implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
-    hibernate:
-      format_sql: true
   flyway:
     enabled: false
+  sql:
+    init:
+      continue-on-error: true
 
 management:
-  metrics:
-    export:
-      influx:
-        enabled: false
   endpoints:
     web:
       base-path: /admin
@@ -54,6 +50,10 @@ management:
         enabled: false
       readinessstate:
         enabled: true
+  influx:
+    metrics:
+      export:
+        enabled: false
 
 feign:
   client:

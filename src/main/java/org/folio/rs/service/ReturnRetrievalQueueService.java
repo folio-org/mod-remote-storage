@@ -7,8 +7,8 @@ import static org.folio.rs.util.RetrievalQueueRecordUtils.buildReturnRetrievalQu
 import java.time.LocalDateTime;
 import java.util.*;
 
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.criteria.Predicate;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.Predicate;
 
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.client.ServicePointsClient;

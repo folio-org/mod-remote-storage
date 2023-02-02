@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ProviderControllerTest extends TestBase {
 
-  private static final String PROVIDERS_URL = "http://localhost:%s/remote-storage/providers/";
+  private static final String PROVIDERS_URL = "http://localhost:%s/remote-storage/providers";
 
   @Test
   void shouldReturnAllProviders() {

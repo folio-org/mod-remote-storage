@@ -5,13 +5,13 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.7.5</version>
+    <version>3.0.2</version>
     <relativePath />
   </parent>
 
   <groupId>org.folio</groupId>
   <artifactId>mod-remote-storage</artifactId>
-  <version>1.8.0-SNAPSHOT</version>
+  <version>2.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <licenses>
@@ -22,15 +22,23 @@
   </licenses>
 
   <properties>
-    <java.version>11</java.version>
-    <folio-spring-base-version>5.0.3</folio-spring-base-version>
-    <openapi-generator.version>5.3.1</openapi-generator.version>
-    <mapstruct.version>1.4.1.Final</mapstruct.version>
+    <java.version>17</java.version>
+    <folio-spring-base-version>6.0.0-SNAPSHOT</folio-spring-base-version>
+    <openapi-generator.version>6.2.1</openapi-generator.version>
+    <mapstruct.version>1.5.3.Final</mapstruct.version>
     <wiremock.version>2.27.2</wiremock.version>
-    <embedded.db.version>2.1.2</embedded.db.version>
+    <embedded.db.version>2.2.0</embedded.db.version>
     <postgresql.version>42.5.0</postgresql.version>
     <pubsub.client.version>2.7.0</pubsub.client.version>
     <snakeyaml.version>1.33</snakeyaml.version>
+    <hazelcast.version>5.2.1</hazelcast.version>
+    <folio-util.version>35.0.3</folio-util.version>
+
+    <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
+    <maven-resources-plugin.version>3.3.0</maven-resources-plugin.version>
+    <copy-rename-maven-plugin.version>1.0</copy-rename-maven-plugin.version>
+    <jsonschema2pojo-maven-plugin.version>1.1.2</jsonschema2pojo-maven-plugin.version>
+    <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
     <sonar.exclusions>src/main/java/org/folio/rs/domain/**, src/main/java/org/folio/rs/client/AuthnClient.java,
       src/main/java/org/folio/rs/config/properties/**, src/main/java/org/folio/rs/service/PubSubService.java, src/main/java/org/folio/rs/error/PubSubException.java </sonar.exclusions>
     <remote-storage.yaml.file>src/main/resources/swagger.api/remote-storage.yaml</remote-storage.yaml.file>
@@ -120,13 +128,14 @@
     <dependency>
       <groupId>com.hazelcast</groupId>
       <artifactId>hazelcast</artifactId>
+      <version>${hazelcast.version}</version>
     </dependency>
 
     <!-- needed for org.folio.HttpStatus -->
     <dependency>
       <groupId>org.folio</groupId>
       <artifactId>util</artifactId>
-      <version>35.0.3</version>
+      <version>${folio-util.version}</version>
     </dependency>
 
     <!-- Test dependencies -->
@@ -184,7 +193,7 @@
 
       <plugin>
         <artifactId>maven-clean-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>${maven-clean-plugin.version}</version>
         <executions>
           <execution>
             <id>auto-clean</id>
@@ -208,7 +217,7 @@
 
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>${maven-resources-plugin.version}</version>
         <executions>
           <execution>
             <id>filter-descriptor-inputs</id>
@@ -233,7 +242,7 @@
       <plugin>
         <groupId>com.coderplus.maven.plugins</groupId>
         <artifactId>copy-rename-maven-plugin</artifactId>
-        <version>1.0</version>
+        <version>${copy-rename-maven-plugin.version}</version>
         <executions>
           <execution>
             <id>rename-descriptor-outputs</id>
@@ -260,7 +269,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>${build-helper-maven-plugin.version}</version>
         <executions>
           <execution>
             <phase>generate-sources</phase>
@@ -300,10 +309,11 @@
               <generateSupportingFiles>true</generateSupportingFiles>
               <supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate>
               <generateModelDocumentation>true</generateModelDocumentation>
+              <inlineSchemaNameDefaults>arrayItemSuffix=</inlineSchemaNameDefaults>
               <configOptions>
-                <java8>true</java8>
                 <dateLibrary>java</dateLibrary>
                 <interfaceOnly>true</interfaceOnly>
+                <useSpringBoot3>true</useSpringBoot3>
               </configOptions>
             </configuration>
           </execution>
@@ -313,9 +323,8 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
         <configuration>
-          <release>11</release>
+          <release>${java.version}</release>
           <annotationProcessorPaths>
             <path>
               <groupId>org.projectlombok</groupId>
@@ -328,9 +337,9 @@
               <version>${mapstruct.version}</version>
             </path>
             <path>
-              <groupId>org.hibernate</groupId>
+              <groupId>org.hibernate.orm</groupId>
               <artifactId>hibernate-jpamodelgen</artifactId>
-              <version>5.5.0.Final</version>
+              <version>${hibernate.version}</version>
             </path>
           </annotationProcessorPaths>
         </configuration>
@@ -339,7 +348,7 @@
       <plugin>
         <groupId>org.jsonschema2pojo</groupId>
         <artifactId>jsonschema2pojo-maven-plugin</artifactId>
-        <version>0.5.1</version>
+        <version>${jsonschema2pojo-maven-plugin.version}</version>
         <configuration>
           <includes>
             <include>*.json</include>
@@ -364,7 +373,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.22.2</version>
+        <version>${maven-surefire-plugin.version}</version>
         <configuration>
           <excludes>
             <exclude>org/folio/rs/Controller/**Test.class</exclude>
@@ -379,7 +388,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.5.3</version>
+        <version>${maven-release-plugin.version}</version>
         <configuration>
           <preparationGoals>clean verify</preparationGoals>
           <tagNameFormat>v@{project.version}</tagNameFormat>

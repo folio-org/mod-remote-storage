@@ -2,7 +2,7 @@ package org.folio.rs.domain.entity.converters;
 
 import java.util.Objects;
 
-import javax.persistence.AttributeConverter;
+import jakarta.persistence.AttributeConverter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.folio.rs.domain.dto.AccessionWorkflowDetails;

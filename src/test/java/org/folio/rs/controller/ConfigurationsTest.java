@@ -31,7 +31,7 @@ import org.springframework.web.client.HttpClientErrorException;
 
 public class ConfigurationsTest extends TestBase {
 
-  private static final String CONFIGURATIONS_URL = "http://localhost:%s/remote-storage/configurations/";
+  private static final String CONFIGURATIONS_URL = "http://localhost:%s/remote-storage/configurations";
   private static final String TENANT_URL = "http://localhost:%s/_/tenant";
 
   private String configurationsUrl;
@@ -88,10 +88,10 @@ public class ConfigurationsTest extends TestBase {
     var configuration = post(configurationsUrl, requestBody, StorageConfiguration.class).getBody();
     assertThat(configuration.getReturningWorkflowDetails(), is(ReturningWorkflowDetails.CAIASOFT));
     configuration.returningWorkflowDetails(ReturningWorkflowDetails.FOLIO);
-    put(configurationsUrl + configuration.getId(), configuration).getBody();
-    var updatedConfiguration = get(configurationsUrl + configuration.getId(), StorageConfiguration.class).getBody();
+    put(configurationsUrl.concat("/") + configuration.getId(), configuration).getBody();
+    var updatedConfiguration = get(configurationsUrl.concat("/") + configuration.getId(), StorageConfiguration.class).getBody();
     assertThat(updatedConfiguration.getReturningWorkflowDetails(), is(ReturningWorkflowDetails.FOLIO));
-    delete(configurationsUrl + configuration.getId());
+    delete(configurationsUrl.concat("/") + configuration.getId());
   }
 
   @Test
@@ -100,10 +100,10 @@ public class ConfigurationsTest extends TestBase {
     var configuration = post(configurationsUrl, requestBody, StorageConfiguration.class).getBody();
     assertThat(configuration.getAccessionWorkflowDetails(), is(AccessionWorkflowDetails.DUPLICATE_HOLDINGS));
     configuration.accessionWorkflowDetails(AccessionWorkflowDetails.CHANGE_PERMANENT_LOCATION);
-    put(configurationsUrl + configuration.getId(), configuration).getBody();
-    var updatedConfiguration = get(configurationsUrl + configuration.getId(), StorageConfiguration.class).getBody();
+    put(configurationsUrl.concat("/") + configuration.getId(), configuration).getBody();
+    var updatedConfiguration = get(configurationsUrl.concat("/") + configuration.getId(), StorageConfiguration.class).getBody();
     assertThat(updatedConfiguration.getAccessionWorkflowDetails(), is(AccessionWorkflowDetails.CHANGE_PERMANENT_LOCATION));
-    delete(configurationsUrl + configuration.getId());
+    delete(configurationsUrl.concat("/") + configuration.getId());
   }
 
   @Test
@@ -119,7 +119,7 @@ public class ConfigurationsTest extends TestBase {
     StorageConfiguration configurationDto = fetchConfigurations().getConfigurations()
       .get(0);
     assertThat(requireNonNull(cacheManager.getCache("configurations")).get(configurationDto.getId()), nullValue());
-    ResponseEntity<StorageConfiguration> firstResponse = get(configurationsUrl + configurationDto.getId(),
+    ResponseEntity<StorageConfiguration> firstResponse = get(configurationsUrl.concat("/") + configurationDto.getId(),
         StorageConfiguration.class);
     assertThat(firstResponse.getStatusCode(), is(HttpStatus.OK));
 
@@ -127,7 +127,7 @@ public class ConfigurationsTest extends TestBase {
     // Object cachedConfiguration =
     // requireNonNull(requireNonNull(cacheManager.getCache("configurations")).get(configurationDto.getId())).get();
 
-    ResponseEntity<StorageConfiguration> secondResponse = get(configurationsUrl + configurationDto.getId(),
+    ResponseEntity<StorageConfiguration> secondResponse = get(configurationsUrl.concat("/") + configurationDto.getId(),
         StorageConfiguration.class);
     assertThat(secondResponse.getStatusCode(), is(HttpStatus.OK));
     assertTrue(
@@ -143,7 +143,7 @@ public class ConfigurationsTest extends TestBase {
       .get(0);
     configurationDto.accessionDelay(5)
       .accessionTimeUnit(TimeUnits.MINUTES);
-    ResponseEntity<String> response = put(configurationsUrl + configurationDto.getId(), configurationDto);
+    ResponseEntity<String> response = put(configurationsUrl.concat("/") + configurationDto.getId(), configurationDto);
     assertThat(response.getStatusCode(), equalTo(HttpStatus.NO_CONTENT));
 
     // Verify caching disable via MODRS-42
@@ -161,7 +161,7 @@ public class ConfigurationsTest extends TestBase {
       .get(0);
     int size = fetchConfigurations().getConfigurations().size();
     requireNonNull(cacheManager.getCache("configurations")).put(configuration.getId(), configuration);
-    assertThat(delete(configurationsUrl + configuration.getId()).getStatusCode(), is(HttpStatus.NO_CONTENT));
+    assertThat(delete(configurationsUrl.concat("/") + configuration.getId()).getStatusCode(), is(HttpStatus.NO_CONTENT));
     assertThat(fetchConfigurations().getTotalRecords(), is(size - 1));
     assertThat(requireNonNull(cacheManager.getCache("configurations")).get(configuration.getId()), nullValue());
   }
@@ -187,10 +187,10 @@ public class ConfigurationsTest extends TestBase {
 
   @Test
   void shouldReturnBadRequestForInvalidUuid() {
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> delete(configurationsUrl + "abcde"));
+    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> delete(configurationsUrl.concat("/") + "abcde"));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
 
-    exception = assertThrows(HttpClientErrorException.class, () -> get(configurationsUrl + "abcde", String.class));
+    exception = assertThrows(HttpClientErrorException.class, () -> get(configurationsUrl.concat("/") + "abcde", String.class));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
   }
 
@@ -215,7 +215,7 @@ public class ConfigurationsTest extends TestBase {
       .get(0)
       .accessionDelay(5)
       .accessionTimeUnit(TimeUnits.MINUTES);
-    String urlWithAnotherUuid = configurationsUrl + randomIdAsString();
+    String urlWithAnotherUuid = configurationsUrl.concat("/") + randomIdAsString();
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class,
         () -> put(urlWithAnotherUuid, configurationDto));
     assertThat(exception.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));

@@ -11,7 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
-import javax.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.client.ServicePointsClient;
 import org.folio.rs.client.UsersClient;

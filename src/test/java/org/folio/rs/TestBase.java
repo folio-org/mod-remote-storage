@@ -15,7 +15,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -23,8 +23,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.util.TestSocketUtils;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.util.SocketUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -48,7 +48,7 @@ public class TestBase {
   @LocalServerPort
   protected int okapiPort;
 
-  public final static int WIRE_MOCK_PORT = SocketUtils.findAvailableTcpPort();
+  public final static int WIRE_MOCK_PORT = TestSocketUtils.findAvailableTcpPort();
 
   @Autowired
   private TenantController tenantController;

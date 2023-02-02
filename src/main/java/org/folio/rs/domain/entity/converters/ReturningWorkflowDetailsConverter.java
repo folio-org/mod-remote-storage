@@ -3,7 +3,7 @@ package org.folio.rs.domain.entity.converters;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.rs.domain.dto.ReturningWorkflowDetails;
 
-import javax.persistence.AttributeConverter;
+import jakarta.persistence.AttributeConverter;
 import java.util.Objects;
 
 public class ReturningWorkflowDetailsConverter implements AttributeConverter<ReturningWorkflowDetails, String> {

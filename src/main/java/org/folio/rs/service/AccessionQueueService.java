@@ -114,6 +114,8 @@ public class AccessionQueueService {
   }
 
   public AccessionQueue processPostAccession(AccessionRequest accessionRequest) {
+    log.debug("processPostAccession :: itemBarcode:{} remoteStorageId:{}",accessionRequest.getItemBarcode(),
+      accessionRequest.getRemoteStorageId());
     var storageConfiguration = getStorageConfiguration(accessionRequest);
     var locationMapping = getLocationMapping(accessionRequest);
     var item = getItem(accessionRequest);

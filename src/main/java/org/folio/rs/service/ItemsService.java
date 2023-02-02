@@ -12,6 +12,7 @@ public class ItemsService {
   private final InventoryClient inventoryClient;
 
   public void markItemAsMissingByBarcode(String barcode) {
+    log.debug("markItemAsMissingByBarcode :: barcode:{}",barcode);
     var items = inventoryClient.getItemsByQuery("barcode==" + barcode);
     if (!items.isEmpty()) {
       inventoryClient.markItemAsMissing(items.getResult().get(0).getId());

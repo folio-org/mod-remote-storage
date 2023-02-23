@@ -1,4 +1,13 @@
-## 1.8.0 Unreleased
+## 2.0.0 2023-02-23
+
+* [MODRS-119](https://issues.folio.org/browse/MODRS-119) - Logging improvement
+* [MODRS-140](https://issues.folio.org/browse/MODRS-140) - Logging improvement - Configuration
+* [MODRS-146](https://issues.folio.org/browse/MODRS-146) - Update to Java 17
+* [MODRS-147](https://issues.folio.org/browse/MODRS-147) - Update the module to Spring boot v3.0.0 and identify issues
+* [MODRS-148](https://issues.folio.org/browse/MODRS-148) - Endpoint /remote-storage/pub-sub-handlers/log-record-event returns 500
+* [MODRS-150](https://issues.folio.org/browse/MODRS-150) - Align the module with API breaking change
+* [MODRS-156](https://issues.folio.org/browse/MODRS-156) - Build failing due to dependency issue
+
 
 ## 1.7.0 Released
 This release contains module upgrades

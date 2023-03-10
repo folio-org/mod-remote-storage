@@ -1,3 +1,7 @@
+## 2.0.1 2023-03-10
+
+* [BF-459](https://issues.folio.org/browse/BF-459) - Fix the mod-remote-storage /admin/health endpoint
+
 ## 2.0.0 2023-02-23
 
 * [MODRS-119](https://issues.folio.org/browse/MODRS-119) - Logging improvement

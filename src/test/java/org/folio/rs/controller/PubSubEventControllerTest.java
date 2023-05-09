@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.folio.rs.TestBase;
+import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.rs.domain.dto.PubSubEvent;
 import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
@@ -28,6 +29,8 @@ import org.folio.rs.repository.ReturnRetrievalQueueRepository;
 import org.folio.rs.service.ConfigurationsService;
 import org.folio.rs.service.LocationMappingsService;
 import org.folio.rs.util.LogEventType;
+import org.folio.spring.FolioModuleMetadata;
+import org.folio.spring.scope.FolioExecutionContextSetter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,35 +58,44 @@ public class PubSubEventControllerTest extends TestBase {
   @Autowired
   private ConfigurationsService configurationsService;
 
+  @Autowired
+  private FolioModuleMetadata moduleMetadata;
+
   @BeforeEach
   void prepare() {
-    returnRetrievalQueueRepository.deleteAll();
+    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+      returnRetrievalQueueRepository.deleteAll();
+    }
   }
 
   @ParameterizedTest
   @EnumSource(value = LogEventType.class, names = { "REQUEST_MOVED", "REQUEST_UPDATED" }, mode = EnumSource.Mode.INCLUDE)
   void shouldProcessChangedEvent(LogEventType logEventType) throws JsonProcessingException {
     log.info("=== Should process created event ===");
-    var pubSubEvent = new PubSubEvent();
-    pubSubEvent.setLogEventType(logEventType.value());
-    pubSubEvent.setPayload(buildRequestChangedEventPayload(HOLD.value(), PAGE.value()));
+    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+      var pubSubEvent = new PubSubEvent();
+      pubSubEvent.setLogEventType(logEventType.value());
+      pubSubEvent.setPayload(buildRequestChangedEventPayload(HOLD.value(), PAGE.value()));
 
-    post(String.format(PUB_SUB_HANDLER_URL, okapiPort), MAPPER.writeValueAsString(pubSubEvent), String.class);
-    Map<String, ReturnRetrievalQueueRecord> records = returnRetrievalQueueRepository.findAll().stream().collect(Collectors.toMap(ReturnRetrievalQueueRecord::getItemBarcode, identity()));
-    assertThat(records.get(ITEM_BARCODE), notNullValue());
+      post(String.format(PUB_SUB_HANDLER_URL, okapiPort), MAPPER.writeValueAsString(pubSubEvent), String.class);
+      Map<String, ReturnRetrievalQueueRecord> records = returnRetrievalQueueRepository.findAll().stream().collect(Collectors.toMap(ReturnRetrievalQueueRecord::getItemBarcode, identity()));
+      assertThat(records.get(ITEM_BARCODE), notNullValue());
+    }
   }
 
   @ParameterizedTest
   @EnumSource(value = LogEventType.class, names = { "REQUEST_MOVED", "REQUEST_UPDATED" }, mode = EnumSource.Mode.INCLUDE)
   void shouldNotProcessChangedEvent(LogEventType logEventType) throws JsonProcessingException {
     log.info("=== Should not process changed event ===");
-    var pubSubEvent = new PubSubEvent();
-    pubSubEvent.setLogEventType(logEventType.value());
-    pubSubEvent.setPayload(buildRequestChangedEventPayload(PAGE.value(), PAGE.value()));
+    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+      var pubSubEvent = new PubSubEvent();
+      pubSubEvent.setLogEventType(logEventType.value());
+      pubSubEvent.setPayload(buildRequestChangedEventPayload(PAGE.value(), PAGE.value()));
 
-    post(String.format(PUB_SUB_HANDLER_URL, okapiPort), MAPPER.writeValueAsString(pubSubEvent), String.class);
-    Map<String, ReturnRetrievalQueueRecord> records = returnRetrievalQueueRepository.findAll().stream().collect(Collectors.toMap(ReturnRetrievalQueueRecord::getItemBarcode, identity()));
-    assertThat(records.get(ITEM_BARCODE), nullValue());
+      post(String.format(PUB_SUB_HANDLER_URL, okapiPort), MAPPER.writeValueAsString(pubSubEvent), String.class);
+      Map<String, ReturnRetrievalQueueRecord> records = returnRetrievalQueueRepository.findAll().stream().collect(Collectors.toMap(ReturnRetrievalQueueRecord::getItemBarcode, identity()));
+      assertThat(records.get(ITEM_BARCODE), nullValue());
+    }
   }
 
   @ParameterizedTest
@@ -91,13 +103,15 @@ public class PubSubEventControllerTest extends TestBase {
       "REQUEST_CREATED_THROUGH_OVERRIDE" }, mode = EnumSource.Mode.INCLUDE)
   void shouldProcessCreatedEvent(LogEventType logEventType) throws JsonProcessingException {
     log.info("=== Should process changed event ===");
-    var pubSubEvent = new PubSubEvent();
-    pubSubEvent.setLogEventType(logEventType.value());
-    pubSubEvent.setPayload(buildRequestCreatedEventPayload(PAGE.value()));
+    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+      var pubSubEvent = new PubSubEvent();
+      pubSubEvent.setLogEventType(logEventType.value());
+      pubSubEvent.setPayload(buildRequestCreatedEventPayload(PAGE.value()));
 
-    post(String.format(PUB_SUB_HANDLER_URL, okapiPort), MAPPER.writeValueAsString(pubSubEvent), String.class);
-    Map<String, ReturnRetrievalQueueRecord> records = returnRetrievalQueueRepository.findAll().stream().collect(Collectors.toMap(ReturnRetrievalQueueRecord::getItemBarcode, identity()));
-    assertThat(records.get(ITEM_BARCODE), notNullValue());
+      post(String.format(PUB_SUB_HANDLER_URL, okapiPort), MAPPER.writeValueAsString(pubSubEvent), String.class);
+      Map<String, ReturnRetrievalQueueRecord> records = returnRetrievalQueueRepository.findAll().stream().collect(Collectors.toMap(ReturnRetrievalQueueRecord::getItemBarcode, identity()));
+      assertThat(records.get(ITEM_BARCODE), notNullValue());
+    }
   }
 
   @ParameterizedTest
@@ -105,13 +119,15 @@ public class PubSubEventControllerTest extends TestBase {
       "REQUEST_CREATED_THROUGH_OVERRIDE" }, mode = EnumSource.Mode.INCLUDE)
   void shouldNotProcessCreatedEvent(LogEventType logEventType) throws JsonProcessingException {
     log.info("=== Should not process created event ===");
-    var pubSubEvent = new PubSubEvent();
-    pubSubEvent.setLogEventType(logEventType.value());
-    pubSubEvent.setPayload(buildRequestCreatedEventPayload(HOLD.value()));
+    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+      var pubSubEvent = new PubSubEvent();
+      pubSubEvent.setLogEventType(logEventType.value());
+      pubSubEvent.setPayload(buildRequestCreatedEventPayload(HOLD.value()));
 
-    post(String.format(PUB_SUB_HANDLER_URL, okapiPort), MAPPER.writeValueAsString(pubSubEvent), String.class);
-    Map<String, ReturnRetrievalQueueRecord> records = returnRetrievalQueueRepository.findAll().stream().collect(Collectors.toMap(ReturnRetrievalQueueRecord::getItemBarcode, identity()));
-    assertThat(records.get(ITEM_BARCODE), nullValue());
+      post(String.format(PUB_SUB_HANDLER_URL, okapiPort), MAPPER.writeValueAsString(pubSubEvent), String.class);
+      Map<String, ReturnRetrievalQueueRecord> records = returnRetrievalQueueRepository.findAll().stream().collect(Collectors.toMap(ReturnRetrievalQueueRecord::getItemBarcode, identity()));
+      assertThat(records.get(ITEM_BARCODE), nullValue());
+    }
   }
 
   @ParameterizedTest
@@ -119,37 +135,43 @@ public class PubSubEventControllerTest extends TestBase {
       "REQUEST_REORDERED" }, mode = EnumSource.Mode.INCLUDE)
   void shouldNotProcessOtherEventTypes(LogEventType logEventType) throws JsonProcessingException {
     log.info("=== Should not process event ===");
-    var pubSubEvent = new PubSubEvent();
-    pubSubEvent.setLogEventType(logEventType.value());
-    pubSubEvent.setPayload(null);
-    pubSubEvent.setItemBarcode(ITEM_BARCODE);
+    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
 
-    post(String.format(PUB_SUB_HANDLER_URL, okapiPort), MAPPER.writeValueAsString(pubSubEvent), String.class);
-    Map<String, ReturnRetrievalQueueRecord> records = returnRetrievalQueueRepository.findAll().stream().collect(Collectors.toMap(ReturnRetrievalQueueRecord::getItemBarcode, identity()));
-    assertThat(records.get(ITEM_BARCODE), nullValue());
+      var pubSubEvent = new PubSubEvent();
+      pubSubEvent.setLogEventType(logEventType.value());
+      pubSubEvent.setPayload(null);
+      pubSubEvent.setItemBarcode(ITEM_BARCODE);
+
+      post(String.format(PUB_SUB_HANDLER_URL, okapiPort), MAPPER.writeValueAsString(pubSubEvent), String.class);
+      Map<String, ReturnRetrievalQueueRecord> records = returnRetrievalQueueRepository.findAll().stream().collect(Collectors.toMap(ReturnRetrievalQueueRecord::getItemBarcode, identity()));
+      assertThat(records.get(ITEM_BARCODE), nullValue());
+    }
   }
 
   @Test
   void shouldProcessItemCheckInEvent() throws JsonProcessingException {
     log.info("=== Should process item check in event ===");
 
-    var configuration = new StorageConfiguration().id("b3354743-285d-468d-9fa1-4e3d6321c13d")
-      .name("Remote Storage")
-      .apiKey("fake_api_key==")
-      .providerName(CAIA_SOFT.getId())
-      .returningWorkflowDetails(FOLIO)
-      .url("https://rs.rs.com")
-      .accessionDelay(2)
-      .accessionTimeUnit(TimeUnits.MINUTES);
+    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
 
-    configurationsService.postConfiguration(configuration);
+      var configuration = new StorageConfiguration().id("b3354743-285d-468d-9fa1-4e3d6321c13d")
+        .name("Remote Storage")
+        .apiKey("fake_api_key==")
+        .providerName(CAIA_SOFT.getId())
+        .returningWorkflowDetails(FOLIO)
+        .url("https://rs.rs.com")
+        .accessionDelay(2)
+        .accessionTimeUnit(TimeUnits.MINUTES);
 
-    locationMappingsService.postRemoteLocationConfigurationMapping(new RemoteLocationConfigurationMapping()
-      .folioLocationId("53cf956f-c1df-410b-8bea-27f712cca7c0")
-      .configurationId(configuration.getId()));
+      configurationsService.postConfiguration(configuration);
 
-    post(String.format(PUB_SUB_HANDLER_URL, okapiPort), MAPPER.writeValueAsString(buildCheckInLogRecordPubSubEvent()), String.class);
-    Map<String, ReturnRetrievalQueueRecord> records = returnRetrievalQueueRepository.findAll().stream().collect(Collectors.toMap(ReturnRetrievalQueueRecord::getItemBarcode, identity()));
-    assertThat(records.get(ITEM_BARCODE), notNullValue());
+      locationMappingsService.postRemoteLocationConfigurationMapping(new RemoteLocationConfigurationMapping()
+        .folioLocationId("53cf956f-c1df-410b-8bea-27f712cca7c0")
+        .configurationId(configuration.getId()));
+
+      post(String.format(PUB_SUB_HANDLER_URL, okapiPort), MAPPER.writeValueAsString(buildCheckInLogRecordPubSubEvent()), String.class);
+      Map<String, ReturnRetrievalQueueRecord> records = returnRetrievalQueueRepository.findAll().stream().collect(Collectors.toMap(ReturnRetrievalQueueRecord::getItemBarcode, identity()));
+      assertThat(records.get(ITEM_BARCODE), notNullValue());
+    }
   }
 }

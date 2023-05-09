@@ -11,10 +11,13 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.folio.rs.TestBase;
+import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.ReturnItemResponse;
 import org.folio.rs.repository.ReturnRetrievalQueueRepository;
 import org.folio.rs.service.LocationMappingsService;
+import org.folio.spring.FolioModuleMetadata;
+import org.folio.spring.scope.FolioExecutionContextSetter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,54 +43,68 @@ public class ReturnItemTest extends TestBase {
   @Autowired
   private ReturnRetrievalQueueRepository returnRetrievalQueueRepository;
 
+  @Autowired
+  private FolioModuleMetadata moduleMetadata;
+
   @BeforeEach
   void prepare() {
-    locationMappingsService.postRemoteLocationConfigurationMapping(new RemoteLocationConfigurationMapping()
-      .folioLocationId(FOLIO_LOCATION_ID).configurationId(REMOTE_STORAGE_CONFIGURATION_ID));
-    locationMappingsService.postRemoteLocationConfigurationMapping(new RemoteLocationConfigurationMapping()
-      .folioLocationId(FOLIO_LOCATION_2_ID).configurationId(REMOTE_STORAGE_CONFIGURATION_ID));
-    checkInUrl = String.format(RETURN_URL, okapiPort, REMOTE_STORAGE_CONFIGURATION_ID);
-    errorCheckInUrl = String.format(RETURN_URL, okapiPort, REMOTE_STORAGE_ERROR_CONFIGURATION_ID);
+    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+
+      locationMappingsService.postRemoteLocationConfigurationMapping(new RemoteLocationConfigurationMapping()
+        .folioLocationId(FOLIO_LOCATION_ID).configurationId(REMOTE_STORAGE_CONFIGURATION_ID));
+      locationMappingsService.postRemoteLocationConfigurationMapping(new RemoteLocationConfigurationMapping()
+        .folioLocationId(FOLIO_LOCATION_2_ID).configurationId(REMOTE_STORAGE_CONFIGURATION_ID));
+      checkInUrl = String.format(RETURN_URL, okapiPort, REMOTE_STORAGE_CONFIGURATION_ID);
+      errorCheckInUrl = String.format(RETURN_URL, okapiPort, REMOTE_STORAGE_ERROR_CONFIGURATION_ID);
+    }
   }
 
   @AfterEach
   void clear() {
-    locationMappingsService.deleteMappingById(FOLIO_LOCATION_ID);
-    returnRetrievalQueueRepository.deleteAll();
+    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+      locationMappingsService.deleteMappingById(FOLIO_LOCATION_ID);
+      returnRetrievalQueueRepository.deleteAll();
+    }
   }
 
   @Test
   void canReturnItemByBarcodePost() {
-    var itemBarcode = "{\"itemBarcode\": \"" + ITEM_BARCODE + "\"}";
-    var response = post(checkInUrl, itemBarcode, ReturnItemResponse.class);
+    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
 
-    assertThat(response.getStatusCode(), is(HttpStatus.OK));
-    assertTrue(Objects.requireNonNull(response.getBody()).getIsHoldRecallRequestExist());
+      var itemBarcode = "{\"itemBarcode\": \"" + ITEM_BARCODE + "\"}";
+      var response = post(checkInUrl, itemBarcode, ReturnItemResponse.class);
 
-    var records = returnRetrievalQueueRepository.findAll();
-    boolean exist = records.stream().anyMatch(record -> ITEM_BARCODE.equals(record.getItemBarcode()));
-    assertTrue(exist);
+      assertThat(response.getStatusCode(), is(HttpStatus.OK));
+      assertTrue(Objects.requireNonNull(response.getBody()).getIsHoldRecallRequestExist());
+
+      var records = returnRetrievalQueueRepository.findAll();
+      boolean exist = records.stream().anyMatch(record -> ITEM_BARCODE.equals(record.getItemBarcode()));
+      assertTrue(exist);
+    }
   }
 
   @Test
   void shouldCheckInItemAtAppropriateServicePointWhenMultipleRemoteLocationMappingsExist() {
-    locationMappingsService.postRemoteLocationConfigurationMapping(new RemoteLocationConfigurationMapping()
-      .folioLocationId(FOLIO_LOCATION_2_ID).configurationId(REMOTE_STORAGE_CONFIGURATION_ID));
+    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
 
-    var checkInItemJsonString = "{\"itemBarcode\": \"" + ITEM2_BARCODE + "\"}";
-    var response = post(checkInUrl, checkInItemJsonString, ReturnItemResponse.class);
+      locationMappingsService.postRemoteLocationConfigurationMapping(new RemoteLocationConfigurationMapping()
+        .folioLocationId(FOLIO_LOCATION_2_ID).configurationId(REMOTE_STORAGE_CONFIGURATION_ID));
 
-    assertThat(response.getStatusCode(), is(HttpStatus.OK));
+      var checkInItemJsonString = "{\"itemBarcode\": \"" + ITEM2_BARCODE + "\"}";
+      var response = post(checkInUrl, checkInItemJsonString, ReturnItemResponse.class);
 
-    var bodyStrings = wireMockServer.getAllServeEvents().stream()
+      assertThat(response.getStatusCode(), is(HttpStatus.OK));
+
+      var bodyStrings = wireMockServer.getAllServeEvents().stream()
         .filter(e -> "/circulation/check-in-by-barcode".equals(e.getRequest().getUrl()))
         .map(e -> e.getRequest().getBody())
         .map(String::new)
         .collect(Collectors.toList());
-    assertThat(bodyStrings.size(), is(1));
-    assertTrue(bodyStrings.get(0).contains(PRIMARY_SERVICE_POINT_2));
+      assertThat(bodyStrings.size(), is(1));
+      assertTrue(bodyStrings.get(0).contains(PRIMARY_SERVICE_POINT_2));
 
-    locationMappingsService.deleteMappingById(FOLIO_LOCATION_2_ID);
+      locationMappingsService.deleteMappingById(FOLIO_LOCATION_2_ID);
+    }
   }
 
   @Test

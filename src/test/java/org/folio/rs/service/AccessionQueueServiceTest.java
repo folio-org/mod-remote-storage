@@ -39,8 +39,10 @@ import org.folio.rs.domain.dto.TimeUnits;
 import org.folio.rs.domain.entity.AccessionQueueRecord;
 import org.folio.rs.repository.AccessionQueueRepository;
 import org.folio.spring.FolioModuleMetadata;
+import org.folio.spring.scope.FolioExecutionContextSetter;
 import org.folio.spring.scope.FolioExecutionScopeExecutionContextManager;
 import org.hamcrest.Matchers;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -96,391 +98,430 @@ public class AccessionQueueServiceTest extends TestBase {
   @ParameterizedTest
   @EnumSource(value = DomainEventType.class, names = {"CREATE", "UPDATE"})
   void testItemUpdatingEventHandling(DomainEventType domainEventType) {
+    try (var context = getFolioExecutionContextSetter()) {
+      var mapping = new RemoteLocationConfigurationMapping()
+        .folioLocationId(NEW_EFFECTIVE_LOCATION_ID)
+        .configurationId(REMOTE_STORAGE_ID);
+      locationMappingsService.postRemoteLocationConfigurationMapping(mapping);
 
-    var mapping = new RemoteLocationConfigurationMapping()
-      .folioLocationId(NEW_EFFECTIVE_LOCATION_ID)
-      .configurationId(REMOTE_STORAGE_ID);
-    locationMappingsService.postRemoteLocationConfigurationMapping(mapping);
+      var originalItem = new Item().effectiveLocationId(OLD_EFFECTIVE_LOCATION_ID)
+        .instanceId(INSTANCE_ID)
+        .barcode(BARCODE)
+        .effectiveCallNumberComponents(
+          new ItemEffectiveCallNumberComponents().callNumber(CALL_NUMBER));
 
-    var originalItem = new Item().effectiveLocationId(OLD_EFFECTIVE_LOCATION_ID)
-      .instanceId(INSTANCE_ID)
-      .barcode(BARCODE)
-      .effectiveCallNumberComponents(
-        new ItemEffectiveCallNumberComponents().callNumber(CALL_NUMBER));
+      var newItem = new Item().effectiveLocationId(NEW_EFFECTIVE_LOCATION_ID)
+        .instanceId(INSTANCE_ID)
+        .barcode(BARCODE)
+        .effectiveCallNumberComponents(
+          new ItemEffectiveCallNumberComponents().callNumber(CALL_NUMBER));
 
-    var newItem = new Item().effectiveLocationId(NEW_EFFECTIVE_LOCATION_ID)
-      .instanceId(INSTANCE_ID)
-      .barcode(BARCODE)
-      .effectiveCallNumberComponents(
-        new ItemEffectiveCallNumberComponents().callNumber(CALL_NUMBER));
+      var newItemWithoutRemoteConfig = new Item().effectiveLocationId(randomIdAsString())
+        .instanceId(INSTANCE_ID)
+        .barcode(BARCODE)
+        .effectiveCallNumberComponents(
+          new ItemEffectiveCallNumberComponents().callNumber(CALL_NUMBER));
 
-    var newItemWithoutRemoteConfig = new Item().effectiveLocationId(randomIdAsString())
-      .instanceId(INSTANCE_ID)
-      .barcode(BARCODE)
-      .effectiveCallNumberComponents(
-        new ItemEffectiveCallNumberComponents().callNumber(CALL_NUMBER));
+      var resourceBodyWithRemoteConfig = DomainEvent
+        .of(domainEventType.equals(DomainEventType.UPDATE) ? originalItem : null, newItem, domainEventType, TEST_TENANT);
+      var resourceBodyWithoutRemoteConfig = DomainEvent
+        .of(domainEventType.equals(DomainEventType.UPDATE) ? originalItem : null, newItemWithoutRemoteConfig, domainEventType,
+          TEST_TENANT);
 
-    var resourceBodyWithRemoteConfig = DomainEvent
-      .of(domainEventType.equals(DomainEventType.UPDATE) ? originalItem : null, newItem, domainEventType, TEST_TENANT);
-    var resourceBodyWithoutRemoteConfig = DomainEvent
-      .of(domainEventType.equals(DomainEventType.UPDATE) ? originalItem : null, newItemWithoutRemoteConfig, domainEventType,
-        TEST_TENANT);
+      accessionQueueService.processAccessionQueueRecord(
+        Collections.singletonList(resourceBodyWithRemoteConfig));
+      accessionQueueService.processAccessionQueueRecord(
+        Collections.singletonList(resourceBodyWithoutRemoteConfig));
 
-    accessionQueueService.processAccessionQueueRecord(
-      Collections.singletonList(resourceBodyWithRemoteConfig));
-    accessionQueueService.processAccessionQueueRecord(
-      Collections.singletonList(resourceBodyWithoutRemoteConfig));
+      AccessionQueueRecord accessionQueueRecord = new AccessionQueueRecord();
+      accessionQueueRecord.setItemBarcode(BARCODE);
+      try (var context1 = getFolioExecutionContextSetter()) {
+        verifyCreatedAccessionQueueRecord(accessionQueueRepository.findAll(Example.of(accessionQueueRecord)).get(0));
+      }
+    }
 
-    AccessionQueueRecord accessionQueueRecord = new AccessionQueueRecord();
-    accessionQueueRecord.setItemBarcode(BARCODE);
-    FolioExecutionScopeExecutionContextManager.beginFolioExecutionContext(
-      AsyncFolioExecutionContext.builder()
-        .tenantId(TEST_TENANT)
-        .moduleMetadata(moduleMetadata)
-        .okapiUrl(getOkapiUrl()).build());
-    verifyCreatedAccessionQueueRecord(accessionQueueRepository.findAll(Example.of(accessionQueueRecord)).get(0));
-    FolioExecutionScopeExecutionContextManager.endFolioExecutionContext();
   }
 
   @Test
   void shouldFindAccessionQueuesByRemoteStorageId() {
-    accessionQueueRepository.save(createBaseAccessionQueueRecord());
-    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID)));
+    try (var context = getFolioExecutionContextSetter()) {
+      accessionQueueRepository.save(createBaseAccessionQueueRecord());
+      accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID)));
 
-    ResponseEntity<AccessionQueues> responseEntity = get(formattedAccessionUrl +"?storageId=" + REMOTE_STORAGE_ID, AccessionQueues.class);
-    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().get(0).getRemoteStorageId(), equalTo(REMOTE_STORAGE_ID));
-    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(1));
-    assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(1));
+      ResponseEntity<AccessionQueues> responseEntity = get(formattedAccessionUrl +"?storageId=" + REMOTE_STORAGE_ID, AccessionQueues.class);
+      assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().get(0).getRemoteStorageId(), equalTo(REMOTE_STORAGE_ID));
+      assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(1));
+      assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(1));
+    }
   }
 
   @Test
   void shouldFindAccessionQueuesWithAccessionDateTime() {
-    accessionQueueRepository.save(createBaseAccessionQueueRecord());
-    AccessionQueueRecord accessionQueueRecord = buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID));
-    accessionQueueRecord.setAccessionedDateTime(LocalDateTime.now());
-    accessionQueueRepository.save(accessionQueueRecord);
+    try (var context = getFolioExecutionContextSetter()) {
+      accessionQueueRepository.save(createBaseAccessionQueueRecord());
+      AccessionQueueRecord accessionQueueRecord = buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID));
+      accessionQueueRecord.setAccessionedDateTime(LocalDateTime.now());
+      accessionQueueRepository.save(accessionQueueRecord);
 
-    ResponseEntity<AccessionQueues> allAccessionQueueRecords = get(formattedAccessionUrl, AccessionQueues.class);
+      ResponseEntity<AccessionQueues> allAccessionQueueRecords = get(formattedAccessionUrl, AccessionQueues.class);
 
-    assertThat(Objects.requireNonNull(allAccessionQueueRecords.getBody()).getAccessions(), notNullValue());
-    assertThat(Objects.requireNonNull(allAccessionQueueRecords.getBody()).getAccessions().size(), equalTo(3));
-    assertThat(Objects.requireNonNull(allAccessionQueueRecords.getBody()).getTotalRecords(), equalTo(3));
+      assertThat(Objects.requireNonNull(allAccessionQueueRecords.getBody()).getAccessions(), notNullValue());
+      assertThat(Objects.requireNonNull(allAccessionQueueRecords.getBody()).getAccessions().size(), equalTo(3));
+      assertThat(Objects.requireNonNull(allAccessionQueueRecords.getBody()).getTotalRecords(), equalTo(3));
 
-    ResponseEntity<AccessionQueues> accessionedRecords = get(formattedAccessionUrl + "?accessioned=true", AccessionQueues.class);
+      ResponseEntity<AccessionQueues> accessionedRecords = get(formattedAccessionUrl + "?accessioned=true", AccessionQueues.class);
 
-    assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getAccessions().get(0), notNullValue());
-    assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getAccessions().size(), equalTo(2));
-    assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getTotalRecords(), equalTo(2));
-    assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getAccessions().get(0).getAccessionedDateTime(), notNullValue());
+      assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getAccessions().get(0), notNullValue());
+      assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getAccessions().size(), equalTo(2));
+      assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getTotalRecords(), equalTo(2));
+      assertThat(Objects.requireNonNull(accessionedRecords.getBody()).getAccessions().get(0).getAccessionedDateTime(), notNullValue());
 
-    ResponseEntity<AccessionQueues> notAccessionedRecords = get(formattedAccessionUrl + "?accessioned=false", AccessionQueues.class);
-    assertThat(Objects.requireNonNull(notAccessionedRecords.getBody()).getAccessions().get(0), notNullValue());
-    assertThat(Objects.requireNonNull(notAccessionedRecords.getBody()).getAccessions().size(), equalTo(1));
-    assertThat(Objects.requireNonNull(notAccessionedRecords.getBody()).getTotalRecords(), equalTo(1));
-    assertThat(Objects.requireNonNull(notAccessionedRecords.getBody()).getAccessions().get(0).getAccessionedDateTime(), nullValue());
+      ResponseEntity<AccessionQueues> notAccessionedRecords = get(formattedAccessionUrl + "?accessioned=false", AccessionQueues.class);
+      assertThat(Objects.requireNonNull(notAccessionedRecords.getBody()).getAccessions().get(0), notNullValue());
+      assertThat(Objects.requireNonNull(notAccessionedRecords.getBody()).getAccessions().size(), equalTo(1));
+      assertThat(Objects.requireNonNull(notAccessionedRecords.getBody()).getTotalRecords(), equalTo(1));
+      assertThat(Objects.requireNonNull(notAccessionedRecords.getBody()).getAccessions().get(0).getAccessionedDateTime(), nullValue());
+    }
 
   }
 
   @Test
   void shouldFindAccessionQueuesWithOffset() {
-    accessionQueueRepository.save(createBaseAccessionQueueRecord());
-    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID)));
+    try (var context = getFolioExecutionContextSetter()) {
+      accessionQueueRepository.save(createBaseAccessionQueueRecord());
+      accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID)));
 
-    ResponseEntity<AccessionQueues> responseEntity = get(formattedAccessionUrl + "?offset=1", AccessionQueues.class);
-    assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(3));
-    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(2));
+      ResponseEntity<AccessionQueues> responseEntity = get(formattedAccessionUrl + "?offset=1", AccessionQueues.class);
+      assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(3));
+      assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(2));
+    }
   }
 
   @Test
   void shouldFindAccessionQueuesWithLimit() {
-    accessionQueueRepository.save(createBaseAccessionQueueRecord());
-    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID)));
+    try (var context = getFolioExecutionContextSetter()) {
+      accessionQueueRepository.save(createBaseAccessionQueueRecord());
+      accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID)));
 
-    ResponseEntity<AccessionQueues> responseEntity = get(formattedAccessionUrl + "?limit=1", AccessionQueues.class);
-    assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(3));
-    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(1));
+      ResponseEntity<AccessionQueues> responseEntity = get(formattedAccessionUrl + "?limit=1", AccessionQueues.class);
+      assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(3));
+      assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(1));
+    }
   }
 
   @Test
   void shouldSetAccessionedById() {
-    UUID id = UUID.randomUUID();
-    accessionQueueRepository.save(buildAccessionQueueRecord(id));
+    try (var context = getFolioExecutionContextSetter()) {
+      UUID id = UUID.randomUUID();
+      accessionQueueRepository.save(buildAccessionQueueRecord(id));
 
-    put(formattedAccessionUrl + "/id/" + id,null);
+      put(formattedAccessionUrl + "/id/" + id,null);
 
-    var actualAccessionQueueRecord = accessionQueueRepository.findById(id).get();
-    assertThat(actualAccessionQueueRecord.getAccessionedDateTime(), notNullValue());
+      var actualAccessionQueueRecord = accessionQueueRepository.findById(id).get();
+      assertThat(actualAccessionQueueRecord.getAccessionedDateTime(), notNullValue());
+    }
   }
 
   @Test
   void shouldSetAccessionedByBarcode() {
-    UUID uuid = UUID.randomUUID();
-    accessionQueueRepository.save(buildAccessionQueueRecord(uuid));
+    try (var context = getFolioExecutionContextSetter()) {
+      UUID uuid = UUID.randomUUID();
+      accessionQueueRepository.save(buildAccessionQueueRecord(uuid));
 
-    put(formattedAccessionUrl + "/barcode/" + BARCODE,null);
+      put(formattedAccessionUrl + "/barcode/" + BARCODE,null);
 
-    var actualAccessionQueueRecord = accessionQueueRepository.findById(uuid).get();
-    assertThat(actualAccessionQueueRecord.getItemBarcode(), equalTo(BARCODE));
-    assertThat(actualAccessionQueueRecord.getAccessionedDateTime(), notNullValue());
+      var actualAccessionQueueRecord = accessionQueueRepository.findById(uuid).get();
+      assertThat(actualAccessionQueueRecord.getItemBarcode(), equalTo(BARCODE));
+      assertThat(actualAccessionQueueRecord.getAccessionedDateTime(), notNullValue());
+    }
   }
 
   @Test
   void shouldThrowNotFoundExceptionWhenIdDoesNotExist() {
-    accessionQueueRepository.save(buildAccessionQueueRecord(UUID.randomUUID()));
-    String url = formattedAccessionUrl + "/id/" + UUID.randomUUID();
+    try (var context = getFolioExecutionContextSetter()) {
+      accessionQueueRepository.save(buildAccessionQueueRecord(UUID.randomUUID()));
+      String url = formattedAccessionUrl + "/id/" + UUID.randomUUID();
 
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
+      HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
         put(url,null));
 
-    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.NOT_FOUND));
+      assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.NOT_FOUND));
+    }
   }
 
   @Test
   void shouldThrowNotFoundExceptionWhenAccessionQueueIsAlreadyAccessioned() {
-    UUID id = UUID.randomUUID();
-    AccessionQueueRecord accessionQueueRecord = buildAccessionQueueRecord(id);
-    accessionQueueRecord.setAccessionedDateTime(LocalDateTime.now());
-    accessionQueueRepository.save(accessionQueueRecord);
-    String url = formattedAccessionUrl + "/id/" + id;
+    try (var context = getFolioExecutionContextSetter()) {
+      UUID id = UUID.randomUUID();
+      AccessionQueueRecord accessionQueueRecord = buildAccessionQueueRecord(id);
+      accessionQueueRecord.setAccessionedDateTime(LocalDateTime.now());
+      accessionQueueRepository.save(accessionQueueRecord);
+      String url = formattedAccessionUrl + "/id/" + id;
 
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
+      HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
         put(url,null));
 
-    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.NOT_FOUND));
+      assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.NOT_FOUND));
+    }
+  }
+
+  @NotNull
+  private FolioExecutionContextSetter getFolioExecutionContextSetter() {
+    return new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build());
   }
 
   @Test
   void shouldThrowNotFoundExceptionWhenBarcodeDoesNotExist() {
-    accessionQueueRepository.save(buildAccessionQueueRecord(UUID.randomUUID()));
-    String url = formattedAccessionUrl + "/barcode/" + UUID.randomUUID();
+    try (var context = getFolioExecutionContextSetter()) {
+      accessionQueueRepository.save(buildAccessionQueueRecord(UUID.randomUUID()));
+      String url = formattedAccessionUrl + "/barcode/" + UUID.randomUUID();
 
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
+      HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
         put(url,null));
 
-    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.NOT_FOUND));
+      assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.NOT_FOUND));
+    }
   }
 
   @Test
   void shouldFindAccessionQueuesByCreatedDate() {
-    LocalDateTime createdDate = LocalDateTime.now();
-    AccessionQueueRecord accessionQueueRecord = createBaseAccessionQueueRecord();
-    accessionQueueRecord.setCreatedDateTime(createdDate);
-    accessionQueueRepository.save(accessionQueueRecord);
+    try (var context = getFolioExecutionContextSetter()) {
+      LocalDateTime createdDate = LocalDateTime.now();
+      AccessionQueueRecord accessionQueueRecord = createBaseAccessionQueueRecord();
+      accessionQueueRecord.setCreatedDateTime(createdDate);
+      accessionQueueRepository.save(accessionQueueRecord);
 
-    accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID)));
+      accessionQueueRepository.save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID)));
 
-    ResponseEntity<AccessionQueues> responseEntity = get(formattedAccessionUrl + "?createdDate=" + createdDate, AccessionQueues.class);
-    assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(1));
-    assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(1));
+      ResponseEntity<AccessionQueues> responseEntity = get(formattedAccessionUrl + "?createdDate=" + createdDate, AccessionQueues.class);
+      assertThat(Objects.requireNonNull(responseEntity.getBody()).getTotalRecords(), equalTo(1));
+      assertThat(Objects.requireNonNull(responseEntity.getBody()).getAccessions().size(), equalTo(1));
+    }
   }
 
   @Test
   void shouldThrowBadRequestExceptionWhenCreateDateHasWrongFormat() {
-    LocalDateTime createdDate = LocalDateTime.now();
-    AccessionQueueRecord accessionQueueRecord = createBaseAccessionQueueRecord();
-    accessionQueueRecord.setCreatedDateTime(createdDate);
-    accessionQueueRepository.save(accessionQueueRecord);
-    accessionQueueRepository
+    try (var context = getFolioExecutionContextSetter()) {
+      LocalDateTime createdDate = LocalDateTime.now();
+      AccessionQueueRecord accessionQueueRecord = createBaseAccessionQueueRecord();
+      accessionQueueRecord.setCreatedDateTime(createdDate);
+      accessionQueueRepository.save(accessionQueueRecord);
+      accessionQueueRepository
         .save(buildAccessionQueueRecord(stringToUUIDSafe(ACCESSION_RECORD_1_ID)));
 
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
+      HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
         get(formattedAccessionUrl + "?createdDate=123", AccessionQueues.class), StringUtils.EMPTY);
 
-    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.BAD_REQUEST));
+      assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.BAD_REQUEST));
+    }
   }
 
   @Test
   void shouldChangeItemPermanentLocationIfHoldingHasTheSameOne() {
-    var storageConfiguration = new StorageConfiguration()
-      .id(REMOTE_STORAGE_ID)
-      .name("Test")
-      .providerName("CAIA_SOFT")
-      .accessionDelay(1)
-      .accessionTimeUnit(TimeUnits.MINUTES)
-      .accessionWorkflowDetails(AccessionWorkflowDetails.CHANGE_PERMANENT_LOCATION);
-    configurationsService.postConfiguration(storageConfiguration);
+    try (var context = getFolioExecutionContextSetter()) {
+      var storageConfiguration = new StorageConfiguration()
+        .id(REMOTE_STORAGE_ID)
+        .name("Test")
+        .providerName("CAIA_SOFT")
+        .accessionDelay(1)
+        .accessionTimeUnit(TimeUnits.MINUTES)
+        .accessionWorkflowDetails(AccessionWorkflowDetails.CHANGE_PERMANENT_LOCATION);
+      configurationsService.postConfiguration(storageConfiguration);
 
-    var locationMapping = new RemoteLocationConfigurationMapping()
-      .configurationId(REMOTE_STORAGE_ID)
-      .folioLocationId(REMOTE_LOCATION_ID);
-    locationMappingsService.postRemoteLocationConfigurationMapping(locationMapping);
+      var locationMapping = new RemoteLocationConfigurationMapping()
+        .configurationId(REMOTE_STORAGE_ID)
+        .folioLocationId(REMOTE_LOCATION_ID);
+      locationMappingsService.postRemoteLocationConfigurationMapping(locationMapping);
 
-    var accessionRequest = new AccessionRequest()
-      .remoteStorageId(REMOTE_STORAGE_ID)
-      .itemBarcode("38268030");
+      var accessionRequest = new AccessionRequest()
+        .remoteStorageId(REMOTE_STORAGE_ID)
+        .itemBarcode("38268030");
 
-    ResponseEntity<AccessionQueue> response = post(formattedAccessionUrl, accessionRequest, AccessionQueue.class);
-    var actualAccessionQueueRecord = accessionQueueRepository.findAll().get(0);
-    assertThat(actualAccessionQueueRecord.getAccessionedDateTime(), notNullValue());
-    assertThatItemPermanentLocationWasChanged("a31301dc-0a28-49e6-9fa2-499e07c0bb42", REMOTE_LOCATION_ID);
-    assertThat(response.getBody().getAccessionedDateTime(), notNullValue());
-    assertThat(response.getBody().getPermanentLocationId(), equalTo(REMOTE_LOCATION_ID));
-    assertThat(response.getBody().getRemoteStorageId(), equalTo(accessionRequest.getRemoteStorageId()));
+      ResponseEntity<AccessionQueue> response = post(formattedAccessionUrl, accessionRequest, AccessionQueue.class);
+      var actualAccessionQueueRecord = accessionQueueRepository.findAll().get(0);
+      assertThat(actualAccessionQueueRecord.getAccessionedDateTime(), notNullValue());
+      assertThatItemPermanentLocationWasChanged("a31301dc-0a28-49e6-9fa2-499e07c0bb42", REMOTE_LOCATION_ID);
+      assertThat(response.getBody().getAccessionedDateTime(), notNullValue());
+      assertThat(response.getBody().getPermanentLocationId(), equalTo(REMOTE_LOCATION_ID));
+      assertThat(response.getBody().getRemoteStorageId(), equalTo(accessionRequest.getRemoteStorageId()));
+    }
   }
 
   @Test
   void shouldChangeHoldingPermanentLocationIfAllItemsWithinHoldingHasRemoteLocation() {
-    var storageConfiguration = new StorageConfiguration()
-      .id(REMOTE_STORAGE_ID)
-      .name("Test")
-      .providerName("CAIA_SOFT")
-      .accessionDelay(1)
-      .accessionTimeUnit(TimeUnits.MINUTES)
-      .accessionWorkflowDetails(AccessionWorkflowDetails.CHANGE_PERMANENT_LOCATION);
-    configurationsService.postConfiguration(storageConfiguration);
+    try (var context = getFolioExecutionContextSetter()) {
+      var storageConfiguration = new StorageConfiguration()
+        .id(REMOTE_STORAGE_ID)
+        .name("Test")
+        .providerName("CAIA_SOFT")
+        .accessionDelay(1)
+        .accessionTimeUnit(TimeUnits.MINUTES)
+        .accessionWorkflowDetails(AccessionWorkflowDetails.CHANGE_PERMANENT_LOCATION);
+      configurationsService.postConfiguration(storageConfiguration);
 
-    var locationMapping = new RemoteLocationConfigurationMapping()
-      .configurationId(REMOTE_STORAGE_ID)
-      .folioLocationId(REMOTE_LOCATION_ID);
-    locationMappingsService.postRemoteLocationConfigurationMapping(locationMapping);
+      var locationMapping = new RemoteLocationConfigurationMapping()
+        .configurationId(REMOTE_STORAGE_ID)
+        .folioLocationId(REMOTE_LOCATION_ID);
+      locationMappingsService.postRemoteLocationConfigurationMapping(locationMapping);
 
-    var accessionRequest = new AccessionRequest()
-      .remoteStorageId(REMOTE_STORAGE_ID)
-      .itemBarcode("38268031");
+      var accessionRequest = new AccessionRequest()
+        .remoteStorageId(REMOTE_STORAGE_ID)
+        .itemBarcode("38268031");
 
-    post(formattedAccessionUrl, accessionRequest, AccessionQueue.class);
-    assertThatHoldingPermanentLocationWasChanged(REMOTE_LOCATION_ID);
+      post(formattedAccessionUrl, accessionRequest, AccessionQueue.class);
+      assertThatHoldingPermanentLocationWasChanged(REMOTE_LOCATION_ID);
+    }
   }
 
   @Test
   void shouldMoveItemToHoldingWithRemoteLocationIfItExists() {
-    var storageConfiguration = new StorageConfiguration()
-      .id(REMOTE_STORAGE_ID)
-      .name("Test")
-      .providerName("CAIA_SOFT")
-      .accessionDelay(1)
-      .accessionTimeUnit(TimeUnits.MINUTES)
-      .accessionWorkflowDetails(AccessionWorkflowDetails.DUPLICATE_HOLDINGS);
-    configurationsService.postConfiguration(storageConfiguration);
+    try (var context = getFolioExecutionContextSetter()) {
+      var storageConfiguration = new StorageConfiguration()
+        .id(REMOTE_STORAGE_ID)
+        .name("Test")
+        .providerName("CAIA_SOFT")
+        .accessionDelay(1)
+        .accessionTimeUnit(TimeUnits.MINUTES)
+        .accessionWorkflowDetails(AccessionWorkflowDetails.DUPLICATE_HOLDINGS);
+      configurationsService.postConfiguration(storageConfiguration);
 
-    var locationMapping = new RemoteLocationConfigurationMapping()
-      .configurationId(REMOTE_STORAGE_ID)
-      .folioLocationId(REMOTE_LOCATION_ID);
-    locationMappingsService.postRemoteLocationConfigurationMapping(locationMapping);
+      var locationMapping = new RemoteLocationConfigurationMapping()
+        .configurationId(REMOTE_STORAGE_ID)
+        .folioLocationId(REMOTE_LOCATION_ID);
+      locationMappingsService.postRemoteLocationConfigurationMapping(locationMapping);
 
-    var accessionRequest = new AccessionRequest()
-      .remoteStorageId(REMOTE_STORAGE_ID)
-      .itemBarcode("38268032");
+      var accessionRequest = new AccessionRequest()
+        .remoteStorageId(REMOTE_STORAGE_ID)
+        .itemBarcode("38268032");
 
-    var response = post(formattedAccessionUrl, accessionRequest, AccessionQueue.class);
-    assertThatItemWasMovedToHoldingWithRemoteLocation("336034b4-0524-45d7-b778-c769274baccf",
-      "a31301dc-0a28-49e6-9fa2-499e07c0bb42");
-    assertThat(response.getBody().getNotes().size(), is(1));
-    assertThat(response.getBody().getNotes().get(0).getNoteType(), equalTo("General note"));
-    assertThat(response.getBody().getNotes().get(0).getNote(), equalTo("test note"));
+      var response = post(formattedAccessionUrl, accessionRequest, AccessionQueue.class);
+      assertThatItemWasMovedToHoldingWithRemoteLocation("336034b4-0524-45d7-b778-c769274baccf",
+        "a31301dc-0a28-49e6-9fa2-499e07c0bb42");
+      assertThat(response.getBody().getNotes().size(), is(1));
+      assertThat(response.getBody().getNotes().get(0).getNoteType(), equalTo("General note"));
+      assertThat(response.getBody().getNotes().get(0).getNote(), equalTo("test note"));
+    }
   }
 
   @Test
   void shouldChangeHoldingsLocationAndSetLocationsToItemsWhenChangePermanentLocationSelected() {
-    var remoteStorageId = UUID.randomUUID().toString();
-    var remoteLocationId = UUID.randomUUID().toString();
+    try (var context = getFolioExecutionContextSetter()) {
+      var remoteStorageId = UUID.randomUUID().toString();
+      var remoteLocationId = UUID.randomUUID().toString();
 
-    var storageConfiguration = new StorageConfiguration()
-      .id(remoteStorageId)
-      .name("Test")
-      .providerName("CAIA_SOFT")
-      .accessionDelay(1)
-      .accessionTimeUnit(TimeUnits.MINUTES)
-      .accessionWorkflowDetails(AccessionWorkflowDetails.CHANGE_PERMANENT_LOCATION);
-    configurationsService.postConfiguration(storageConfiguration);
+      var storageConfiguration = new StorageConfiguration()
+        .id(remoteStorageId)
+        .name("Test")
+        .providerName("CAIA_SOFT")
+        .accessionDelay(1)
+        .accessionTimeUnit(TimeUnits.MINUTES)
+        .accessionWorkflowDetails(AccessionWorkflowDetails.CHANGE_PERMANENT_LOCATION);
+      configurationsService.postConfiguration(storageConfiguration);
 
-    var locationMapping = new RemoteLocationConfigurationMapping()
-      .configurationId(remoteStorageId)
-      .folioLocationId(remoteLocationId);
-    locationMappingsService.postRemoteLocationConfigurationMapping(locationMapping);
+      var locationMapping = new RemoteLocationConfigurationMapping()
+        .configurationId(remoteStorageId)
+        .folioLocationId(remoteLocationId);
+      locationMappingsService.postRemoteLocationConfigurationMapping(locationMapping);
 
-    var accessionRequest = new AccessionRequest()
-      .remoteStorageId(remoteStorageId)
-      .itemBarcode("111");
+      var accessionRequest = new AccessionRequest()
+        .remoteStorageId(remoteStorageId)
+        .itemBarcode("111");
 
-    ResponseEntity<AccessionQueue> response = post(formattedAccessionUrl, accessionRequest, AccessionQueue.class);
+      ResponseEntity<AccessionQueue> response = post(formattedAccessionUrl, accessionRequest, AccessionQueue.class);
 
-    var actualAccessionQueueRecord = accessionQueueRepository.findAll().get(0);
-    assertThat(actualAccessionQueueRecord.getAccessionedDateTime(), notNullValue());
+      var actualAccessionQueueRecord = accessionQueueRepository.findAll().get(0);
+      assertThat(actualAccessionQueueRecord.getAccessionedDateTime(), notNullValue());
 
-    assertThatHoldingPermanentLocationWasChanged(remoteLocationId);
+      assertThatHoldingPermanentLocationWasChanged(remoteLocationId);
 
-    // accessioned item's permanent location should be changed to remote
-    assertThatItemPermanentLocationWasChanged("0b96a642-5e7f-452d-9cae-9cee66c9a892", remoteLocationId);
+      // accessioned item's permanent location should be changed to remote
+      assertThatItemPermanentLocationWasChanged("0b96a642-5e7f-452d-9cae-9cee66c9a892", remoteLocationId);
 
-    // item's permanent location should be changed to holdings record's original location
-    // if item contains neither permanent or temporary location
-    assertThatItemPermanentLocationWasChanged("2b04ef41-b08d-432a-b27f-b434655b5aff", "d9cd0bed-1b49-4b5e-a7bd-064b8d177231");
+      // item's permanent location should be changed to holdings record's original location
+      // if item contains neither permanent or temporary location
+      assertThatItemPermanentLocationWasChanged("2b04ef41-b08d-432a-b27f-b434655b5aff", "d9cd0bed-1b49-4b5e-a7bd-064b8d177231");
 
-    // item containing either permanent or temporary location should not be modified
-    assertThereWereNoPutItemRequests("fc90dd2b-06d5-4f23-a8b9-e26ede8e4d03");
+      // item containing either permanent or temporary location should not be modified
+      assertThereWereNoPutItemRequests("fc90dd2b-06d5-4f23-a8b9-e26ede8e4d03");
+    }
   }
 
   @Test
   void shouldDuplicateHoldingsRecordAndMoveItemIfDuplicateHoldingsSelectedAndNoHoldingExists() {
-    var storageConfiguration = new StorageConfiguration()
-      .id(REMOTE_STORAGE_ID)
-      .name("Test")
-      .providerName("CAIA_SOFT")
-      .accessionDelay(1)
-      .accessionTimeUnit(TimeUnits.MINUTES)
-      .accessionWorkflowDetails(AccessionWorkflowDetails.DUPLICATE_HOLDINGS);
-    configurationsService.postConfiguration(storageConfiguration);
+    try (var context = getFolioExecutionContextSetter()) {
+      var storageConfiguration = new StorageConfiguration()
+        .id(REMOTE_STORAGE_ID)
+        .name("Test")
+        .providerName("CAIA_SOFT")
+        .accessionDelay(1)
+        .accessionTimeUnit(TimeUnits.MINUTES)
+        .accessionWorkflowDetails(AccessionWorkflowDetails.DUPLICATE_HOLDINGS);
+      configurationsService.postConfiguration(storageConfiguration);
 
-    var locationMapping = new RemoteLocationConfigurationMapping()
-      .configurationId(REMOTE_STORAGE_ID)
-      .folioLocationId(REMOTE_LOCATION_ID);
-    locationMappingsService.postRemoteLocationConfigurationMapping(locationMapping);
+      var locationMapping = new RemoteLocationConfigurationMapping()
+        .configurationId(REMOTE_STORAGE_ID)
+        .folioLocationId(REMOTE_LOCATION_ID);
+      locationMappingsService.postRemoteLocationConfigurationMapping(locationMapping);
 
-    var accessionRequest = new AccessionRequest()
-      .remoteStorageId(REMOTE_STORAGE_ID)
-      .itemBarcode("0001");
+      var accessionRequest = new AccessionRequest()
+        .remoteStorageId(REMOTE_STORAGE_ID)
+        .itemBarcode("0001");
 
-    post(formattedAccessionUrl, accessionRequest, AccessionQueue.class);
-    assertThatHoldingsRecordWasCreated();
-    assertThatItemWasMovedToHoldingWithRemoteLocation("7f806ac6-a0ef-4962-95f8-0b3154b70a08",
-      "fd14f552-2f2f-48a4-a777-570d087ba224");
+      post(formattedAccessionUrl, accessionRequest, AccessionQueue.class);
+      assertThatHoldingsRecordWasCreated();
+      assertThatItemWasMovedToHoldingWithRemoteLocation("7f806ac6-a0ef-4962-95f8-0b3154b70a08",
+        "fd14f552-2f2f-48a4-a777-570d087ba224");
+    }
   }
 
   @Test
   void shouldRespondWithBadRequestIfConfigurationHasNoAccessionDetails() {
-    var storageConfiguration = new StorageConfiguration()
-      .id(REMOTE_STORAGE_ID)
-      .name("Test")
-      .providerName("CAIA_SOFT")
-      .accessionDelay(1)
-      .accessionTimeUnit(TimeUnits.MINUTES);
-    configurationsService.postConfiguration(storageConfiguration);
+    try (var context = getFolioExecutionContextSetter()) {
+      var storageConfiguration = new StorageConfiguration()
+        .id(REMOTE_STORAGE_ID)
+        .name("Test")
+        .providerName("CAIA_SOFT")
+        .accessionDelay(1)
+        .accessionTimeUnit(TimeUnits.MINUTES);
+      configurationsService.postConfiguration(storageConfiguration);
 
-    var accessionRequest = new AccessionRequest()
-      .remoteStorageId(REMOTE_STORAGE_ID)
-      .itemBarcode("38268032");
+      var accessionRequest = new AccessionRequest()
+        .remoteStorageId(REMOTE_STORAGE_ID)
+        .itemBarcode("38268032");
 
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
-      post(formattedAccessionUrl, accessionRequest, AccessionQueue.class), StringUtils.EMPTY);
+      HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
+        post(formattedAccessionUrl, accessionRequest, AccessionQueue.class), StringUtils.EMPTY);
 
-    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.BAD_REQUEST));
+      assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.BAD_REQUEST));
+    }
   }
 
   @Test
   void shouldRespondWithBadRequestIfThereAreMultipleHoldingsWithSameRemoteLocationExist() {
-    var storageConfiguration = new StorageConfiguration()
-      .id(REMOTE_STORAGE_ID)
-      .name("Test")
-      .providerName("CAIA_SOFT")
-      .accessionDelay(1)
-      .accessionTimeUnit(TimeUnits.MINUTES)
-      .accessionWorkflowDetails(AccessionWorkflowDetails.DUPLICATE_HOLDINGS);
-    configurationsService.postConfiguration(storageConfiguration);
+    try (var context = getFolioExecutionContextSetter()) {
+      var storageConfiguration = new StorageConfiguration()
+        .id(REMOTE_STORAGE_ID)
+        .name("Test")
+        .providerName("CAIA_SOFT")
+        .accessionDelay(1)
+        .accessionTimeUnit(TimeUnits.MINUTES)
+        .accessionWorkflowDetails(AccessionWorkflowDetails.DUPLICATE_HOLDINGS);
+      configurationsService.postConfiguration(storageConfiguration);
 
-    var locationMapping = new RemoteLocationConfigurationMapping()
-      .configurationId(REMOTE_STORAGE_ID)
-      .folioLocationId(REMOTE_LOCATION_ID);
-    locationMappingsService.postRemoteLocationConfigurationMapping(locationMapping);
+      var locationMapping = new RemoteLocationConfigurationMapping()
+        .configurationId(REMOTE_STORAGE_ID)
+        .folioLocationId(REMOTE_LOCATION_ID);
+      locationMappingsService.postRemoteLocationConfigurationMapping(locationMapping);
 
-    var accessionRequest = new AccessionRequest()
-      .remoteStorageId(REMOTE_STORAGE_ID)
-      .itemBarcode("0003");
+      var accessionRequest = new AccessionRequest()
+        .remoteStorageId(REMOTE_STORAGE_ID)
+        .itemBarcode("0003");
 
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
-      post(formattedAccessionUrl, accessionRequest, AccessionQueue.class), StringUtils.EMPTY);
+      HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
+        post(formattedAccessionUrl, accessionRequest, AccessionQueue.class), StringUtils.EMPTY);
 
-    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.BAD_REQUEST));
+      assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.BAD_REQUEST));
+    }
   }
 
   @Test

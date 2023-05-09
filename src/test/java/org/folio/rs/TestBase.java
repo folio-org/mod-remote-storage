@@ -6,6 +6,7 @@ import org.folio.rs.controller.TenantController;
 import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.spring.FolioModuleMetadata;
 import org.folio.spring.integration.XOkapiHeaders;
+import org.folio.spring.scope.FolioExecutionContextSetter;
 import org.folio.spring.scope.FolioExecutionScopeExecutionContextManager;
 import org.folio.tenant.domain.dto.Parameter;
 import org.folio.tenant.domain.dto.TenantAttributes;
@@ -58,13 +59,12 @@ public class TestBase {
 
   @BeforeEach
   void setUp() {
-      FolioExecutionScopeExecutionContextManager.beginFolioExecutionContext(
-        AsyncFolioExecutionContext.builder()
-          .tenantId(TEST_TENANT)
-          .moduleMetadata(moduleMetadata)
-          .okapiUrl(getOkapiUrl()).build());
+    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder()
+      .tenantId(TEST_TENANT).moduleMetadata(moduleMetadata)
+      .okapiUrl(getOkapiUrl()).build())) {
       tenantController.postTenant(new TenantAttributes().moduleTo("mod_remote_storage")
         .addParametersItem(new Parameter().key(PARAMETER_LOAD_SAMPLE).value("true")));
+    }
   }
 
   public static String getOkapiUrl() {
@@ -73,14 +73,13 @@ public class TestBase {
 
   @AfterEach
   void eachTearDown() {
-    FolioExecutionScopeExecutionContextManager.beginFolioExecutionContext(
-      AsyncFolioExecutionContext.builder()
-        .tenantId(TEST_TENANT)
-        .moduleMetadata(moduleMetadata)
-        .okapiUrl(getOkapiUrl()).build());
-    tenantController.deleteTenant(TEST_TENANT);
-    wireMockServer.resetAll();
-    FolioExecutionScopeExecutionContextManager.endFolioExecutionContext();
+    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder()
+      .tenantId(TEST_TENANT)
+      .moduleMetadata(moduleMetadata)
+      .okapiUrl(getOkapiUrl()).build())) {
+      tenantController.deleteTenant(TEST_TENANT);
+      wireMockServer.resetAll();
+    }
   }
 
 

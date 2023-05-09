@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.folio.rs.TestBase;
+import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.rs.domain.dto.CheckInItem;
 import org.folio.rs.domain.dto.CheckInItemByHoldId;
 import org.folio.rs.domain.dto.LocationMappingFilterData;
@@ -17,6 +18,8 @@ import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.entity.ReturnRetrievalQueueRecord;
 import org.folio.rs.repository.ReturnRetrievalQueueRepository;
 import org.folio.rs.service.LocationMappingsService;
+import org.folio.spring.FolioModuleMetadata;
+import org.folio.spring.scope.FolioExecutionContextSetter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,35 +49,46 @@ public class CheckInRetrieveTest extends TestBase {
   @Autowired
   private ReturnRetrievalQueueRepository retrievalQueueRepository;
 
+  @Autowired
+  private FolioModuleMetadata moduleMetadata;
+
   @BeforeEach
   void prepare() {
-    locationMappingsService.postRemoteLocationConfigurationMapping(new RemoteLocationConfigurationMapping()
-      .folioLocationId(FINAL_LOCATION_ID)
-      .configurationId(REMOTE_STORAGE_CONFIGURATION_ID));
-    retrievalQueueRepository.save(ReturnRetrievalQueueRecord.builder()
-      .id(UUID.randomUUID())
-      .holdId(HOLD_ID)
-      .remoteStorageId(stringToUUIDSafe(REMOTE_STORAGE_CONFIGURATION_ID))
-      .itemBarcode(ITEM_BARCODE)
-      .createdDateTime(LocalDateTime.now())
-      .build());
-    checkInUrl = String.format(CHECK_IN_URL, okapiPort, REMOTE_STORAGE_CONFIGURATION_ID);
-    checkInByHoldIdUrl = String.format(CHECK_IN_BY_HOLD_ID_URL, okapiPort, REMOTE_STORAGE_CONFIGURATION_ID);
-    errorCheckInUrl = String.format(CHECK_IN_URL, okapiPort, REMOTE_STORAGE_ERROR_CONFIGURATION_ID);
-    errorCheckInByHoldIdUrl = String.format(CHECK_IN_BY_HOLD_ID_URL, okapiPort, REMOTE_STORAGE_ERROR_CONFIGURATION_ID);
+    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+      locationMappingsService.postRemoteLocationConfigurationMapping(new RemoteLocationConfigurationMapping()
+        .folioLocationId(FINAL_LOCATION_ID)
+        .configurationId(REMOTE_STORAGE_CONFIGURATION_ID));
+      retrievalQueueRepository.save(ReturnRetrievalQueueRecord.builder()
+        .id(UUID.randomUUID())
+        .holdId(HOLD_ID)
+        .remoteStorageId(stringToUUIDSafe(REMOTE_STORAGE_CONFIGURATION_ID))
+        .itemBarcode(ITEM_BARCODE)
+        .createdDateTime(LocalDateTime.now())
+        .build());
+      checkInUrl = String.format(CHECK_IN_URL, okapiPort, REMOTE_STORAGE_CONFIGURATION_ID);
+      checkInByHoldIdUrl = String.format(CHECK_IN_BY_HOLD_ID_URL, okapiPort, REMOTE_STORAGE_CONFIGURATION_ID);
+      errorCheckInUrl = String.format(CHECK_IN_URL, okapiPort, REMOTE_STORAGE_ERROR_CONFIGURATION_ID);
+      errorCheckInByHoldIdUrl = String.format(CHECK_IN_BY_HOLD_ID_URL, okapiPort, REMOTE_STORAGE_ERROR_CONFIGURATION_ID);
+    }
   }
 
   @AfterEach
   void clear() {
+    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder()
+      .tenantId(TEST_TENANT).moduleMetadata(moduleMetadata)
+      .okapiUrl(getOkapiUrl()).build())) {
     locationMappingsService.deleteMappingById(FINAL_LOCATION_ID);
+    }
   }
 
   @Test
   void canCheckInItemByBarcodeWithRemoteStorageConfigurationIdPost() {
-    var checkInItem = new CheckInItem();
-    checkInItem.setItemBarcode(ITEM_BARCODE);
-    var response = post(checkInUrl, checkInItem, String.class);
-    assertThat(response.getStatusCode(), is(HttpStatus.OK));
+    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+      var checkInItem = new CheckInItem();
+      checkInItem.setItemBarcode(ITEM_BARCODE);
+      var response = post(checkInUrl, checkInItem, String.class);
+      assertThat(response.getStatusCode(), is(HttpStatus.OK));
+    }
   }
 
   @Test

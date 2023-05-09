@@ -62,6 +62,7 @@ import org.folio.rs.repository.AccessionQueueRepository;
 import org.folio.rs.util.IdentifierType;
 import org.folio.spring.FolioModuleMetadata;
 import org.folio.spring.data.OffsetRequest;
+import org.folio.spring.scope.FolioExecutionContextSetter;
 import org.folio.spring.scope.FolioExecutionScopeExecutionContextManager;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -94,21 +95,20 @@ public class AccessionQueueService {
           DomainEventType.UPDATE == event.getType() && isEffectiveLocationChanged(event)) {
         var item = event.getNewEntity();
         var systemUserParameters = securityManagerService.getSystemUserParameters(event.getTenant());
-        FolioExecutionScopeExecutionContextManager.beginFolioExecutionContext(
-          new AsyncFolioExecutionContext(systemUserParameters, moduleMetadata));
-        var effectiveLocationId = item.getEffectiveLocationId();
-        var locationMapping = locationMappingsService
-          .getRemoteLocationConfigurationMapping(effectiveLocationId);
-        if (nonNull(locationMapping)) {
-          var instances = inventoryClient.getInstancesByQuery("id==" + item.getInstanceId());
-          var instance = instances.getResult().get(0);
-          var record = buildAccessionQueueRecord(item, instance, locationMapping);
-          accessionQueueRepository.save(record);
-          log.info("Record prepared and saved for item barcode: {}", record.getItemBarcode());
-        } else {
-          log.info("Location mapping with id={} not found. Accession queue record not created.", effectiveLocationId);
+        try (var context = new FolioExecutionContextSetter(new AsyncFolioExecutionContext(systemUserParameters, moduleMetadata))){
+          var effectiveLocationId = item.getEffectiveLocationId();
+          var locationMapping = locationMappingsService
+            .getRemoteLocationConfigurationMapping(effectiveLocationId);
+          if (nonNull(locationMapping)) {
+            var instances = inventoryClient.getInstancesByQuery("id==" + item.getInstanceId());
+            var instance = instances.getResult().get(0);
+            var record = buildAccessionQueueRecord(item, instance, locationMapping);
+            accessionQueueRepository.save(record);
+            log.info("Record prepared and saved for item barcode: {}", record.getItemBarcode());
+          } else {
+            log.info("Location mapping with id={} not found. Accession queue record not created.", effectiveLocationId);
+          }
         }
-        FolioExecutionScopeExecutionContextManager.endFolioExecutionContext();
       }
     });
   }

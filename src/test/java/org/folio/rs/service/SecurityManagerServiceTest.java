@@ -6,16 +6,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.folio.rs.TestBase;
-import org.folio.rs.domain.AsyncFolioExecutionContext;
-import org.folio.rs.domain.entity.SystemUserParameters;
 import org.folio.spring.FolioModuleMetadata;
-import org.folio.spring.scope.FolioExecutionContextSetter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -35,7 +29,7 @@ public class SecurityManagerServiceTest extends TestBase {
 
   @Test
   void testCreateDefaultSystemUser() {
-    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+    try (var context = getFolioExecutionContextSetter()) {
       securityManagerService.prepareOrUpdateSystemUser(NON_PRESENTED_USER, PASSWORD, getOkapiUrl(), TEST_TENANT);
       List<String> paths = wireMockServer.getAllServeEvents().stream().map(e -> e.getRequest().getUrl()).collect(toList());
       assertThat(paths, hasItems("/authn/login", "/perms/users", "/authn/credentials", "/users", "/users?query=username%3D%3Dnon_presented_user"));
@@ -44,7 +38,7 @@ public class SecurityManagerServiceTest extends TestBase {
 
   @Test
   void testOverrideDefaultSystemUser() {
-    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+    try (var context = getFolioExecutionContextSetter()) {
       var originalSystemUserParameters = securityManagerService.getSystemUserParameters(TEST_TENANT);
 
       final var newOkapiUrl = "http://new-okapi-url";
@@ -62,7 +56,7 @@ public class SecurityManagerServiceTest extends TestBase {
 
   @Test
   void testCreateNonExistedUser() {
-    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+    try (var context = getFolioExecutionContextSetter()) {
       securityManagerService.prepareOrUpdateSystemUser(NON_EXISTED_USER, PASSWORD, getOkapiUrl(), TEST_TENANT);
       List<String> paths = wireMockServer.getAllServeEvents().stream().map(e -> e.getRequest().getUrl()).collect(toList());
       assertThat(paths, hasItems(  "/authn/login", "/perms/users", "/authn/credentials", "/users", "/users?query=username%3D%3Dnon_existed_user"));
@@ -71,7 +65,7 @@ public class SecurityManagerServiceTest extends TestBase {
 
   @Test
   void testCreateExistedUser() {
-    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+    try (var context = getFolioExecutionContextSetter()) {
       securityManagerService.prepareOrUpdateSystemUser(EXISTED_USER, PASSWORD, getOkapiUrl(), TEST_TENANT);
       List<String> paths = wireMockServer.getAllServeEvents().stream().map(e -> e.getRequest().getUrl()).collect(toList());
       assertThat(paths, hasItems("/authn/login", "/perms/users/c78aa9ec-b7d3-4d53-9e43-20296f39b496/permissions?indexField=userId",
@@ -82,7 +76,7 @@ public class SecurityManagerServiceTest extends TestBase {
 
   @Test
   void testRefreshSystemUserApiKey() {
-    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+    try (var context = getFolioExecutionContextSetter()) {
       securityManagerService.refreshSystemUserApiKey(EXISTED_USER, PASSWORD, getOkapiUrl(), TEST_TENANT);
       List<String> paths = wireMockServer.getAllServeEvents().stream().map(e -> e.getRequest().getUrl()).collect(toList());
       assertThat(paths, hasItems("/authn/login"));

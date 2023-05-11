@@ -14,15 +14,11 @@ import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.folio.rs.TestBase;
-import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.rs.domain.dto.RetrievalQueues;
 import org.folio.rs.domain.entity.ReturnRetrievalQueueRecord;
 import org.folio.rs.repository.ReturnRetrievalQueueRepository;
 import org.folio.rs.util.RequestType;
-import org.folio.spring.FolioModuleMetadata;
-import org.folio.spring.scope.FolioExecutionContextSetter;
 import org.hamcrest.Matchers;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -50,9 +46,6 @@ public class ReturnRetrievalQueueServiceTest extends TestBase {
 
   @Autowired
   private ReturnRetrievalQueueRepository returnRetrievalQueueRepository;
-
-  @Autowired
-  private FolioModuleMetadata moduleMetadata;
 
   @BeforeEach
   void prepareUrl() {
@@ -280,10 +273,4 @@ public class ReturnRetrievalQueueServiceTest extends TestBase {
       .requestType(RequestType.PYR.getType())
       .build();
   }
-
-  @NotNull
-  private FolioExecutionContextSetter getFolioExecutionContextSetter() {
-    return new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build());
-  }
-
 }

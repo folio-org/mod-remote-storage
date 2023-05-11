@@ -49,12 +49,9 @@ public class CheckInRetrieveTest extends TestBase {
   @Autowired
   private ReturnRetrievalQueueRepository retrievalQueueRepository;
 
-  @Autowired
-  private FolioModuleMetadata moduleMetadata;
-
   @BeforeEach
   void prepare() {
-    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+    try (var context = getFolioExecutionContextSetter()) {
       locationMappingsService.postRemoteLocationConfigurationMapping(new RemoteLocationConfigurationMapping()
         .folioLocationId(FINAL_LOCATION_ID)
         .configurationId(REMOTE_STORAGE_CONFIGURATION_ID));
@@ -74,16 +71,14 @@ public class CheckInRetrieveTest extends TestBase {
 
   @AfterEach
   void clear() {
-    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder()
-      .tenantId(TEST_TENANT).moduleMetadata(moduleMetadata)
-      .okapiUrl(getOkapiUrl()).build())) {
+    try (var context = getFolioExecutionContextSetter()) {
     locationMappingsService.deleteMappingById(FINAL_LOCATION_ID);
     }
   }
 
   @Test
   void canCheckInItemByBarcodeWithRemoteStorageConfigurationIdPost() {
-    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+    try (var context = getFolioExecutionContextSetter()) {
       var checkInItem = new CheckInItem();
       checkInItem.setItemBarcode(ITEM_BARCODE);
       var response = post(checkInUrl, checkInItem, String.class);

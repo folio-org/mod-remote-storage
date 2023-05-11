@@ -115,4 +115,8 @@ public class TestBase {
   public ResponseEntity<String> delete(String url) {
     return restTemplate.exchange(url, HttpMethod.DELETE, new HttpEntity<>(headers), String.class);
   }
+
+  public FolioExecutionContextSetter getFolioExecutionContextSetter() {
+    return new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build());
+  }
 }

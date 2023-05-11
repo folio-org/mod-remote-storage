@@ -3,7 +3,6 @@ package org.folio.rs.controller;
 import static java.util.function.UnaryOperator.identity;
 import static org.folio.rs.TestUtils.ITEM_BARCODE;
 import static org.folio.rs.TestUtils.MAPPER;
-import static org.folio.rs.TestUtils.buildBaseEventPayload;
 import static org.folio.rs.TestUtils.buildCheckInLogRecordPubSubEvent;
 import static org.folio.rs.TestUtils.buildRequestChangedEventPayload;
 import static org.folio.rs.TestUtils.buildRequestCreatedEventPayload;
@@ -19,7 +18,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.folio.rs.TestBase;
-import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.rs.domain.dto.PubSubEvent;
 import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
@@ -29,8 +27,6 @@ import org.folio.rs.repository.ReturnRetrievalQueueRepository;
 import org.folio.rs.service.ConfigurationsService;
 import org.folio.rs.service.LocationMappingsService;
 import org.folio.rs.util.LogEventType;
-import org.folio.spring.FolioModuleMetadata;
-import org.folio.spring.scope.FolioExecutionContextSetter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,12 +54,9 @@ public class PubSubEventControllerTest extends TestBase {
   @Autowired
   private ConfigurationsService configurationsService;
 
-  @Autowired
-  private FolioModuleMetadata moduleMetadata;
-
   @BeforeEach
   void prepare() {
-    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+    try (var context = getFolioExecutionContextSetter()) {
       returnRetrievalQueueRepository.deleteAll();
     }
   }
@@ -72,7 +65,7 @@ public class PubSubEventControllerTest extends TestBase {
   @EnumSource(value = LogEventType.class, names = { "REQUEST_MOVED", "REQUEST_UPDATED" }, mode = EnumSource.Mode.INCLUDE)
   void shouldProcessChangedEvent(LogEventType logEventType) throws JsonProcessingException {
     log.info("=== Should process created event ===");
-    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+    try (var context = getFolioExecutionContextSetter()) {
       var pubSubEvent = new PubSubEvent();
       pubSubEvent.setLogEventType(logEventType.value());
       pubSubEvent.setPayload(buildRequestChangedEventPayload(HOLD.value(), PAGE.value()));
@@ -87,7 +80,7 @@ public class PubSubEventControllerTest extends TestBase {
   @EnumSource(value = LogEventType.class, names = { "REQUEST_MOVED", "REQUEST_UPDATED" }, mode = EnumSource.Mode.INCLUDE)
   void shouldNotProcessChangedEvent(LogEventType logEventType) throws JsonProcessingException {
     log.info("=== Should not process changed event ===");
-    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+    try (var context = getFolioExecutionContextSetter()) {
       var pubSubEvent = new PubSubEvent();
       pubSubEvent.setLogEventType(logEventType.value());
       pubSubEvent.setPayload(buildRequestChangedEventPayload(PAGE.value(), PAGE.value()));
@@ -103,7 +96,7 @@ public class PubSubEventControllerTest extends TestBase {
       "REQUEST_CREATED_THROUGH_OVERRIDE" }, mode = EnumSource.Mode.INCLUDE)
   void shouldProcessCreatedEvent(LogEventType logEventType) throws JsonProcessingException {
     log.info("=== Should process changed event ===");
-    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+    try (var context = getFolioExecutionContextSetter()) {
       var pubSubEvent = new PubSubEvent();
       pubSubEvent.setLogEventType(logEventType.value());
       pubSubEvent.setPayload(buildRequestCreatedEventPayload(PAGE.value()));
@@ -119,7 +112,7 @@ public class PubSubEventControllerTest extends TestBase {
       "REQUEST_CREATED_THROUGH_OVERRIDE" }, mode = EnumSource.Mode.INCLUDE)
   void shouldNotProcessCreatedEvent(LogEventType logEventType) throws JsonProcessingException {
     log.info("=== Should not process created event ===");
-    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+    try (var context = getFolioExecutionContextSetter()) {
       var pubSubEvent = new PubSubEvent();
       pubSubEvent.setLogEventType(logEventType.value());
       pubSubEvent.setPayload(buildRequestCreatedEventPayload(HOLD.value()));
@@ -135,7 +128,7 @@ public class PubSubEventControllerTest extends TestBase {
       "REQUEST_REORDERED" }, mode = EnumSource.Mode.INCLUDE)
   void shouldNotProcessOtherEventTypes(LogEventType logEventType) throws JsonProcessingException {
     log.info("=== Should not process event ===");
-    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+    try (var context = getFolioExecutionContextSetter()) {
 
       var pubSubEvent = new PubSubEvent();
       pubSubEvent.setLogEventType(logEventType.value());
@@ -152,7 +145,7 @@ public class PubSubEventControllerTest extends TestBase {
   void shouldProcessItemCheckInEvent() throws JsonProcessingException {
     log.info("=== Should process item check in event ===");
 
-    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+    try (var context = getFolioExecutionContextSetter()) {
 
       var configuration = new StorageConfiguration().id("b3354743-285d-468d-9fa1-4e3d6321c13d")
         .name("Remote Storage")

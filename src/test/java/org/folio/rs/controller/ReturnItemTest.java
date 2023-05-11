@@ -11,13 +11,10 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.folio.rs.TestBase;
-import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.ReturnItemResponse;
 import org.folio.rs.repository.ReturnRetrievalQueueRepository;
 import org.folio.rs.service.LocationMappingsService;
-import org.folio.spring.FolioModuleMetadata;
-import org.folio.spring.scope.FolioExecutionContextSetter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,12 +40,9 @@ public class ReturnItemTest extends TestBase {
   @Autowired
   private ReturnRetrievalQueueRepository returnRetrievalQueueRepository;
 
-  @Autowired
-  private FolioModuleMetadata moduleMetadata;
-
   @BeforeEach
   void prepare() {
-    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+    try (var context = getFolioExecutionContextSetter()) {
 
       locationMappingsService.postRemoteLocationConfigurationMapping(new RemoteLocationConfigurationMapping()
         .folioLocationId(FOLIO_LOCATION_ID).configurationId(REMOTE_STORAGE_CONFIGURATION_ID));
@@ -61,7 +55,7 @@ public class ReturnItemTest extends TestBase {
 
   @AfterEach
   void clear() {
-    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+    try (var context = getFolioExecutionContextSetter()) {
       locationMappingsService.deleteMappingById(FOLIO_LOCATION_ID);
       returnRetrievalQueueRepository.deleteAll();
     }
@@ -69,7 +63,7 @@ public class ReturnItemTest extends TestBase {
 
   @Test
   void canReturnItemByBarcodePost() {
-    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+    try (var context = getFolioExecutionContextSetter()) {
 
       var itemBarcode = "{\"itemBarcode\": \"" + ITEM_BARCODE + "\"}";
       var response = post(checkInUrl, itemBarcode, ReturnItemResponse.class);
@@ -85,7 +79,7 @@ public class ReturnItemTest extends TestBase {
 
   @Test
   void shouldCheckInItemAtAppropriateServicePointWhenMultipleRemoteLocationMappingsExist() {
-    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build())) {
+    try (var context = getFolioExecutionContextSetter()) {
 
       locationMappingsService.postRemoteLocationConfigurationMapping(new RemoteLocationConfigurationMapping()
         .folioLocationId(FOLIO_LOCATION_2_ID).configurationId(REMOTE_STORAGE_CONFIGURATION_ID));

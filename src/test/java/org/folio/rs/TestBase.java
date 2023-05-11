@@ -59,9 +59,7 @@ public class TestBase {
 
   @BeforeEach
   void setUp() {
-    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder()
-      .tenantId(TEST_TENANT).moduleMetadata(moduleMetadata)
-      .okapiUrl(getOkapiUrl()).build())) {
+    try (var context = getFolioExecutionContextSetter()) {
       tenantController.postTenant(new TenantAttributes().moduleTo("mod_remote_storage")
         .addParametersItem(new Parameter().key(PARAMETER_LOAD_SAMPLE).value("true")));
     }
@@ -73,10 +71,7 @@ public class TestBase {
 
   @AfterEach
   void eachTearDown() {
-    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder()
-      .tenantId(TEST_TENANT)
-      .moduleMetadata(moduleMetadata)
-      .okapiUrl(getOkapiUrl()).build())) {
+    try (var context = getFolioExecutionContextSetter()) {
       tenantController.deleteTenant(TEST_TENANT);
       wireMockServer.resetAll();
     }

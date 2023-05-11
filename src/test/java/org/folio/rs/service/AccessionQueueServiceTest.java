@@ -258,11 +258,6 @@ public class AccessionQueueServiceTest extends TestBase {
     }
   }
 
-//  @NotNull
-//  private FolioExecutionContextSetter getFolioExecutionContextSetter() {
-//    return new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build());
-//  }
-
   @Test
   void shouldThrowNotFoundExceptionWhenBarcodeDoesNotExist() {
     try (var context = getFolioExecutionContextSetter()) {

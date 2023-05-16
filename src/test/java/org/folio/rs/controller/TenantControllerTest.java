@@ -7,6 +7,7 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.FolioModuleMetadata;
+import org.folio.spring.scope.FolioExecutionContextSetter;
 import org.folio.spring.scope.FolioExecutionScopeExecutionContextManager;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.junit.jupiter.api.Test;
@@ -36,16 +37,14 @@ public class TenantControllerTest {
 
   @Test
   void shouldDropDatabaseSchemaUponTenantDeletion() {
-    FolioExecutionScopeExecutionContextManager.beginFolioExecutionContext(
-      AsyncFolioExecutionContext.builder()
-        .tenantId("test_tenant")
-        .moduleMetadata(moduleMetadata)
-        .okapiUrl(getOkapiUrl()).build());
-    tenantController.postTenant(new TenantAttributes().moduleTo("mod_remote_storage"));
-    tenantController.deleteTenant("test_tenant");
-
-    verify(jdbcTemplate).execute(String.format(DROP_SCHEMA_QUERY, getSchemaName()));
-    FolioExecutionScopeExecutionContextManager.endFolioExecutionContext();
+    try (var context = new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder()
+      .tenantId("test_tenant")
+      .moduleMetadata(moduleMetadata)
+      .okapiUrl(getOkapiUrl()).build())) {
+      tenantController.postTenant(new TenantAttributes().moduleTo("mod_remote_storage"));
+      tenantController.deleteTenant("test_tenant");
+      verify(jdbcTemplate).execute(String.format(DROP_SCHEMA_QUERY, getSchemaName()));
+    }
   }
 
   private String getSchemaName() {

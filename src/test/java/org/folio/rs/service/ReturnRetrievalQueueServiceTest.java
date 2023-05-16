@@ -54,176 +54,200 @@ public class ReturnRetrievalQueueServiceTest extends TestBase {
 
   @Test
   void shouldFindRetrievalQueuesByRemoteStorageId() {
-    returnRetrievalQueueRepository.save(createBaseRetrievalQueueRecord());
-    returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID)));
+    try (var context = getFolioExecutionContextSetter()) {
+      returnRetrievalQueueRepository.save(createBaseRetrievalQueueRecord());
+      returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID)));
 
-    ResponseEntity<RetrievalQueues> responseEntity = get(formattedRetrievalUrl + "?storageId=" + REMOTE_STORAGE_ID,
+      ResponseEntity<RetrievalQueues> responseEntity = get(formattedRetrievalUrl + "?storageId=" + REMOTE_STORAGE_ID,
         RetrievalQueues.class);
-    assertThat(Objects.requireNonNull(responseEntity.getBody())
-      .getRetrievals()
-      .get(0)
-      .getRemoteStorageId(), equalTo(REMOTE_STORAGE_ID));
-    assertThat(Objects.requireNonNull(responseEntity.getBody())
-      .getRetrievals()
-      .size(), equalTo(1));
-    assertThat(Objects.requireNonNull(responseEntity.getBody())
-      .getTotalRecords(), equalTo(1));
+      assertThat(Objects.requireNonNull(responseEntity.getBody())
+        .getRetrievals()
+        .get(0)
+        .getRemoteStorageId(), equalTo(REMOTE_STORAGE_ID));
+      assertThat(Objects.requireNonNull(responseEntity.getBody())
+        .getRetrievals()
+        .size(), equalTo(1));
+      assertThat(Objects.requireNonNull(responseEntity.getBody())
+        .getTotalRecords(), equalTo(1));
+    }
   }
 
   @Test
   void shouldFindRetrievalQueuesWithRetrievalDateTime() {
-    returnRetrievalQueueRepository.save(createBaseRetrievalQueueRecord());
-    var retrievalQueueRecord = buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID));
-    retrievalQueueRecord.setRetrievedDateTime(LocalDateTime.now());
-    returnRetrievalQueueRepository.save(retrievalQueueRecord);
+    try (var context = getFolioExecutionContextSetter()) {
+      returnRetrievalQueueRepository.save(createBaseRetrievalQueueRecord());
+      var retrievalQueueRecord = buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID));
+      retrievalQueueRecord.setRetrievedDateTime(LocalDateTime.now());
+      returnRetrievalQueueRepository.save(retrievalQueueRecord);
 
-    ResponseEntity<RetrievalQueues> allRecords = get(formattedRetrievalUrl, RetrievalQueues.class);
+      ResponseEntity<RetrievalQueues> allRecords = get(formattedRetrievalUrl, RetrievalQueues.class);
 
-    assertThat(Objects.requireNonNull(allRecords.getBody()).getRetrievals(), notNullValue());
-    assertThat(Objects.requireNonNull(allRecords.getBody()).getRetrievals().size(), equalTo(4));
-    assertThat(Objects.requireNonNull(allRecords.getBody()).getTotalRecords(), equalTo(4));
+      assertThat(Objects.requireNonNull(allRecords.getBody()).getRetrievals(), notNullValue());
+      assertThat(Objects.requireNonNull(allRecords.getBody()).getRetrievals().size(), equalTo(4));
+      assertThat(Objects.requireNonNull(allRecords.getBody()).getTotalRecords(), equalTo(4));
 
-    ResponseEntity<RetrievalQueues> retrievedRecord = get(formattedRetrievalUrl + "?retrieved=true", RetrievalQueues.class);
+      ResponseEntity<RetrievalQueues> retrievedRecord = get(formattedRetrievalUrl + "?retrieved=true", RetrievalQueues.class);
 
-    assertThat(Objects.requireNonNull(retrievedRecord.getBody()).getRetrievals().get(0), notNullValue());
-    assertThat(Objects.requireNonNull(retrievedRecord.getBody()).getRetrievals().size(), equalTo(2));
-    assertThat(Objects.requireNonNull(retrievedRecord.getBody()).getTotalRecords(), equalTo(2));
-    assertThat(Objects.requireNonNull(retrievedRecord.getBody()).getRetrievals().get(0).getRetrievedDateTime(), notNullValue());
+      assertThat(Objects.requireNonNull(retrievedRecord.getBody()).getRetrievals().get(0), notNullValue());
+      assertThat(Objects.requireNonNull(retrievedRecord.getBody()).getRetrievals().size(), equalTo(2));
+      assertThat(Objects.requireNonNull(retrievedRecord.getBody()).getTotalRecords(), equalTo(2));
+      assertThat(Objects.requireNonNull(retrievedRecord.getBody()).getRetrievals().get(0).getRetrievedDateTime(), notNullValue());
 
-    ResponseEntity<RetrievalQueues> nonRetrievedRecord = get(formattedRetrievalUrl + "?retrieved=false", RetrievalQueues.class);
+      ResponseEntity<RetrievalQueues> nonRetrievedRecord = get(formattedRetrievalUrl + "?retrieved=false", RetrievalQueues.class);
 
-    assertThat(Objects.requireNonNull(nonRetrievedRecord.getBody()).getRetrievals().get(0), notNullValue());
-    assertThat(Objects.requireNonNull(nonRetrievedRecord.getBody()).getRetrievals().size(), equalTo(2));
-    assertThat(Objects.requireNonNull(nonRetrievedRecord.getBody()).getTotalRecords(), equalTo(2));
-    assertThat(Objects.requireNonNull(nonRetrievedRecord.getBody()).getRetrievals().get(0).getRetrievedDateTime(), nullValue());
+      assertThat(Objects.requireNonNull(nonRetrievedRecord.getBody()).getRetrievals().get(0), notNullValue());
+      assertThat(Objects.requireNonNull(nonRetrievedRecord.getBody()).getRetrievals().size(), equalTo(2));
+      assertThat(Objects.requireNonNull(nonRetrievedRecord.getBody()).getTotalRecords(), equalTo(2));
+      assertThat(Objects.requireNonNull(nonRetrievedRecord.getBody()).getRetrievals().get(0).getRetrievedDateTime(), nullValue());
+    }
   }
 
   @Test
   void shouldFindRetrievalQueuesWithOffset() {
-    returnRetrievalQueueRepository.save(createBaseRetrievalQueueRecord());
-    returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID)));
+    try (var context = getFolioExecutionContextSetter()) {
+      returnRetrievalQueueRepository.save(createBaseRetrievalQueueRecord());
+      returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID)));
 
-    ResponseEntity<RetrievalQueues> responseEntity = get(formattedRetrievalUrl + "?offset=1", RetrievalQueues.class);
-    assertThat(Objects.requireNonNull(responseEntity.getBody())
-      .getTotalRecords(), equalTo(4));
-    assertThat(Objects.requireNonNull(responseEntity.getBody())
-      .getRetrievals()
-      .size(), equalTo(3));
+      ResponseEntity<RetrievalQueues> responseEntity = get(formattedRetrievalUrl + "?offset=1", RetrievalQueues.class);
+      assertThat(Objects.requireNonNull(responseEntity.getBody())
+        .getTotalRecords(), equalTo(4));
+      assertThat(Objects.requireNonNull(responseEntity.getBody())
+        .getRetrievals()
+        .size(), equalTo(3));
+    }
   }
 
   @Test
   void shouldFindRetrievalQueuesWithLimit() {
-    returnRetrievalQueueRepository.save(createBaseRetrievalQueueRecord());
-    returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID)));
+    try (var context = getFolioExecutionContextSetter()) {
+      returnRetrievalQueueRepository.save(createBaseRetrievalQueueRecord());
+      returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID)));
 
-    ResponseEntity<RetrievalQueues> responseEntity = get(formattedRetrievalUrl + "?limit=1", RetrievalQueues.class);
-    assertThat(Objects.requireNonNull(responseEntity.getBody())
-      .getTotalRecords(), equalTo(4));
-    assertThat(Objects.requireNonNull(responseEntity.getBody())
-      .getRetrievals()
-      .size(), equalTo(1));
+      ResponseEntity<RetrievalQueues> responseEntity = get(formattedRetrievalUrl + "?limit=1", RetrievalQueues.class);
+      assertThat(Objects.requireNonNull(responseEntity.getBody())
+        .getTotalRecords(), equalTo(4));
+      assertThat(Objects.requireNonNull(responseEntity.getBody())
+        .getRetrievals()
+        .size(), equalTo(1));
+    }
   }
 
   @Test
   void shouldSetRetrievedById() {
-    UUID id = UUID.randomUUID();
-    returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(id));
+    try (var context = getFolioExecutionContextSetter()) {
+      UUID id = UUID.randomUUID();
+      returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(id));
 
-    put(formattedRetrievalUrl + "/id/" + id, null);
+      put(formattedRetrievalUrl + "/id/" + id, null);
 
-    var actualRetrievalQueueRecord = returnRetrievalQueueRepository.findAll()
-      .get(0);
-    assertThat(actualRetrievalQueueRecord.getRetrievedDateTime(), notNullValue());
+      var actualRetrievalQueueRecord = returnRetrievalQueueRepository.findAll()
+        .get(0);
+      assertThat(actualRetrievalQueueRecord.getRetrievedDateTime(), notNullValue());
+    }
   }
 
   @Test
   void shouldSetRetrievedByBarcode() {
-    UUID uuid = UUID.randomUUID();
-    returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(uuid));
+    try (var context = getFolioExecutionContextSetter()) {
+      UUID uuid = UUID.randomUUID();
+      returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(uuid));
 
-    put(formattedRetrievalUrl + "/barcode/" + BARCODE, null);
+      put(formattedRetrievalUrl + "/barcode/" + BARCODE, null);
 
-    var actualRetrievalQueueRecord = returnRetrievalQueueRepository.findById(uuid).get();
-    assertThat(actualRetrievalQueueRecord.getItemBarcode(), equalTo(BARCODE));
-    assertThat(actualRetrievalQueueRecord.getRetrievedDateTime(), notNullValue());
+      var actualRetrievalQueueRecord = returnRetrievalQueueRepository.findById(uuid).get();
+      assertThat(actualRetrievalQueueRecord.getItemBarcode(), equalTo(BARCODE));
+      assertThat(actualRetrievalQueueRecord.getRetrievedDateTime(), notNullValue());
+    }
   }
 
   @Test
   void shouldThrowNotFoundExceptionWhenIdDoesNotExist() {
-    returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(UUID.randomUUID()));
-    String url = formattedRetrievalUrl + "/id/" + UUID.randomUUID();
+    try (var context = getFolioExecutionContextSetter()) {
+      returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(UUID.randomUUID()));
+      String url = formattedRetrievalUrl + "/id/" + UUID.randomUUID();
 
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> put(url, null));
+      HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> put(url, null));
 
-    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.NOT_FOUND));
+      assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.NOT_FOUND));
+    }
   }
 
   @Test
   void shouldThrowNotFoundExceptionWhenRetrievalQueueIsAlreadyRetrieved() {
-    UUID id = UUID.randomUUID();
-    var retrievalQueueRecord = buildRetrievalQueueRecord(id);
-    retrievalQueueRecord.setRetrievedDateTime(LocalDateTime.now());
-    returnRetrievalQueueRepository.save(retrievalQueueRecord);
-    String url = formattedRetrievalUrl + "/id/" + id;
+    try (var context = getFolioExecutionContextSetter()) {
+      UUID id = UUID.randomUUID();
+      var retrievalQueueRecord = buildRetrievalQueueRecord(id);
+      retrievalQueueRecord.setRetrievedDateTime(LocalDateTime.now());
+      returnRetrievalQueueRepository.save(retrievalQueueRecord);
+      String url = formattedRetrievalUrl + "/id/" + id;
 
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> put(url, null));
+      HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> put(url, null));
 
-    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.NOT_FOUND));
+      assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.NOT_FOUND));
+    }
   }
 
   @Test
   void shouldThrowNotFoundExceptionWhenBarcodeDoesNotExist() {
-    returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(UUID.randomUUID()));
-    var url = formattedRetrievalUrl + "/barcode/" + UUID.randomUUID();
+    try (var context = getFolioExecutionContextSetter()) {
+      returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(UUID.randomUUID()));
+      var url = formattedRetrievalUrl + "/barcode/" + UUID.randomUUID();
 
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> put(url, null));
+      HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> put(url, null));
 
-    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.NOT_FOUND));
+      assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.NOT_FOUND));
+    }
   }
 
   @Test
   void shouldBeRequestTypeAfterSaving() {
-    UUID id = UUID.randomUUID();
-    returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(id));
+    try (var context = getFolioExecutionContextSetter()) {
+      UUID id = UUID.randomUUID();
+      returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(id));
 
-    put(formattedRetrievalUrl + "/id/" + id, null);
+      put(formattedRetrievalUrl + "/id/" + id, null);
 
-    var actualRetrievalQueueRecord = returnRetrievalQueueRepository.findAll()
-      .get(0);
+      var actualRetrievalQueueRecord = returnRetrievalQueueRepository.findAll()
+        .get(0);
 
-    assertEquals(RequestType.PYR.getType(), actualRetrievalQueueRecord.getRequestType());
+      assertEquals(RequestType.PYR.getType(), actualRetrievalQueueRecord.getRequestType());
+    }
   }
 
   @Test
   void shouldFindRetrievalQueuesByCreatedDate() {
-    LocalDateTime createdDate = LocalDateTime.now();
-    var retrievalQueueRecord = createBaseRetrievalQueueRecord();
-    retrievalQueueRecord.setCreatedDateTime(createdDate);
-    returnRetrievalQueueRepository.save(retrievalQueueRecord);
+    try (var context = getFolioExecutionContextSetter()) {
+      LocalDateTime createdDate = LocalDateTime.now();
+      var retrievalQueueRecord = createBaseRetrievalQueueRecord();
+      retrievalQueueRecord.setCreatedDateTime(createdDate);
+      returnRetrievalQueueRepository.save(retrievalQueueRecord);
 
-    returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID)));
+      returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID)));
 
-    ResponseEntity<RetrievalQueues> responseEntity = get(formattedRetrievalUrl + "?createdDate=" + createdDate,
+      ResponseEntity<RetrievalQueues> responseEntity = get(formattedRetrievalUrl + "?createdDate=" + createdDate,
         RetrievalQueues.class);
-    assertThat(Objects.requireNonNull(responseEntity.getBody())
-      .getTotalRecords(), equalTo(1));
-    assertThat(Objects.requireNonNull(responseEntity.getBody())
-      .getRetrievals()
-      .size(), equalTo(1));
+      assertThat(Objects.requireNonNull(responseEntity.getBody())
+        .getTotalRecords(), equalTo(1));
+      assertThat(Objects.requireNonNull(responseEntity.getBody())
+        .getRetrievals()
+        .size(), equalTo(1));
+    }
   }
 
   @Test
   void shouldThrowBadRequestExceptionWhenCreateDateHasWrongFormat() {
-    LocalDateTime requestDate = LocalDateTime.now();
-    var retrievalQueueRecord = createBaseRetrievalQueueRecord();
-    retrievalQueueRecord.setCreatedDateTime(requestDate);
-    returnRetrievalQueueRepository.save(retrievalQueueRecord);
-    returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID)));
+    try (var context = getFolioExecutionContextSetter()) {
+      LocalDateTime requestDate = LocalDateTime.now();
+      var retrievalQueueRecord = createBaseRetrievalQueueRecord();
+      retrievalQueueRecord.setCreatedDateTime(requestDate);
+      returnRetrievalQueueRepository.save(retrievalQueueRecord);
+      returnRetrievalQueueRepository.save(buildRetrievalQueueRecord(stringToUUIDSafe(RETRIEVAL_RECORD_1_ID)));
 
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class,
+      HttpClientErrorException exception = assertThrows(HttpClientErrorException.class,
         () -> get(formattedRetrievalUrl + "?createdDate=123", RetrievalQueues.class), StringUtils.EMPTY);
 
-    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.BAD_REQUEST));
+      assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.BAD_REQUEST));
+    }
   }
 
   private ReturnRetrievalQueueRecord createBaseRetrievalQueueRecord() {
@@ -249,5 +273,4 @@ public class ReturnRetrievalQueueServiceTest extends TestBase {
       .requestType(RequestType.PYR.getType())
       .build();
   }
-
 }

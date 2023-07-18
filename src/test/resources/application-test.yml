@@ -35,4 +35,4 @@ folio.tenant.validation.enabled: true
 remote-storage:
   system-user:
     username: system-user
-    password: password
+    password: testpassword

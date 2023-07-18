@@ -35,7 +35,7 @@ import lombok.extern.log4j.Log4j2;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource("classpath:application-test.yml")
-@ActiveProfiles("TestDB")
+@ActiveProfiles("test")
 @EnableTransactionManagement
 @AutoConfigureEmbeddedDatabase(beanName = "dataSource")
 @Log4j2
@@ -62,7 +62,6 @@ public class TestBase {
     try (var context = getFolioExecutionContextSetter()) {
       tenantController.postTenant(new TenantAttributes().moduleTo("mod_remote_storage")
         .addParametersItem(new Parameter().key(PARAMETER_LOAD_SAMPLE).value("true")));
-      System.setProperty("SYSTEM_USER_PASSWORD", "password");
     }
   }
   public static String getOkapiUrl() {

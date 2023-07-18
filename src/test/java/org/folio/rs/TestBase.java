@@ -62,9 +62,9 @@ public class TestBase {
     try (var context = getFolioExecutionContextSetter()) {
       tenantController.postTenant(new TenantAttributes().moduleTo("mod_remote_storage")
         .addParametersItem(new Parameter().key(PARAMETER_LOAD_SAMPLE).value("true")));
+      System.setProperty("SYSTEM_USER_PASSWORD", "password");
     }
   }
-
   public static String getOkapiUrl() {
     return String.format("http://localhost:%s", WIRE_MOCK_PORT);
   }

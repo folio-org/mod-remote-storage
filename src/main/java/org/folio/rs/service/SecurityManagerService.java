@@ -55,12 +55,10 @@ public class SecurityManagerService {
     var folioUser = getFolioUser(username);
     String userId = null;
     if (folioUser.isPresent()) {
-      log.info("folioUser.isPresent()");
       updateUser(folioUser.get());
       userId = folioUser.get().getId();
       addPermissions(userId);
     } else {
-      log.info("folioUser.is not present");
       userId = createFolioUser(username);
       assignPermissions(userId);
     }

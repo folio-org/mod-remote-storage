@@ -15,6 +15,7 @@ The mod-remote-storage module provides API for:
   * adapter modules
 
 ## Additional information
+The `system-user` system user for running tasks is created in the post tenant API controller. The password must be set using the `SYSTEM_USER_PASSWORD` environment variable. Permissions are defined in `src/main/resources/permissions/system-user-permissions.csv`.
 
 API provides the following URLs for working with remote storage configurations:
 

@@ -32,6 +32,7 @@ import org.folio.spring.service.TenantService;
 import org.folio.tenant.domain.dto.Parameter;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.folio.tenant.rest.resource.TenantApi;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -62,7 +63,10 @@ public class TenantController implements TenantApi {
   private final List<String> retrievalQueueSamples = List.of("retrieval_queue_record.json", "retrieval_queue_record_for_caia_soft.json");
   private final List<String> accessionQueueSamples = Collections.singletonList("accession_queue_record.json");
 
-  public static final String SYSTEM_USER = "system-user";
+  @Value("${remote-storage.system-user.username}")
+  private String username;
+  @Value("${remote-storage.system-user.password}")
+  private String password;
 
 
 
@@ -115,7 +119,7 @@ public class TenantController implements TenantApi {
 
   private void initializeSystemUser(String tenantId) {
     try {
-      securityManagerService.prepareOrUpdateSystemUser(SYSTEM_USER, SYSTEM_USER, context.getOkapiUrl(), tenantId);
+      securityManagerService.prepareOrUpdateSystemUser(username, password, context.getOkapiUrl(), tenantId);
     } catch (Exception e) {
       log.error("Error initializing System User", e);
     }

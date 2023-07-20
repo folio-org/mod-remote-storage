@@ -34,7 +34,7 @@ import lombok.extern.log4j.Log4j2;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource("classpath:application-test.yml")
-@ActiveProfiles("TestDB")
+@ActiveProfiles("test")
 @EnableTransactionManagement
 @AutoConfigureEmbeddedDatabase(beanName = "dataSource")
 @Log4j2

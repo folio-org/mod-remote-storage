@@ -53,15 +53,21 @@ public class SecurityManagerService {
     var systemUserParameters = buildDefaultSystemUserParameters(username, password, okapiUrl, tenantId);
 
     var folioUser = getFolioUser(username);
-
+    String userId = null;
     if (folioUser.isPresent()) {
       updateUser(folioUser.get());
-      addPermissions(folioUser.get().getId());
+      userId = folioUser.get().getId();
+      addPermissions(userId);
     } else {
-      var userId = createFolioUser(username);
-      saveCredentials(systemUserParameters);
+      userId = createFolioUser(username);
       assignPermissions(userId);
     }
+    try {
+      deleteCredentials(userId);
+    } catch (feign.FeignException.NotFound e) {
+      // ignore if not exist
+    }
+    saveCredentials(systemUserParameters);
     updateApiKey(systemUserParameters);
   }
 
@@ -141,6 +147,12 @@ public class SecurityManagerService {
 
     log.info("Saved credentials for user: [{}]", systemUserParameters.getUsername());
   }
+  public void deleteCredentials(String userId) {
+    authnClient.deleteCredentials(userId);
+
+    log.info("Removed credentials for user {}.", userId);
+  }
+
 
   private boolean assignPermissions(String userId) {
     List<String> perms = readPermissionsFromResource(PERMISSIONS_FILE_PATH);

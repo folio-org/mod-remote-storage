@@ -15,6 +15,7 @@ The mod-remote-storage module provides API for:
   * adapter modules
 
 ## Additional information
+The `system-user` system user for running tasks is created in the post tenant API controller. The password must be set using the `SYSTEM_USER_PASSWORD` environment variable. Permissions are defined in `src/main/resources/permissions/system-user-permissions.csv`.
 
 API provides the following URLs for working with remote storage configurations:
 
@@ -66,24 +67,26 @@ API provides the following URL to mark item as missing:
 
 ### Environment variables:
 
-| Name                          | Default value             | Description                                                       |
-| :-----------------------------| :------------------------:|:------------------------------------------------------------------|
-| JAVA_OPTIONS                  | -XX:MaxRAMPercentage=75.0 | Java options                                                 |
-| DB_HOST                       | postgres                  | Postgres hostname                                                 |
-| DB_PORT                       | 5432                      | Postgres port                                                     |
-| DB_USERNAME                   | folio_admin               | Postgres username                                                 |
-| DB_PASSWORD                   | -                         | Postgres username password                                        |
-| DB_DATABASE                   | okapi_modules             | Postgres database name                                            |
-| DB_QUERYTIMEOUT               | 60000                     | Database query timeout. |
-| DB_CHARSET                    | UTF-8                     | Database charset. |
-| DB_MAXPOOLSIZE                | 5                         | Database max pool size. |
-| KAFKA_HOST                    | kafka                     | Kafka broker hostname                                             |
-| KAFKA_PORT                    | 9092                      | Kafka broker port                                                 |
-| KAFKA_SECURITY_PROTOCOL       | PLAINTEXT                 | Kafka security protocol used to communicate with brokers (SSL or PLAINTEXT) |
-| KAFKA_SSL_KEYSTORE_LOCATION   | -                         | The location of the Kafka key store file. This is optional for client and can be used for two-way authentication for client. |
-| KAFKA_SSL_KEYSTORE_PASSWORD   | -                         | The store password for the Kafka key store file. This is optional for client and only needed if 'ssl.keystore.location' is configured. |
-| KAFKA_SSL_TRUSTSTORE_LOCATION | -                         | The location of the Kafka trust store file. |
-| KAFKA_SSL_TRUSTSTORE_PASSWORD | -                         | The password for the Kafka trust store file. If a password is not set, trust store file configured will still be used, but integrity checking is disabled. |
+| Name                          |       Default value       | Description                                                                                                                                                |
+|:------------------------------|:-------------------------:|:-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| JAVA_OPTIONS                  | -XX:MaxRAMPercentage=75.0 | Java options                                                                                                                                               |
+| DB_HOST                       |         postgres          | Postgres hostname                                                                                                                                          |
+| DB_PORT                       |           5432            | Postgres port                                                                                                                                              |
+| DB_USERNAME                   |        folio_admin        | Postgres username                                                                                                                                          |
+| DB_PASSWORD                   |             -             | Postgres username password                                                                                                                                 |
+| DB_DATABASE                   |       okapi_modules       | Postgres database name                                                                                                                                     |
+| DB_QUERYTIMEOUT               |           60000           | Database query timeout.                                                                                                                                    |
+| DB_CHARSET                    |           UTF-8           | Database charset.                                                                                                                                          |
+| DB_MAXPOOLSIZE                |             5             | Database max pool size.                                                                                                                                    |
+| KAFKA_HOST                    |           kafka           | Kafka broker hostname                                                                                                                                      |
+| KAFKA_PORT                    |           9092            | Kafka broker port                                                                                                                                          |
+| KAFKA_SECURITY_PROTOCOL       |         PLAINTEXT         | Kafka security protocol used to communicate with brokers (SSL or PLAINTEXT)                                                                                |
+| KAFKA_SSL_KEYSTORE_LOCATION   |             -             | The location of the Kafka key store file. This is optional for client and can be used for two-way authentication for client.                               |
+| KAFKA_SSL_KEYSTORE_PASSWORD   |             -             | The store password for the Kafka key store file. This is optional for client and only needed if 'ssl.keystore.location' is configured.                     |
+| KAFKA_SSL_TRUSTSTORE_LOCATION |             -             | The location of the Kafka trust store file.                                                                                                                |
+| KAFKA_SSL_TRUSTSTORE_PASSWORD |             -             | The password for the Kafka trust store file. If a password is not set, trust store file configured will still be used, but integrity checking is disabled. |
+| SYSTEM\_USER\_NAME            |        system-user        | Username of the system user.                                                                                                                               |
+| SYSTEM\_USER\_PASSWORD        |             -             | Password of the system user.                                                                                                                               |
 
 ### Required Permissions
 Institutional users should be granted the following permissions in order to use this remote storage API:

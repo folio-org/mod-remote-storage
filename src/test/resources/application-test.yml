@@ -32,3 +32,7 @@ logging:
 
 server.port: 8081
 folio.tenant.validation.enabled: true
+remote-storage:
+  system-user:
+    username: system-user
+    password: testpassword

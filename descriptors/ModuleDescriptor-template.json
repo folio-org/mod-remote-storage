@@ -319,6 +319,7 @@
             "users.item.post",
             "users.item.put",
             "login.item.post",
+            "login.item.delete",
             "perms.users.item.post",
             "perms.users.assign.immutable",
             "pubsub.event-types.post",

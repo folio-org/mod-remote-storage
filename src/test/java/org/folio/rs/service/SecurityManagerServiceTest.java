@@ -1,7 +1,6 @@
 package org.folio.rs.service;
 
 import static java.util.stream.Collectors.toList;
-import static org.folio.rs.controller.TenantController.SYSTEM_USER;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
@@ -15,6 +14,7 @@ import org.folio.rs.TestBase;
 import org.folio.rs.domain.entity.SystemUserParameters;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 public class SecurityManagerServiceTest extends TestBase {
 
@@ -26,7 +26,11 @@ public class SecurityManagerServiceTest extends TestBase {
   public static final String EXISTED_USER = "existed_user";
   public static final String NON_EXISTED_USER = "non_existed_user";
   public static final String NON_PRESENTED_USER = "non_presented_user";
+  @Value("${remote-storage.system-user.username}")
+  private String username;
 
+  @Value("${remote-storage.system-user.password}")
+  private String password;
   @Test
   void testCreateDefaultSystemUser() {
     securityManagerService.prepareOrUpdateSystemUser(NON_PRESENTED_USER, PASSWORD, getOkapiUrl(), TEST_TENANT);
@@ -39,7 +43,7 @@ public class SecurityManagerServiceTest extends TestBase {
     var originalSystemUserParameters = securityManagerService.getSystemUserParameters(TEST_TENANT);
 
     final var newOkapiUrl = "http://new-okapi-url";
-    securityManagerService.prepareOrUpdateSystemUser(SYSTEM_USER, SYSTEM_USER, newOkapiUrl, TEST_TENANT);
+    securityManagerService.prepareOrUpdateSystemUser(username, password, newOkapiUrl, TEST_TENANT);
     var updatedSystemUserParameters = securityManagerService.getSystemUserParameters(TEST_TENANT);
 
     assertEquals(originalSystemUserParameters.getId(), updatedSystemUserParameters.getId());

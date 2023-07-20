@@ -1,3 +1,6 @@
+## 2.0.3 2023-07-20
+* [MODRS-175] - Security Remediation
+
 ## 2.0.2 2023-03-20
 * [MODRS-157](https://issues.folio.org/browse/MODRS-157) - Postgresql 42.5.4 fixing Information Exposure and Socket Resource Leak
 * [MODRS-158](https://issues.folio.org/browse/MODRS-158) - apt upgrade - OpenSSL 3.0.8 fixing 8 vulns

@@ -1,4 +1,5 @@
-## 1.8.0 Unreleased
+## 1.7.2 Released
+* [MODRS-174] - Security Remediation
 
 ## 1.7.1 Released
 This release contains security updates

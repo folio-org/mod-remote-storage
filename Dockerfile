@@ -2,6 +2,9 @@ FROM folioci/alpine-jre-openjdk17:latest
 
 USER root
 
+# Install latest patch versions of packages: https://pythonspeed.com/articles/security-updates-in-docker/
+RUN apk upgrade --no-cache
+
 # Copy your fat jar to the container
 ENV APP_FILE mod-remote-storage-fat.jar
 

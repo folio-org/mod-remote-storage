@@ -74,3 +74,7 @@ application:
 
 server.port: 8081
 folio.tenant.validation.enabled: false
+remote-storage:
+  system-user:
+    username: ${SYSTEM_USER_NAME:system-user}
+    password: ${SYSTEM_USER_PASSWORD}

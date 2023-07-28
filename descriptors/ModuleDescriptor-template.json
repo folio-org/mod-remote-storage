@@ -301,7 +301,8 @@
           "permissionsRequired": ["remote-storage.items.item.mark-as-missing.post"],
           "modulePermissions": [
             "inventory.items.collection.get",
-            "inventory.items.item.mark-missing.post"
+            "inventory.items.item.mark-missing.post",
+            "inventory-storage.items.item.get"
           ]
         }
       ]
@@ -324,7 +325,8 @@
             "perms.users.assign.immutable",
             "pubsub.event-types.post",
             "pubsub.subscribers.post",
-            "pubsub.publishers.post"
+            "pubsub.publishers.post",
+            "inventory-storage.items.item.get"
           ]
         }, {
           "methods": ["GET", "DELETE"],

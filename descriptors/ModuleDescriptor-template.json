@@ -325,8 +325,7 @@
             "perms.users.assign.immutable",
             "pubsub.event-types.post",
             "pubsub.subscribers.post",
-            "pubsub.publishers.post",
-            "inventory-storage.items.item.get"
+            "pubsub.publishers.post"
           ]
         }, {
           "methods": ["GET", "DELETE"],

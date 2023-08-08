@@ -301,7 +301,8 @@
           "permissionsRequired": ["remote-storage.items.item.mark-as-missing.post"],
           "modulePermissions": [
             "inventory.items.collection.get",
-            "inventory.items.item.mark-missing.post"
+            "inventory.items.item.mark-missing.post",
+            "inventory-storage.items.item.get"
           ]
         }
       ]

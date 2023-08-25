@@ -62,8 +62,7 @@ import org.folio.rs.repository.AccessionQueueRepository;
 import org.folio.rs.util.IdentifierType;
 import org.folio.spring.FolioModuleMetadata;
 import org.folio.spring.data.OffsetRequest;
-import org.folio.spring.scope.FolioExecutionContextSetter;
-import org.folio.spring.scope.FolioExecutionScopeExecutionContextManager;
+import org.folio.spring.service.SystemUserScopedExecutionService;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -86,6 +85,7 @@ public class AccessionQueueService {
   private final ItemNoteTypesClient itemNoteTypesClient;
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  private final SystemUserScopedExecutionService systemUserScopedExecutionService;
 
   public void processAccessionQueueRecord(List<DomainEvent> events) {
     log.info("Starting processing events...");
@@ -94,8 +94,8 @@ public class AccessionQueueService {
       if (DomainEventType.CREATE == event.getType() ||
           DomainEventType.UPDATE == event.getType() && isEffectiveLocationChanged(event)) {
         var item = event.getNewEntity();
-        var systemUserParameters = securityManagerService.getSystemUserParameters(event.getTenant());
-        try (var context = new FolioExecutionContextSetter(new AsyncFolioExecutionContext(systemUserParameters, moduleMetadata))){
+        systemUserScopedExecutionService.executeAsyncSystemUserScoped(event.getTenant(), () -> {
+          log.info("processAccessionQueueRecord:: Executing inside executeAsyncSystemUserScope");
           var effectiveLocationId = item.getEffectiveLocationId();
           var locationMapping = locationMappingsService
             .getRemoteLocationConfigurationMapping(effectiveLocationId);
@@ -108,10 +108,11 @@ public class AccessionQueueService {
           } else {
             log.info("Location mapping with id={} not found. Accession queue record not created.", effectiveLocationId);
           }
-        }
+        });
       }
     });
   }
+
 
   public AccessionQueue processPostAccession(AccessionRequest accessionRequest) {
     log.debug("processPostAccession :: itemBarcode:{} remoteStorageId:{}",accessionRequest.getItemBarcode(),

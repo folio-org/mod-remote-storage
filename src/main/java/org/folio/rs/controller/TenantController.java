@@ -28,6 +28,7 @@ import org.folio.rs.service.SecurityManagerService;
 import org.folio.rs.service.PubSubService;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.liquibase.FolioSpringLiquibase;
+import org.folio.spring.service.PrepareSystemUserService;
 import org.folio.spring.service.TenantService;
 import org.folio.tenant.domain.dto.Parameter;
 import org.folio.tenant.domain.dto.TenantAttributes;
@@ -67,6 +68,8 @@ public class TenantController implements TenantApi {
   private String username;
   @Value("${remote-storage.system-user.password}")
   private String password;
+
+  private final PrepareSystemUserService prepareSystemUserService;
 
 
 
@@ -119,7 +122,8 @@ public class TenantController implements TenantApi {
 
   private void initializeSystemUser(String tenantId) {
     try {
-      securityManagerService.prepareOrUpdateSystemUser(username, password, context.getOkapiUrl(), tenantId);
+      prepareSystemUserService.setupSystemUser();
+      //securityManagerService.prepareOrUpdateSystemUser(username, password, context.getOkapiUrl(), tenantId);
     } catch (Exception e) {
       log.error("Error initializing System User", e);
     }

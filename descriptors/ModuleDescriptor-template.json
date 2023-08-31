@@ -321,8 +321,10 @@
             "users.item.put",
             "login.item.post",
             "login.item.delete",
+            "perms.users.get",
             "perms.users.item.post",
             "perms.users.assign.immutable",
+            "perms.users.assign.mutable",
             "pubsub.event-types.post",
             "pubsub.subscribers.post",
             "pubsub.publishers.post"

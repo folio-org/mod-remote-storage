@@ -20,5 +20,4 @@ public class ModRemoteStorageSpringConfiguration {
   public Logger feignLogger() {
     return new SensitiveDataProtectionLogger();
   }
-
 }

@@ -31,7 +31,6 @@ import org.folio.rs.client.HoldingsStorageClient;
 import org.folio.rs.client.IdentifierTypesClient;
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.client.ItemNoteTypesClient;
-import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.rs.domain.dto.AccessionQueue;
 import org.folio.rs.domain.dto.AccessionQueues;
 import org.folio.rs.domain.dto.AccessionRequest;
@@ -76,7 +75,6 @@ public class AccessionQueueService {
   private final LocationMappingsService locationMappingsService;
   private final InventoryClient inventoryClient;
   private final AccessionQueueMapper accessionQueueMapper;
-  private final SecurityManagerService securityManagerService;
   private final FolioModuleMetadata moduleMetadata;
   private final HoldingsStorageClient holdingsStorageClient;
   private final IdentifierTypesClient identifierTypesClient;

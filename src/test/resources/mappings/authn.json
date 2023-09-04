@@ -21,6 +21,23 @@
     {
       "request": {
         "method": "POST",
+        "url": "/authn/login-with-expiry",
+        "bodyPatterns" : [ {
+          "equalToJson" : "{  \n   \"username\":\"system-user\",\n   \"password\":\"password\"\n}"
+        } ]
+      },
+      "response": {
+        "status": 200,
+        "body": "{ \n \"accessTokenExpiration\": \"2030-09-01T13:04:35Z\",\n \"refreshTokenExpiration\": \"2030-09-08T12:54:35Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json",
+          "set-cookie": "folioAccessToken=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2QtaW5ucmVhY2giLCJ1c2VyX2lkIjoiMDFjYjFjYjgtZTFiNi00NjNkLWE4OTEtZGU0YzNmMjg1MTkyIiwidHlwZSI6ImFjY2VzcyIsImV4cCI6MTY5MzU3MzQ3NSwiaWF0IjoxNjkzNTcyODc1LCJ0ZW5hbnQiOiJkaWt1In0.IUAZngqq-jEkXtxZlmjDjpiKI-cgSG7YbcfisXlgUVE; Max-Age=600; Expires=Fri, 01 Sep 2030 13:04:35 GMT; Path=/; Secure; HTTPOnly; SameSite=None"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
         "url": "/authn/login",
         "bodyPatterns" : [ {
           "equalToJson" : "{  \n   \"username\":\"non_existed_user\",\n   \"password\":\"failed_password\"\n}"

@@ -16,7 +16,6 @@ import org.folio.rs.service.KafkaServiceTest;
 import org.folio.rs.service.ReturnRetrievalQueueServiceTest;
 import org.folio.rs.service.ReturnRetrievalQueueServiceUnitTest;
 import org.folio.rs.service.ReturnItemServiceTest;
-import org.folio.rs.service.SecurityManagerServiceTest;
 import org.junit.jupiter.api.Nested;
 
 public class TestSuite {
@@ -28,11 +27,6 @@ public class TestSuite {
 
   @Nested
   class LocationMappingsTestNested extends LocationMappingsTest {
-
-  }
-
-  @Nested
-  class SecurityManagerServiceTestNested extends SecurityManagerServiceTest {
 
   }
 

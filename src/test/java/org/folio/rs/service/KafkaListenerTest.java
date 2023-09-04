@@ -19,7 +19,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -30,8 +29,6 @@ public class KafkaListenerTest {
 
   @InjectMocks
   private KafkaMessageListener kafkaMessageListener;
-  @Mock
-  private SecurityManagerService securityManagerService;
   @Mock
   private FolioExecutionContext folioExecutionContext;
   @Mock
@@ -46,7 +43,6 @@ public class KafkaListenerTest {
 
     // verify
     verify(accessionQueueService, times(1)).processAccessionQueueRecord(any());
-    verify(securityManagerService, times(0)).refreshSystemUserApiKey(any(), any(), any(), any());
   }
 
   @Test
@@ -55,8 +51,6 @@ public class KafkaListenerTest {
     // when
     doThrow(prepareFeignException(401)).when(accessionQueueService)
       .processAccessionQueueRecord(any());
-    doNothing().when(securityManagerService)
-      .refreshSystemUserApiKey(any(), any(), any(), any());
 
     // then
     var events = getEventsList();
@@ -64,7 +58,6 @@ public class KafkaListenerTest {
 
     // verify
     verify(accessionQueueService, times(2)).processAccessionQueueRecord(any());
-    verify(securityManagerService, times(1)).refreshSystemUserApiKey(any(), any(), any(), any());
   }
 
   @Test
@@ -81,7 +74,6 @@ public class KafkaListenerTest {
 
     // verify
     verify(accessionQueueService, times(1)).processAccessionQueueRecord(any());
-    verify(securityManagerService, times(0)).refreshSystemUserApiKey(any(), any(), any(), any());
   }
 
   @Test
@@ -98,7 +90,6 @@ public class KafkaListenerTest {
 
     // verify
     verify(accessionQueueService, times(1)).processAccessionQueueRecord(any());
-    verify(securityManagerService, times(0)).refreshSystemUserApiKey(any(), any(), any(), any());
   }
 
   private List<DomainEvent> getEventsList() {

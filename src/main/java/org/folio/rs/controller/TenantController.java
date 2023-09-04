@@ -76,7 +76,6 @@ public class TenantController implements TenantApi {
 
       var schemaName = context.getFolioModuleMetadata()
         .getDBSchemaName(tenantId);
-      log.info("schemaName {} ", schemaName);
 
       folioSpringLiquibase.setDefaultSchema(schemaName);
       try {

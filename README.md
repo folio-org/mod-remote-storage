@@ -87,6 +87,9 @@ API provides the following URL to mark item as missing:
 | KAFKA_SSL_TRUSTSTORE_PASSWORD |             -             | The password for the Kafka trust store file. If a password is not set, trust store file configured will still be used, but integrity checking is disabled. |
 | SYSTEM\_USER\_NAME            |        system-user        | Username of the system user.                                                                                                                               |
 | SYSTEM\_USER\_PASSWORD        |             -             | Password of the system user.                                                                                                                               |
+| OKAPI_URL                     |     http://okapi:9130     | OKAPI URL used to login system user, required                                                                                                              |
+| ENV                           |           folio           | Logical name of the deployment, must be set if Kafka/Elasticsearch are shared for environments, `a-z (any case)`, `0-9`, `-`, `_` symbols only allowed     |
+
 
 ### Required Permissions
 Institutional users should be granted the following permissions in order to use this remote storage API:

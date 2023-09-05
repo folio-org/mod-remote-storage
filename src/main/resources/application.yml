@@ -82,7 +82,7 @@ folio.tenant.validation.enabled: false
 folio:
   system-user:
     username: ${SYSTEM_USER_NAME:system-user}
-    password: ${SYSTEM_PASSWORD}
+    password: ${SYSTEM_USER_PASSWORD}
     permissionsFilePath: permissions/system-user-permissions.csv
     lastname: System
   okapi-url: ${OKAPI_URL:http://okapi:9130}

@@ -59,7 +59,6 @@ import org.folio.rs.error.AccessionException;
 import org.folio.rs.mapper.AccessionQueueMapper;
 import org.folio.rs.repository.AccessionQueueRepository;
 import org.folio.rs.util.IdentifierType;
-import org.folio.spring.FolioModuleMetadata;
 import org.folio.spring.data.OffsetRequest;
 import org.folio.spring.service.SystemUserScopedExecutionService;
 import org.springframework.data.domain.Sort;
@@ -75,7 +74,6 @@ public class AccessionQueueService {
   private final LocationMappingsService locationMappingsService;
   private final InventoryClient inventoryClient;
   private final AccessionQueueMapper accessionQueueMapper;
-  private final FolioModuleMetadata moduleMetadata;
   private final HoldingsStorageClient holdingsStorageClient;
   private final IdentifierTypesClient identifierTypesClient;
   private final ContributorTypesClient contributorTypesClient;

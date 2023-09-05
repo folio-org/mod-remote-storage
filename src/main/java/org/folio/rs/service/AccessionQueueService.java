@@ -93,7 +93,6 @@ public class AccessionQueueService {
           DomainEventType.UPDATE == event.getType() && isEffectiveLocationChanged(event)) {
         var item = event.getNewEntity();
         systemUserScopedExecutionService.executeAsyncSystemUserScoped(event.getTenant(), () -> {
-          log.info("processAccessionQueueRecord:: Executing inside executeAsyncSystemUserScope");
           var effectiveLocationId = item.getEffectiveLocationId();
           var locationMapping = locationMappingsService
             .getRemoteLocationConfigurationMapping(effectiveLocationId);

@@ -79,7 +79,13 @@ application:
 
 server.port: 8081
 folio.tenant.validation.enabled: false
-remote-storage:
+folio:
   system-user:
     username: ${SYSTEM_USER_NAME:system-user}
     password: ${SYSTEM_USER_PASSWORD}
+    permissionsFilePath: permissions/system-user-permissions.csv
+    lastname: System
+  okapi-url: ${OKAPI_URL:http://okapi:9130}
+  environment: ${ENV:folio}
+
+

@@ -24,15 +24,14 @@ import org.folio.rs.repository.ReturnRetrievalQueueRepository;
 import org.folio.rs.service.ConfigurationsService;
 import org.folio.rs.service.KafkaService;
 import org.folio.rs.service.LocationMappingsService;
-import org.folio.rs.service.SecurityManagerService;
 import org.folio.rs.service.PubSubService;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.liquibase.FolioSpringLiquibase;
+import org.folio.spring.service.PrepareSystemUserService;
 import org.folio.spring.service.TenantService;
 import org.folio.tenant.domain.dto.Parameter;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.folio.tenant.rest.resource.TenantApi;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -51,7 +50,6 @@ public class TenantController implements TenantApi {
   private final FolioExecutionContext context;
   private final ConfigurationsService configurationsService;
   private final LocationMappingsService locationMappingsService;
-  private final SecurityManagerService securityManagerService;
   private final ReturnRetrievalQueueRepository returnRetrievalQueueRepository;
   private final AccessionQueueRepository accessionQueueRepository;
   private final PubSubService pubSubService;
@@ -63,10 +61,7 @@ public class TenantController implements TenantApi {
   private final List<String> retrievalQueueSamples = List.of("retrieval_queue_record.json", "retrieval_queue_record_for_caia_soft.json");
   private final List<String> accessionQueueSamples = Collections.singletonList("accession_queue_record.json");
 
-  @Value("${remote-storage.system-user.username}")
-  private String username;
-  @Value("${remote-storage.system-user.password}")
-  private String password;
+  private final PrepareSystemUserService prepareSystemUserService;
 
 
 
@@ -102,7 +97,7 @@ public class TenantController implements TenantApi {
     }
 
     try {
-      initializeSystemUser(tenantId);
+      prepareSystemUserService.setupSystemUser();
     } catch(Exception e) {
       log.error("Error during system-user initialization:", e);
     }
@@ -116,15 +111,6 @@ public class TenantController implements TenantApi {
     tenantService.deleteTenant(null);
     return ResponseEntity.noContent().build();
   }
-
-  private void initializeSystemUser(String tenantId) {
-    try {
-      securityManagerService.prepareOrUpdateSystemUser(username, password, context.getOkapiUrl(), tenantId);
-    } catch (Exception e) {
-      log.error("Error initializing System User", e);
-    }
-  }
-
 
   private void loadSampleData() {
     log.info("Loading sample data");

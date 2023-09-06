@@ -5,9 +5,9 @@ import static org.folio.rs.controller.TenantController.PARAMETER_LOAD_SAMPLE;
 import org.folio.rs.controller.TenantController;
 import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.spring.FolioModuleMetadata;
+import org.folio.spring.config.properties.FolioEnvironment;
 import org.folio.spring.integration.XOkapiHeaders;
 import org.folio.spring.scope.FolioExecutionContextSetter;
-import org.folio.spring.scope.FolioExecutionScopeExecutionContextManager;
 import org.folio.tenant.domain.dto.Parameter;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.junit.jupiter.api.AfterAll;
@@ -57,12 +57,16 @@ public class TestBase {
   @Autowired
   private FolioModuleMetadata moduleMetadata;
 
+  @Autowired
+  private FolioEnvironment folioEnvironment;
+
   @BeforeEach
   void setUp() {
     try (var context = getFolioExecutionContextSetter()) {
       tenantController.postTenant(new TenantAttributes().moduleTo("mod_remote_storage")
         .addParametersItem(new Parameter().key(PARAMETER_LOAD_SAMPLE).value("true")));
     }
+    folioEnvironment.setOkapiUrl(getOkapiUrl());
   }
   public static String getOkapiUrl() {
     return String.format("http://localhost:%s", WIRE_MOCK_PORT);

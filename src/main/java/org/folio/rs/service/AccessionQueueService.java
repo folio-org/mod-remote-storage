@@ -31,7 +31,6 @@ import org.folio.rs.client.HoldingsStorageClient;
 import org.folio.rs.client.IdentifierTypesClient;
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.client.ItemNoteTypesClient;
-import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.rs.domain.dto.AccessionQueue;
 import org.folio.rs.domain.dto.AccessionQueues;
 import org.folio.rs.domain.dto.AccessionRequest;
@@ -60,10 +59,8 @@ import org.folio.rs.error.AccessionException;
 import org.folio.rs.mapper.AccessionQueueMapper;
 import org.folio.rs.repository.AccessionQueueRepository;
 import org.folio.rs.util.IdentifierType;
-import org.folio.spring.FolioModuleMetadata;
 import org.folio.spring.data.OffsetRequest;
-import org.folio.spring.scope.FolioExecutionContextSetter;
-import org.folio.spring.scope.FolioExecutionScopeExecutionContextManager;
+import org.folio.spring.service.SystemUserScopedExecutionService;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -77,8 +74,6 @@ public class AccessionQueueService {
   private final LocationMappingsService locationMappingsService;
   private final InventoryClient inventoryClient;
   private final AccessionQueueMapper accessionQueueMapper;
-  private final SecurityManagerService securityManagerService;
-  private final FolioModuleMetadata moduleMetadata;
   private final HoldingsStorageClient holdingsStorageClient;
   private final IdentifierTypesClient identifierTypesClient;
   private final ContributorTypesClient contributorTypesClient;
@@ -86,6 +81,7 @@ public class AccessionQueueService {
   private final ItemNoteTypesClient itemNoteTypesClient;
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  private final SystemUserScopedExecutionService systemUserScopedExecutionService;
 
   public void processAccessionQueueRecord(List<DomainEvent> events) {
     log.info("Starting processing events...");
@@ -94,8 +90,7 @@ public class AccessionQueueService {
       if (DomainEventType.CREATE == event.getType() ||
           DomainEventType.UPDATE == event.getType() && isEffectiveLocationChanged(event)) {
         var item = event.getNewEntity();
-        var systemUserParameters = securityManagerService.getSystemUserParameters(event.getTenant());
-        try (var context = new FolioExecutionContextSetter(new AsyncFolioExecutionContext(systemUserParameters, moduleMetadata))){
+        systemUserScopedExecutionService.executeAsyncSystemUserScoped(event.getTenant(), () -> {
           var effectiveLocationId = item.getEffectiveLocationId();
           var locationMapping = locationMappingsService
             .getRemoteLocationConfigurationMapping(effectiveLocationId);
@@ -108,10 +103,11 @@ public class AccessionQueueService {
           } else {
             log.info("Location mapping with id={} not found. Accession queue record not created.", effectiveLocationId);
           }
-        }
+        });
       }
     });
   }
+
 
   public AccessionQueue processPostAccession(AccessionRequest accessionRequest) {
     log.debug("processPostAccession :: itemBarcode:{} remoteStorageId:{}",accessionRequest.getItemBarcode(),

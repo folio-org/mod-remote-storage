@@ -10,16 +10,12 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.folio.rs.TestBase;
-import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.rs.domain.dto.CheckInItem;
 import org.folio.rs.domain.dto.CheckInItemByHoldId;
-import org.folio.rs.domain.dto.LocationMappingFilterData;
 import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.entity.ReturnRetrievalQueueRecord;
 import org.folio.rs.repository.ReturnRetrievalQueueRepository;
 import org.folio.rs.service.LocationMappingsService;
-import org.folio.spring.FolioModuleMetadata;
-import org.folio.spring.scope.FolioExecutionContextSetter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

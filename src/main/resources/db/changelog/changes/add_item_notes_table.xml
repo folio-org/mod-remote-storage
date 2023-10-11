@@ -6,7 +6,7 @@
 
   <changeSet author="FOLIO Firebird Team" id="add_item_notes">
     <sqlFile dbms="postgresql"
-             path="changes/add_item_notes_table.sql"
+             path="add_item_notes_table.sql"
              relativeToChangelogFile="true"
              splitStatements="false"/>
   </changeSet>

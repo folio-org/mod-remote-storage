@@ -6,7 +6,7 @@
 
   <changeSet author="FOLIO Firebird Team" id="location_mappings_update_schema">
     <sqlFile dbms="postgresql"
-             path="changes/location_mappings_update_schema.sql"
+             path="location_mappings_update_schema.sql"
              relativeToChangelogFile="true"
              splitStatements="false"/>
   </changeSet>

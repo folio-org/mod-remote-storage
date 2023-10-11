@@ -25,21 +25,21 @@
     <java.version>17</java.version>
     <folio-spring-base.version>7.2.0</folio-spring-base.version>
     <folio-spring-system-user.version>7.2.0</folio-spring-system-user.version>
-    <openapi-generator.version>6.2.1</openapi-generator.version>
-    <mapstruct.version>1.5.3.Final</mapstruct.version>
+    <openapi-generator.version>6.6.0</openapi-generator.version>
+    <mapstruct.version>1.5.5.Final</mapstruct.version>
     <wiremock.version>2.27.2</wiremock.version>
     <embedded.db.version>2.2.0</embedded.db.version>
-    <postgresql.version>42.5.4</postgresql.version>
-    <pubsub.client.version>2.7.0</pubsub.client.version>
-    <snakeyaml.version>1.33</snakeyaml.version>
-    <hazelcast.version>5.2.1</hazelcast.version>
-    <folio-util.version>35.0.3</folio-util.version>
+    <postgresql.version>42.6.0</postgresql.version>
+    <pubsub.client.version>2.9.1</pubsub.client.version>
+    <snakeyaml.version>2.2</snakeyaml.version>
+    <hazelcast.version>5.3.2</hazelcast.version>
+    <folio-util.version>35.1.0</folio-util.version>
 
-    <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
-    <maven-resources-plugin.version>3.3.0</maven-resources-plugin.version>
+    <maven-clean-plugin.version>3.3.1</maven-clean-plugin.version>
+    <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
     <copy-rename-maven-plugin.version>1.0</copy-rename-maven-plugin.version>
-    <jsonschema2pojo-maven-plugin.version>1.1.2</jsonschema2pojo-maven-plugin.version>
-    <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
+    <jsonschema2pojo-maven-plugin.version>1.2.1</jsonschema2pojo-maven-plugin.version>
+    <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
     <sonar.exclusions>src/main/java/org/folio/rs/domain/**, src/main/java/org/folio/rs/client/AuthnClient.java,
       src/main/java/org/folio/rs/config/properties/**, src/main/java/org/folio/rs/service/PubSubService.java, src/main/java/org/folio/rs/error/PubSubException.java </sonar.exclusions>
     <remote-storage.yaml.file>src/main/resources/swagger.api/remote-storage.yaml</remote-storage.yaml.file>

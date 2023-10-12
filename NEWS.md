@@ -1,3 +1,14 @@
+## 3.0.0 2023-10-12
+
+* [MODRS-184](https://issues.folio.org/browse/MODRS-184) - Upgrade dependencies for Poppy
+* [MODRS-183](https://issues.folio.org/browse/MODRS-183) - Upgrade Spring boot starter parent version
+* [MODRS-182](https://issues.folio.org/browse/MODRS-182) - Update folio spring base version and folio spring system user version
+* [MODRS-142](https://issues.folio.org/browse/MODRS-142) - Implement refresh token rotation
+* [MODRS-178](https://issues.folio.org/browse/MODRS-178) - Missing Permission to Inventory
+* [MODRS-166](https://issues.folio.org/browse/MODRS-166) - FolioContext logic refactoring
+* [MODRS-163](https://issues.folio.org/browse/MODRS-163) - Change spelling of fulfillment parameter in requests
+* [MODRS-161](https://issues.folio.org/browse/MODRS-161) - Spring Boot 3.0.5
+
 ## 2.0.2 2023-03-20
 * [MODRS-157](https://issues.folio.org/browse/MODRS-157) - Postgresql 42.5.4 fixing Information Exposure and Socket Resource Leak
 * [MODRS-158](https://issues.folio.org/browse/MODRS-158) - apt upgrade - OpenSSL 3.0.8 fixing 8 vulns

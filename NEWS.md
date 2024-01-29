@@ -1,8 +1,10 @@
+## 3.0.2 2024-01-29
+* [MODRS-186](https://issues.folio.org/browse/MODRS-186) - Make system user creation optional
+
 ## 3.0.1 2023-12-13
 
 * [MODRS-185](https://issues.folio.org/browse/MODRS-185) - Spring Boot 3.1.5, Kafka 3.5.1, mod-pubsub-client 2.12.2
 * [MODRS-190](https://issues.folio.org/browse/MODRS-190) - hazelcast 5.3.6 fixing org.json:json OOM CVE-2023-5072
-* [MODRS-186](https://issues.folio.org/browse/MODRS-186) - Make system user creation optional
 
 ## 3.0.0 2023-10-12
 

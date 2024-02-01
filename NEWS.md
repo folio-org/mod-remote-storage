@@ -1,3 +1,6 @@
+## 3.1.0 2024-02-01
+* [MODRS-186](https://issues.folio.org/browse/MODRS-186) - Make system user creation optional
+
 ## 3.0.1 2023-12-13
 
 * [MODRS-185](https://issues.folio.org/browse/MODRS-185) - Spring Boot 3.1.5, Kafka 3.5.1, mod-pubsub-client 2.12.2

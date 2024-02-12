@@ -307,6 +307,7 @@ public class AccessionQueueService {
       .volume(item.getVolume())
       .enumeration(item.getEnumeration())
       .chronology(item.getChronology())
+      .displaySummary(item.getDisplaySummary())
       .isbn(extractIdentifier(instance, ISBN))
       .issn(extractIdentifier(instance, ISSN))
       .oclc(extractIdentifier(instance, OCLC))

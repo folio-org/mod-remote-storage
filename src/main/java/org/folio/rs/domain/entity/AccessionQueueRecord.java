@@ -54,6 +54,8 @@ public class AccessionQueueRecord {
 
   private String chronology;
 
+  private String displaySummary;
+
   private String issn;
 
   private String isbn;

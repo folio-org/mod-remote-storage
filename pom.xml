@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.1.5</version>
+    <version>3.2.0</version>
     <relativePath />
   </parent>
 
@@ -23,7 +23,7 @@
 
   <properties>
     <java.version>17</java.version>
-    <folio-spring-base.version>7.2.0</folio-spring-base.version>
+    <folio-spring-base.version>8.0.0</folio-spring-base.version>
     <folio-spring-system-user.version>7.3.0-SNAPSHOT</folio-spring-system-user.version>
     <openapi-generator.version>6.6.0</openapi-generator.version>
     <mapstruct.version>1.5.5.Final</mapstruct.version>

@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.2.0</version>
+    <version>3.2.3</version>
     <relativePath />
   </parent>
 
@@ -28,7 +28,7 @@
     <openapi-generator.version>6.6.0</openapi-generator.version>
     <mapstruct.version>1.5.5.Final</mapstruct.version>
     <wiremock.version>2.27.2</wiremock.version>
-    <embedded.db.version>2.2.0</embedded.db.version>
+    <embedded.db.version>2.5.0</embedded.db.version>
     <postgresql.version>42.6.0</postgresql.version>
     <pubsub.client.version>2.11.2</pubsub.client.version>
     <snakeyaml.version>2.2</snakeyaml.version>

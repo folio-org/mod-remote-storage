@@ -39,6 +39,7 @@ public class KafkaConfiguration {
     return factory;
   }
 
+  @SuppressWarnings("java:S5738")
   private ConsumerFactory<String, DomainEvent> jsonNodeConsumerFactory() {
     var deserializer = new JsonDeserializer<>(DomainEvent.class);
     Map<String, Object> config = new HashMap<>(kafkaProperties.buildConsumerProperties());

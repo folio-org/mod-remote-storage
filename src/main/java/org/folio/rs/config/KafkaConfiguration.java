@@ -35,13 +35,8 @@ public class KafkaConfiguration {
     var factory = new ConcurrentKafkaListenerContainerFactory<String, DomainEvent>();
     factory.setBatchListener(true);
     factory.setConsumerFactory(jsonNodeConsumerFactory());
-    factory.setCommonErrorHandler(eventErrorHandler());
+    factory.setCommonErrorHandler(new DefaultErrorHandler());
     return factory;
-  }
-
-  private DefaultErrorHandler eventErrorHandler() {
-    return new DefaultErrorHandler((message, exception) ->
-      log.error("Failed to process event [record: {}]", message, exception.getCause()));
   }
 
   private ConsumerFactory<String, DomainEvent> jsonNodeConsumerFactory() {

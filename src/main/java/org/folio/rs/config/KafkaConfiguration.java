@@ -35,11 +35,11 @@ public class KafkaConfiguration {
     var factory = new ConcurrentKafkaListenerContainerFactory<String, DomainEvent>();
     factory.setBatchListener(true);
     factory.setConsumerFactory(jsonNodeConsumerFactory());
-    factory.setCommonErrorHandler(new DefaultErrorHandler());
+    factory.setCommonErrorHandler(new DefaultErrorHandler((exception, data) ->
+      log.error("Error in process with Exception {} and the record is {}", exception, data)));
     return factory;
   }
 
-  @SuppressWarnings("java:S5738")
   private ConsumerFactory<String, DomainEvent> jsonNodeConsumerFactory() {
     var deserializer = new JsonDeserializer<>(DomainEvent.class);
     Map<String, Object> config = new HashMap<>(kafkaProperties.buildConsumerProperties());
@@ -47,4 +47,5 @@ public class KafkaConfiguration {
     config.put(VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
     return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), deserializer);
   }
+
 }

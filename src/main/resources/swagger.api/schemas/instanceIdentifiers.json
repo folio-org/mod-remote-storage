@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "An extensible name-value pairs associated with the resource",
+  "type": "object",
+  "properties": {
+    "value": {
+      "type": "string",
+      "description": "Resource identifier value"
+    },
+    "identifierTypeId": {
+      "type": "string",
+      "description": "Resource identifier type (e.g. ISBN, ISSN, LCCN, CODEN, Locally defined identifiers)"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "value",
+    "identifierTypeId"
+  ]
+}

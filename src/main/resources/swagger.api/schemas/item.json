@@ -44,13 +44,7 @@
       "description": "A list of contributor names",
       "type": "array",
       "items": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "description": "The contributor name",
-            "type": "string"
-          }
-        }
+        "$ref": "itemContributorNames.json"
       }
     },
     "callNumber": {

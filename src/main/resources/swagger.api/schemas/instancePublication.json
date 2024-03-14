@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Publication items",
+  "type": "object",
+  "properties": {
+    "publisher": {
+      "type": "string",
+      "description": "Name of publisher, distributor, etc."
+    },
+    "place": {
+      "type": "string",
+      "description": "Place of publication, distribution, etc."
+    },
+    "dateOfPublication": {
+      "type": "string",
+      "description": "Date (year YYYY) of publication, distribution, etc."
+    },
+    "role": {
+      "type": "string",
+      "description": "The role of the publisher, distributor, etc."
+    }
+  }
+}

@@ -132,22 +132,7 @@
       "description": "An extensible set of name-value pairs of identifiers associated with the resource",
       "minItems": 0,
       "items": {
-        "type": "object",
-        "properties": {
-          "value": {
-            "type": "string",
-            "description": "Resource identifier value"
-          },
-          "identifierTypeId": {
-            "type": "string",
-            "description": "Resource identifier type (e.g. ISBN, ISSN, LCCN, CODEN, Locally defined identifiers)"
-          }
-        },
-        "additionalProperties": false,
-        "required": [
-          "value",
-          "identifierTypeId"
-        ]
+        "$ref": "instanceIdentifiers.json"
       }
     },
     "contributors": {
@@ -155,34 +140,7 @@
       "description": "List of contributors",
       "minItems": 0,
       "items": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Personal name, corporate name, meeting name"
-          },
-          "contributorTypeId": {
-            "type": "string",
-            "description": "ID for the contributor type term defined as a referencetable in settings"
-          },
-          "contributorTypeText": {
-            "type": "string",
-            "description": "Free text element for adding contributor type terms other that defined by the MARC code list for relators"
-          },
-          "contributorNameTypeId": {
-            "type": "string",
-            "description": "Contributor type terms defined by the MARC code list for relators"
-          },
-          "primary": {
-            "type": "boolean",
-            "description": "Whether this is the primary contributor"
-          }
-        },
-        "additionalProperties": false,
-        "required": [
-          "name",
-          "contributorNameTypeId"
-        ]
+        "$ref": "instanceContributors.json"
       }
     },
     "subjects": {
@@ -230,25 +188,7 @@
       "type": "array",
       "description": "List of publication items",
       "items": {
-        "type": "object",
-        "properties": {
-          "publisher": {
-            "type": "string",
-            "description": "Name of publisher, distributor, etc."
-          },
-          "place": {
-            "type": "string",
-            "description": "Place of publication, distribution, etc."
-          },
-          "dateOfPublication": {
-            "type": "string",
-            "description": "Date (year YYYY) of publication, distribution, etc."
-          },
-          "role": {
-            "type": "string",
-            "description": "The role of the publisher, distributor, etc."
-          }
-        }
+        "$ref": "instancePublication.json"
       }
     },
     "publicationFrequency": {
@@ -456,22 +396,7 @@
             "description": "An extensible set of name-value pairs of identifiers associated with the resource",
             "minItems": 0,
             "items": {
-              "type": "object",
-              "properties": {
-                "value": {
-                  "type": "string",
-                  "description": "Resource identifier value"
-                },
-                "identifierTypeId": {
-                  "type": "string",
-                  "description": "Resource identifier type (e.g. ISBN, ISSN, LCCN, CODEN, Locally defined identifiers)"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "value",
-                "identifierTypeId"
-              ]
+              "$ref": "instanceIdentifiers.json"
             }
           }
         },
@@ -507,22 +432,7 @@
             "description": "An extensible set of name-value pairs of identifiers associated with the resource",
             "minItems": 0,
             "items": {
-              "type": "object",
-              "properties": {
-                "value": {
-                  "type": "string",
-                  "description": "Resource identifier value"
-                },
-                "identifierTypeId": {
-                  "type": "string",
-                  "description": "Resource identifier type (e.g. ISBN, ISSN, LCCN, CODEN, Locally defined identifiers)"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "value",
-                "identifierTypeId"
-              ]
+              "$ref": "instanceIdentifiers.json"
             }
           }
         },

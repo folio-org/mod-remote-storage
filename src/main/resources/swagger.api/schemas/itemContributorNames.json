@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Contributor names",
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "The contributor name",
+      "type": "string"
+    }
+  }
+}

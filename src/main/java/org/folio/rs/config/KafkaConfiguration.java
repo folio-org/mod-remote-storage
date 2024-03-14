@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import lombok.RequiredArgsConstructor;
@@ -34,15 +35,17 @@ public class KafkaConfiguration {
     var factory = new ConcurrentKafkaListenerContainerFactory<String, DomainEvent>();
     factory.setBatchListener(true);
     factory.setConsumerFactory(jsonNodeConsumerFactory());
-    factory.setBatchErrorHandler(((exception, data) -> log.error("Error in process with Exception {} and the record is {}", exception, data)));
+    factory.setCommonErrorHandler(new DefaultErrorHandler((exception, data) -> log.error(
+      "Error in process with Exception {} and the record is {}", exception, data)));
     return factory;
   }
 
   private ConsumerFactory<String, DomainEvent> jsonNodeConsumerFactory() {
     var deserializer = new JsonDeserializer<>(DomainEvent.class);
-    Map<String, Object> config = new HashMap<>(kafkaProperties.buildConsumerProperties());
+    Map<String, Object> config = new HashMap<>(kafkaProperties.buildConsumerProperties(null));
     config.put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     config.put(VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
     return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), deserializer);
   }
+
 }

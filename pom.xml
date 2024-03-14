@@ -34,7 +34,7 @@
 
     <maven-clean-plugin.version>3.3.1</maven-clean-plugin.version>
     <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
-    <copy-rename-maven-plugin.version>1.0</copy-rename-maven-plugin.version>
+    <copy-rename-maven-plugin.version>1.0.1</copy-rename-maven-plugin.version>
     <jsonschema2pojo-maven-plugin.version>1.2.1</jsonschema2pojo-maven-plugin.version>
     <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
     <sonar.exclusions>src/main/java/org/folio/rs/domain/**, src/main/java/org/folio/rs/client/AuthnClient.java,

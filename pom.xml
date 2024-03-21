@@ -29,7 +29,7 @@
     <wiremock-standalone.version>3.4.2</wiremock-standalone.version>
     <embedded.db.version>2.5.0</embedded.db.version>
     <postgresql.version>42.6.0</postgresql.version>
-    <pubsub.client.version>2.11.2</pubsub.client.version>
+    <pubsub.client.version>2.13.0</pubsub.client.version>
     <folio-util.version>35.1.0</folio-util.version>
 
     <maven-clean-plugin.version>3.3.1</maven-clean-plugin.version>

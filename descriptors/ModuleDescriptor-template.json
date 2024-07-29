@@ -483,6 +483,21 @@
       ]
     }
   ],
+  "metadata": {
+    "user": {
+      "type": "system",
+      "permissions": [
+        "users.collection.get",
+        "users.item.get",
+        "inventory.instances.collection.get",
+        "inventory-storage.contributor-types.collection.get",
+        "inventory-storage.holdings.collection.get",
+        "inventory-storage.items.collection.get",
+        "inventory-storage.identifier-types.collection.get",
+        "inventory-storage.item-note-types.item.get"
+      ]
+    }
+  },
   "launchDescriptor": {
     "dockerImage": "@artifactId@:@version@",
     "dockerPull": false,

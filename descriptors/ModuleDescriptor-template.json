@@ -65,7 +65,9 @@
     {
       "id": "pubsub-subscribers",
       "version": "0.1"
-    },
+    }
+  ],
+  "optional": [
     {
       "id": "item-note-types",
       "version": "1.0"

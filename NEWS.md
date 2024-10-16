@@ -1,3 +1,7 @@
+## 3.2.1
+
+* [MODRS-207](https://folio-org.atlassian.net/browse/MODRS-207) Upgrade `holdings-storage` to 8.0
+
 ## 3.2.0 2024-03-21
 
 MODRS-185: Spring Boot 3.1.5, Kafka 3.5.1, mod-pubsub-client 2.12.2

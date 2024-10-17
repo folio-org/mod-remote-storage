@@ -218,7 +218,7 @@
         {
           "methods": ["PUT"],
           "pathPattern": "/remote-storage/accessions/barcode/{barcode}",
-          "permissionsRequired" : [ "remote-storage.accessions.item.put" ]
+          "permissionsRequired" : [ "remote-storage.accessions.item-barcode.put" ]
         }
       ]
     },
@@ -239,7 +239,7 @@
         {
           "methods": ["PUT"],
           "pathPattern": "/remote-storage/retrievals/barcode/{barcode}",
-          "permissionsRequired" : [ "remote-storage.retrievals.item.put" ]
+          "permissionsRequired" : [ "remote-storage.retrievals.item-barcode.put" ]
         }
       ]
     },
@@ -259,7 +259,7 @@
         {
           "methods": ["POST"],
           "pathPattern": "/remote-storage/retrieve/{remoteStorageConfigurationId}/checkInItemByHoldId",
-          "permissionsRequired" : ["remote-storage.check-in.item.post"],
+          "permissionsRequired" : ["remote-storage.check-in.item-hold.post"],
           "modulePermissions" : [
             "inventory-storage.locations.item.get",
             "circulation.check-in-by-barcode.post"
@@ -287,7 +287,7 @@
         {
           "methods": ["POST"],
           "pathPattern": "/remote-storage/pub-sub-handlers/log-record-event",
-          "permissionsRequired": ["pubsub.events.post"],
+          "permissionsRequired": ["remote-storage.pub-sub-handlers.log-record-event.post"],
           "modulePermissions": [
             "inventory.items.collection.get",
             "users.collection.get",
@@ -434,6 +434,11 @@
       "description" : "Modify a remote storage accession queue by changing accessioned date time"
     },
     {
+      "permissionName" : "remote-storage.accessions.item-barcode.put",
+      "displayName" : "modify a remote storage accession queue by barcode",
+      "description" : "Modify a remote storage accession queue by barcode and changing accessioned date time"
+    },
+    {
       "permissionName": "remote-storage.retrievals.collection.get",
       "displayName": "get remote storage retrieval queues collection",
       "description": "Get list of remote storage retrieval queue records"
@@ -444,9 +449,19 @@
       "description" : "Modify a remote storage retrieval queue record by changing retrieved date time"
     },
     {
+      "permissionName" : "remote-storage.retrievals.item-barcode.put",
+      "displayName" : "modify a remote storage retrieval queue record by barcode",
+      "description" : "Modify a remote storage retrieval queue record by barcode by changing retrieved date time"
+    },
+    {
       "permissionName" : "remote-storage.check-in.item.post",
       "displayName" : "check-in item by barcode",
       "description" : "Check-in item by barcode"
+    },
+    {
+      "permissionName" : "remote-storage.check-in.item-hold.post",
+      "displayName" : "check-in item by hold id",
+      "description" : "Check-in item by hold id"
     },
     {
       "permissionName" : "remote-storage.return.item.post",
@@ -457,6 +472,12 @@
       "permissionName" : "remote-storage.items.item.mark-as-missing.post",
       "displayName" : "mark item as missing by barcode",
       "description" : "Mark item as missing by barcode"
+    },
+    {
+      "permissionName": "remote-storage.pub-sub-handlers.log-record-event.post",
+      "displayName" : "log record events from pub-sub",
+      "description" : "log record events received from pub-sub",
+      "replaces": [ "pubsub.events.post" ]
     },
     {
       "permissionName": "remote-storage.all",
@@ -481,9 +502,12 @@
         "remote-storage.accessions.item.post",
         "remote-storage.accessions.collection.get",
         "remote-storage.accessions.item.put",
+        "remote-storage.accessions.item-barcode.put",
         "remote-storage.retrievals.collection.get",
         "remote-storage.retrievals.item.put",
+        "remote-storage.retrievals.item-barcode.put",
         "remote-storage.check-in.item.post",
+        "remote-storage.check-in.item-hold.post",
         "remote-storage.return.item.post",
         "remote-storage.items.item.mark-as-missing.post"
       ]

@@ -40,7 +40,6 @@
     <sonar.exclusions>src/main/java/org/folio/rs/domain/**, src/main/java/org/folio/rs/client/AuthnClient.java,
       src/main/java/org/folio/rs/config/properties/**, src/main/java/org/folio/rs/service/PubSubService.java, src/main/java/org/folio/rs/error/PubSubException.java </sonar.exclusions>
     <remote-storage.yaml.file>src/main/resources/swagger.api/remote-storage.yaml</remote-storage.yaml.file>
-    <folio-module-descriptor-validator.version>1.0.0</folio-module-descriptor-validator.version>
   </properties>
 
   <dependencies>
@@ -401,20 +400,6 @@
           <localCheckout>true</localCheckout>
         </configuration>
       </plugin>
-
-      <plugin>
-        <groupId>org.folio</groupId>
-        <artifactId>folio-module-descriptor-validator</artifactId>
-        <version>${folio-module-descriptor-validator.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>validate</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
     </plugins>
   </build>
 

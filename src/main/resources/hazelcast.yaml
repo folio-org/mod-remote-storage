@@ -1,4 +1,5 @@
 hazelcast:
+  cluster-name: mod-remote-storage-@project.version@
   network:
     join:
       multicast:

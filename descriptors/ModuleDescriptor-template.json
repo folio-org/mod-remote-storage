@@ -12,7 +12,7 @@
     },
     {
       "id": "holdings-storage",
-      "version": "6.0 7.0 8.0"
+      "version": "8.0"
     },
     {
       "id": "identifier-types",
@@ -24,7 +24,7 @@
     },
     {
       "id": "users",
-      "version": "16.1"
+      "version": "16.3"
     },
     {
       "id": "authtoken",
@@ -36,15 +36,15 @@
     },
     {
       "id": "permissions",
-      "version": "5.6"
+      "version": "5.7"
     },
     {
       "id": "locations",
-      "version": "3.0"
+      "version": "3.1"
     },
     {
       "id": "circulation",
-      "version": "14.2"
+      "version": "14.4"
     },
     {
       "id": "item-storage",

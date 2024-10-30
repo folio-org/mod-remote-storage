@@ -1,3 +1,16 @@
+## 3.3.0 2024-10-30
+
+* [MODRS-200](https://folio-org.atlassian.net/browse/MODRS-200) - API version update
+* [EUREKA-225](https://folio-org.atlassian.net/browse/EUREKA-225) - Update module descriptors to use the "metadata" field
+* [MODRS-204](https://folio-org.atlassian.net/browse/MODRS-204) - SYSTEM_USER env var is not taking affect
+* [MODRS-206](https://folio-org.atlassian.net/browse/MODRS-206) - Missing required interfaces in Module Descriptor
+* [MODRS-210](https://folio-org.atlassian.net/browse/MODRS-210) - inventory API version update
+* [MODRS-207](https://folio-org.atlassian.net/browse/MODRS-207) - Update module permissions in the ModuleDescriptor
+* [MODRS-205](https://folio-org.atlassian.net/browse/MODRS-205) - Review and cleanup Module Descriptors for mod-remote-storage
+* [MODRS-211](https://folio-org.atlassian.net/browse/MODRS-211) - Update Spring support version for Ramsons
+* [MODRS-205](https://folio-org.atlassian.net/browse/MODRS-205) - Review and cleanup Module Descriptors for mod-remote-storage
+* [PR 212](https://github.com/folio-org/mod-remote-storage/pull/212) - hazelcast-fix-custom-cluster-name: custom hazelcast cluster-name is set (#212)
+
 ## 3.2.1
 
 * [MODRS-207](https://folio-org.atlassian.net/browse/MODRS-207) Upgrade `holdings-storage` to 8.0

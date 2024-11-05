@@ -287,12 +287,14 @@
         {
           "methods": ["POST"],
           "pathPattern": "/remote-storage/pub-sub-handlers/log-record-event",
-          "permissionsRequired": ["pubsub.events.post"],
+          "permissionsRequired": [
+          ],
           "modulePermissions": [
             "inventory.items.collection.get",
             "users.collection.get",
             "inventory-storage.service-points.item.get",
-            "circulation.requests.queue.collection.get"
+            "circulation.requests.queue.collection.get",
+            "remote-storage.pub-sub-handlers.log-record-event.post"
           ]
         }
       ]

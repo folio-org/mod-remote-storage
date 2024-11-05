@@ -288,13 +288,13 @@
           "methods": ["POST"],
           "pathPattern": "/remote-storage/pub-sub-handlers/log-record-event",
           "permissionsRequired": [
+            "remote-storage.pub-sub-handlers.log-record-event.post"
           ],
           "modulePermissions": [
             "inventory.items.collection.get",
             "users.collection.get",
             "inventory-storage.service-points.item.get",
-            "circulation.requests.queue.collection.get",
-            "remote-storage.pub-sub-handlers.log-record-event.post"
+            "circulation.requests.queue.collection.get"
           ]
         }
       ]
@@ -474,6 +474,11 @@
       "permissionName" : "remote-storage.items.item.mark-as-missing.post",
       "displayName" : "mark item as missing by barcode",
       "description" : "Mark item as missing by barcode"
+    },
+    {
+      "permissionName": "remote-storage.pub-sub-handlers.log-record-event.post",
+      "displayName" : "log record events from pub-sub",
+      "description" : "log record events received from pub-sub"
     },
     {
       "permissionName": "remote-storage.all",

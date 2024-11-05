@@ -476,11 +476,6 @@
       "description" : "Mark item as missing by barcode"
     },
     {
-      "permissionName": "remote-storage.pub-sub-handlers.log-record-event.post",
-      "displayName" : "log record events from pub-sub",
-      "description" : "log record events received from pub-sub"
-    },
-    {
       "permissionName": "remote-storage.all",
       "displayName": "remote storage API module - all permissions",
       "description": "All permissions for remote storage",

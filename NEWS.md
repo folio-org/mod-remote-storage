@@ -1,3 +1,7 @@
+## 3.3.1 2024-11-19
+
+* [MODRS-216](https://folio-org.atlassian.net/browse/MODRS-216) - Make pubsub permission changes.
+
 ## 3.3.0 2024-10-30
 
 * [MODRS-200](https://folio-org.atlassian.net/browse/MODRS-200) - API version update

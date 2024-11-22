@@ -271,7 +271,8 @@
           "permissionsRequired" : ["remote-storage.return.item.post"],
           "modulePermissions" : [
             "inventory.items.collection.get",
-            "circulation.requests.queue.collection.get",
+            "circulation.requests.queue-item.collection.get",
+            "circulation.requests.queue-instance.collection.get",
             "inventory-storage.locations.item.get",
             "circulation.check-in-by-barcode.post",
             "inventory-storage.service-points.item.get",
@@ -294,7 +295,8 @@
             "inventory.items.collection.get",
             "users.collection.get",
             "inventory-storage.service-points.item.get",
-            "circulation.requests.queue.collection.get"
+            "circulation.requests.queue-item.collection.get",
+            "circulation.requests.queue-instance.collection.get"
           ]
         }
       ]

@@ -288,7 +288,9 @@
         {
           "methods": ["POST"],
           "pathPattern": "/remote-storage/pub-sub-handlers/log-record-event",
-          "permissionsRequired": ["pubsub.events.post"],
+          "permissionsRequired": [
+            "remote-storage.pub-sub-handlers.log-record-event.post"
+          ],
           "modulePermissions": [
             "inventory.items.collection.get",
             "users.collection.get",

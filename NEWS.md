@@ -1,3 +1,7 @@
+## 3.3.2 2024-12-02
+
+* [MODRS-219](https://folio-org.atlassian.net/browse/MODRS-219) - Update permission after mod-circulation permission changes
+
 ## 3.3.1 2024-11-19
 
 * [MODRS-216](https://folio-org.atlassian.net/browse/MODRS-216) - Make pubsub permission changes.

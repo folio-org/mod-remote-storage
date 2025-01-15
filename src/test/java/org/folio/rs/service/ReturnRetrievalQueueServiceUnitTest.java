@@ -10,6 +10,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import feign.FeignException;
 import java.util.Collections;
 import jakarta.persistence.EntityNotFoundException;
 import org.folio.rs.client.InventoryClient;
@@ -22,7 +23,6 @@ import org.folio.rs.domain.dto.ItemEffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.ItemEffectiveLocation;
 import org.folio.rs.domain.dto.PickupServicePoint;
 import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
-import org.folio.rs.domain.dto.ResultList;
 import org.folio.rs.domain.dto.User;
 import org.folio.rs.domain.entity.ReturnRetrievalQueueRecord;
 import org.folio.rs.repository.ReturnRetrievalQueueRepository;
@@ -74,8 +74,6 @@ public class ReturnRetrievalQueueServiceUnitTest {
   @Mock
   private Item item;
   @Mock
-  private ResultList<Item> items;
-  @Mock
   private ItemContributorNames contributor;
   @Mock
   private RemoteLocationConfigurationMapping locationMapping;
@@ -83,8 +81,6 @@ public class ReturnRetrievalQueueServiceUnitTest {
   private ItemEffectiveLocation effectiveLocation;
   @Mock
   private PickupServicePoint pickupServicePoint;
-  @Mock
-  private ResultList<User> users;
   @Mock
   private User user;
   @Mock
@@ -101,8 +97,7 @@ public class ReturnRetrievalQueueServiceUnitTest {
     when(requestEvent.getHoldId()).thenReturn(HOLD_ID);
     when(requestEvent.getRequestNote()).thenReturn(REQUEST_NOTE);
     when(requestEvent.getRequestStatus()).thenReturn(STATUS);
-    when(inventoryClient.getItemsByQuery("barcode==" + ITEM_BARCODE)).thenReturn(items);
-    when(items.getResult()).thenReturn(Collections.singletonList(item));
+    when(inventoryClient.getItemByBarcodeOrNull(ITEM_BARCODE)).thenReturn(item);
     when(item.getTitle()).thenReturn(INSTANCE_TITLE);
     when(item.getContributorNames()).thenReturn(Collections.singletonList(contributor));
     when(contributor.getName()).thenReturn(INSTANCE_AUTHOR);
@@ -114,8 +109,7 @@ public class ReturnRetrievalQueueServiceUnitTest {
     when(locationMapping.getConfigurationId()).thenReturn(REMOTE_STORAGE_ID);
     when(servicePointsClient.getServicePoint(PICKUP_SERVICE_POINT_ID)).thenReturn(pickupServicePoint);
     when(pickupServicePoint.getCode()).thenReturn(PICKUP_SERVICE_POINT_CODE);
-    when(usersClient.getUsersByQuery("id==" + REQUESTER_ID)).thenReturn(users);
-    when(users.getResult()).thenReturn(Collections.singletonList(user));
+    when(usersClient.getUser(REQUESTER_ID)).thenReturn(user);
     when(user.getBarcode()).thenReturn(PATRON_BARCODE);
     when(user.getUsername()).thenReturn(PATRON_NAME);
   }
@@ -143,8 +137,7 @@ public class ReturnRetrievalQueueServiceUnitTest {
 
   @Test()
   void shouldThrowExceptionWhenItemByBarcodeIsNotFound() {
-    when(inventoryClient.getItemsByQuery("barcode==" + ITEM_BARCODE)).thenReturn(items);
-    when(items.getResult()).thenReturn(Collections.EMPTY_LIST);
+    when(inventoryClient.getItemByBarcodeOrNull(ITEM_BARCODE)).thenReturn(null);
 
     assertThrows(EntityNotFoundException.class, () -> service.processEventRequest(requestEvent));
   }
@@ -160,8 +153,7 @@ public class ReturnRetrievalQueueServiceUnitTest {
 
   @Test
   void shouldThrowExceptionWhenPatronIsNotFound() {
-    when(usersClient.getUsersByQuery("id==" + REQUESTER_ID)).thenReturn(users);
-    when(users.getResult()).thenReturn(Collections.EMPTY_LIST);
+    when(usersClient.getUser(REQUESTER_ID)).thenThrow(FeignException.NotFound.class);
 
     assertThrows(EntityNotFoundException.class, () -> service.processEventRequest(requestEvent));
   }

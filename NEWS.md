@@ -1,3 +1,7 @@
+## 3.3.4 2025-01-21
+
+* [MODRS-225](https://folio-org.atlassian.net/browse/MODRS-225) - Add missing required interfaces to Module Descriptor
+
 ## 3.3.3 2024-12-20
 
 * [MODRS-221](https://folio-org.atlassian.net/browse/MODRS-221) - Spring Boot 3.3.6, tomcat-embed-core 10.1.33: CVE-2024-52317

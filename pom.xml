@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.3.4</version>
+    <version>3.3.6</version>
     <relativePath />
   </parent>
 
@@ -27,8 +27,8 @@
     <openapi-generator.version>7.3.0</openapi-generator.version>
     <mapstruct.version>1.5.5.Final</mapstruct.version>
     <wiremock-standalone.version>3.4.2</wiremock-standalone.version>
-    <embedded.db.version>2.5.0</embedded.db.version>
-    <postgresql.version>42.6.0</postgresql.version>
+    <embedded.db.version>2.6.0</embedded.db.version>
+    <postgresql.version>42.7.4</postgresql.version>
     <pubsub.client.version>2.13.0</pubsub.client.version>
     <folio-util.version>35.1.0</folio-util.version>
 

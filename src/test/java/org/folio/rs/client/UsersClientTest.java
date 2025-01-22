@@ -5,37 +5,28 @@ import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
-import feign.Feign;
 import feign.FeignException;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import lombok.extern.log4j.Log4j2;
 import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.rs.domain.dto.User;
-import org.folio.rs.error.ItemReturnException;
 import org.folio.spring.FolioModuleMetadata;
 import org.folio.spring.config.properties.FolioEnvironment;
 import org.folio.spring.scope.FolioExecutionContextSetter;
-import org.folio.rs.controller.TenantController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
-import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

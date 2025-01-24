@@ -380,12 +380,13 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven-surefire-plugin.version}</version>
         <configuration>
-          <excludes>
-            <exclude>org/folio/rs/Controller/**Test.class</exclude>
-          </excludes>
           <includes>
+            <include>**/*Test.class</include>
             <include>org/folio/rs/TestSuite.class</include>
           </includes>
+          <excludes>
+            <exclude>org/folio/rs/controller/**Test.class</exclude>
+          </excludes>
           <useSystemClassLoader>false</useSystemClassLoader>
         </configuration>
       </plugin>

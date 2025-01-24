@@ -4,6 +4,7 @@ import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.folio.rs.util.MapperUtils.stringToUUIDSafe;
 import static org.folio.rs.util.RetrievalQueueRecordUtils.buildReturnRetrievalQueueRecord;
 
+import feign.FeignException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -166,18 +167,18 @@ public class ReturnRetrievalQueueService {
   }
 
   private Item getOriginalItemByBarcode(RequestEvent requestEvent) {
-    ResultList<Item> items = inventoryClient.getItemsByQuery("barcode==" + requestEvent.getItemBarCode());
-    if (isEmpty(items.getResult())) {
+    var item = inventoryClient.getItemByBarcodeOrNull(requestEvent.getItemBarCode());
+    if (item == null) {
       throw new EntityNotFoundException("Item with barcode " + requestEvent.getItemBarCode() + NOT_FOUND);
     }
-    return items.getResult().get(0);
+    return item;
   }
 
   private User getUserByRequesterId(RequestEvent requestEvent) {
-    ResultList<User> users = usersClient.getUsersByQuery("id==" + requestEvent.getRequesterId());
-    if (isEmpty(users.getResult())) {
+    try {
+      return usersClient.getUser(requestEvent.getRequesterId());
+    } catch (FeignException.NotFound e) {
       throw new EntityNotFoundException("User with id " + requestEvent.getRequesterId() + NOT_FOUND);
     }
-    return users.getResult().get(0);
   }
 }

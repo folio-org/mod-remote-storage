@@ -7,6 +7,7 @@ import static org.folio.rs.domain.dto.ReturningWorkflowDetails.CAIASOFT;
 import static org.folio.rs.domain.entity.ProviderRecord.CAIA_SOFT;
 import static org.folio.rs.util.RetrievalQueueRecordUtils.buildReturnRetrievalRecord;
 
+import feign.FeignException;
 import java.util.Optional;
 
 import org.folio.rs.client.CirculationClient;
@@ -33,8 +34,6 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 @Log4j2
 public class ReturnItemService {
-  private static final String USER_ID_QUERY_PROPERTY = "id==";
-
   private final InventoryClient inventoryClient;
   private final CirculationClient circulationClient;
   private final UsersClient usersClient;
@@ -117,10 +116,10 @@ public class ReturnItemService {
   }
 
   private User getUserById(String requesterId) {
-    var users = usersClient.getUsersByQuery(USER_ID_QUERY_PROPERTY + requesterId);
-    if (users.isEmpty()) {
+    try {
+      return usersClient.getUser(requesterId);
+    } catch (FeignException.NotFound e) {
       throw new ItemReturnException("User does not exist for requester id " + requesterId);
     }
-    return users.getResult().get(0);
   }
 }

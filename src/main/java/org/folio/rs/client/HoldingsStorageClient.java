@@ -15,6 +15,9 @@ public interface HoldingsStorageClient {
     consumes = MediaType.APPLICATION_JSON_VALUE)
   HoldingsRecord postHoldingsRecord(@RequestBody HoldingsRecord holdingsRecord);
 
+  @GetMapping(value = "/holdings/{id}")
+  HoldingsRecord getHoldingsRecord(@PathVariable("id") String id);
+
   @PutMapping(value = "/holdings/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
   void putHoldingsRecord(@PathVariable("id") String id, @RequestBody HoldingsRecord holdingsRecord);
 }

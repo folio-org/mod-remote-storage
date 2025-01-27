@@ -61,6 +61,7 @@ import org.folio.rs.repository.AccessionQueueRepository;
 import org.folio.rs.util.IdentifierType;
 import org.folio.spring.data.OffsetRequest;
 import org.folio.spring.service.SystemUserScopedExecutionService;
+import org.folio.util.StringUtil;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -95,8 +96,7 @@ public class AccessionQueueService {
           var locationMapping = locationMappingsService
             .getRemoteLocationConfigurationMapping(effectiveLocationId);
           if (nonNull(locationMapping)) {
-            var instances = inventoryClient.getInstancesByQuery("id==" + item.getInstanceId());
-            var instance = instances.getResult().get(0);
+            var instance = inventoryClient.getInstance(item.getInstanceId());
             var record = buildAccessionQueueRecord(item, instance, locationMapping);
             accessionQueueRepository.save(record);
             log.info("Record prepared and saved for item barcode: {}", record.getItemBarcode());
@@ -115,8 +115,8 @@ public class AccessionQueueService {
     var storageConfiguration = getStorageConfiguration(accessionRequest);
     var locationMapping = getLocationMapping(accessionRequest);
     var item = getItem(accessionRequest);
-    var holdingsRecord = holdingsStorageClient.getHoldingsRecordsByQuery("id==" + item.getHoldingsRecordId()).getResult().get(0);
-    var instance = inventoryClient.getInstancesByQuery("id==" + holdingsRecord.getInstanceId()).getResult().get(0);
+    var holdingsRecord = holdingsStorageClient.getHoldingsRecord(item.getHoldingsRecordId());
+    var instance = inventoryClient.getInstance(holdingsRecord.getInstanceId());
 
     var remoteLocationId = locationMapping.getFolioLocationId();
 
@@ -156,7 +156,7 @@ public class AccessionQueueService {
   }
 
   private void setLocationForItemsWithoutLocation(HoldingsRecord holdingsRecord) {
-    inventoryClient.getItemsByQuery("holdingsRecordId==" + holdingsRecord.getId())
+    inventoryClient.getItemsByQuery("holdingsRecordId==" + StringUtil.cqlEncode(holdingsRecord.getId()))
       .getResult().forEach(i -> {
       if (isNull(i.getPermanentLocation()) && isNull(i.getTemporaryLocation())) {
         changeItemPermanentLocation(i, holdingsRecord.getPermanentLocationId());
@@ -179,7 +179,8 @@ public class AccessionQueueService {
   }
 
   private String findOrCreateHoldingWithSamePermanentLocation(HoldingsRecord holdingsRecord, String remoteLocationId) {
-    var holdings = holdingsStorageClient.getHoldingsRecordsByQuery("instanceId==" + holdingsRecord.getInstanceId())
+    var cql = "instanceId==" + StringUtil.cqlEncode(holdingsRecord.getInstanceId());
+    var holdings = holdingsStorageClient.getHoldingsRecordsByQuery(cql)
       .getResult().stream()
       .filter(h -> remoteLocationId.equals(h.getPermanentLocationId()))
       .collect(Collectors.toList());
@@ -205,7 +206,7 @@ public class AccessionQueueService {
   }
 
   private boolean isAllItemsInHoldingHaveSamePermanentLocation(Item item, String location) {
-    return inventoryClient.getItemsByQuery("holdingsRecordId==" + item.getHoldingsRecordId())
+    return inventoryClient.getItemsByQuery("holdingsRecordId==" + StringUtil.cqlEncode(item.getHoldingsRecordId()))
       .getResult()
       .stream()
       .filter(i -> !item.getId().equals(i.getId()))
@@ -213,11 +214,11 @@ public class AccessionQueueService {
   }
 
   private Item getItem(AccessionRequest accessionRequest) {
-    var items = inventoryClient.getItemsByQuery("barcode==" + accessionRequest.getItemBarcode());
-    if (items.isEmpty()) {
+    var item = inventoryClient.getItemByBarcodeOrNull(accessionRequest.getItemBarcode());
+    if (item == null) {
       throw new AccessionException(String.format("Item with barcode=%s was not found", accessionRequest.getItemBarcode()));
     }
-    return items.getResult().get(0);
+    return item;
   }
 
   private StorageConfiguration getStorageConfiguration(AccessionRequest accessionRequest) {
@@ -319,7 +320,8 @@ public class AccessionQueueService {
   }
 
   private String extractAuthors(Instance instance) {
-    var contributorTypeId = contributorTypesClient.getContributorTypesByQuery("name==" + AUTHOR)
+    var cql = "name==" + StringUtil.cqlEncode(AUTHOR.toString());
+    var contributorTypeId = contributorTypesClient.getContributorTypesByQuery(cql)
       .getResult()
       .stream()
       .findFirst()
@@ -340,7 +342,7 @@ public class AccessionQueueService {
   }
 
   private String extractIdentifier(Instance instance, IdentifierType type) {
-    var identifierTypeId = identifierTypesClient.getIdentifierTypesByQuery("name==" + type)
+    var identifierTypeId = identifierTypesClient.getIdentifierTypesByQuery("name==" + StringUtil.cqlEncode(type.toString()))
       .getResult()
       .stream()
       .findFirst()

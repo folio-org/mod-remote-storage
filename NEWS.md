@@ -1,10 +1,16 @@
+## 3.3.5 2025-01-24
+
+* [MODRS-221](https://folio-org.atlassian.net/browse/MODRS-221): Spring Boot 3.3.6, tomcat-embed-core 10.1.33: CVE-2024-52317
+* [MODRS-222](https://folio-org.atlassian.net/browse/MODRS-222): postgresql 42.7.4, embedded.db 2.6.0, postgres:16-alpine
+* [MODRS-224](https://folio-org.atlassian.net/browse/MODRS-224): CQL injection, special characters cause exception
+
 ## 3.3.4 2025-01-21
 
 * [MODRS-225](https://folio-org.atlassian.net/browse/MODRS-225) - Add missing required interfaces to Module Descriptor
 
 ## 3.3.3 2024-12-20
 
-* [MODRS-221](https://folio-org.atlassian.net/browse/MODRS-221) - Spring Boot 3.3.6, tomcat-embed-core 10.1.33: CVE-2024-52317
+Release without code change: https://github.com/folio-org/mod-remote-storage/compare/v3.3.2...v3.3.3
 
 ## 3.3.2 2024-12-02
 

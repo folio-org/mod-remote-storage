@@ -3,7 +3,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=barcode%3D%3D645398607547"
+        "url": "/inventory/items?query=barcode%3D%3D%22645398607547%22"
       },
       "response": {
         "status": 200,
@@ -16,7 +16,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=barcode%3D%3D645398607548"
+        "url": "/inventory/items?query=barcode%3D%3D%22645398607548%22"
       },
       "response": {
         "status": 200,
@@ -29,7 +29,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=barcode%3D%3D645398607549"
+        "url": "/inventory/items?query=barcode%3D%3D%22645398607549%22"
       },
       "response": {
         "status": 200,
@@ -42,7 +42,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=barcode%3D%3Dnot-exist-item-barcode"
+        "url": "/inventory/items?query=barcode%3D%3D%22not-exist-item-barcode%22"
       },
       "response": {
         "status": 200,
@@ -55,7 +55,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=barcode%3D%3D38268030"
+        "url": "/inventory/items?query=barcode%3D%3D%2238268030%22"
       },
       "response": {
         "status": 200,
@@ -68,7 +68,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=barcode%3D%3D38268031"
+        "url": "/inventory/items?query=barcode%3D%3D%2238268031%22"
       },
       "response": {
         "status": 200,
@@ -81,7 +81,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=holdingsRecordId%3D%3Dcfade499-67c3-4583-949f-948638ddef16"
+        "url": "/inventory/items?query=holdingsRecordId%3D%3D%22cfade499-67c3-4583-949f-948638ddef16%22"
       },
       "response": {
         "status": 200,
@@ -94,7 +94,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=barcode%3D%3D38268032"
+        "url": "/inventory/items?query=barcode%3D%3D%2238268032%22"
       },
       "response": {
         "status": 200,
@@ -107,7 +107,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=holdingsRecordId%3D%3Dee4025c8-893e-4283-b0e6-36cf818c0605"
+        "url": "/inventory/items?query=holdingsRecordId%3D%3D%22ee4025c8-893e-4283-b0e6-36cf818c0605%22"
       },
       "response": {
         "status": 200,
@@ -120,7 +120,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=barcode%3D%3D111"
+        "url": "/inventory/items?query=barcode%3D%3D%22111%22"
       },
       "response": {
         "status": 200,
@@ -133,7 +133,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=barcode%3D%3D12345"
+        "url": "/inventory/items?query=barcode%3D%3D%2212345%22"
       },
       "response": {
         "status": 200,
@@ -146,7 +146,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=holdingsRecordId%3D%3D65cb2bf0-d4c2-4886-8ad0-b76f1ba75d61"
+        "url": "/inventory/items?query=holdingsRecordId%3D%3D%2265cb2bf0-d4c2-4886-8ad0-b76f1ba75d61%22"
       },
       "response": {
         "status": 200,
@@ -159,7 +159,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=barcode%3D%3D0001"
+        "url": "/inventory/items?query=barcode%3D%3D%220001%22"
       },
       "response": {
         "status": 200,
@@ -172,7 +172,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=holdingsRecordId%3D%3D032703c1-90f0-4708-aa5e-ac5fb7d19c59"
+        "url": "/inventory/items?query=holdingsRecordId%3D%3D%22032703c1-90f0-4708-aa5e-ac5fb7d19c59%22"
       },
       "response": {
         "status": 200,
@@ -185,7 +185,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=barcode%3D%3D0003"
+        "url": "/inventory/items?query=barcode%3D%3D%220003%22"
       },
       "response": {
         "status": 200,
@@ -198,7 +198,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=holdingsRecordId%3D%3D16ea6238-e0c9-41a4-9614-9442a3cc6dcc"
+        "url": "/inventory/items?query=holdingsRecordId%3D%3D%2216ea6238-e0c9-41a4-9614-9442a3cc6dcc%22"
       },
       "response": {
         "status": 200,
@@ -223,7 +223,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/inventory/items?query=barcode%3D%3Dmissing-item-barcode"
+        "url": "/inventory/items?query=barcode%3D%3D%22missing-item-barcode%22"
       },
       "response": {
         "status": 200,

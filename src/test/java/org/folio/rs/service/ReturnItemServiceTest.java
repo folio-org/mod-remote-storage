@@ -11,6 +11,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import feign.FeignException;
 import org.folio.rs.client.CirculationClient;
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.client.ServicePointsClient;
@@ -73,9 +74,6 @@ public class ReturnItemServiceTest {
 
     var user = new User();
     user.setId(USER_ID);
-    var userResult = new ResultList<User>();
-    userResult.setTotalRecords(1);
-    userResult.setResult(Collections.singletonList(user));
 
     var item = new Item();
     item.setId(ITEM_ID);
@@ -100,7 +98,7 @@ public class ReturnItemServiceTest {
 
     when(inventoryClient.getItemByBarcode(item.getBarcode())).thenReturn(item);
     when(circulationClient.getItemRequests(item.getId())).thenReturn(itemRequests);
-    when(usersClient.getUsersByQuery("id==" + USER_ID)).thenReturn(userResult);
+    when(usersClient.getUser(USER_ID)).thenReturn(user);
     when(returnRetrievalQueueRepository.save(isA(ReturnRetrievalQueueRecord.class))).thenReturn(null);
     when(servicePointsClient.getServicePoint(request.getPickupServicePointId())).thenReturn(pickUpServicePoint);
     when(configurationsService.getConfigurationById(isA(String.class))).thenReturn(configuration);
@@ -240,10 +238,6 @@ public class ReturnItemServiceTest {
     var checkInItem = new CheckInItem();
     checkInItem.setItemBarcode(ITEM_BARCODE);
 
-    var userResult = new ResultList<User>();
-    userResult.setTotalRecords(0);
-    userResult.setResult(Collections.emptyList());
-
     var item = new Item();
     item.setId(ITEM_ID);
     item.setBarcode(ITEM_BARCODE);
@@ -266,7 +260,7 @@ public class ReturnItemServiceTest {
 
     when(inventoryClient.getItemByBarcode(item.getBarcode())).thenReturn(item);
     when(circulationClient.getItemRequests(item.getId())).thenReturn(itemRequests);
-    when(usersClient.getUsersByQuery("id==" + USER_ID)).thenReturn(userResult);
+    when(usersClient.getUser(USER_ID)).thenThrow(FeignException.NotFound.class);
     when(configurationsService.getConfigurationById(isA(String.class))).thenReturn(configuration);
 
     Assertions.assertThrows(ItemReturnException.class,

@@ -3,7 +3,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/contributor-types?query=name%3D%3DAUTHOR"
+        "url": "/contributor-types?query=name%3D%3D%22AUTHOR%22"
       },
       "response": {
         "status": 200,

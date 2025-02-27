@@ -8,16 +8,16 @@ import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.kafka.listener.MessageListenerContainer;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(classes = KafkaService.class)
 public class KafkaServiceTest {
 
   @Autowired
   private KafkaService kafkaService;
-  @MockBean
+  @MockitoBean
   private KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry;
 
   @Test

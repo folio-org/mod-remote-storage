@@ -13,10 +13,10 @@ import org.folio.tenant.domain.dto.TenantAttributes;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource("classpath:application-test.yml")
@@ -34,7 +34,7 @@ public class TenantControllerTest {
   @Autowired
   private FolioExecutionContext context;
 
-  @SpyBean
+  @MockitoSpyBean
   private JdbcTemplate jdbcTemplate;
 
   @Test

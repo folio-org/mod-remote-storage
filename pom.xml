@@ -24,7 +24,7 @@
   <properties>
     <java.version>21</java.version>
     <folio-spring.version>9.0.0</folio-spring.version>
-    <openapi-generator.version>7.3.0</openapi-generator.version>
+    <openapi-generator.version>7.12.0</openapi-generator.version>
     <mapstruct.version>1.6.3</mapstruct.version>
     <wiremock-standalone.version>3.4.2</wiremock-standalone.version>
     <embedded.db.version>2.6.0</embedded.db.version>
@@ -36,7 +36,7 @@
     <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
     <copy-rename-maven-plugin.version>1.0.1</copy-rename-maven-plugin.version>
     <jsonschema2pojo-maven-plugin.version>1.2.2</jsonschema2pojo-maven-plugin.version>
-    <maven-release-plugin.version>3.1.1 </maven-release-plugin.version>
+    <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
     <sonar.exclusions>src/main/java/org/folio/rs/domain/**, src/main/java/org/folio/rs/client/AuthnClient.java,
       src/main/java/org/folio/rs/config/properties/**, src/main/java/org/folio/rs/service/PubSubService.java, src/main/java/org/folio/rs/error/PubSubException.java </sonar.exclusions>
     <remote-storage.yaml.file>src/main/resources/swagger.api/remote-storage.yaml</remote-storage.yaml.file>

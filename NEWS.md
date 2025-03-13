@@ -1,3 +1,8 @@
+## 3.4.0 2025-03-13
+
+* [FOLIO-3944](https://folio-org.atlassian.net/browse/FOLIO-3944) - Upgrade the Actions used by API-related GitHub Workflows
+* [FOLIO-4216](https://folio-org.atlassian.net/browse/FOLIO-4216) - Update to mod-remote-storage Java 21 (Java and spring boot version upgrade)
+
 ## 3.3.4 2025-01-21
 
 * [MODRS-225](https://folio-org.atlassian.net/browse/MODRS-225) - Add missing required interfaces to Module Descriptor

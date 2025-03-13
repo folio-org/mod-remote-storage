@@ -24,7 +24,7 @@
   <properties>
     <java.version>21</java.version>
     <folio-spring.version>9.0.0</folio-spring.version>
-    <openapi-generator.version>7.12.0</openapi-generator.version>
+    <openapi-generator.version>7.6.0</openapi-generator.version>
     <mapstruct.version>1.6.3</mapstruct.version>
     <wiremock-standalone.version>3.4.2</wiremock-standalone.version>
     <embedded.db.version>2.6.0</embedded.db.version>

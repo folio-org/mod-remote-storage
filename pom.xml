@@ -11,7 +11,7 @@
 
   <groupId>org.folio</groupId>
   <artifactId>mod-remote-storage</artifactId>
-  <version>3.3.5-SNAPSHOT</version>
+  <version>3.4.0</version>
   <packaging>jar</packaging>
 
   <licenses>
@@ -460,7 +460,7 @@
     <url>https://github.com/folio-org/${project.artifactId}</url>
     <connection>scm:git:git://github.com/folio-org/${project.artifactId}.git</connection>
     <developerConnection>scm:git:git@github.com:folio-org/${project.artifactId}.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>v3.4.0</tag>
   </scm>
 
 </project>

@@ -1,3 +1,7 @@
+## 3.4.1 2025-03-20
+
+* [MODRS-232](https://folio-org.atlassian.net/browse/MODRS-232) - Bump wiremock-standalone from 3.4.2 to 3.12.1
+
 ## 3.4.0 2025-03-13
 
 * [FOLIO-3944](https://folio-org.atlassian.net/browse/FOLIO-3944) - Upgrade the Actions used by API-related GitHub Workflows

@@ -11,7 +11,7 @@
 
   <groupId>org.folio</groupId>
   <artifactId>mod-remote-storage</artifactId>
-  <version>3.4.1-SNAPSHOT</version>
+  <version>3.4.2-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <licenses>
@@ -26,7 +26,7 @@
     <folio-spring.version>9.0.0</folio-spring.version>
     <openapi-generator.version>7.6.0</openapi-generator.version>
     <mapstruct.version>1.6.3</mapstruct.version>
-    <wiremock-standalone.version>3.4.2</wiremock-standalone.version>
+    <wiremock-standalone.version>3.12.1</wiremock-standalone.version>
     <embedded.db.version>2.6.0</embedded.db.version>
     <postgresql.version>42.7.5</postgresql.version>
     <pubsub.client.version>2.16.0</pubsub.client.version>

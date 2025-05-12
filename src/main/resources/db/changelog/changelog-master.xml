@@ -11,4 +11,5 @@
   <include file="changes/location_mappings_update_schema.xml" relativeToChangelogFile="true"/>
   <include file="changes/location_mappings_update_schema_tech_debt.xml" relativeToChangelogFile="true"/>
   <include file="changes/add_item_notes_table.xml" relativeToChangelogFile="true"/>
+  <include file="changes/add_item_notes_item_id_idx.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

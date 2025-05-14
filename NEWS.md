@@ -1,3 +1,7 @@
+## 3.4.2 2025-05-14
+
+* [MODRS-223](https://folio-org.atlassian.net/browse/MODRS-223) - Performance issue - Search of item_notes without index on item_id
+
 ## 3.4.1 2025-03-20
 
 * [MODRS-232](https://folio-org.atlassian.net/browse/MODRS-232) - Bump wiremock-standalone from 3.4.2 to 3.12.1

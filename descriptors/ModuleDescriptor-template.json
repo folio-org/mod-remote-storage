@@ -517,6 +517,7 @@
       "permissions": [
         "users.collection.get",
         "users.item.get",
+        "inventory.instances.item.get",
         "inventory.instances.collection.get",
         "inventory-storage.contributor-types.collection.get",
         "inventory-storage.holdings.collection.get",

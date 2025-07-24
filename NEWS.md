@@ -1,3 +1,6 @@
+## 3.5.0 2025-XX-XX
+* [MODRS-243](https://folio-org.atlassian.net/browse/MODRS-243) - Item Storage API version update from 10.1 to 11.0
+
 ## 3.4.3 2025-05-19
 
 * [MODRS-238](https://folio-org.atlassian.net/browse/MODRS-238) - Fix Spring Bootstrap issue 'management.endpoint.loggers.access' uses an incompatible target type

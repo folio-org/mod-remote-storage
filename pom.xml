@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.4.3</version>
+    <version>3.5.4</version>
     <relativePath />
   </parent>
 
@@ -23,16 +23,16 @@
 
   <properties>
     <java.version>21</java.version>
-    <folio-spring.version>9.0.0</folio-spring.version>
-    <openapi-generator.version>7.6.0</openapi-generator.version>
+    <folio-spring.version>9.1.0</folio-spring.version>
+    <openapi-generator.version>7.14.0</openapi-generator.version>
     <mapstruct.version>1.6.3</mapstruct.version>
     <wiremock-standalone.version>3.13.1</wiremock-standalone.version>
     <embedded.db.version>2.6.0</embedded.db.version>
     <postgresql.version>42.7.5</postgresql.version>
-    <pubsub.client.version>2.16.0</pubsub.client.version>
+    <pubsub.client.version>2.16.1</pubsub.client.version>
     <folio-util.version>35.4.0</folio-util.version>
 
-    <maven-clean-plugin.version>3.4.1</maven-clean-plugin.version>
+    <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
     <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
     <copy-rename-maven-plugin.version>1.0.1</copy-rename-maven-plugin.version>
     <jsonschema2pojo-maven-plugin.version>1.2.2</jsonschema2pojo-maven-plugin.version>

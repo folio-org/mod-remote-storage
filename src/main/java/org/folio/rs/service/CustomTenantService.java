@@ -121,6 +121,6 @@ public class CustomTenantService extends TenantService {
         }
       })
       .filter(Objects::nonNull)
-      .collect(Collectors.toList());
+      .toList();
   }
 }

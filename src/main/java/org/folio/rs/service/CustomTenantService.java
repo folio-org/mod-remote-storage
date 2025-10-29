@@ -6,7 +6,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.folio.rs.domain.dto.ExtendedRemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.StorageConfiguration;
@@ -31,6 +30,12 @@ import org.springframework.stereotype.Service;
 public class CustomTenantService extends TenantService {
 
   private static final String SAMPLES_DIR = "samples";
+  private static final List<String> mappingSamples = List.of("annex_to_dematic_full.json");
+  private static final List<String> accessionQueueSamples = List.of("accession_queue_record.json");
+  private static final List<String> configurationSamples =
+    List.of("dematic_configuration_sample.json", "caia_soft_configuration_sample.json");
+  private static final List<String> retrievalQueueSamples =
+    List.of("retrieval_queue_record.json", "retrieval_queue_record_for_caia_soft.json");
 
   private final KafkaService kafkaService;
   private final PubSubService pubSubService;
@@ -40,10 +45,6 @@ public class CustomTenantService extends TenantService {
   private final AccessionQueueRepository accessionQueueRepository;
   private final ReturnRetrievalQueueRepository returnRetrievalQueueRepository;
 
-  private final List<String> configurationSamples = List.of("dematic_configuration_sample.json", "caia_soft_configuration_sample.json");
-  private final List<String> mappingSamples = List.of("annex_to_dematic_full.json");
-  private final List<String> retrievalQueueSamples = List.of("retrieval_queue_record.json", "retrieval_queue_record_for_caia_soft.json");
-  private final List<String> accessionQueueSamples = List.of("accession_queue_record.json");
 
   public CustomTenantService(
     JdbcTemplate jdbcTemplate,

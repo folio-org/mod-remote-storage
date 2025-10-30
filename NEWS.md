@@ -1,5 +1,6 @@
 ## 3.5.0 2025-XX-XX
 * [MODRS-243](https://folio-org.atlassian.net/browse/MODRS-243) - Item Storage API version update from 10.1 to 11.0
+* [MODRS-250](https://folio-org.atlassian.net/browse/MODRS-250) - Adjust module to be compatible with Tenant API 2.0
 
 ## 3.4.3 2025-05-19
 

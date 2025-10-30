@@ -1,8 +1,8 @@
 package org.folio.rs;
 
-import static org.folio.rs.controller.TenantController.PARAMETER_LOAD_SAMPLE;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-import org.folio.rs.controller.TenantController;
 import org.folio.rs.domain.AsyncFolioExecutionContext;
 import org.folio.spring.FolioModuleMetadata;
 import org.folio.spring.config.properties.FolioEnvironment;
@@ -41,6 +41,8 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class TestBase {
   public static final String METADATA = "metadata";
+  public static final String PARAMETER_LOAD_SAMPLE = "loadSample";
+  public static final String MODULE_NAME = "mod_remote_storage";
   private static HttpHeaders headers;
   private static RestTemplate restTemplate;
   public static WireMockServer wireMockServer;
@@ -52,9 +54,6 @@ public class TestBase {
   public final static int WIRE_MOCK_PORT = TestSocketUtils.findAvailableTcpPort();
 
   @Autowired
-  private TenantController tenantController;
-
-  @Autowired
   private FolioModuleMetadata moduleMetadata;
 
   @Autowired
@@ -62,24 +61,26 @@ public class TestBase {
 
   @BeforeEach
   void setUp() {
-    try (var context = getFolioExecutionContextSetter()) {
-      tenantController.postTenant(new TenantAttributes().moduleTo("mod_remote_storage")
-        .addParametersItem(new Parameter().key(PARAMETER_LOAD_SAMPLE).value("true")));
-    }
+    var tenantAttributes = new TenantAttributes().moduleTo(MODULE_NAME)
+      .addParametersItem(new Parameter().key(PARAMETER_LOAD_SAMPLE).value("true"));
+
+    var baseUrl = String.format("http://localhost:%s/_/tenant", okapiPort);
+    var response = post(baseUrl, tenantAttributes, String.class);
+    assertThat(response.getStatusCode().is2xxSuccessful(), is(true));
+
     folioEnvironment.setOkapiUrl(getOkapiUrl());
-  }
-  public static String getOkapiUrl() {
-    return String.format("http://localhost:%s", WIRE_MOCK_PORT);
+
   }
 
   @AfterEach
   void eachTearDown() {
-    try (var context = getFolioExecutionContextSetter()) {
-      tenantController.deleteTenant(TEST_TENANT);
-      wireMockServer.resetAll();
-    }
-  }
+    var tenantAttributes = new TenantAttributes().moduleFrom(MODULE_NAME).purge(true);
+    var baseUrl = String.format("http://localhost:%s/_/tenant", okapiPort);
+    var response = post(baseUrl, tenantAttributes, String.class);
+    assertThat(response.getStatusCode().is2xxSuccessful(), is(true));
 
+    wireMockServer.resetAll();
+  }
 
   @BeforeAll
   static void testSetup() {
@@ -96,6 +97,10 @@ public class TestBase {
   @AfterAll
   static void tearDown() {
     wireMockServer.stop();
+  }
+
+  public static String getOkapiUrl() {
+    return String.format("http://localhost:%s", WIRE_MOCK_PORT);
   }
 
   public <T> ResponseEntity<T> get(String url, Class<T> clazz) {
@@ -115,6 +120,8 @@ public class TestBase {
   }
 
   public FolioExecutionContextSetter getFolioExecutionContextSetter() {
-    return new FolioExecutionContextSetter(AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl()).build());
+    return new FolioExecutionContextSetter(
+      AsyncFolioExecutionContext.builder().tenantId(TEST_TENANT).moduleMetadata(moduleMetadata).okapiUrl(getOkapiUrl())
+        .build());
   }
 }

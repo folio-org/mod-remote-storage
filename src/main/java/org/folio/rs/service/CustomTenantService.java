@@ -45,7 +45,6 @@ public class CustomTenantService extends TenantService {
   private final AccessionQueueRepository accessionQueueRepository;
   private final ReturnRetrievalQueueRepository returnRetrievalQueueRepository;
 
-
   public CustomTenantService(
     JdbcTemplate jdbcTemplate,
     FolioExecutionContext context,

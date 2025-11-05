@@ -293,6 +293,7 @@
           ],
           "modulePermissions": [
             "inventory.items.collection.get",
+            "users.item.get",
             "users.collection.get",
             "inventory-storage.service-points.item.get",
             "circulation.requests.queue-item.collection.get",

@@ -59,7 +59,7 @@ feign:
   client:
     config:
       default:
-        loggerLevel: full
+        loggerLevel: BASIC
 
 logging:
   level:
@@ -88,5 +88,3 @@ folio:
     lastname: System
   okapi-url: ${OKAPI_URL:http://okapi:9130}
   environment: ${ENV:folio}
-
-

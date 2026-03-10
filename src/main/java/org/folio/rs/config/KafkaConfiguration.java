@@ -35,8 +35,9 @@ public class KafkaConfiguration {
     var factory = new ConcurrentKafkaListenerContainerFactory<String, DomainEvent>();
     factory.setBatchListener(true);
     factory.setConsumerFactory(jsonNodeConsumerFactory());
-    factory.setCommonErrorHandler(new DefaultErrorHandler((exception, data) -> log.error(
-      "Error in process with Exception {} and the record is {}", exception, data)));
+    factory.setCommonErrorHandler(new DefaultErrorHandler((record, exception) -> log.error(
+      "Error processing Kafka record [topic: {}, partition: {}, offset: {}]",
+      record.topic(), record.partition(), record.offset(), exception)));
     return factory;
   }
 

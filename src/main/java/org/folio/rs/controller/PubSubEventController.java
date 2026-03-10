@@ -40,15 +40,15 @@ public class PubSubEventController implements PubSubHandlersApi {
   @Override
   public ResponseEntity<String> pubSubHandlersLogRecordEventPost(@Valid PubSubEvent pubSubEvent) {
     if (Objects.nonNull(pubSubEvent)) {
-      log.debug("pubSubHandlersLogRecordEventPost pubSubEvent:{}",pubSubEvent);
+      var logEventType = pubSubEvent.getLogEventType();
+      log.debug("pubSubHandlersLogRecordEventPost [logEventType: {}, hasPayload: {}, hasItemBarcode: {}]",
+        logEventType, Objects.nonNull(pubSubEvent.getPayload()), Objects.nonNull(pubSubEvent.getItemBarcode()));
       RequestEvent requestEvent = null;
       try {
-        var logEventType = pubSubEvent.getLogEventType();
         if (isItemCheckedId(logEventType)) {
           returnItemService.returnItem(pubSubEvent.getItemBarcode());
         } else {
           var payload = MAPPER.writeValueAsString(pubSubEvent.getPayload());
-          log.info("pubSubHandlersLogRecordEventPost payload:{}",payload);
           if (Objects.nonNull(pubSubEvent.getPayload()) && isPagedRequestCreated(logEventType, payload)) {
             requestEvent = MAPPER.readValue(payload, CreateRequestEvent.class);
           }
@@ -59,7 +59,7 @@ public class PubSubEventController implements PubSubHandlersApi {
         }
 
       } catch (JsonProcessingException e) {
-        log.error("Error processing event: {}", pubSubEvent, e);
+        log.error("Error processing event [logEventType: {}]", logEventType, e);
       }
     }
     return ResponseEntity.noContent()

@@ -11,7 +11,6 @@ import static org.folio.rs.util.IdentifierType.ISSN;
 import static org.folio.rs.util.IdentifierType.OCLC;
 import static org.folio.rs.util.MapperUtils.stringToUUIDSafe;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,7 +23,6 @@ import java.util.stream.Collectors;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.rs.client.ContributorTypesClient;
 import org.folio.rs.client.HoldingsStorageClient;
@@ -81,13 +79,12 @@ public class AccessionQueueService {
   private final ConfigurationsService configurationsService;
   private final ItemNoteTypesClient itemNoteTypesClient;
 
-  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private final SystemUserScopedExecutionService systemUserScopedExecutionService;
 
   public void processAccessionQueueRecord(List<DomainEvent> events) {
     log.info("Starting processing events...");
     events.forEach(event -> {
-      log.info("Event received: {}", asJsonString(event));
+      log.info("Event received [type: {}, tenant: {}]", event.getType(), event.getTenant());
       if (DomainEventType.CREATE == event.getType() ||
           DomainEventType.UPDATE == event.getType() && isEffectiveLocationChanged(event)) {
         var item = event.getNewEntity();
@@ -390,11 +387,6 @@ public class AccessionQueueService {
 
   private Specification<AccessionQueueRecord> hasId(String id) {
     return (rec, criteria, builder) -> builder.equal(rec.get(AccessionQueueRecord_.id), stringToUUIDSafe(id));
-  }
-
-  @SneakyThrows
-  private String asJsonString(Object value) {
-    return OBJECT_MAPPER.writeValueAsString(value);
   }
 
   private ItemNoteEntity buildItemNote(ItemNote itemNote) {

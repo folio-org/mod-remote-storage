@@ -42,7 +42,7 @@ public class DefaultErrorHandler {
           .key(((FieldError) er).getField())
           .value(String.valueOf(((FieldError) er).getRejectedValue())))));
     errors.setTotalRecords(errors.getErrors().size());
-    return ResponseEntity.unprocessableEntity().body(errors);
+    return ResponseEntity.unprocessableContent().body(errors);
   }
 
   @ExceptionHandler(ConstraintViolationException.class)
@@ -80,7 +80,7 @@ public class DefaultErrorHandler {
       return buildUnknownErrorResponse(exception.getMessage());
     }
     return ResponseEntity
-      .unprocessableEntity()
+      .unprocessableContent()
       .body(new Errors()
         .addErrorsItem(new Error()
           .message(message)
@@ -159,7 +159,7 @@ public class DefaultErrorHandler {
   @ExceptionHandler(RequiredValueMissingException.class)
   public ResponseEntity<Errors> handleRequiredValueMissingException(RequiredValueMissingException e) {
     return ResponseEntity
-      .unprocessableEntity()
+      .unprocessableContent()
       .body(new Errors()
         .addErrorsItem(new Error()
           .message(e.getMessage())
@@ -191,7 +191,7 @@ public class DefaultErrorHandler {
         return cause.getMessage();
       }
       var detail = serverErrorMessage.getClass().getMethod("getDetail").invoke(serverErrorMessage);
-      return (detail instanceof String) ? (String) detail : cause.getMessage();
+      return (detail instanceof String stringDetails) ? stringDetails : cause.getMessage();
     } catch (ReflectiveOperationException e) {
       return cause.getMessage();
     }

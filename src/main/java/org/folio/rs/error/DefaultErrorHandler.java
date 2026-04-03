@@ -15,6 +15,8 @@ import static org.folio.rs.error.ErrorType.UNKNOWN;
 import org.folio.rs.domain.dto.Error;
 import org.folio.rs.domain.dto.Errors;
 import org.folio.rs.domain.dto.Parameter;
+import org.postgresql.util.PSQLException;
+import org.postgresql.util.ServerErrorMessage;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,18 +76,18 @@ public class DefaultErrorHandler {
 
   @ExceptionHandler(DataIntegrityViolationException.class)
   public ResponseEntity<Errors> handleDataIntegrityViolation(final DataIntegrityViolationException exception) {
-    var mostSpecificCause = exception.getMostSpecificCause();
-    var message = getConstraintViolationMessage(mostSpecificCause);
-    if (isNull(message)) {
+    if (exception.getMostSpecificCause() instanceof PSQLException) {
+      ServerErrorMessage serverErrorMessage = ((PSQLException) exception.getMostSpecificCause()).getServerErrorMessage();
+      return ResponseEntity
+        .unprocessableContent()
+        .body(new Errors()
+          .addErrorsItem(new Error()
+            .message(isNull(serverErrorMessage) ? null : serverErrorMessage.getDetail())
+            .code(CONSTRAINT_VIOLATION.getDescription())
+            .type(INTERNAL.getValue())));
+    } else {
       return buildUnknownErrorResponse(exception.getMessage());
     }
-    return ResponseEntity
-      .unprocessableContent()
-      .body(new Errors()
-        .addErrorsItem(new Error()
-          .message(message)
-          .code(CONSTRAINT_VIOLATION.getDescription())
-          .type(INTERNAL.getValue())));
   }
 
   @ExceptionHandler(CheckInException.class)
@@ -176,24 +178,5 @@ public class DefaultErrorHandler {
           .code(UNKNOWN_ERROR.getDescription())
           .type(UNKNOWN.getValue()))
         .totalRecords(1));
-  }
-
-  private String getConstraintViolationMessage(Throwable cause) {
-    if (isNull(cause)) {
-      return null;
-    }
-    if (!"org.postgresql.util.PSQLException".equals(cause.getClass().getName())) {
-      return cause.getMessage();
-    }
-    try {
-      var serverErrorMessage = cause.getClass().getMethod("getServerErrorMessage").invoke(cause);
-      if (isNull(serverErrorMessage)) {
-        return cause.getMessage();
-      }
-      var detail = serverErrorMessage.getClass().getMethod("getDetail").invoke(serverErrorMessage);
-      return (detail instanceof String stringDetails) ? stringDetails : cause.getMessage();
-    } catch (ReflectiveOperationException e) {
-      return cause.getMessage();
-    }
   }
 }

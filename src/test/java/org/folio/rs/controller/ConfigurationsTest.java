@@ -86,11 +86,11 @@ public class ConfigurationsTest extends TestBase {
   void canPostAndPutConfigurationWithReturningWorkflow() {
     var requestBody = "{\"name\":\"RemoteStorage\", \"providerName\": \"CaiaSoft\", \"accessionTimeUnit\":\"minutes\", \"returningWorkflowDetails\":\"Scanned to CaiaSoft\"}";
     var configuration = post(configurationsUrl, requestBody, StorageConfiguration.class).getBody();
-    assertThat(configuration.getReturningWorkflowDetails(), is(ReturningWorkflowDetails.CAIASOFT));
-    configuration.returningWorkflowDetails(ReturningWorkflowDetails.FOLIO);
+    assertThat(configuration.getReturningWorkflowDetails(), is(ReturningWorkflowDetails.SCANNED_TO_CAIA_SOFT));
+    configuration.returningWorkflowDetails(ReturningWorkflowDetails.SCANNED_TO_FOLIO);
     put(configurationsUrl.concat("/") + configuration.getId(), configuration).getBody();
     var updatedConfiguration = get(configurationsUrl.concat("/") + configuration.getId(), StorageConfiguration.class).getBody();
-    assertThat(updatedConfiguration.getReturningWorkflowDetails(), is(ReturningWorkflowDetails.FOLIO));
+    assertThat(updatedConfiguration.getReturningWorkflowDetails(), is(ReturningWorkflowDetails.SCANNED_TO_FOLIO));
     delete(configurationsUrl.concat("/") + configuration.getId());
   }
 
@@ -171,7 +171,7 @@ public class ConfigurationsTest extends TestBase {
     HttpEntity entityMissingName = new HttpEntity(new StorageConfiguration().name(null));
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class,
         () -> post(configurationsUrl, entityMissingName, StorageConfiguration.class));
-    assertThat(exception.getStatusCode(), is(HttpStatus.UNPROCESSABLE_ENTITY));
+    assertThat(exception.getStatusCode(), is(HttpStatus.UNPROCESSABLE_CONTENT));
   }
 
   @Test
@@ -182,7 +182,7 @@ public class ConfigurationsTest extends TestBase {
 
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class,
         () -> post(configurationsUrl, initialEntity, StorageConfiguration.class));
-    assertThat(exception.getStatusCode(), is(HttpStatus.UNPROCESSABLE_ENTITY));
+    assertThat(exception.getStatusCode(), is(HttpStatus.UNPROCESSABLE_CONTENT));
   }
 
   @Test
@@ -231,13 +231,13 @@ public class ConfigurationsTest extends TestBase {
 
     var exception = assertThrows(HttpClientErrorException.class,
       () -> post(configurationsUrl, configuration, StorageConfiguration.class));
-    assertThat(exception.getStatusCode(), equalTo(HttpStatus.UNPROCESSABLE_ENTITY));
+    assertThat(exception.getStatusCode(), equalTo(HttpStatus.UNPROCESSABLE_CONTENT));
 
     configuration.accessionDelay(-1);
 
     exception = assertThrows(HttpClientErrorException.class,
       () -> post(configurationsUrl, configuration, StorageConfiguration.class));
-    assertThat(exception.getStatusCode(), equalTo(HttpStatus.UNPROCESSABLE_ENTITY));
+    assertThat(exception.getStatusCode(), equalTo(HttpStatus.UNPROCESSABLE_CONTENT));
   }
 
   @Test
@@ -249,7 +249,7 @@ public class ConfigurationsTest extends TestBase {
 
     var exception = assertThrows(HttpClientErrorException.class,
       () -> post(configurationsUrl, configurationMissingName, StorageConfiguration.class));
-    assertThat(exception.getStatusCode(), equalTo(HttpStatus.UNPROCESSABLE_ENTITY));
+    assertThat(exception.getStatusCode(), equalTo(HttpStatus.UNPROCESSABLE_CONTENT));
 
      var configurationMissingProviderName = new StorageConfiguration()
       .name("name")
@@ -258,7 +258,7 @@ public class ConfigurationsTest extends TestBase {
 
     exception = assertThrows(HttpClientErrorException.class,
       () -> post(configurationsUrl, configurationMissingProviderName, StorageConfiguration.class));
-    assertThat(exception.getStatusCode(), equalTo(HttpStatus.UNPROCESSABLE_ENTITY));
+    assertThat(exception.getStatusCode(), equalTo(HttpStatus.UNPROCESSABLE_CONTENT));
   }
 
   @Test
@@ -269,7 +269,7 @@ public class ConfigurationsTest extends TestBase {
 
     var exception = assertThrows(HttpClientErrorException.class,
       () -> post(configurationsUrl, configuration, StorageConfiguration.class));
-    assertThat(exception.getStatusCode(), equalTo(HttpStatus.UNPROCESSABLE_ENTITY));
+    assertThat(exception.getStatusCode(), equalTo(HttpStatus.UNPROCESSABLE_CONTENT));
   }
 
   private StorageConfiguration buildConfiguration(String id) {

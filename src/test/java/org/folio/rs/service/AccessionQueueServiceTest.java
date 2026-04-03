@@ -19,7 +19,6 @@ import java.util.regex.Pattern;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang.StringUtils;
 import org.folio.rs.TestBase;
 import org.folio.rs.domain.dto.AccessionQueue;
@@ -40,20 +39,14 @@ import org.folio.rs.repository.AccessionQueueRepository;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.HttpClientErrorException;
 
-@ExtendWith(SpringExtension.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Log4j2
 public class AccessionQueueServiceTest extends TestBase {
 
   private static final String CALL_NUMBER = "+1-111-22-33";
@@ -533,7 +526,7 @@ public class AccessionQueueServiceTest extends TestBase {
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
       post(formattedAccessionUrl, accessionRequest, AccessionQueue.class), StringUtils.EMPTY);
 
-    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.UNPROCESSABLE_ENTITY));
+    assertThat(exception.getStatusCode(), Matchers.is(HttpStatus.UNPROCESSABLE_CONTENT));
   }
 
 
@@ -555,7 +548,7 @@ public class AccessionQueueServiceTest extends TestBase {
 
   @SneakyThrows
   private void assertThatItemPermanentLocationWasChanged(String itemId, String desiredLocationId) {
-    var requestBody = wireMockServer.getAllServeEvents().stream()
+    var requestBody = getAllServeEvents().stream()
       .filter(e -> RequestMethod.PUT.equals(e.getRequest().getMethod()) &&
         ITEM_STORAGE_ITEMS.concat(itemId).equals(e.getRequest().getUrl()))
       .findFirst()
@@ -569,7 +562,7 @@ public class AccessionQueueServiceTest extends TestBase {
 
   @SneakyThrows
   private void assertThereWereNoPutItemRequests(String itemId) {
-    var putRequest = wireMockServer.getAllServeEvents().stream()
+    var putRequest = getAllServeEvents().stream()
       .filter(e -> RequestMethod.PUT.equals(e.getRequest().getMethod()) &&
         ITEM_STORAGE_ITEMS.concat(itemId).equals(e.getRequest().getUrl()))
       .findFirst();
@@ -578,7 +571,7 @@ public class AccessionQueueServiceTest extends TestBase {
 
   @SneakyThrows
   private void assertThatHoldingPermanentLocationWasChanged(String desiredLocationId) {
-    var requestBody = wireMockServer.getAllServeEvents().stream()
+    var requestBody = getAllServeEvents().stream()
       .filter(e -> RequestMethod.PUT.equals(e.getRequest().getMethod()) &&
         HOLDINGS_STORAGE_HOLDINGS_PATTERN.matcher(e.getRequest().getUrl()).matches())
       .findFirst()
@@ -592,7 +585,7 @@ public class AccessionQueueServiceTest extends TestBase {
 
   @SneakyThrows
   private void assertThatItemWasMovedToHoldingWithRemoteLocation(String holdingsRecordId, String itemId) {
-    var requestBody = wireMockServer.getAllServeEvents().stream()
+    var requestBody = getAllServeEvents().stream()
       .filter(e -> RequestMethod.POST.equals(e.getRequest().getMethod()) &&
         "/inventory/items/move".equals(e.getRequest().getUrl()))
       .findFirst()
@@ -608,7 +601,7 @@ public class AccessionQueueServiceTest extends TestBase {
 
   @SneakyThrows
   private void assertThatHoldingsRecordWasCreated() {
-    var requestBody = wireMockServer.getAllServeEvents().stream()
+    var requestBody = getAllServeEvents().stream()
       .filter(e -> RequestMethod.POST.equals(e.getRequest().getMethod()) &&
         "/holdings-storage/holdings".equals(e.getRequest().getUrl()))
       .findFirst()

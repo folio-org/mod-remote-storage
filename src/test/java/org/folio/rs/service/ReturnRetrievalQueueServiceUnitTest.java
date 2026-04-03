@@ -1,8 +1,7 @@
 package org.folio.rs.service;
 
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.never;
@@ -10,12 +9,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import feign.FeignException;
 import java.util.Collections;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.Optional;
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.client.ServicePointsClient;
-import org.folio.rs.client.UsersClient;
+import org.folio.rs.client.RemoteStorageUsersClient;
 import org.folio.rs.domain.dto.RequestEvent;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.ItemContributorNames;
@@ -36,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.web.client.HttpClientErrorException;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -68,7 +68,7 @@ public class ReturnRetrievalQueueServiceUnitTest {
   @Mock
   private InventoryClient inventoryClient;
   @Mock
-  private UsersClient usersClient;
+  private RemoteStorageUsersClient usersClient;
   @Mock
   private ServicePointsClient servicePointsClient;
   @Mock
@@ -109,7 +109,7 @@ public class ReturnRetrievalQueueServiceUnitTest {
     when(locationMapping.getConfigurationId()).thenReturn(REMOTE_STORAGE_ID);
     when(servicePointsClient.getServicePoint(PICKUP_SERVICE_POINT_ID)).thenReturn(pickupServicePoint);
     when(pickupServicePoint.getCode()).thenReturn(PICKUP_SERVICE_POINT_CODE);
-    when(usersClient.getUser(REQUESTER_ID)).thenReturn(user);
+    when(usersClient.getUser(REQUESTER_ID)).thenReturn(Optional.of(user));
     when(user.getBarcode()).thenReturn(PATRON_BARCODE);
     when(user.getUsername()).thenReturn(PATRON_NAME);
   }
@@ -153,7 +153,7 @@ public class ReturnRetrievalQueueServiceUnitTest {
 
   @Test
   void shouldThrowExceptionWhenPatronIsNotFound() {
-    when(usersClient.getUser(REQUESTER_ID)).thenThrow(FeignException.NotFound.class);
+    when(usersClient.getUser(REQUESTER_ID)).thenThrow(HttpClientErrorException.NotFound.class);
 
     assertThrows(EntityNotFoundException.class, () -> service.processEventRequest(requestEvent));
   }

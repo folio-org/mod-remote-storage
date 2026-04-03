@@ -1,8 +1,5 @@
 package org.folio.rs.service;
 
-import feign.FeignException;
-import feign.Request;
-import feign.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.folio.rs.domain.dto.DomainEvent;
 import org.folio.rs.integration.KafkaMessageListener;
@@ -13,9 +10,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.nio.charset.Charset;
-import java.util.HashMap;
 import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -49,12 +48,12 @@ public class KafkaListenerTest {
   void testUnauthorizedError() {
     log.info("======= Test Kafka events processing: Re-authorization in Authorization Error Case =======");
     // when
-    doThrow(prepareFeignException(401)).when(accessionQueueService)
-      .processAccessionQueueRecord(any());
+    var exception = new HttpServerErrorException(HttpStatus.valueOf(401));
+    doThrow(exception).when(accessionQueueService).processAccessionQueueRecord(any());
 
     // then
     var events = getEventsList();
-    assertThrows(FeignException.class, () -> kafkaMessageListener.handleEvents(events));
+    assertThrows(HttpStatusCodeException.class, () -> kafkaMessageListener.handleEvents(events));
 
     // verify
     verify(accessionQueueService, times(2)).processAccessionQueueRecord(any());
@@ -65,12 +64,12 @@ public class KafkaListenerTest {
     log.info("======= Test Kafka events processing: Skipping Re-authorization in non-Authorization Error Case =======");
 
     // when
-    doThrow(prepareFeignException(500)).when(accessionQueueService)
+    doThrow(new HttpClientErrorException(HttpStatus.valueOf(500))).when(accessionQueueService)
       .processAccessionQueueRecord(any());
 
     // then
     var events = getEventsList();
-    assertThrows(FeignException.class, () -> kafkaMessageListener.handleEvents(events));
+    assertThrows(HttpStatusCodeException.class, () -> kafkaMessageListener.handleEvents(events));
 
     // verify
     verify(accessionQueueService, times(1)).processAccessionQueueRecord(any());
@@ -94,16 +93,5 @@ public class KafkaListenerTest {
 
   private List<DomainEvent> getEventsList() {
     return List.of(new DomainEvent());
-  }
-
-  private FeignException prepareFeignException(int status) {
-    return FeignException.errorStatus("method-key", Response.builder()
-      .status(status)
-      .request(prepareMockRequest())
-      .build());
-  }
-
-  private Request prepareMockRequest() {
-    return Request.create(Request.HttpMethod.GET, "", new HashMap<>(), new byte[0], Charset.defaultCharset(), null);
   }
 }

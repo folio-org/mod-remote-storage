@@ -40,12 +40,10 @@ public class LocationMappingsTest extends TestBase {
   private static final String MAPPINGS_URL = "http://localhost:%s/remote-storage/mappings";
   private static final String EXTENDED_MAPPINGS_URL = "http://localhost:%s/remote-storage/extended-mappings";
   private static final String MAPPINGS_LOCATIONS_URL = "http://localhost:%s/remote-storage/extended-mappings/locations";
-  private static final String LOCATIONS_URL = "http://localhost:%s/locations";
 
   private String mappingsUrl;
   private String extendedMappingsUrl;
   private String mappingsLocationsUrl;
-  private String locationsUrl;
 
   @Autowired
   private CacheManager cacheManager;
@@ -55,7 +53,6 @@ public class LocationMappingsTest extends TestBase {
     mappingsUrl = String.format(MAPPINGS_URL, okapiPort);
     extendedMappingsUrl = String.format(EXTENDED_MAPPINGS_URL, okapiPort);
     mappingsLocationsUrl = String.format(MAPPINGS_LOCATIONS_URL, okapiPort);
-    locationsUrl = String.format(LOCATIONS_URL, okapiPort);
     ofNullable(cacheManager.getCache(MAPPINGS)).ifPresent(Cache::clear);
   }
 
@@ -433,13 +430,13 @@ public class LocationMappingsTest extends TestBase {
       .configurationId("abcde"));
     HttpClientErrorException exception = assertThrows(HttpClientErrorException.class,
         () -> post(mappingsUrl, invalidBody1, StorageConfiguration.class));
-    assertThat(exception.getStatusCode(), is(HttpStatus.UNPROCESSABLE_ENTITY));
+    assertThat(exception.getStatusCode(), is(HttpStatus.UNPROCESSABLE_CONTENT));
 
     var invalidBody2 = new HttpEntity(new RemoteLocationConfigurationMapping().folioLocationId("abcde")
       .configurationId("abcde"));
     exception = assertThrows(HttpClientErrorException.class,
       () -> post(mappingsUrl, invalidBody2, StorageConfiguration.class));
-    assertThat(exception.getStatusCode(), is(HttpStatus.UNPROCESSABLE_ENTITY));
+    assertThat(exception.getStatusCode(), is(HttpStatus.UNPROCESSABLE_CONTENT));
   }
 
   @Test

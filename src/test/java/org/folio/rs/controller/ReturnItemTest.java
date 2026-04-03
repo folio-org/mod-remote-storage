@@ -1,6 +1,7 @@
 package org.folio.rs.controller;
 
 import static org.folio.rs.TestUtils.ITEM_BARCODE;
+import static org.folio.rs.support.wiremock.WiremockContainerExtension.getWireMockAdminClient;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -15,6 +16,7 @@ import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.ReturnItemResponse;
 import org.folio.rs.repository.ReturnRetrievalQueueRepository;
 import org.folio.rs.service.LocationMappingsService;
+import org.folio.rs.support.wiremock.WiremockContainerExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,6 +44,7 @@ public class ReturnItemTest extends TestBase {
 
   @BeforeEach
   void prepare() {
+    getWireMockAdminClient().resetAll();
     try (var context = getFolioExecutionContextSetter()) {
 
       locationMappingsService.postRemoteLocationConfigurationMapping(new RemoteLocationConfigurationMapping()
@@ -55,6 +58,7 @@ public class ReturnItemTest extends TestBase {
 
   @AfterEach
   void clear() {
+    getWireMockAdminClient().resetAll();
     try (var context = getFolioExecutionContextSetter()) {
       locationMappingsService.deleteMappingById(FOLIO_LOCATION_ID);
       returnRetrievalQueueRepository.deleteAll();
@@ -89,7 +93,7 @@ public class ReturnItemTest extends TestBase {
 
       assertThat(response.getStatusCode(), is(HttpStatus.OK));
 
-      var bodyStrings = wireMockServer.getAllServeEvents().stream()
+      var bodyStrings = getAllServeEvents().stream()
         .filter(e -> "/circulation/check-in-by-barcode".equals(e.getRequest().getUrl()))
         .map(e -> e.getRequest().getBody())
         .map(String::new)

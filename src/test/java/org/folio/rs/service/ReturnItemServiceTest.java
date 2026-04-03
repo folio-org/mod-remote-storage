@@ -1,7 +1,7 @@
 package org.folio.rs.service;
 
-import static org.folio.rs.domain.dto.ReturningWorkflowDetails.CAIASOFT;
-import static org.folio.rs.domain.dto.ReturningWorkflowDetails.FOLIO;
+import static org.folio.rs.domain.dto.ReturningWorkflowDetails.SCANNED_TO_CAIA_SOFT;
+import static org.folio.rs.domain.dto.ReturningWorkflowDetails.SCANNED_TO_FOLIO;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.isA;
@@ -11,11 +11,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import feign.FeignException;
+import java.util.Optional;
 import org.folio.rs.client.CirculationClient;
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.client.ServicePointsClient;
-import org.folio.rs.client.UsersClient;
+import org.folio.rs.client.RemoteStorageUsersClient;
 import org.folio.rs.domain.dto.CheckInItem;
 import org.folio.rs.domain.dto.PickupServicePoint;
 import org.folio.rs.domain.dto.Request;
@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.springframework.web.client.HttpClientErrorException;
 
 @ExtendWith(MockitoExtension.class)
 public class ReturnItemServiceTest {
@@ -53,7 +54,7 @@ public class ReturnItemServiceTest {
   @Mock
   private CirculationClient circulationClient;
   @Mock
-  private UsersClient usersClient;
+  private RemoteStorageUsersClient usersClient;
   @Mock
   private ReturnRetrievalQueueRepository returnRetrievalQueueRepository;
   @Mock
@@ -98,7 +99,7 @@ public class ReturnItemServiceTest {
 
     when(inventoryClient.getItemByBarcode(item.getBarcode())).thenReturn(item);
     when(circulationClient.getItemRequests(item.getId())).thenReturn(itemRequests);
-    when(usersClient.getUser(USER_ID)).thenReturn(user);
+    when(usersClient.getUser(USER_ID)).thenReturn(Optional.of(user));
     when(returnRetrievalQueueRepository.save(isA(ReturnRetrievalQueueRecord.class))).thenReturn(null);
     when(servicePointsClient.getServicePoint(request.getPickupServicePointId())).thenReturn(pickUpServicePoint);
     when(configurationsService.getConfigurationById(isA(String.class))).thenReturn(configuration);
@@ -129,7 +130,7 @@ public class ReturnItemServiceTest {
     var configuration = new StorageConfiguration()
       .name("test")
       .providerName("CAIA_SOFT")
-      .returningWorkflowDetails(FOLIO);
+      .returningWorkflowDetails(SCANNED_TO_FOLIO);
 
     when(inventoryClient.getItemByBarcode(item.getBarcode())).thenReturn(item);
     when(configurationsService.getConfigurationById(isA(String.class))).thenReturn(configuration);
@@ -260,7 +261,7 @@ public class ReturnItemServiceTest {
 
     when(inventoryClient.getItemByBarcode(item.getBarcode())).thenReturn(item);
     when(circulationClient.getItemRequests(item.getId())).thenReturn(itemRequests);
-    when(usersClient.getUser(USER_ID)).thenThrow(FeignException.NotFound.class);
+    when(usersClient.getUser(USER_ID)).thenThrow(HttpClientErrorException.NotFound.class);
     when(configurationsService.getConfigurationById(isA(String.class))).thenReturn(configuration);
 
     Assertions.assertThrows(ItemReturnException.class,
@@ -271,13 +272,17 @@ public class ReturnItemServiceTest {
     return Arrays.asList(
       new StorageConfiguration().name("test").providerName("DEMATIC_EMS"),
       new StorageConfiguration().name("test").providerName("DEMATIC_SD"),
-      new StorageConfiguration().name("test").providerName("CAIA_SOFT").returningWorkflowDetails(CAIASOFT)
+      new StorageConfiguration().name("test").providerName("CAIA_SOFT").returningWorkflowDetails(SCANNED_TO_CAIA_SOFT)
     );
   }
 
   private static List<StorageConfiguration> getAllConfigurations() {
     var configurations = new ArrayList<>(getConfigurationsWithRequestsCheckNeeded());
-    configurations.add(new StorageConfiguration().name("test").providerName("CAIA_SOFT").returningWorkflowDetails(FOLIO));
+    configurations.add(
+      new StorageConfiguration()
+        .name("test")
+        .providerName("CAIA_SOFT")
+        .returningWorkflowDetails(SCANNED_TO_FOLIO));
     return configurations;
   }
 }

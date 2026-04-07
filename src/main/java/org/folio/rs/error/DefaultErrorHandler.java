@@ -44,7 +44,7 @@ public class DefaultErrorHandler {
           .key(((FieldError) er).getField())
           .value(String.valueOf(((FieldError) er).getRejectedValue())))));
     errors.setTotalRecords(errors.getErrors().size());
-    return ResponseEntity.unprocessableEntity().body(errors);
+    return ResponseEntity.unprocessableContent().body(errors);
   }
 
   @ExceptionHandler(ConstraintViolationException.class)
@@ -79,7 +79,7 @@ public class DefaultErrorHandler {
     if (exception.getMostSpecificCause() instanceof PSQLException) {
       ServerErrorMessage serverErrorMessage = ((PSQLException) exception.getMostSpecificCause()).getServerErrorMessage();
       return ResponseEntity
-        .unprocessableEntity()
+        .unprocessableContent()
         .body(new Errors()
           .addErrorsItem(new Error()
             .message(isNull(serverErrorMessage) ? null : serverErrorMessage.getDetail())
@@ -161,7 +161,7 @@ public class DefaultErrorHandler {
   @ExceptionHandler(RequiredValueMissingException.class)
   public ResponseEntity<Errors> handleRequiredValueMissingException(RequiredValueMissingException e) {
     return ResponseEntity
-      .unprocessableEntity()
+      .unprocessableContent()
       .body(new Errors()
         .addErrorsItem(new Error()
           .message(e.getMessage())

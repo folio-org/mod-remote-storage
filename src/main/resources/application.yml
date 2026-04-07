@@ -27,11 +27,12 @@ spring:
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
-        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+        implicit-strategy: org.springframework.boot.hibernate.SpringImplicitNamingStrategy
       ddl-auto: none
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-  flyway:
-    enabled: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   sql:
     init:
       continue-on-error: true
@@ -55,12 +56,6 @@ management:
       export:
         enabled: false
 
-feign:
-  client:
-    config:
-      default:
-        loggerLevel: BASIC
-
 logging:
   level:
     org:
@@ -78,8 +73,19 @@ application:
         group-id: ${ENV:folio}-mod-remote-storage-items-group
 
 server.port: 8081
-folio.tenant.validation.enabled: false
 folio:
+  exchange:
+    enabled: true
+  tenant:
+    validation:
+      enabled: false
+  logging:
+    request:
+      enabled: false
+      level: BASIC
+    exchange:
+      enabled: false
+      level: BASIC
   system-user:
     enabled: ${SYSTEM_USER_ENABLED:true}
     username: ${SYSTEM_USER_NAME:system-user}

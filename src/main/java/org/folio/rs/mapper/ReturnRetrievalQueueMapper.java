@@ -25,7 +25,9 @@ public interface ReturnRetrievalQueueMapper {
       @Mapping(target = "requestNote", source = "requestNote"),
       @Mapping(target = "retrievedDateTime", source = "retrievedDateTime"),
       @Mapping(target = "remoteStorageId", expression = "java(org.folio.rs.util.MapperUtils.uuidToStringSafe(returnRetrievalQueueRecord.getRemoteStorageId()))"),
-      @Mapping(target = "requestType", source = "requestType") })
+      @Mapping(target = "requestType", source = "requestType"),
+      @Mapping(target = "metadata", ignore = true),
+  })
   RetrievalQueue mapEntityToDto(ReturnRetrievalQueueRecord returnRetrievalQueueRecord);
 
   default RetrievalQueues mapEntitiesToRetrievalQueueCollection(Page<ReturnRetrievalQueueRecord> retrievalQueueRecords) {

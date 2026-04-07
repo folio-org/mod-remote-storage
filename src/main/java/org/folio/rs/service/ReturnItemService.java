@@ -3,17 +3,15 @@ package org.folio.rs.service;
 import static java.util.Objects.isNull;
 import static org.folio.rs.domain.dto.Request.RequestType.HOLD;
 import static org.folio.rs.domain.dto.Request.RequestType.RECALL;
-import static org.folio.rs.domain.dto.ReturningWorkflowDetails.CAIASOFT;
 import static org.folio.rs.domain.entity.ProviderRecord.CAIA_SOFT;
 import static org.folio.rs.util.RetrievalQueueRecordUtils.buildReturnRetrievalRecord;
 
-import feign.FeignException;
 import java.util.Optional;
 
 import org.folio.rs.client.CirculationClient;
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.client.ServicePointsClient;
-import org.folio.rs.client.UsersClient;
+import org.folio.rs.client.RemoteStorageUsersClient;
 import org.folio.rs.domain.dto.CheckInItem;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
@@ -26,6 +24,7 @@ import org.folio.rs.error.ItemReturnException;
 import org.folio.rs.repository.ReturnRetrievalQueueRepository;
 import org.folio.rs.util.RequestType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -36,7 +35,7 @@ import lombok.extern.log4j.Log4j2;
 public class ReturnItemService {
   private final InventoryClient inventoryClient;
   private final CirculationClient circulationClient;
-  private final UsersClient usersClient;
+  private final RemoteStorageUsersClient usersClient;
   private final ReturnRetrievalQueueRepository returnRetrievalQueueRepository;
   private final CheckInItemService checkInItemService;
   private final ServicePointsClient servicePointsClient;
@@ -71,7 +70,7 @@ public class ReturnItemService {
     var storageConfiguration = getStorageConfigurationById(locationMapping.getConfigurationId());
 
     if (CAIA_SOFT.getId().equals(storageConfiguration.getProviderName())
-      && storageConfiguration.getReturningWorkflowDetails() == ReturningWorkflowDetails.FOLIO) {
+      && storageConfiguration.getReturningWorkflowDetails() == ReturningWorkflowDetails.SCANNED_TO_FOLIO) {
       findFirstHoldRecallRequest(item).ifPresent(request -> {
         itemReturnResponse.isHoldRecallRequestExist(true);
         var user = getUserById(request.getRequesterId());
@@ -101,7 +100,7 @@ public class ReturnItemService {
 
   private boolean isRequestsCheckNeeded(StorageConfiguration storageConfiguration) {
     return !CAIA_SOFT.getId().equals(storageConfiguration.getProviderName()) ||
-      CAIASOFT == storageConfiguration.getReturningWorkflowDetails();
+      ReturningWorkflowDetails.SCANNED_TO_CAIA_SOFT == storageConfiguration.getReturningWorkflowDetails();
   }
 
   private Optional<Request> findFirstHoldRecallRequest(Item item) {
@@ -117,8 +116,9 @@ public class ReturnItemService {
 
   private User getUserById(String requesterId) {
     try {
-      return usersClient.getUser(requesterId);
-    } catch (FeignException.NotFound e) {
+      return usersClient.getUser(requesterId)
+        .orElseThrow(() -> new ItemReturnException("User does not exist for requester id " + requesterId));
+    } catch (HttpClientErrorException.NotFound e) {
       throw new ItemReturnException("User does not exist for requester id " + requesterId);
     }
   }

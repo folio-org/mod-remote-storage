@@ -115,7 +115,7 @@ public class CheckInRetrieveTest extends TestBase {
   void testCheckInByHoldIdForInvalidHoldId() {
     CheckInItemByHoldId checkInByHoldId = getCheckInItemByHoldIdSample("invalid-id");
     var exception = assertThrows(HttpClientErrorException.class, () -> post(checkInByHoldIdUrl, checkInByHoldId, String.class));
-    assertThat(exception.getStatusCode(), equalTo(HttpStatus.UNPROCESSABLE_ENTITY));
+    assertThat(exception.getStatusCode(), equalTo(HttpStatus.UNPROCESSABLE_CONTENT));
   }
 
   private CheckInItemByHoldId getCheckInItemByHoldIdSample(String holdId) {

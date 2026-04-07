@@ -2,13 +2,12 @@ package org.folio.rs.client;
 
 import org.folio.rs.domain.dto.ContributorType;
 import org.folio.rs.domain.dto.ResultList;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.service.annotation.GetExchange;
+import org.springframework.web.service.annotation.HttpExchange;
 
-@FeignClient(value = "contributor-types")
+@HttpExchange(value = "contributor-types")
 public interface ContributorTypesClient {
-  @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+  @GetExchange
   ResultList<ContributorType> getContributorTypesByQuery(@RequestParam("query") String query);
 }

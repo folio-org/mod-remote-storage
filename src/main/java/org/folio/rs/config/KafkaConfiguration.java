@@ -9,7 +9,7 @@ import java.util.Map;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.folio.rs.config.properties.FolioKafkaProperties;
 import org.folio.rs.domain.dto.DomainEvent;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,10 +17,10 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.DefaultErrorHandler;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
 
 @Slf4j
 @Configuration
@@ -42,8 +42,8 @@ public class KafkaConfiguration {
   }
 
   private ConsumerFactory<String, DomainEvent> jsonNodeConsumerFactory() {
-    var deserializer = new JsonDeserializer<>(DomainEvent.class);
-    Map<String, Object> config = new HashMap<>(kafkaProperties.buildConsumerProperties(null));
+    var deserializer = new JacksonJsonDeserializer<>(DomainEvent.class);
+    var config = new HashMap<>(kafkaProperties.buildConsumerProperties());
     config.put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     config.put(VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
     return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), deserializer);

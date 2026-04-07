@@ -21,19 +21,11 @@ import org.folio.rs.util.RequestType;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.HttpClientErrorException;
 
-import lombok.extern.log4j.Log4j2;
-
-@ExtendWith(SpringExtension.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Log4j2
 public class ReturnRetrievalQueueServiceTest extends TestBase {
 
   private static final String BARCODE = "1234567890";

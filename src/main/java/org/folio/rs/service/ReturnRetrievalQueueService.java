@@ -1,10 +1,8 @@
 package org.folio.rs.service;
 
-import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.folio.rs.util.MapperUtils.stringToUUIDSafe;
 import static org.folio.rs.util.RetrievalQueueRecordUtils.buildReturnRetrievalQueueRecord;
 
-import feign.FeignException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -13,13 +11,12 @@ import jakarta.persistence.criteria.Predicate;
 
 import org.folio.rs.client.InventoryClient;
 import org.folio.rs.client.ServicePointsClient;
-import org.folio.rs.client.UsersClient;
+import org.folio.rs.client.RemoteStorageUsersClient;
 import org.folio.rs.domain.dto.AccessionFilterData;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.PickupServicePoint;
 import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.RequestEvent;
-import org.folio.rs.domain.dto.ResultList;
 import org.folio.rs.domain.dto.RetrievalQueues;
 import org.folio.rs.domain.dto.User;
 import org.folio.rs.domain.entity.ReturnRetrievalQueueRecord;
@@ -33,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.web.client.HttpClientErrorException;
 
 @Service
 @Log4j2
@@ -50,7 +48,7 @@ public class ReturnRetrievalQueueService {
   private final ReturnRetrievalQueueMapper returnRetrievalQueueMapper;
   private final LocationMappingsService locationMappingsService;
   private final InventoryClient inventoryClient;
-  private final UsersClient usersClient;
+  private final RemoteStorageUsersClient usersClient;
   private final ServicePointsClient servicePointsClient;
 
 
@@ -176,8 +174,9 @@ public class ReturnRetrievalQueueService {
 
   private User getUserByRequesterId(RequestEvent requestEvent) {
     try {
-      return usersClient.getUser(requestEvent.getRequesterId());
-    } catch (FeignException.NotFound e) {
+      return usersClient.getUser(requestEvent.getRequesterId())
+        .orElseThrow(() -> new EntityNotFoundException("User with id " + requestEvent.getRequesterId() + NOT_FOUND));
+    } catch (HttpClientErrorException.NotFound e) {
       throw new EntityNotFoundException("User with id " + requestEvent.getRequesterId() + NOT_FOUND);
     }
   }

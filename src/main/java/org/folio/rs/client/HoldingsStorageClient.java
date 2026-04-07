@@ -2,22 +2,26 @@ package org.folio.rs.client;
 
 import org.folio.rs.domain.dto.HoldingsRecord;
 import org.folio.rs.domain.dto.ResultList;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.service.annotation.GetExchange;
+import org.springframework.web.service.annotation.HttpExchange;
+import org.springframework.web.service.annotation.PostExchange;
+import org.springframework.web.service.annotation.PutExchange;
 
-@FeignClient(value = "holdings-storage")
+@HttpExchange("holdings-storage")
 public interface HoldingsStorageClient {
-  @GetMapping("/holdings")
+
+  @GetExchange("/holdings")
   ResultList<HoldingsRecord> getHoldingsRecordsByQuery(@RequestParam("query") String query);
 
-  @PostMapping(value = "/holdings",
-    consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PostExchange("/holdings")
   HoldingsRecord postHoldingsRecord(@RequestBody HoldingsRecord holdingsRecord);
 
-  @GetMapping(value = "/holdings/{id}")
+  @GetExchange("/holdings/{id}")
   HoldingsRecord getHoldingsRecord(@PathVariable("id") String id);
 
-  @PutMapping(value = "/holdings/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-  void putHoldingsRecord(@PathVariable("id") String id, @RequestBody HoldingsRecord holdingsRecord);
+  @PutExchange(value = "/holdings/{id}")
+  void putHoldingsRecord(@PathVariable String id, @RequestBody HoldingsRecord holdingsRecord);
 }

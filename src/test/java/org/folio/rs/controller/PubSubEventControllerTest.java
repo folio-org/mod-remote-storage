@@ -8,7 +8,7 @@ import static org.folio.rs.TestUtils.buildRequestChangedEventPayload;
 import static org.folio.rs.TestUtils.buildRequestCreatedEventPayload;
 import static org.folio.rs.domain.dto.Request.RequestType.HOLD;
 import static org.folio.rs.domain.dto.Request.RequestType.PAGE;
-import static org.folio.rs.domain.dto.ReturningWorkflowDetails.FOLIO;
+import static org.folio.rs.domain.dto.ReturningWorkflowDetails.SCANNED_TO_FOLIO;
 import static org.folio.rs.domain.entity.ProviderRecord.CAIA_SOFT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
@@ -151,7 +151,7 @@ public class PubSubEventControllerTest extends TestBase {
         .name("Remote Storage")
         .apiKey("fake_api_key==")
         .providerName(CAIA_SOFT.getId())
-        .returningWorkflowDetails(FOLIO)
+        .returningWorkflowDetails(SCANNED_TO_FOLIO)
         .url("https://rs.rs.com")
         .accessionDelay(2)
         .accessionTimeUnit(TimeUnits.MINUTES);

@@ -24,7 +24,7 @@
 
   <properties>
     <java.version>21</java.version>
-    <folio-spring.version>10.0.0-RC1</folio-spring.version>
+    <folio-spring.version>10.0.0</folio-spring.version>
     <openapi-generator.version>7.21.0</openapi-generator.version>
     <mapstruct.version>1.6.3</mapstruct.version>
     <lombok.mapstruct-binding.version>0.2.0</lombok.mapstruct-binding.version>
@@ -32,7 +32,7 @@
     <folio-util.version>36.0.0-SNAPSHOT</folio-util.version>
 
     <copy-rename-maven-plugin.version>1.0.1</copy-rename-maven-plugin.version>
-    <jsonschema2pojo-maven-plugin.version>1.2.2</jsonschema2pojo-maven-plugin.version>
+    <jsonschema2pojo-maven-plugin.version>1.3.3</jsonschema2pojo-maven-plugin.version>
     <sonar.exclusions>src/main/java/org/folio/rs/domain/**, src/main/java/org/folio/rs/client/AuthnClient.java,
       src/main/java/org/folio/rs/config/properties/**, src/main/java/org/folio/rs/service/PubSubService.java,
       src/main/java/org/folio/rs/error/PubSubException.java

@@ -24,11 +24,11 @@
 
   <properties>
     <java.version>21</java.version>
-    <folio-spring.version>10.0.0-RC1</folio-spring.version>
+    <folio-spring.version>10.0.0</folio-spring.version>
     <openapi-generator.version>7.21.0</openapi-generator.version>
     <mapstruct.version>1.6.3</mapstruct.version>
     <lombok.mapstruct-binding.version>0.2.0</lombok.mapstruct-binding.version>
-    <pubsub.client.version>2.16.0</pubsub.client.version>
+    <pubsub.client.version>2.16.3</pubsub.client.version>
     <folio-util.version>36.0.0-SNAPSHOT</folio-util.version>
 
     <copy-rename-maven-plugin.version>1.0.1</copy-rename-maven-plugin.version>

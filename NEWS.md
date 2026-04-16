@@ -1,8 +1,44 @@
-## 3.5.0 2025-XX-XX
-* [MODRS-243](https://folio-org.atlassian.net/browse/MODRS-243) - Item Storage API version update from 10.1 to 11.0
-* [MODRS-250](https://folio-org.atlassian.net/browse/MODRS-250) - Adjust module to be compatible with Tenant API 2.0
-* [MODRS-253](https://folio-org.atlassian.net/browse/MODRS-253) - Use GitHub Workflows for Maven
-* [MODRS-251](https://folio-org.atlassian.net/browse/MODRS-251) - Migrate to Spring Boot v4.0.5
+## 4.0.0 2026-04-16
+
+### Breaking changes
+* Migrate to Spring Boot v4.0.5 ([MODRS-251](https://folio-org.atlassian.net/browse/MODRS-251))
+* Item Storage API version update from 10.1 to 11.0 ([MODRS-243](https://folio-org.atlassian.net/browse/MODRS-243))
+
+### New APIs versions
+* Requires `item-storage v11.0`
+
+### Features
+* Remove custom TenantController and use folio-provided Tenant API 2.0 ([MODRS-250](https://folio-org.atlassian.net/browse/MODRS-250))
+* Use GitHub Workflows for Maven ([MODRS-253](https://folio-org.atlassian.net/browse/MODRS-253))
+* Add config file for dependabot, CODEOWNERS and pull request template ([MODRS-241](https://folio-org.atlassian.net/browse/MODRS-241))
+
+### Bug fixes
+* Performance issue - Search of item_notes without index on item_id ([MODRS-223](https://folio-org.atlassian.net/browse/MODRS-223))
+* Fixed 'management.endpoint.loggers.access' uses an incompatible target type ([MODRS-238](https://folio-org.atlassian.net/browse/MODRS-238))
+* Add missing permission to system user ([MODRS-242](https://folio-org.atlassian.net/browse/MODRS-242))
+* Add log-record-event missing module permissions ([MODRS-248](https://folio-org.atlassian.net/browse/MODRS-248))
+* Sensitive data in logs cleanup ([MODRS-229](https://folio-org.atlassian.net/browse/MODRS-229))
+
+### Tech Debt
+* Migrate from OpenFeign to Spring HTTP Exchange interfaces ([MODRS-251](https://folio-org.atlassian.net/browse/MODRS-251))
+* Remove custom TenantController in favor of folio-spring-base provided one ([MODRS-250](https://folio-org.atlassian.net/browse/MODRS-250))
+* Remove Feign client interceptor, request logger, and EnrichHeadersClient ([MODRS-251](https://folio-org.atlassian.net/browse/MODRS-251))
+* Simplify Dockerfile and remove run.sh ([MODRS-251](https://folio-org.atlassian.net/browse/MODRS-251))
+
+### Dependencies
+* Bump `spring-boot` from `3.4.3` to `4.0.5`
+* Bump `folio-spring-support` from `9.0.0` to `10.0.0`
+* Bump `folio-util` from `35.4.0` to `36.0.0`
+* Bump `openapi-generator` from `7.6.0` to `7.21.0`
+* Bump `mod-pubsub-client` from `2.16.0` to `2.16.3`
+* Bump `jsonschema2pojo-maven-plugin` from `1.2.2` to `1.3.3`
+* Replace `wiremock-standalone` with `folio-spring-testing`
+* Replace `hibernate-jpamodelgen` with `hibernate-processor`
+* Add `lombok-mapstruct-binding` `0.2.0`
+* Remove `embedded-database-spring-test`
+* Remove `jackson-dataformat-xml`
+
+---
 
 ## 3.4.3 2025-05-19
 

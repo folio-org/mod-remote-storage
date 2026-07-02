@@ -5,13 +5,11 @@ import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.folio.rs.util.MapperUtils.stringToUUIDSafe;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.domain.dto.ItemContributorNames;
-import org.folio.rs.domain.dto.ItemEffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.PickupServicePoint;
 import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;
 import org.folio.rs.domain.dto.Request;
@@ -79,7 +77,6 @@ public class RetrievalQueueRecordUtils {
   }
 
   private static String getCallNumber(Item item) {
-    ItemEffectiveCallNumberComponents components = item.getEffectiveCallNumberComponents();
-    return Objects.nonNull(components) ? components.getCallNumber() : null;
+    return CallNumberUtils.buildEffectiveCallNumber(item);
   }
 }

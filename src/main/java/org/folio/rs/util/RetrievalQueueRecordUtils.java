@@ -35,7 +35,7 @@ public class RetrievalQueueRecordUtils {
       .itemBarcode(item.getBarcode())
       .instanceTitle(item.getTitle())
       .instanceAuthor(getContributorNames(item))
-      .callNumber(getCallNumber(item))
+      .callNumber(CallNumberUtils.buildEffectiveCallNumber(item))
       .patronBarcode(patron.getBarcode())
       .patronName(patron.getUsername())
       .pickupLocation(servicePointCode)
@@ -58,7 +58,7 @@ public class RetrievalQueueRecordUtils {
       .instanceTitle(item.getTitle())
       .instanceAuthor(getContributorNames(item))
 
-      .callNumber(getCallNumber(item))
+      .callNumber(CallNumberUtils.buildEffectiveCallNumber(item))
       .patronBarcode(patron.getBarcode())
       .patronName(patron.getUsername())
       .pickupLocation(pickupServicePoint.getCode())
@@ -74,9 +74,5 @@ public class RetrievalQueueRecordUtils {
           .stream()
           .map(ItemContributorNames::getName)
           .collect(Collectors.joining("; "));
-  }
-
-  private static String getCallNumber(Item item) {
-    return CallNumberUtils.buildEffectiveCallNumber(item);
   }
 }

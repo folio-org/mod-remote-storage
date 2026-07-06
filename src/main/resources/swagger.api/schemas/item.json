@@ -56,6 +56,10 @@
       "description": "Text, with input likely validated by the barcode scanner",
       "type": "string"
     },
+    "displaySummary": {
+      "description": "Display summary about the item",
+      "type": "string"
+    },
     "effectiveShelvingOrder": {
       "type": "string",
       "description": "A system generated normalization of the call number that allows for call number sorting in reports and search results",

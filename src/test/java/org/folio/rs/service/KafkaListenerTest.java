@@ -94,13 +94,13 @@ public class KafkaListenerTest {
 
   @Test
   void handleLogRecordEvents_positive_doesNotThrowAndDoesNotDelegateToAccessionQueueService() {
-    // Arrange
+    // when
     var events = List.of(new PubSubEvent("CHECK_IN_EVENT"));
 
-    // Act
+    // then
     kafkaMessageListener.handleLogRecordEvents(events);
 
-    // Assert
+    // verify
     verify(accessionQueueService, times(0)).processAccessionQueueRecord(any());
   }
 

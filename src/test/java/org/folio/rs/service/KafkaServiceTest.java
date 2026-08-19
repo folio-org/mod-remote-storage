@@ -1,6 +1,6 @@
 package org.folio.rs.service;
 
-import static org.folio.rs.service.KafkaService.EVENT_LISTENER_ID;
+import static org.folio.rs.service.KafkaService.INVENTORY_ITEM_EVENT_LISTENER_ID;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,7 +23,7 @@ public class KafkaServiceTest {
   @Test
   void restartEventListeners() {
     var mockListenerContainer = mock(MessageListenerContainer.class);
-    when(kafkaListenerEndpointRegistry.getListenerContainer(EVENT_LISTENER_ID)).thenReturn(mockListenerContainer);
+    when(kafkaListenerEndpointRegistry.getListenerContainer(INVENTORY_ITEM_EVENT_LISTENER_ID)).thenReturn(mockListenerContainer);
     kafkaService.restartEventListeners();
     verify(mockListenerContainer).start();
     verify(mockListenerContainer).stop();

@@ -39,7 +39,7 @@ public class KafkaListenerTest {
     log.info("======= Test Kafka events processing: Successful Case =======");
 
     // then
-    kafkaMessageListener.handleEvents(getEventsList());
+    kafkaMessageListener.handleInventoryItemEvents(getEventsList());
 
     // verify
     verify(accessionQueueService, times(1)).processAccessionQueueRecord(any());
@@ -54,7 +54,7 @@ public class KafkaListenerTest {
 
     // then
     var events = getEventsList();
-    assertThrows(HttpStatusCodeException.class, () -> kafkaMessageListener.handleEvents(events));
+    assertThrows(HttpStatusCodeException.class, () -> kafkaMessageListener.handleInventoryItemEvents(events));
 
     // verify
     verify(accessionQueueService, times(2)).processAccessionQueueRecord(any());
@@ -70,7 +70,7 @@ public class KafkaListenerTest {
 
     // then
     var events = getEventsList();
-    assertThrows(HttpStatusCodeException.class, () -> kafkaMessageListener.handleEvents(events));
+    assertThrows(HttpStatusCodeException.class, () -> kafkaMessageListener.handleInventoryItemEvents(events));
 
     // verify
     verify(accessionQueueService, times(1)).processAccessionQueueRecord(any());
@@ -86,7 +86,7 @@ public class KafkaListenerTest {
 
     // then
     var events = getEventsList();
-    assertThrows(NullPointerException.class, () -> kafkaMessageListener.handleEvents(events));
+    assertThrows(NullPointerException.class, () -> kafkaMessageListener.handleInventoryItemEvents(events));
 
     // verify
     verify(accessionQueueService, times(1)).processAccessionQueueRecord(any());

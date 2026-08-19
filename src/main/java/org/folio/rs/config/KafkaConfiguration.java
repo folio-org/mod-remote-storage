@@ -31,17 +31,17 @@ public class KafkaConfiguration {
   private final KafkaProperties kafkaProperties;
 
   @Bean
-  public ConcurrentKafkaListenerContainerFactory<String, DomainEvent> kafkaListenerContainerFactory() {
+  public ConcurrentKafkaListenerContainerFactory<String, DomainEvent> kafkaDomainEventListenerContainerFactory() {
     var factory = new ConcurrentKafkaListenerContainerFactory<String, DomainEvent>();
     factory.setBatchListener(true);
-    factory.setConsumerFactory(jsonNodeConsumerFactory());
+    factory.setConsumerFactory(kafkaDomainEventConsumerFactory());
     factory.setCommonErrorHandler(new DefaultErrorHandler((consumerRecord, exception) -> log.error(
       "Error processing Kafka record [topic: {}, partition: {}, offset: {}]",
       consumerRecord.topic(), consumerRecord.partition(), consumerRecord.offset(), exception)));
     return factory;
   }
 
-  private ConsumerFactory<String, DomainEvent> jsonNodeConsumerFactory() {
+  private ConsumerFactory<String, DomainEvent> kafkaDomainEventConsumerFactory() {
     var deserializer = new JacksonJsonDeserializer<>(DomainEvent.class);
     var config = new HashMap<>(kafkaProperties.buildConsumerProperties());
     config.put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -50,17 +50,17 @@ public class KafkaConfiguration {
   }
 
   @Bean
-  public ConcurrentKafkaListenerContainerFactory<String, PubSubEvent> kafkaPubSubListenerContainerFactory() {
+  public ConcurrentKafkaListenerContainerFactory<String, PubSubEvent> kafkaLogRecordEventListenerContainerFactory() {
     var factory = new ConcurrentKafkaListenerContainerFactory<String, PubSubEvent>();
     factory.setBatchListener(true);
-    factory.setConsumerFactory(pubSubEventConsumerFactory());
+    factory.setConsumerFactory(kafkaLogRecordEventConsumerFactory());
     factory.setCommonErrorHandler(new DefaultErrorHandler((consumerRecord, exception) -> log.error(
       "Error processing LOG_RECORD Kafka record [topic: {}, partition: {}, offset: {}]",
       consumerRecord.topic(), consumerRecord.partition(), consumerRecord.offset(), exception)));
     return factory;
   }
 
-  private ConsumerFactory<String, PubSubEvent> pubSubEventConsumerFactory() {
+  private ConsumerFactory<String, PubSubEvent> kafkaLogRecordEventConsumerFactory() {
     var deserializer = new JacksonJsonDeserializer<>(PubSubEvent.class);
     var config = new HashMap<>(kafkaProperties.buildConsumerProperties());
     config.put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);

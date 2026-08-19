@@ -67,7 +67,7 @@ application:
     retry-interval-ms: 20000
     retry-delivery-attempts: 10
     listener:
-      events:
+      inventory-item-events:
         concurrency: 2
         topic-pattern: (${ENV:folio}\.)?(.*\.)?inventory.item
         group-id: ${ENV:folio}-mod-remote-storage-items-group

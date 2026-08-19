@@ -1,3 +1,8 @@
+## 4.1.0-SNAPSHOT 2026-XX-XX
+
+### Tech Debt
+* PubSub deprecation: Prepare Kafka Listener for Log Record Event ([MODRS-168](https://folio-org.atlassian.net/browse/MODRS-168))
+
 ## 4.0.0 2026-04-16
 
 ### Breaking changes

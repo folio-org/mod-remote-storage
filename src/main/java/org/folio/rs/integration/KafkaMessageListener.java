@@ -3,6 +3,7 @@ package org.folio.rs.integration;
 import java.util.List;
 
 import org.folio.rs.domain.dto.DomainEvent;
+import org.folio.rs.domain.dto.PubSubEvent;
 import org.folio.rs.service.AccessionQueueService;
 import org.folio.rs.service.KafkaService;
 import org.springframework.http.HttpStatus;
@@ -40,5 +41,16 @@ public class KafkaMessageListener {
         throw fe;
       }
     }
+  }
+
+  @KafkaListener(
+    id = KafkaService.LOG_RECORD_LISTENER_ID,
+    containerFactory = "kafkaPubSubListenerContainerFactory",
+    topicPattern = "${application.kafka.listener.log-record-events.topic-pattern}",
+    groupId = "${application.kafka.listener.log-record-events.group-id}",
+    concurrency = "${application.kafka.listener.log-record-events.concurrency}")
+  public void handleLogRecordEvents(List<PubSubEvent> events) {
+    log.info("Received LOG_RECORD events from kafka [eventsCount: {}]", events.size());
+    // TODO: implement processing in Phase 2
   }
 }

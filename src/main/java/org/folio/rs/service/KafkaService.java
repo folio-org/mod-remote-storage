@@ -12,6 +12,7 @@ import lombok.extern.log4j.Log4j2;
 public class KafkaService {
 
   public static final String EVENT_LISTENER_ID = "mod-remote-storage-events-listener";
+  public static final String LOG_RECORD_LISTENER_ID = "mod-remote-storage-log-record-listener";
 
   private final KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry;
 

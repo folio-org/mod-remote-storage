@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import org.folio.rs.domain.dto.PubSubEvent;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -89,6 +90,18 @@ public class KafkaListenerTest {
 
     // verify
     verify(accessionQueueService, times(1)).processAccessionQueueRecord(any());
+  }
+
+  @Test
+  void handleLogRecordEvents_positive_doesNotThrowAndDoesNotDelegateToAccessionQueueService() {
+    // Arrange
+    var events = List.of(new PubSubEvent("CHECK_IN_EVENT"));
+
+    // Act
+    kafkaMessageListener.handleLogRecordEvents(events);
+
+    // Assert
+    verify(accessionQueueService, times(0)).processAccessionQueueRecord(any());
   }
 
   private List<DomainEvent> getEventsList() {

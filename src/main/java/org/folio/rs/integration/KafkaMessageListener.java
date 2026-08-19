@@ -3,6 +3,7 @@ package org.folio.rs.integration;
 import java.util.List;
 
 import org.folio.rs.domain.dto.DomainEvent;
+import org.folio.rs.domain.dto.PubSubEvent;
 import org.folio.rs.service.AccessionQueueService;
 import org.folio.rs.service.KafkaService;
 import org.springframework.http.HttpStatus;
@@ -22,12 +23,12 @@ public class KafkaMessageListener {
 
 
   @KafkaListener(
-    id = KafkaService.EVENT_LISTENER_ID,
-    containerFactory = "kafkaListenerContainerFactory",
-    topicPattern = "${application.kafka.listener.events.topic-pattern}",
-    groupId = "${application.kafka.listener.events.group-id}",
-    concurrency = "${application.kafka.listener.events.concurrency}")
-  public void handleEvents(List<DomainEvent> events) {
+    id = KafkaService.INVENTORY_ITEM_EVENT_LISTENER_ID,
+    containerFactory = "kafkaDomainEventListenerContainerFactory",
+    topicPattern = "${application.kafka.listener.inventory-item-events.topic-pattern}",
+    groupId = "${application.kafka.listener.inventory-item-events.group-id}",
+    concurrency = "${application.kafka.listener.inventory-item-events.concurrency}")
+  public void handleInventoryItemEvents(List<DomainEvent> events) {
     log.info("Processing resource events from kafka [eventsCount: {}]", events.size());
     try {
       accessionQueueService.processAccessionQueueRecord(events);
@@ -40,5 +41,17 @@ public class KafkaMessageListener {
         throw fe;
       }
     }
+  }
+
+  @KafkaListener(
+    id = KafkaService.LOG_RECORD_LISTENER_ID,
+    containerFactory = "kafkaLogRecordEventListenerContainerFactory",
+    topicPattern = "${application.kafka.listener.log-record-events.topic-pattern}",
+    groupId = "${application.kafka.listener.log-record-events.group-id}",
+    concurrency = "${application.kafka.listener.log-record-events.concurrency}")
+  public void handleLogRecordEvents(List<PubSubEvent> events) {
+    log.info("Received LOG_RECORD events from kafka [eventsCount: {}]", events.size());
+    // TODO: implement processing in Phase 2, also rename the DTO from PubSubEvent to something else so that no PubSub
+    // is mentioned in it
   }
 }

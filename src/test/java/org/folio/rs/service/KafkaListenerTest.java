@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import org.folio.rs.domain.dto.PubSubEvent;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -38,7 +39,7 @@ public class KafkaListenerTest {
     log.info("======= Test Kafka events processing: Successful Case =======");
 
     // then
-    kafkaMessageListener.handleEvents(getEventsList());
+    kafkaMessageListener.handleInventoryItemEvents(getEventsList());
 
     // verify
     verify(accessionQueueService, times(1)).processAccessionQueueRecord(any());
@@ -53,7 +54,7 @@ public class KafkaListenerTest {
 
     // then
     var events = getEventsList();
-    assertThrows(HttpStatusCodeException.class, () -> kafkaMessageListener.handleEvents(events));
+    assertThrows(HttpStatusCodeException.class, () -> kafkaMessageListener.handleInventoryItemEvents(events));
 
     // verify
     verify(accessionQueueService, times(2)).processAccessionQueueRecord(any());
@@ -69,7 +70,7 @@ public class KafkaListenerTest {
 
     // then
     var events = getEventsList();
-    assertThrows(HttpStatusCodeException.class, () -> kafkaMessageListener.handleEvents(events));
+    assertThrows(HttpStatusCodeException.class, () -> kafkaMessageListener.handleInventoryItemEvents(events));
 
     // verify
     verify(accessionQueueService, times(1)).processAccessionQueueRecord(any());
@@ -85,10 +86,22 @@ public class KafkaListenerTest {
 
     // then
     var events = getEventsList();
-    assertThrows(NullPointerException.class, () -> kafkaMessageListener.handleEvents(events));
+    assertThrows(NullPointerException.class, () -> kafkaMessageListener.handleInventoryItemEvents(events));
 
     // verify
     verify(accessionQueueService, times(1)).processAccessionQueueRecord(any());
+  }
+
+  @Test
+  void handleLogRecordEvents_positive_doesNotThrowAndDoesNotDelegateToAccessionQueueService() {
+    // when
+    var events = List.of(new PubSubEvent("CHECK_IN_EVENT"));
+
+    // then
+    kafkaMessageListener.handleLogRecordEvents(events);
+
+    // verify
+    verify(accessionQueueService, times(0)).processAccessionQueueRecord(any());
   }
 
   private List<DomainEvent> getEventsList() {

@@ -11,7 +11,8 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 public class KafkaService {
 
-  public static final String EVENT_LISTENER_ID = "mod-remote-storage-events-listener";
+  public static final String INVENTORY_ITEM_EVENT_LISTENER_ID = "mod-remote-storage-inventory-item-listener";
+  public static final String LOG_RECORD_LISTENER_ID = "mod-remote-storage-log-record-listener";
 
   private final KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry;
 
@@ -19,8 +20,8 @@ public class KafkaService {
    * Restarts kafka event listeners in mod-remote-storage application.
    */
   public void restartEventListeners() {
-    log.info("Restarting kafka consumer to start listening created topics [id: {}]", EVENT_LISTENER_ID);
-    var listenerContainer = kafkaListenerEndpointRegistry.getListenerContainer(EVENT_LISTENER_ID);
+    log.info("Restarting kafka consumer to start listening created topics [id: {}]", INVENTORY_ITEM_EVENT_LISTENER_ID);
+    var listenerContainer = kafkaListenerEndpointRegistry.getListenerContainer(INVENTORY_ITEM_EVENT_LISTENER_ID);
     listenerContainer.stop();
     listenerContainer.start();
   }

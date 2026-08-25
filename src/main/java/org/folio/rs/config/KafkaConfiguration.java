@@ -8,7 +8,7 @@ import java.util.HashMap;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.folio.rs.config.properties.FolioKafkaProperties;
 import org.folio.rs.domain.dto.DomainEvent;
-import org.folio.rs.domain.dto.PubSubEvent;
+import org.folio.rs.domain.dto.LogRecordEvent;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -50,8 +50,8 @@ public class KafkaConfiguration {
   }
 
   @Bean
-  public ConcurrentKafkaListenerContainerFactory<String, PubSubEvent> kafkaLogRecordEventListenerContainerFactory() {
-    var factory = new ConcurrentKafkaListenerContainerFactory<String, PubSubEvent>();
+  public ConcurrentKafkaListenerContainerFactory<String, LogRecordEvent> kafkaLogRecordEventListenerContainerFactory() {
+    var factory = new ConcurrentKafkaListenerContainerFactory<String, LogRecordEvent>();
     factory.setBatchListener(true);
     factory.setConsumerFactory(kafkaLogRecordEventConsumerFactory());
     factory.setCommonErrorHandler(new DefaultErrorHandler((consumerRecord, exception) -> log.error(
@@ -60,8 +60,8 @@ public class KafkaConfiguration {
     return factory;
   }
 
-  private ConsumerFactory<String, PubSubEvent> kafkaLogRecordEventConsumerFactory() {
-    var deserializer = new JacksonJsonDeserializer<>(PubSubEvent.class);
+  private ConsumerFactory<String, LogRecordEvent> kafkaLogRecordEventConsumerFactory() {
+    var deserializer = new JacksonJsonDeserializer<>(LogRecordEvent.class);
     var config = new HashMap<>(kafkaProperties.buildConsumerProperties());
     config.put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     config.put(VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);

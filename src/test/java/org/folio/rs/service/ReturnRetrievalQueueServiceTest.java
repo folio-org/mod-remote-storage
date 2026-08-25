@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.folio.rs.TestBase;
 import org.folio.rs.domain.dto.RetrievalQueues;
 import org.folio.rs.domain.entity.ReturnRetrievalQueueRecord;

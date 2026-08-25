@@ -5,12 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
 
-import java.util.UUID;
-
 @Data
 @With
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItemCheckInPubSubEvent {
+public class LogRecordEvent {
+  private String logEventType;
+  private Object payload;
   private String itemBarcode;
 }

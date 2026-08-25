@@ -20,8 +20,13 @@ public class KafkaService {
    * Restarts kafka event listeners in mod-remote-storage application.
    */
   public void restartEventListeners() {
-    log.info("Restarting kafka consumer to start listening created topics [id: {}]", INVENTORY_ITEM_EVENT_LISTENER_ID);
-    var listenerContainer = kafkaListenerEndpointRegistry.getListenerContainer(INVENTORY_ITEM_EVENT_LISTENER_ID);
+    restartListener(INVENTORY_ITEM_EVENT_LISTENER_ID);
+    restartListener(LOG_RECORD_LISTENER_ID);
+  }
+
+  private void restartListener(String listenerId) {
+    log.info("Restarting kafka consumer to start listening created topics [id: {}]", listenerId);
+    var listenerContainer = kafkaListenerEndpointRegistry.getListenerContainer(listenerId);
     listenerContainer.stop();
     listenerContainer.start();
   }

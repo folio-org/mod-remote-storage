@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.extern.log4j.Log4j2;
-import org.folio.okapi.common.XOkapiHeaders;
+import org.folio.spring.integration.XOkapiHeaders;
 import org.folio.rs.domain.dto.Item;
 import org.folio.rs.error.ItemReturnException;
 import org.folio.rs.support.wiremock.WiremockContainerExtension;

@@ -73,7 +73,7 @@ application:
         group-id: ${ENV:folio}-mod-remote-storage-items-group
       log-record-events:
         concurrency: 2
-        topic-pattern: (${ENV:folio}\.)?(.*\.)?LOG_RECORD
+        topic-pattern: (${ENV:folio}\.)?(.*\.)?audit.LOG_RECORD
         group-id: ${ENV:folio}-mod-remote-storage-log-record-group
 
 server.port: 8081

@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.folio.rs.TestBase;
 import org.folio.rs.domain.dto.RemoteLocationConfigurationMapping;

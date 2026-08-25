@@ -2,10 +2,6 @@ package org.folio.rs.service;
 
 import static org.folio.rs.domain.dto.Request.RequestType.HOLD;
 import static org.folio.rs.domain.dto.Request.RequestType.PAGE;
-import static org.folio.rs.util.LogEventType.REQUEST_CREATED;
-import static org.folio.rs.util.LogEventType.REQUEST_CREATED_THROUGH_OVERRIDE;
-import static org.folio.rs.util.LogEventType.REQUEST_MOVED;
-import static org.folio.rs.util.LogEventType.REQUEST_UPDATED;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.never;

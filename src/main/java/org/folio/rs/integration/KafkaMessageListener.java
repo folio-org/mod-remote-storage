@@ -62,19 +62,19 @@ public class KafkaMessageListener {
     records.forEach(this::handleLogRecordEvent);
   }
 
-  private void handleLogRecordEvent(ConsumerRecord<String, LogRecordEvent> record) {
-    var tenant = getTenant(record);
+  private void handleLogRecordEvent(ConsumerRecord<String, LogRecordEvent> consumerRecord) {
+    var tenant = getTenant(consumerRecord);
     if (tenant.isEmpty()) {
       log.warn("Skipping LOG_RECORD event: missing {} header [topic: {}, offset: {}]",
-        XOkapiHeaders.TENANT, record.topic(), record.offset());
+        XOkapiHeaders.TENANT, consumerRecord.topic(), consumerRecord.offset());
       return;
     }
     systemUserScopedExecutionService.executeAsyncSystemUserScoped(tenant.get(),
-      () -> logRecordEventService.processEvent(record.value()));
+      () -> logRecordEventService.processEvent(consumerRecord.value()));
   }
 
-  private Optional<String> getTenant(ConsumerRecord<String, LogRecordEvent> record) {
-    var header = record.headers().lastHeader(XOkapiHeaders.TENANT);
+  private Optional<String> getTenant(ConsumerRecord<String, LogRecordEvent> consumerRecord) {
+    var header = consumerRecord.headers().lastHeader(XOkapiHeaders.TENANT);
     if (Objects.isNull(header)) {
       return Optional.empty();
     }

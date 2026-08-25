@@ -1,6 +1,5 @@
 package org.folio.rs.controller;
 
-import static org.folio.rs.TestUtils.ITEM_BARCODE;
 import static org.folio.rs.support.wiremock.WiremockContainerExtension.getWireMockAdminClient;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -24,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 
 public class ReturnItemTest extends TestBase {
+  public static final String ITEM_BARCODE = "645398607547";
   public static final String ITEM2_BARCODE = "645398607548";
   public static final String ITEM3_BARCODE = "645398607549";
   private static final String RETURN_URL = "http://localhost:%s/remote-storage/return/%s";
@@ -75,7 +75,7 @@ public class ReturnItemTest extends TestBase {
       assertTrue(Objects.requireNonNull(response.getBody()).getIsHoldRecallRequestExist());
 
       var records = returnRetrievalQueueRepository.findAll();
-      boolean exist = records.stream().anyMatch(record -> ITEM_BARCODE.equals(record.getItemBarcode()));
+      boolean exist = records.stream().anyMatch(consumerRecord -> ITEM_BARCODE.equals(consumerRecord.getItemBarcode()));
       assertTrue(exist);
     }
   }
@@ -96,7 +96,7 @@ public class ReturnItemTest extends TestBase {
         .filter(e -> "/circulation/check-in-by-barcode".equals(e.getRequest().getUrl()))
         .map(e -> e.getRequest().getBody())
         .map(String::new)
-        .collect(Collectors.toList());
+        .toList();
       assertThat(bodyStrings.size(), is(1));
       assertTrue(bodyStrings.get(0).contains(PRIMARY_SERVICE_POINT_2));
 

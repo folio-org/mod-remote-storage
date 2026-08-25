@@ -53,7 +53,7 @@ public class KafkaListenerTest {
   private SystemUserScopedExecutionService systemUserScopedExecutionService;
 
   @Test
-  void handleInventoryItemEventsSuccessfulCaseDelegatesToAccessionQueueService() {
+  void testInventoryItemEventsSuccessfulCaseDelegatesToAccessionQueueService() {
     log.info("======= Test Kafka events processing: Successful Case =======");
 
     // then
@@ -64,7 +64,7 @@ public class KafkaListenerTest {
   }
 
   @Test
-  void handleInventoryItemEventsUnauthorizedErrorRetriesOnce() {
+  void testInventoryItemEventsUnauthorizedErrorRetriesOnce() {
     log.info("======= Test Kafka events processing: Re-authorization in Authorization Error Case =======");
     // when
     var exception = new HttpServerErrorException(HttpStatus.valueOf(401));
@@ -79,7 +79,7 @@ public class KafkaListenerTest {
   }
 
   @Test
-  void handleInventoryItemEventsNonUnauthorizedErrorSkipsReAuthorization() {
+  void testInventoryItemEventsNonUnauthorizedErrorSkipsReAuthorization() {
     log.info("======= Test Kafka events processing: Skipping Re-authorization in non-Authorization Error Case =======");
 
     // when
@@ -95,7 +95,7 @@ public class KafkaListenerTest {
   }
 
   @Test
-  void handleInventoryItemEventsNonFeignErrorSkipsReAuthorization() {
+  void testInventoryItemEventsNonFeignErrorSkipsReAuthorization() {
     log.info("======= Test Kafka events processing: Skipping Re-authorization in non-Feign Error Case =======");
 
     // when
@@ -111,10 +111,10 @@ public class KafkaListenerTest {
   }
 
   @Test
-  void handleLogRecordEventsWithTenantHeaderDelegatesToLogRecordEventService() {
+  void testLogRecordEventsWithTenantHeaderDelegatesToLogRecordEventService() {
     // when
     var logRecordEvent = new LogRecordEvent(CHECK_IN_EVENT, null, BARCODE_001);
-    var record = buildConsumerRecord(logRecordEvent, TEST_TENANT);
+    var consumerRecord = buildConsumerRecord(logRecordEvent, TEST_TENANT);
 
     doAnswer(invocation -> {
       ((Runnable) invocation.getArgument(1)).run();
@@ -122,7 +122,7 @@ public class KafkaListenerTest {
     }).when(systemUserScopedExecutionService).executeAsyncSystemUserScoped(eq(TEST_TENANT), any(Runnable.class));
 
     // then
-    kafkaMessageListener.handleLogRecordEvents(List.of(record));
+    kafkaMessageListener.handleLogRecordEvents(List.of(consumerRecord));
 
     // verify
     verify(logRecordEventService, times(1)).processEvent(logRecordEvent);
@@ -130,13 +130,13 @@ public class KafkaListenerTest {
   }
 
   @Test
-  void handleLogRecordEventsMissingTenantHeaderSkipsRecord() {
+  void testLogRecordEventsMissingTenantHeaderSkipsRecord() {
     // when
     var logRecordEvent = new LogRecordEvent(CHECK_IN_EVENT, null, BARCODE_001);
-    var record = buildConsumerRecord(logRecordEvent, null);
+    var consumerRecord = buildConsumerRecord(logRecordEvent, null);
 
     // then
-    kafkaMessageListener.handleLogRecordEvents(List.of(record));
+    kafkaMessageListener.handleLogRecordEvents(List.of(consumerRecord));
 
     // verify
     verify(logRecordEventService, never()).processEvent(any());
@@ -144,11 +144,11 @@ public class KafkaListenerTest {
   }
 
   private ConsumerRecord<String, LogRecordEvent> buildConsumerRecord(LogRecordEvent event, String tenant) {
-    var record = new ConsumerRecord<>(LOG_RECORD_TOPIC, 0, 0L, (String) null, event);
+    var consumerRecord = new ConsumerRecord<>(LOG_RECORD_TOPIC, 0, 0L, (String) null, event);
     if (tenant != null) {
-      record.headers().add(new RecordHeader(TENANT, tenant.getBytes(StandardCharsets.UTF_8)));
+      consumerRecord.headers().add(new RecordHeader(TENANT, tenant.getBytes(StandardCharsets.UTF_8)));
     }
-    return record;
+    return consumerRecord;
   }
 
   private List<DomainEvent> getEventsList() {

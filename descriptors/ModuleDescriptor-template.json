@@ -488,7 +488,10 @@
         "inventory-storage.holdings.collection.get",
         "inventory-storage.items.collection.get",
         "inventory-storage.identifier-types.collection.get",
-        "inventory-storage.item-note-types.item.get"
+        "inventory-storage.item-note-types.item.get",
+        "inventory.items.collection.get",
+        "circulation.requests.queue-item.collection.get",
+        "inventory-storage.service-points.item.get"
       ]
     }
   },

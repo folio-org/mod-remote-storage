@@ -5,7 +5,6 @@ import org.folio.rs.controller.ConfigurationsTest;
 import org.folio.rs.controller.ItemsTest;
 import org.folio.rs.controller.LocationMappingsTest;
 import org.folio.rs.controller.ProviderControllerTest;
-import org.folio.rs.controller.PubSubEventControllerTest;
 import org.folio.rs.controller.ReturnItemTest;
 import org.folio.rs.controller.TenantControllerTest;
 import org.folio.rs.error.KafkaErrorHandlerTest;
@@ -13,6 +12,7 @@ import org.folio.rs.service.AccessionQueueServiceTest;
 import org.folio.rs.service.CheckInItemServiceTest;
 import org.folio.rs.service.KafkaListenerTest;
 import org.folio.rs.service.KafkaServiceTest;
+import org.folio.rs.service.LogRecordEventServiceTest;
 import org.folio.rs.service.ReturnRetrievalQueueServiceTest;
 import org.folio.rs.service.ReturnRetrievalQueueServiceUnitTest;
 import org.folio.rs.service.ReturnItemServiceTest;
@@ -66,11 +66,6 @@ public class TestSuite {
   }
 
   @Nested
-  class PubSubEventControllerTestNested extends PubSubEventControllerTest {
-
-  }
-
-  @Nested
   class ProviderControllerTestNested extends ProviderControllerTest {
 
   }
@@ -96,6 +91,11 @@ public class TestSuite {
 
   @Nested
   class KafkaListenerTestNested extends KafkaListenerTest {
+
+  }
+
+  @Nested
+  class LogRecordEventServiceTestNested extends LogRecordEventServiceTest {
 
   }
 }

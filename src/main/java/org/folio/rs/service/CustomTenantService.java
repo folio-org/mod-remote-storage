@@ -38,7 +38,6 @@ public class CustomTenantService extends TenantService {
     List.of("retrieval_queue_record.json", "retrieval_queue_record_for_caia_soft.json");
 
   private final KafkaService kafkaService;
-  private final PubSubService pubSubService;
   private final ConfigurationsService configurationsService;
   private final LocationMappingsService locationMappingsService;
   private final PrepareSystemUserService prepareSystemUserService;
@@ -50,7 +49,6 @@ public class CustomTenantService extends TenantService {
     FolioExecutionContext context,
     FolioSpringLiquibase folioSpringLiquibase,
     KafkaService kafkaService,
-    PubSubService pubSubService,
     ConfigurationsService configurationsService,
     LocationMappingsService locationMappingsService,
     PrepareSystemUserService prepareSystemUserService,
@@ -58,7 +56,6 @@ public class CustomTenantService extends TenantService {
     AccessionQueueRepository accessionQueueRepository) {
     super(jdbcTemplate, context, folioSpringLiquibase);
     this.kafkaService = kafkaService;
-    this.pubSubService = pubSubService;
     this.configurationsService = configurationsService;
     this.locationMappingsService = locationMappingsService;
     this.prepareSystemUserService = prepareSystemUserService;
@@ -74,23 +71,10 @@ public class CustomTenantService extends TenantService {
   @Override
   protected void afterTenantUpdate(TenantAttributes tenantAttributes) {
     try {
-      pubSubService.registerPubSubModule(
-        context.getOkapiUrl(), context.getTenantId(), context.getToken());
-    } catch(Exception e) {
-      log.error("Error during pub-sub registration:", e);
-    }
-
-    try {
       prepareSystemUserService.setupSystemUser();
     } catch(Exception e) {
       log.error("Error during system-user initialization:", e);
     }
-  }
-
-  @Override
-  protected void afterTenantDeletion(TenantAttributes tenantAttributes) {
-    pubSubService.unregisterPubSubModule(
-      context.getOkapiUrl(), context.getTenantId(), context.getToken());
   }
 
   @Override

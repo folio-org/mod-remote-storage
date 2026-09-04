@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.log4j.Log4j2;
-import org.folio.okapi.common.XOkapiHeaders;
+import org.folio.spring.integration.XOkapiHeaders;
 import org.folio.rs.support.wiremock.EnableWiremock;
 import org.folio.spring.DefaultFolioExecutionContext;
 import org.folio.spring.FolioModuleMetadata;

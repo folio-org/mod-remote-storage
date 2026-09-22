@@ -9,13 +9,16 @@ import org.folio.rs.domain.dto.ChangeRequestEvent;
 import org.folio.rs.domain.dto.CreateRequestEvent;
 import org.folio.rs.domain.dto.LogRecordEvent;
 import org.folio.rs.domain.dto.RequestEvent;
+import org.folio.rs.error.ItemReturnException;
 import org.folio.rs.util.LogEventType;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.JsonPathException;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -42,7 +45,9 @@ public class LogRecordEventService {
       } else {
         processRequestEvent(logEventType, logRecordEvent.getPayload());
       }
-    } catch (JsonProcessingException e) {
+    } catch (JsonProcessingException | JsonPathException e) {
+      log.error("Error processing event payload [logEventType: {}]", logEventType, e);
+    } catch (ItemReturnException | EntityNotFoundException | IllegalArgumentException e) {
       log.error("Error processing event [logEventType: {}]", logEventType, e);
     }
   }

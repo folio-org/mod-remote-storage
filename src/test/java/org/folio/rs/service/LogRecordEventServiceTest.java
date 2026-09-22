@@ -1,16 +1,21 @@
 package org.folio.rs.service;
 
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.folio.rs.domain.dto.Request.RequestType.HOLD;
 import static org.folio.rs.domain.dto.Request.RequestType.PAGE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.Map;
 
+import jakarta.persistence.EntityNotFoundException;
+
 import org.folio.rs.domain.dto.LogRecordEvent;
+import org.folio.rs.error.ItemReturnException;
 import org.folio.rs.util.LogEventType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -152,6 +157,45 @@ public class LogRecordEventServiceTest {
     logRecordEventService.processEvent(event);
 
     // verify
+    verify(returnRetrievalQueueService, never()).processEventRequest(any());
+    verify(returnItemService, never()).returnItem(any());
+  }
+
+  @Test
+  void processEvent_checkIn_itemReturnExceptionCaughtAndLogged() {
+    // Arrange
+    var event = new LogRecordEvent(CHECK_IN_EVENT, null, BARCODE_001);
+    doThrow(new ItemReturnException("Mapping does not exist for folioLocationId abc-123"))
+      .when(returnItemService).returnItem(BARCODE_001);
+
+    // Act + Assert — must not propagate
+    assertThatNoException().isThrownBy(() -> logRecordEventService.processEvent(event));
+    verify(returnItemService).returnItem(BARCODE_001);
+  }
+
+  @Test
+  void processEvent_checkIn_entityNotFoundExceptionCaughtAndLogged() {
+    // Arrange
+    var event = new LogRecordEvent(CHECK_IN_EVENT, null, BARCODE_001);
+    doThrow(new EntityNotFoundException("Item with barcode BARCODE-001 not found"))
+      .when(returnItemService).returnItem(BARCODE_001);
+
+    // Act + Assert — must not propagate
+    assertThatNoException().isThrownBy(() -> logRecordEventService.processEvent(event));
+    verify(returnItemService).returnItem(BARCODE_001);
+  }
+
+  @ParameterizedTest
+  @EnumSource(value = LogEventType.class,
+    names = { "REQUEST_CREATED", "REQUEST_CREATED_THROUGH_OVERRIDE" },
+    mode = EnumSource.Mode.INCLUDE)
+  void processEvent_requestCreated_jsonPathExceptionCaughtAndLogged(LogEventType type) {
+    // Arrange — payload is missing the "requests.created" path that JsonPath expects
+    var payloadMissingRequestsNode = Map.of("itemBarcode", BARCODE_001);
+    var event = new LogRecordEvent(type.value(), payloadMissingRequestsNode, null);
+
+    // Act + Assert — PathNotFoundException (a JsonPathException) must not propagate
+    assertThatNoException().isThrownBy(() -> logRecordEventService.processEvent(event));
     verify(returnRetrievalQueueService, never()).processEventRequest(any());
     verify(returnItemService, never()).returnItem(any());
   }

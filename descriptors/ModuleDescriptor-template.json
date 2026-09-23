@@ -53,18 +53,6 @@
     {
       "id": "service-points",
       "version": "3.4"
-    },
-    {
-      "id": "pubsub-event-types",
-      "version": "0.1"
-    },
-    {
-      "id": "pubsub-publishers",
-      "version": "0.1"
-    },
-    {
-      "id": "pubsub-subscribers",
-      "version": "0.1"
     }
   ],
   "optional": [
@@ -282,27 +270,6 @@
       ]
     },
     {
-      "id": "remote-storage-event-handlers",
-      "version": "1.1",
-      "handlers": [
-        {
-          "methods": ["POST"],
-          "pathPattern": "/remote-storage/pub-sub-handlers/log-record-event",
-          "permissionsRequired": [
-            "remote-storage.pub-sub-handlers.log-record-event.post"
-          ],
-          "modulePermissions": [
-            "inventory.items.collection.get",
-            "users.item.get",
-            "users.collection.get",
-            "inventory-storage.service-points.item.get",
-            "circulation.requests.queue-item.collection.get",
-            "circulation.requests.queue-instance.collection.get"
-          ]
-        }
-      ]
-    },
-    {
       "id": "remote-storage-items",
       "version": "1.0",
       "handlers": [
@@ -335,10 +302,7 @@
             "perms.users.get",
             "perms.users.item.post",
             "perms.users.assign.immutable",
-            "perms.users.assign.mutable",
-            "pubsub.event-types.post",
-            "pubsub.subscribers.post",
-            "pubsub.publishers.post"
+            "perms.users.assign.mutable"
           ]
         }, {
           "methods": ["GET", "DELETE"],
@@ -524,7 +488,10 @@
         "inventory-storage.holdings.collection.get",
         "inventory-storage.items.collection.get",
         "inventory-storage.identifier-types.collection.get",
-        "inventory-storage.item-note-types.item.get"
+        "inventory-storage.item-note-types.item.get",
+        "inventory.items.collection.get",
+        "circulation.requests.queue-item.collection.get",
+        "inventory-storage.service-points.item.get"
       ]
     }
   },

@@ -1,3 +1,7 @@
+## 3.4.4 2026-09-25
+* [MODRS-180](https://folio-org.atlassian.net/browse/MODRS-180) - Make use of effective call number instead of item call number
+* [MODRS-259](https://folio-org.atlassian.net/browse/MODRS-259) - Update the remote storage connector names for Dematic systems
+
 ## 3.4.3 2025-05-19
 
 * [MODRS-238](https://folio-org.atlassian.net/browse/MODRS-238) - Fix Spring Bootstrap issue 'management.endpoint.loggers.access' uses an incompatible target type

@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ProviderRecord {
   DEMATIC_EMS("Dematic EMS (API)", "DEMATIC_EMS"),
-  DEMATIC_SD("Dematic StagingDirector (TCP/IP)", "DEMATIC_SD"),
+  DEMATIC_SD("Dematic (TCP/IP)", "DEMATIC_SD"),
   CAIA_SOFT("CaiaSoft", "CAIA_SOFT");
 
   private final String name;

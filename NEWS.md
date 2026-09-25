@@ -1,3 +1,11 @@
+## 4.0.1 2026-09-25
+
+### Bug fixes
+* [MODRS-180](https://folio-org.atlassian.net/browse/MODRS-180) - Make use of effective call number instead of item call number
+
+### Features
+* [MODRS-259](https://folio-org.atlassian.net/browse/MODRS-259) - Update the remote storage connector names for Dematic systems
+
 ## 4.0.0 2026-04-16
 
 ### Breaking changes

@@ -1,6 +1,7 @@
 package org.folio.rs.service;
 
 import static org.folio.rs.service.KafkaService.INVENTORY_ITEM_EVENT_LISTENER_ID;
+import static org.folio.rs.service.KafkaService.LOG_RECORD_LISTENER_ID;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,11 +22,22 @@ public class KafkaServiceTest {
   private KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry;
 
   @Test
-  void restartEventListeners() {
-    var mockListenerContainer = mock(MessageListenerContainer.class);
-    when(kafkaListenerEndpointRegistry.getListenerContainer(INVENTORY_ITEM_EVENT_LISTENER_ID)).thenReturn(mockListenerContainer);
+  void restartEventListenersRestartsInventoryItemAndLogRecordListeners() {
+    // when
+    var inventoryItemListenerContainer = mock(MessageListenerContainer.class);
+    var logRecordListenerContainer = mock(MessageListenerContainer.class);
+    when(kafkaListenerEndpointRegistry.getListenerContainer(INVENTORY_ITEM_EVENT_LISTENER_ID))
+      .thenReturn(inventoryItemListenerContainer);
+    when(kafkaListenerEndpointRegistry.getListenerContainer(LOG_RECORD_LISTENER_ID))
+      .thenReturn(logRecordListenerContainer);
+
+    // then
     kafkaService.restartEventListeners();
-    verify(mockListenerContainer).start();
-    verify(mockListenerContainer).stop();
+
+    // verify
+    verify(inventoryItemListenerContainer).stop();
+    verify(inventoryItemListenerContainer).start();
+    verify(logRecordListenerContainer).stop();
+    verify(logRecordListenerContainer).start();
   }
 }

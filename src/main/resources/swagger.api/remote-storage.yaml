@@ -515,23 +515,6 @@ paths:
           required: true
           schema:
             type: string
-  /pub-sub-handlers/log-record-event:
-    description: "Handler for PubSub event"
-    post:
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/pubSubEvent"
-        required: true
-      responses:
-        '204':
-          description: No content
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: No content
   /retrievals:
     get:
       responses:
@@ -816,8 +799,6 @@ components:
       $ref: schemas/checkInItemByHoldId.json
     returnItemResponse:
       $ref: schemas/returnItemResponse.json
-    pubSubEvent:
-      $ref: schemas/pubSubEvent.json
     accessionRequest:
       $ref: schemas/accessionRequest.json
     item:

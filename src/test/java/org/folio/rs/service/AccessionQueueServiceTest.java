@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import lombok.SneakyThrows;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.folio.rs.TestBase;
 import org.folio.rs.domain.dto.AccessionQueue;
 import org.folio.rs.domain.dto.AccessionQueues;

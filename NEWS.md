@@ -1,5 +1,8 @@
 ## 4.1.0-SNAPSHOT 2026-XX-XX
 
+### Breaking changes
+* PubSub deprecation: Implement Kafka LOG_RECORD Event Processing, remove PubSub infrastructure ([MODRS-170](https://folio-org.atlassian.net/browse/MODRS-170))
+
 ### Tech Debt
 * PubSub deprecation: Prepare Kafka Listener for Log Record Event ([MODRS-168](https://folio-org.atlassian.net/browse/MODRS-168))
 

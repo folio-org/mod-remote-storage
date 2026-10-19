@@ -1,3 +1,7 @@
+## 3.4.5 2026-10-19
+* [MODRS-269](https://folio-org.atlassian.net/browse/MODRS-269) - Revert Sunflower - Update the remote storage connector names for Dematic systems
+* [MODRS-270](https://folio-org.atlassian.net/browse/MODRS-270) - Revert Sunflower - Remote Storage uses Call Number instead of Effective Call Number
+
 ## 3.4.4 2026-09-25
 * [MODRS-180](https://folio-org.atlassian.net/browse/MODRS-180) - Make use of effective call number instead of item call number
 * [MODRS-259](https://folio-org.atlassian.net/browse/MODRS-259) - Update the remote storage connector names for Dematic systems

@@ -44,6 +44,7 @@ import org.folio.rs.domain.dto.InstanceContributors;
 import org.folio.rs.domain.dto.InstancePublication;
 import org.folio.rs.domain.dto.InstanceIdentifiers;
 import org.folio.rs.domain.dto.Item;
+import org.folio.rs.domain.dto.ItemEffectiveCallNumberComponents;
 import org.folio.rs.domain.dto.ItemMaterialType;
 import org.folio.rs.domain.dto.ItemNote;
 import org.folio.rs.domain.dto.ItemPermanentLocation;
@@ -57,7 +58,6 @@ import org.folio.rs.domain.entity.ItemNoteEntity;
 import org.folio.rs.error.AccessionException;
 import org.folio.rs.mapper.AccessionQueueMapper;
 import org.folio.rs.repository.AccessionQueueRepository;
-import org.folio.rs.util.CallNumberUtils;
 import org.folio.rs.util.IdentifierType;
 import org.folio.spring.data.OffsetRequest;
 import org.folio.spring.service.SystemUserScopedExecutionService;
@@ -290,7 +290,9 @@ public class AccessionQueueService {
       .itemBarcode(item.getBarcode())
       .createdDateTime(LocalDateTime.now())
       .remoteStorageId(UUID.fromString(locationMapping.getConfigurationId()))
-      .callNumber(CallNumberUtils.buildEffectiveCallNumber(item))
+      .callNumber(ofNullable(item.getEffectiveCallNumberComponents())
+        .map(ItemEffectiveCallNumberComponents::getCallNumber)
+        .orElse(null))
       .instanceTitle(instance.getTitle())
       .instanceAuthor(extractAuthors(instance))
       .instanceContributors(extractContributors(instance))

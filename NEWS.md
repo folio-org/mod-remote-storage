@@ -1,3 +1,8 @@
+## 4.0.2 2026-10-21
+
+### Breaking changes
+* [MODRS-267](https://folio-org.atlassian.net/browse/MODRS-267) Migrate to Spring Boot v4.1.1
+
 ## 4.0.1 2026-09-25
 
 ### Bug fixes
